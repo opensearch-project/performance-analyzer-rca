@@ -3,7 +3,7 @@
 
 ## Small 2 line Summary
 
-This RCA is used to detect bottlenect in resource X by ..
+This RCA is used to detect bottleneck in resource X by ..
 
 ## Usecases
 - usecase 1
@@ -106,10 +106,10 @@ TBD
 
 ## RCA graph images
 
-Should include the graph nodes and on which ES nodes will they run.
+Should include the graph nodes and on which OpenSearch nodes will they run.
 
 1. Please use a three data node, three master node cluster.
-2. Please 3 es nodes with colocated master and data
+2. Please 3 opensearch nodes with colocated master and data
 
 ## Descriptive summary
 

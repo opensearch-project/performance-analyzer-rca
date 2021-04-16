@@ -1,5 +1,5 @@
-[![Java CI](https://github.com/opendistro-for-elasticsearch/performance-analyzer-rca/workflows/Java%20CI/badge.svg)](https://github.com/opendistro-for-elasticsearch/performance-analyzer-rca/actions?query=workflow%3A%22Java+CI%22)
-[![codecov](https://codecov.io/gh/opendistro-for-elasticsearch/performance-analyzer-rca/branch/master/graph/badge.svg)](https://codecov.io/gh/opendistro-for-elasticsearch/performance-analyzer-rca)
+[![Java CI](https://github.com/opensearch-project/performance-analyzer-rca/workflows/Java%20CI/badge.svg)](https://github.com/opensearch-project/performance-analyzer-rca/actions?query=workflow%3A%22Java+CI%22)
+[![codecov](https://codecov.io/gh/opensearch-project/performance-analyzer-rca/branch/master/graph/badge.svg)](https://codecov.io/gh/opensearch-project/performance-analyzer-rca)
 [![Documentation](https://img.shields.io/badge/api-reference-blue.svg)](https://opendistro.github.io/for-elasticsearch-docs/docs/rca/)
 [![Chat](https://img.shields.io/badge/chat-on%20forums-blue)](https://discuss.opendistrocommunity.dev/c/performance-analyzer/)
 ![PRs welcome!](https://img.shields.io/badge/PRs-welcome!-success)
@@ -7,10 +7,10 @@
 ## Performance Analyzer RCA
 
 The Performance Analyzer RCA is a framework that builds on the Performance Analyzer engine to
-support Root Cause Analysis (RCA) of performance and reliability problems in Elasticsearch
+support Root Cause Analysis (RCA) of performance and reliability problems in OpenSearch
 clusters. This framework executes real time root cause analyses using Performance Analyzer
 metrics. Root cause analysis can significantly improve operations, administration and
-provisioning of Elasticsearch clusters, and it can enable Elasticsearch client teams to tune
+provisioning of OpenSearch clusters, and it can enable OpenSearch client teams to tune
 their workloads to reduce errors.
 
 ## RCA Overview
@@ -43,7 +43,7 @@ __WireHopper__: Interface between the scheduler and the networking layer to help
 
 __Context__: The context contains a brief summary of the RCA. For example, a High CPU utilization symptom context will contain the average CPU utilization when the symptom was triggered. 
 
-__Thresholds__: Thresholds are static values that must be exceeded to trigger symptoms and RCAs. Thresholds can be dynamically updated and do not require a process restart. Thresholds are user defined and often depend on hardware configuration and Elasticsearch versions. The threshold store supports tags to help associate metadata with a threshold.
+__Thresholds__: Thresholds are static values that must be exceeded to trigger symptoms and RCAs. Thresholds can be dynamically updated and do not require a process restart. Thresholds are user defined and often depend on hardware configuration and OpenSearch versions. The threshold store supports tags to help associate metadata with a threshold.
 
 __Tags__: Tags are key-value pairs that are specified in the configuration file(rca.conf). Tags can be associated with both hosts and RCA nodes.
 * RCA nodes are only executed on hosts with the exact same tags as the RCA node. A common use-case of tags is to restrict certain RCA nodes to only execute on the master node. 
@@ -182,3 +182,7 @@ If you discover a potential security issue in this project we ask that you notif
 ## License
 
 This library is licensed under the Apache 2.0 License.
+
+## Copyright
+
+Copyright 2021 Amazon.com, Inc. or its affiliates. All Rights Reserved.

@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-# Files created by OpenDistroForElasticsearch should always be group writable too
+# Files created by OpenSearch should always be group writable too
 umask 0002
 
 run_as_other_user_if_needed() {
@@ -15,21 +15,21 @@ run_as_other_user_if_needed() {
     fi
 }
 
-# Allow user specify custom CMD, maybe bin/elasticsearch itself
-# for example to directly specify `-E` style parameters for elasticsearch on k8s
+# Allow user specify custom CMD, maybe bin/opensearch itself
+# for example to directly specify `-E` style parameters for opensearch on k8s
 # or simply to run /bin/bash to check the image
-if [[ "$1" != "eswrapper" ]]; then
-    if [[ "$(id -u)" == "0" && $(basename "$1") == "elasticsearch" ]]; then
+if [[ "$1" != "opensearchwrapper" ]]; then
+    if [[ "$(id -u)" == "0" && $(basename "$1") == "opensearch" ]]; then
         # centos:7 chroot doesn't have the `--skip-chdir` option and
         # changes our CWD.
-        # Rewrite CMD args to replace $1 with `elasticsearch` explicitly,
+        # Rewrite CMD args to replace $1 with `opensearch` explicitly,
         # so that we are backwards compatible with the docs
-        # from the previous Elasticsearch versions<6
+        # from the previous versions<6
         # and configuration option D:
         # https://www.elastic.co/guide/en/elasticsearch/reference/5.6/docker.html#_d_override_the_image_8217_s_default_ulink_url_https_docs_docker_com_engine_reference_run_cmd_default_command_or_options_cmd_ulink
-        # Without this, user could specify `elasticsearch -E x.y=z` but
-        # `bin/elasticsearch -E x.y=z` would not work.
-        set -- "elasticsearch" "${@:2}"
+        # Without this, user could specify `opensearch -E x.y=z` but
+        # `bin/opensearch -E x.y=z` would not work.
+        set -- "opensearch" "${@:2}"
         # Use chroot to switch to UID 1000
         exec chroot --userspec=1000 / "$@"
     else
@@ -38,25 +38,25 @@ if [[ "$1" != "eswrapper" ]]; then
     fi
 fi
 
-# Parse Docker env vars to customize Elasticsearch
+# Parse Docker env vars to customize OpenSearch
 #
 # e.g. Setting the env var cluster.name=testcluster
 #
-# will cause Elasticsearch to be invoked with -Ecluster.name=testcluster
+# will cause OpenSearch to be invoked with -Ecluster.name=testcluster
 #
 # see https://www.elastic.co/guide/en/elasticsearch/reference/current/settings.html#_setting_default_settings
 
-declare -a es_opts
+declare -a open_search_opts
 
 while IFS='=' read -r envvar_key envvar_value
 do
-    # Elasticsearch settings need to have at least two dot separated lowercase
+    # OpenSearch settings need to have at least two dot separated lowercase
     # words, e.g. `cluster.name`, except for `processors` which we handle
     # specially
     if [[ "$envvar_key" =~ ^[a-z0-9_]+\.[a-z0-9_]+ || "$envvar_key" == "processors" ]]; then
         if [[ ! -z $envvar_value ]]; then
-          es_opt="-E${envvar_key}=${envvar_value}"
-          es_opts+=("${es_opt}")
+          open_search_opt="-E${envvar_key}=${envvar_value}"
+          open_search_opts+=("${open_search_opt}")
         fi
     fi
 done < <(env)
@@ -67,32 +67,32 @@ done < <(env)
 # introspect the statistics for the cgroup for the given
 # hierarchy. Alas, Docker breaks this by mounting the container
 # statistics at the root while leaving the cgroup paths as the actual
-# paths. Therefore, Elasticsearch provides a mechanism to override
+# paths. Therefore, OpenSearch provides a mechanism to override
 # reading the cgroup path from /proc/self/cgroup and instead uses the
 # cgroup path defined the JVM system property
-# es.cgroups.hierarchy.override. Therefore, we set this value here so
+# opensearch.cgroups.hierarchy.override. Therefore, we set this value here so
 # that cgroup statistics are available for the container this process
 # will run in.
-export ES_JAVA_OPTS="-Des.cgroups.hierarchy.override=/ $ES_JAVA_OPTS"
+export OPENSEARCH_JAVA_OPTS="-Dopensearch.cgroups.hierarchy.override=/ $OPENSEARCH_JAVA_OPTS"
 
 if [[ "$(id -u)" == "0" ]]; then
     # If requested and running as root, mutate the ownership of bind-mounts
     if [[ -n "$TAKE_FILE_OWNERSHIP" ]]; then
-        chown -R 1000:0 /usr/share/elasticsearch/{data,logs}
+        chown -R 1000:0 /usr/share/opensearch/{data,logs}
     fi
 fi
 
-if [[ -d "/usr/share/elasticsearch/plugins/opendistro_security" ]]; then
-    # Install Demo certifactes for Security Plugin and update the elasticsearch.yml
+if [[ -d "/usr/share/opensearch/plugins/opendistro_security" ]]; then
+    # Install Demo certificates for Security Plugin and update the opensearch.yml
     # file to use those certificates.
-    /usr/share/elasticsearch/plugins/opendistro_security/tools/install_demo_configuration.sh -y -i -s
+    /usr/share/opensearch/plugins/opendistro_security/tools/install_demo_configuration.sh -y -i -s
 fi
 
-if [[ -d "/usr/share/elasticsearch/plugins/opendistro-performance-analyzer" ]]; then
+if [[ -d "/usr/share/opensearch/plugins/opendistro-performance-analyzer" ]]; then
     CLK_TCK=`/usr/bin/getconf CLK_TCK`
     DEBUG_OPTS="-agentlib:jdwp=transport=dt_socket,address=8000,server=y,suspend=n"
-    ES_JAVA_OPTS="-Djava.security.policy=file:///usr/share/elasticsearch/performance-analyzer-rca/pa_config/es_security.policy -Dclk.tck=$CLK_TCK -Djdk.attach.allowAttachSelf=true $ES_JAVA_OPTS"
-    /usr/bin/supervisord -c /usr/share/elasticsearch/performance-analyzer-rca/pa_config/supervisord.conf
+    OPENSEARCH_JAVA_OPTS="-Djava.security.policy=file:///usr/share/opensearch/performance-analyzer-rca/pa_config/opensearch_security.policy -Dclk.tck=$CLK_TCK -Djdk.attach.allowAttachSelf=true $OPENSEARCH_JAVA_OPTS"
+    /usr/bin/supervisord -c /usr/share/opensearch/performance-analyzer-rca/pa_config/supervisord.conf
 fi
 
-run_as_other_user_if_needed /usr/share/elasticsearch/bin/elasticsearch "${es_opts[@]}"
+run_as_other_user_if_needed /usr/share/opensearch/bin/opensearch "${open_search_opts[@]}"

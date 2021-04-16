@@ -1,17 +1,17 @@
 #!/bin/bash
 
-if [ "$START_PERF_ANALYZER" = "false" ]; then
+if [[ "$START_PERF_ANALYZER" = "false" ]]; then
     echo "Not starting performance-analyzer-agent"
     exit 0
 fi
 
-if [ -z "$1" ]; then
-    if [ -z "$ES_HOME" ]; then
-        echo "ES_HOME needs to be set or passed in as the first parameter."
+if [[ -z "$1" ]]; then
+    if [[ -z "$OPENSEARCH_HOME" ]]; then
+        echo "OPENSEARCH_HOME needs to be set or passed in as the first parameter."
         exit 1
     fi
 else
-    ES_HOME=$1
+    OPENSEARCH_HOME=$1
 fi
 
 if [ -z "$2" ]; then
@@ -24,12 +24,12 @@ else
 fi
 
 if ! echo $* | grep -E '(^-d |-d$| -d |--daemonize$|--daemonize )' > /dev/null; then
-    export JAVA_OPTS=-Des.path.home=$ES_HOME\ -Dlog4j.configurationFile=$ES_HOME/performance-analyzer-rca/pa_config/log4j2.xml
-    exec $ES_HOME/performance-analyzer-rca/bin/performance-analyzer-rca
+    export JAVA_OPTS=-Dopensearch.path.home=$OPENSEARCH_HOME\ -Dlog4j.configurationFile=$OPENSEARCH_HOME/performance-analyzer-rca/pa_config/log4j2.xml
+    exec $OPENSEARCH_HOME/performance-analyzer-rca/bin/performance-analyzer-rca
 else
     echo 'Starting deamon'
-    export JAVA_OPTS=-Des.path.home=$ES_HOME\ -Dlog4j.configurationFile=$ES_HOME/performance-analyzer-rca/pa_config/log4j2.xml
-    exec $ES_HOME/performance-analyzer-rca/bin/performance-analyzer-rca &
+    export JAVA_OPTS=-Dopensearch.path.home=$OPENSEARCH_HOME\ -Dlog4j.configurationFile=$OPENSEARCH_HOME/performance-analyzer-rca/pa_config/log4j2.xml
+    exec $OPENSEARCH_HOME/performance-analyzer-rca/bin/performance-analyzer-rca &
 
     pid=$!
     PID_LOC=/tmp/performance-analyzer-agent

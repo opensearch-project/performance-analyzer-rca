@@ -16,7 +16,7 @@
 ---
 version: '2.1'
 services:
-  elasticsearch1:
+  opensearch1:
     ports:
       - 9200:9200
       - 9600:9600

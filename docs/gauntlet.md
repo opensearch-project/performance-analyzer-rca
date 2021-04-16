@@ -9,7 +9,7 @@ endpoint on a particular host.
 
 ## Out of Scope
 This framework will not facilitate testing the PerformanceAnalyzer Reader component, writer
-component and how PerformanceAnalyzer interacts with ElasticSearch. 
+component and how PerformanceAnalyzer interacts with OpenSearch. 
 
 ## How to write your own tests using this framework ?
 The RCA-IT is composed of various annotatons that you can use to configure the 
@@ -81,7 +81,7 @@ Let's see an example:
 ```
 
 - _name_ : The Metric graph node that will be emitting these values. The expected parameter is one of the metrics classes
- in `com.amazon.opendistro.elasticsearch.performanceanalyzer.rca.framework.api.metrics`. The
+ in `com.amazon.opendistro.opensearch.performanceanalyzer.rca.framework.api.metrics`. The
  metrics class that you specify, should have a `static final` field called `NAME` (`CPU_Utilization`)
  and that will be used to determine the name of the metric table.
 - _dimensionNames_ : For the dimension names for a metric, please refer to the docs 
@@ -169,7 +169,7 @@ Host IDs | Host Tags
 ### Examples
 
 Some of the examples for how to write the integ tests can be found here:
-`src/test/java/com/amazon/opendistro/elasticsearch/performanceanalyzer/rca/integTests/tests/poc/*`
+`src/test/java/com/amazon/opendistro/opensearch/performanceanalyzer/rca/integTests/tests/poc/*`
 
 ### Running the integ tests
 1. All integration tests written using this framework can be run by using the command

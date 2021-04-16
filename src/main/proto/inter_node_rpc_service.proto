@@ -1,12 +1,12 @@
 syntax = "proto3";
 
 option java_multiple_files = true;
-option java_package = "com.amazon.opendistro.elasticsearch.performanceanalyzer.grpc";
+option java_package = "com.amazon.opendistro.opensearch.performanceanalyzer.grpc";
 option java_outer_classname = "PANetworking";
 
 import "google/protobuf/descriptor.proto";
 
-package com.amazon.opendistro.elasticsearch.performanceanalyzer.grpc;
+package com.amazon.opendistro.opensearch.performanceanalyzer.grpc;
 
 service InterNodeRpcService {
     // Sends a flowunit to whoever is interested in it.
@@ -189,7 +189,7 @@ message NodeTemperatureSummaryMessage {
 */
 message FlowUnitMessage {
     string graphNode = 1;
-    string esNode = 2;
+    string node = 2;
     uint64 timeStamp = 3;
     ResourceContextMessage resourceContext = 4;
     oneof summary_oneof {
