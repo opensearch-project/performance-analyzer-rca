@@ -1,5 +1,5 @@
-[![Java CI](https://github.com/opendistro-for-elasticsearch/performance-analyzer-rca/workflows/Java%20CI/badge.svg)](https://github.com/opendistro-for-elasticsearch/performance-analyzer-rca/actions?query=workflow%3A%22Java+CI%22)
-[![codecov](https://codecov.io/gh/opendistro-for-elasticsearch/performance-analyzer-rca/branch/master/graph/badge.svg)](https://codecov.io/gh/opendistro-for-elasticsearch/performance-analyzer-rca)
+[![Java CI](https://github.com/opensearch-project/performance-analyzer-rca/workflows/Java%20CI/badge.svg)](https://github.com/opensearch-project/performance-analyzer-rca/actions?query=workflow%3A%22Java+CI%22)
+[![codecov](https://codecov.io/gh/opensearch-project/performance-analyzer-rca/branch/master/graph/badge.svg)](https://codecov.io/gh/opensearch-project/performance-analyzer-rca)
 [![Documentation](https://img.shields.io/badge/api-reference-blue.svg)](https://opendistro.github.io/for-elasticsearch-docs/docs/rca/)
 [![Chat](https://img.shields.io/badge/chat-on%20forums-blue)](https://discuss.opendistrocommunity.dev/c/performance-analyzer/)
 ![PRs welcome!](https://img.shields.io/badge/PRs-welcome!-success)
@@ -182,3 +182,7 @@ If you discover a potential security issue in this project we ask that you notif
 ## License
 
 This library is licensed under the Apache 2.0 License.
+
+## Copyright
+
+Copyright 2021 Amazon.com, Inc. or its affiliates. All Rights Reserved.

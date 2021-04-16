@@ -12,58 +12,59 @@
 # permissions and limitations under the License.
 
 ################################################################################
-# Build stage 0 `prep_es_files`:
-# Extract elasticsearch artifact
+# Build stage 0 `prep_open_search_files`:
+# Extract opensearch artifact
 # Install required plugins
 # Set gid=0 and make group perms==owner perms
 ################################################################################
 
-FROM centos:7 AS prep_es_files
+FROM centos:7 AS prep_open_search_files
 
-ENV PATH /usr/share/elasticsearch/bin:$PATH
+ENV PATH /usr/share/opensearch/bin:$PATH
 RUN curl -s https://download.java.net/java/GA/jdk11/13/GPL/openjdk-11.0.1_linux-x64_bin.tar.gz | tar -C /opt -zxf -
 ENV JAVA_HOME /opt/jdk-11.0.1
 RUN yum install -y unzip
 RUN yum install -y lsof
 
-RUN groupadd -g 1000 elasticsearch && \
-    adduser -u 1000 -g 1000 -d /usr/share/elasticsearch elasticsearch
+RUN groupadd -g 1000 opensearch && \
+    adduser -u 1000 -g 1000 -d /usr/share/opensearch opensearch
 
 USER 1000
 
 
-WORKDIR /usr/share/elasticsearch
+WORKDIR /usr/share/opensearch
 
 # Bust cache for wgets
 ENV BUST_CACHE 1576286189
 
-# Download and extract defined ES version.
-RUN curl -fsSL https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-oss-7.10.2-linux-x86_64.tar.gz | \
-    tar zx --strip-components=1
+# Download and extract defined OpenSearch version.
+# TODO: Modify this link to the opensearch artifact link
+COPY opensearch-oss-7.10.3-SNAPSHOT-linux-x86_64.tar.gz .
+RUN tar -xf opensearch-oss-7.10.3-SNAPSHOT-linux-x86_64.tar.gz --strip-component=1
 
-RUN set -ex && for esdirs in config data logs; do \
-        mkdir -p "$esdirs"; \
+RUN set -ex && for opensearchdirs in config data logs; do \
+        mkdir -p "$opensearchdirs"; \
     done
 
-COPY --chown=1000:0 elasticsearch.yml log4j2.properties config/
+COPY --chown=1000:0 opensearch.yml log4j2.properties config/
 
 COPY --chown=1000:0 performance-analyzer-rca.zip config/
 
 COPY --chown=1000:0 opendistro-performance-analyzer-1.13.0.0-SNAPSHOT.zip /tmp/
 
-RUN elasticsearch-plugin install --batch file:///tmp/opendistro-performance-analyzer-1.13.0.0-SNAPSHOT.zip; \
+RUN opensearch-plugin install --batch file:///tmp/opendistro-performance-analyzer-1.13.0.0-SNAPSHOT.zip; \
         rm /tmp/opendistro-performance-analyzer-1.13.0.0-SNAPSHOT.zip
 
 USER 0
 
-# Set gid to 0 for opendistroforelasticsearch and make group permission similar to that of user
-RUN chown -R elasticsearch:0 . && \
-    chmod -R g=u /usr/share/elasticsearch
+# Set gid to 0 for opensearch and make group permission similar to that of user
+RUN chown -R opensearch:0 . && \
+    chmod -R g=u /usr/share/opensearch
 
 RUN unzip config/performance-analyzer-rca.zip
 
 RUN cp -r performance-analyzer-rca/* plugins/opendistro-performance-analyzer/
-RUN chmod 755 /usr/share/elasticsearch/plugins/opendistro-performance-analyzer/pa_bin/performance-analyzer-agent
+RUN chmod 755 /usr/share/opensearch/plugins/opendistro-performance-analyzer/pa_bin/performance-analyzer-agent
 RUN chmod -R 755 /dev/shm
 ################################################################################
 # Build stage 1 (the actual opendistroforelasticsearch image):
@@ -73,7 +74,7 @@ RUN chmod -R 755 /dev/shm
 
 FROM centos:7
 
-ENV ELASTIC_CONTAINER true
+ENV OPENSEARCH_CONTAINER true
 
 RUN \
   rpm --rebuilddb && yum clean all && \
@@ -88,15 +89,16 @@ RUN \
                   which \
                   jq \
                   lsof \
+                  python-pip \
                   rsync && \
   yum clean all && \
-  easy_install supervisor
+  pip install supervisor
 
 RUN yum update -y && \
     yum install -y nc unzip wget which && \
     yum clean all
 COPY CENTOS_LICENSING.txt /root
-COPY --from=prep_es_files --chown=1000:0 /opt/jdk-11.0.1 /opt/jdk-11.0.1
+COPY --from=prep_open_search_files --chown=1000:0 /opt/jdk-11.0.1 /opt/jdk-11.0.1
 ENV JAVA_HOME /opt/jdk-11.0.1
 
 # Replace OpenJDK's built-in CA certificate keystore with the one from the OS
@@ -105,28 +107,28 @@ RUN ln -sf /etc/pki/ca-trust/extracted/java/cacerts /opt/jdk-11.0.1/lib/security
 
 ENV PATH $PATH:$JAVA_HOME/bin
 
-RUN mkdir /usr/share/elasticsearch && \
-    groupadd -g 1000 elasticsearch && \
-    adduser -u 1000 -g 1000 -G 0 -d /usr/share/elasticsearch elasticsearch && \
-    chmod 0775 /usr/share/elasticsearch && \
-    chgrp 0 /usr/share/elasticsearch
+RUN mkdir /usr/share/opensearch && \
+    groupadd -g 1000 opensearch && \
+    adduser -u 1000 -g 1000 -G 0 -d /usr/share/opensearch opensearch && \
+    chmod 0775 /usr/share/opensearch && \
+    chgrp 0 /usr/share/opensearch
 
 RUN mkdir -p /usr/share/supervisor/performance_analyzer
 
-WORKDIR /usr/share/elasticsearch
-COPY --from=prep_es_files --chown=1000:0 /usr/share/elasticsearch /usr/share/elasticsearch
-ENV PATH /usr/share/elasticsearch/bin:$PATH
+WORKDIR /usr/share/opensearch
+COPY --from=prep_open_search_files --chown=1000:0 /usr/share/opensearch /usr/share/opensearch
+ENV PATH /usr/share/opensearch/bin:$PATH
 
 ADD --chown=1000:0 docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 
 # Openshift overrides USER and uses ones with randomly uid>1024 and gid=0
-# Allow ENTRYPOINT (and ES) to run even with a different user
+# Allow ENTRYPOINT (and OpenSearch) to run even with a different user
 RUN chgrp 0 /usr/local/bin/docker-entrypoint.sh && \
     chmod g=u /etc/passwd && \
     chmod 0775 /usr/local/bin/docker-entrypoint.sh
 
 # Bind to all interfaces so that the docker container is accessible from the host machine
-RUN sed -i "s|#webservice-bind-host =|webservice-bind-host = 0.0.0.0|g" /usr/share/elasticsearch/plugins/opendistro-performance-analyzer/pa_config/performance-analyzer.properties
+RUN sed -i "s|#webservice-bind-host =|webservice-bind-host = 0.0.0.0|g" /usr/share/opensearch/plugins/opendistro-performance-analyzer/pa_config/performance-analyzer.properties
 
 EXPOSE 9200 9300 9600 9650
 
@@ -141,4 +143,4 @@ LABEL org.label-schema.schema-version="1.0" \
 
 ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
 # Dummy overridable parameter parsed by entrypoint
-CMD ["eswrapper"]
+CMD ["opensearchwrapper"]

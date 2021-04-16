@@ -1,6 +1,6 @@
 # Building, Installing, and Running the RCA Framework
 
-This document walks you through the process of building and deploying the RCA framework along with the Performance Analyzer plugin. The RCA framework relies on the metrics provided by the [performance analyzer plugin](https://github.com/opendistro-for-elasticsearch/performance-analyzer). Since this code is still in development, the released versions of performance analyzer plugin do not support the RCA framework yet and you will have to build the plugin from source.
+This document walks you through the process of building and deploying the RCA framework along with the Performance Analyzer plugin. The RCA framework relies on the metrics provided by the [performance analyzer plugin](https://github.com/opensearch-project/performance-analyzer). Since this code is still in development, the released versions of performance analyzer plugin do not support the RCA framework yet and you will have to build the plugin from source.
 
     
  ## Building the Performance Analyzer plugin
@@ -20,7 +20,7 @@ This document walks you through the process of building and deploying the RCA fr
     
  #### 2. Clone the Performance Analyzer RCA repository as follows:
  
-    `git clone https://github.com/opendistro-for-elasticsearch/performance-analyzer-rca.git`
+    `git clone https://github.com/opensearch-project/performance-analyzer-rca.git`
     
     `cd performance-analyzer-rca`
     
@@ -67,7 +67,7 @@ This package uses the [Gradle](https://docs.gradle.org/current/userguide/usergui
 
 2. Clone the Performance Analyzer plugin repository as follows:
  
-    `git clone -b master --single-branch https://github.com/opendistro-for-elasticsearch/performance-analyzer.git`
+    `git clone -b master --single-branch https://github.com/opensearch-project/performance-analyzer.git`
    
 3. `cd performance-analyzer`
     
@@ -106,7 +106,7 @@ You can use the packaged Dockerfile and docker-compose.yml files [here](./docker
 4. Copy the RCA framework artifact and the Performance Analyzer plugin JAR into this folder
  
     `cp <RCA framework root>/build/distributions/performance-analyzer-rca.zip ./`  
-    `cp <Performance Analyzer plugin root>/build/distributions/opendistro-performance-analyzer-1.13.0.0-SNAPSHOT.zip ./`
+    `cp <Performance Analyzer plugin root>/build/distributions/opendistro-performance-analyzer-1.13.0.0-SNAPSHOT.zip ./` 
  
  ### Installation
  
@@ -114,11 +114,11 @@ You can use the packaged Dockerfile and docker-compose.yml files [here](./docker
  
  2. Build and tag the Docker image with our RCA framework.
     
-    `docker build  -t odfe-es/pa-rca:1.0  .`
+    `docker build -t odfe-opensearch/pa-rca:1.0 .`
  
  3. Spin up a two node cluster as follows:
  
-    `DATA_VOLUME1=esdata1 DATA_VOLUME2=esdata2 docker-compose -f docker-compose.yml -f docker-compose.hostports.yml -f docker-compose.cluster.yml up elasticsearch1 elasticsearch2`
+    `DATA_VOLUME1=opensearchdata1 DATA_VOLUME2=opensearchdata2 docker-compose -f docker-compose.yml -f docker-compose.hostports.yml -f docker-compose.cluster.yml up opensearch1 opensearch2`
  
  ## Running
  
