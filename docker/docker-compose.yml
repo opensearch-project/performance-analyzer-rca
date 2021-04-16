@@ -13,21 +13,21 @@
 # permissions and limitations under the License.
 
 
-# Description: 
-# docker-compose.yml for running elasticsearch in docker.
+# Description:
+# docker-compose.yml for running opensearch in docker.
 #
 # This file was generated from the template at templates/docker-compose.yml.j2
 
 version: '2.1'
 services:
-  elasticsearch1:
-    container_name: elasticsearch1
-    image: odfe-es/pa-rca:1.0
+  opensearch1:
+    container_name: opensearch1
+    image: odfe-opensearch/pa-rca:1.0
     mem_limit: 4g
     networks:
-      esnet:
+      opensearchnet:
         aliases:
-          - elasticsearch
+          - opensearch
     # If unset, uses empty string which Docker ignores
     # Defined in tests/conftest.py to test starting with a random uid
     user: ${PROCESS_UID}
@@ -37,30 +37,30 @@ services:
         hard: -1
     # DATA_VOLUME{1,2} are defined in tests/conftest.py
     volumes:
-      - ${DATA_VOLUME1}:/usr/share/elasticsearch/data
+      - ${DATA_VOLUME1}:/usr/share/opensearch/data
 
-  elasticsearch2:
-    container_name: elasticsearch2
+  opensearch2:
+    container_name: opensearch2
     environment:
       - node.master=false
-    image: odfe-es/pa-rca:1.0
+    image: odfe-opensearch/pa-rca:1.0
     mem_limit: 4g
     networks:
-      - esnet
+      - opensearchnet
     user: ${PROCESS_UID}
     ulimits:
       memlock:
         soft: -1
         hard: -1
     volumes:
-      - ${DATA_VOLUME2}:/usr/share/elasticsearch/data
+      - ${DATA_VOLUME2}:/usr/share/opensearch/data
 
 volumes:
-  esdata1:
+  opensearchdata1:
     driver: local
-  esdata2:
+  opensearchdata2:
     driver: local
 
 networks:
-  esnet:
+  opensearchnet:
     driver: bridge

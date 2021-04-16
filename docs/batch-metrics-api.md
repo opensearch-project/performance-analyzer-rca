@@ -1,7 +1,7 @@
 # Batch Metrics API
 
 ## Background and Problem statement
-The metrics API currently allows us to collect the past 5 seconds of performance data from an ODFE cluster. However, this data is aggregated, not raw, performance metrics. Additionally, it is restricting that we only have access to the past 5 seconds of data, rather than data from longer periods of time. Having fine granularity (raw) metrics from longer periods of time would allow users to learn a lot more about the performance of an AES cluster.
+The metrics API currently allows us to collect the past 5 seconds of performance data from an ODFE cluster. However, this data is aggregated, not raw, performance metrics. Additionally, it is restricting that we only have access to the past 5 seconds of data, rather than data from longer periods of time. Having fine granularity (raw) metrics from longer periods of time would allow users to learn a lot more about the performance of an OpenSearch cluster.
 
 ## Design
 First, we would like to expand the retention period beyond 5s. Currently, each cluster retains the past 5s of performance data in the form of a sqlite database (metricsdb files). We can naively expand the retention period by simply retaining more of these databases and allowing users to query from them.
