@@ -94,8 +94,6 @@ ext {
     gitDefaultBranch = 'main'
 }
 
-// TODO: Add spotless back. Removed due to NPE. Need to investigate and fix it.
-/*
 spotless {
     java {
         // only apply formatting rules to updated files
@@ -112,7 +110,6 @@ spotless {
         toggleOffOn()
     }
 }
-*/
 
 tasks.withType(Checkstyle) {
     reports {
@@ -246,7 +243,7 @@ sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
 compileJava {
-    // dependsOn spotlessApply
+    dependsOn spotlessApply
     JavaVersion targetVersion = JavaVersion.toVersion(targetCompatibility);
     if (targetVersion.isJava9Compatible()) {
         options.compilerArgs += ["--add-exports", "jdk.attach/sun.tools.attach=ALL-UNNAMED"]
