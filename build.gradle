@@ -89,7 +89,7 @@ publishing {
 }
 
 ext {
-    opensearchVersion = '1.0'
+    rca_version = '1.0'
     isSnapshot = "true" == System.getProperty("build.snapshot", "true")
     gitDefaultBranch = 'main'
 }
@@ -209,7 +209,7 @@ jacocoTestCoverageVerification {
 check.dependsOn jacocoTestCoverageVerification
 
 
-version = "${opensearchVersion}.0"
+version = "${rca_version}.0.0-beta1"
 if (isSnapshot) {
     version += "-SNAPSHOT"
 }
@@ -396,7 +396,7 @@ task copyAllArtifacts(type: Copy) {
     def rcaArtifacts = Paths.get(projectPathStr, 'build', 'distributions', 'performance-analyzer-rca.zip')
     def paArtifacts = Paths.get(paDir, 'build', 'distributions', 'opensearch-performance-analyzer-1.0.0.0-beta1-SNAPSHOT.zip')
     // Replace this path to point to opensearch artifact local location
-    def opensearchArtifacts = Paths.get('../opensearch-oss-7.10.3-SNAPSHOT-linux-x86_64.tar.gz')
+    def opensearchArtifacts = Paths.get('../opensearch-1.0.0-alpha1-SNAPSHOT-linux-x86_64-112.tar.gz')
 
     dockerArtifactsDir = Paths.get(dockerBuildDir, 'rca-docker')
     from(dockerArtifacts)
