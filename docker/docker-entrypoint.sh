@@ -82,13 +82,13 @@ if [[ "$(id -u)" == "0" ]]; then
     fi
 fi
 
-if [[ -d "/usr/share/opensearch/plugins/opendistro_security" ]]; then
+if [[ -d "/usr/share/opensearch/plugins/opensearch_security" ]]; then
     # Install Demo certificates for Security Plugin and update the opensearch.yml
     # file to use those certificates.
-    /usr/share/opensearch/plugins/opendistro_security/tools/install_demo_configuration.sh -y -i -s
+    /usr/share/opensearch/plugins/opensearch_security/tools/install_demo_configuration.sh -y -i -s
 fi
 
-if [[ -d "/usr/share/opensearch/plugins/opendistro-performance-analyzer" ]]; then
+if [[ -d "/usr/share/opensearch/plugins/opensearch-performance-analyzer" ]]; then
     CLK_TCK=`/usr/bin/getconf CLK_TCK`
     DEBUG_OPTS="-agentlib:jdwp=transport=dt_socket,address=8000,server=y,suspend=n"
     OPENSEARCH_JAVA_OPTS="-Djava.security.policy=file:///usr/share/opensearch/performance-analyzer-rca/pa_config/opensearch_security.policy -Dclk.tck=$CLK_TCK -Djdk.attach.allowAttachSelf=true $OPENSEARCH_JAVA_OPTS"
