@@ -46,7 +46,7 @@ public class Util {
                     + File.separator
                     + "plugins"
                     + File.separator
-                    + "opendistro-performance-analyzer"
+                    + "opensearch-performance-analyzer"
                     + File.separator;
     public static final String READER_LOCATION =
             OPENSEARCH_HOME + File.separator + "performance-analyzer-rca" + File.separator;
