@@ -32,8 +32,12 @@ import com.amazon.opendistro.opensearch.performanceanalyzer.rca.stats.eval.impl.
 import java.util.Collection;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class NamedCounter implements IStatistic<NamedAggregateValue> {
+
+    private static final Logger LOG = LogManager.getLogger(NamedCounter.class);
     private boolean empty;
     private Map<String, NamedAggregateValue> counters;
 
@@ -61,7 +65,7 @@ public class NamedCounter implements IStatistic<NamedAggregateValue> {
                 counters.put(key, mapValue);
                 empty = false;
             } catch (Exception ex) {
-                ex.printStackTrace();
+                LOG.error("Caught an exception while calculating the counter value", ex);
             }
         }
     }

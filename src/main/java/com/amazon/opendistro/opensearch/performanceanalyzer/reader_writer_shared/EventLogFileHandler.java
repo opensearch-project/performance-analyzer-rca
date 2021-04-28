@@ -99,11 +99,10 @@ public class EventLogFileHandler {
                 writeInternal(out, data);
             }
         } catch (IOException e) {
-            e.printStackTrace();
             LOG.error(
-                    "Error writing entry '{}'. Cause: {}",
+                    "Error writing entry '{}'. Cause:",
                     currEntry == null ? "NOT_INITIALIZED" : currEntry.key,
-                    e.getMessage());
+                    e);
         }
     }
 
@@ -118,8 +117,7 @@ public class EventLogFileHandler {
         try {
             Files.move(tmpPath, path, REPLACE_EXISTING, ATOMIC_MOVE);
         } catch (IOException e) {
-            e.printStackTrace();
-            LOG.error("Error moving file {} to {}.", tmpPath.toString(), path.toString());
+            LOG.error("Error moving file {} to {}.", tmpPath.toString(), path.toString(), e);
         }
     }
 
@@ -165,7 +163,7 @@ public class EventLogFileHandler {
                 // TODO: Handle edge case where buffer is too small.
             }
         } catch (IOException ex) {
-            ex.printStackTrace();
+            LOG.error("Error reading file", ex);
         }
     }
 }
