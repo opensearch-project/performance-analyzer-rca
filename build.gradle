@@ -222,6 +222,9 @@ test {
         excludeTestsMatching 'com.amazon.opendistro.opensearch.performanceanalyzer.rca.integTests.tests.consolidate_tuning.JvmFlipFlopITest'
     }
     enabled = true
+    retry {
+        maxRetries = 2
+    }
 }
 
 task rcaTest(type: Test) {
