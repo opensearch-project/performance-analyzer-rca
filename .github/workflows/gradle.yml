@@ -67,7 +67,7 @@ jobs:
       working-directory: ./tmp/pa
       run: ./gradlew updateShas
     - name: Set docker-compose path
-      run: DOCKER_COMPOSE_LOCATION=$(which docker-compose)
+      run: echo "DOCKER_COMPOSE_LOCATION=$(which docker-compose)" >> $GITHUB_ENV
       # Set the vm.max_map_count system property to the minimum required to run OpenSearch
     - name: Set vm.max_map_count
       run: sudo sysctl -w vm.max_map_count=262144

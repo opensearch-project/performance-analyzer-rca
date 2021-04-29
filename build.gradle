@@ -222,6 +222,9 @@ test {
         excludeTestsMatching 'com.amazon.opendistro.opensearch.performanceanalyzer.rca.integTests.tests.consolidate_tuning.JvmFlipFlopITest'
     }
     enabled = true
+    retry {
+        maxRetries = 2
+    }
 }
 
 task rcaTest(type: Test) {
@@ -395,14 +398,11 @@ task copyAllArtifacts(type: Copy) {
     def dockerArtifacts = Paths.get(projectPathStr, 'docker').toString()
     def rcaArtifacts = Paths.get(projectPathStr, 'build', 'distributions', 'performance-analyzer-rca.zip')
     def paArtifacts = Paths.get(paDir, 'build', 'distributions', 'opensearch-performance-analyzer-1.0.0.0-beta1-SNAPSHOT.zip')
-    // Replace this path to point to opensearch artifact local location
-    def opensearchArtifacts = Paths.get('../opensearch-1.0.0-beta1-linux-x64.tar.gz')
 
     dockerArtifactsDir = Paths.get(dockerBuildDir, 'rca-docker')
     from(dockerArtifacts)
     from(rcaArtifacts)
     from(paArtifacts)
-    from(opensearchArtifacts)
     into(dockerArtifactsDir)
 }
 

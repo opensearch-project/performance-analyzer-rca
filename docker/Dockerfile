@@ -49,9 +49,8 @@ WORKDIR /usr/share/opensearch
 ENV BUST_CACHE 1576286189
 
 # Download and extract defined OpenSearch version.
-# TODO: Modify this link to the opensearch artifact link
-COPY opensearch-1.0.0-beta1-linux-x64.tar.gz .
-RUN tar -xf opensearch-1.0.0-beta1-linux-x64.tar.gz --strip-component=1
+RUN curl -fsSL https://artifacts.opensearch.org/releases/core/opensearch/1.0.0-beta1/opensearch-1.0.0-beta1-linux-x64.tar.gz | \
+    tar zx --strip-components=1
 
 RUN set -ex && for opensearchdirs in config data logs; do \
         mkdir -p "$opensearchdirs"; \
