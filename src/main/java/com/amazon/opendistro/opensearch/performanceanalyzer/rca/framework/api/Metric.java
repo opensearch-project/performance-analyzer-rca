@@ -76,8 +76,7 @@ public abstract class Metric extends LeafNode<MetricFlowUnit> {
             PerformanceAnalyzerApp.ERRORS_AND_EXCEPTIONS_AGGREGATOR.updateStat(
                     ExceptionsAndErrors.EXCEPTION_IN_GATHER, name(), 1);
             // TODO: Emit log/stats that gathering failed.
-            LOG.error("RCA: Caught an exception while getting the DB {}", e.getMessage());
-            e.printStackTrace();
+            LOG.error("RCA: Caught an exception while getting the DB", e);
             return MetricFlowUnit.generic();
         }
         try {
@@ -94,8 +93,7 @@ public abstract class Metric extends LeafNode<MetricFlowUnit> {
         } catch (Exception e) {
             PerformanceAnalyzerApp.ERRORS_AND_EXCEPTIONS_AGGREGATOR.updateStat(
                     ExceptionsAndErrors.EXCEPTION_IN_GATHER, name(), 1);
-            e.printStackTrace();
-            LOG.error("Metric exception: {}", e.getMessage());
+            LOG.error("Metric exception:", e);
         }
         return MetricFlowUnit.generic();
     }

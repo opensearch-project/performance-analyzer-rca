@@ -104,8 +104,7 @@ public class RcaControllerHelper {
 
             return inputLine;
         } catch (IOException e) {
-            LOG.error("Could not get the elected master node: {}", e.getMessage());
-            e.printStackTrace();
+            LOG.error("Could not get the elected master node", e);
         }
 
         return "";
