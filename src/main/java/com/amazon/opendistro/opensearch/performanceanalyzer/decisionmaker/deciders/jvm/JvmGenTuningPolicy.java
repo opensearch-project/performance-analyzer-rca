@@ -178,7 +178,7 @@ public class JvmGenTuningPolicy implements DecisionPolicy {
      */
     public int computeIncrease(double currentRatio) {
         // Don't increase the (old:young) ratio beyond 3:1
-        if (currentRatio < 3) {
+        if (currentRatio <= 3) {
             return -1;
         }
         // If the current ratio is egregious (e.g. 50:1) set the ratio to 3:1 immediately

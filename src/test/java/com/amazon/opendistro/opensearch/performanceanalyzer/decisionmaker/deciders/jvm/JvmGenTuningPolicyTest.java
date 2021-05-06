@@ -164,6 +164,10 @@ public class JvmGenTuningPolicyTest {
         Assert.assertEquals(1, actions.size());
         Assert.assertTrue(actions.get(0) instanceof JvmGenAction);
         Assert.assertEquals(5, ((JvmGenAction) actions.get(0)).getTargetRatio());
+        // Should not decrease the young gen size if the ratio is beyond 5:1
+        mockCurrentRatio(6);
+        actions = policy.evaluate();
+        Assert.assertTrue(actions.isEmpty());
         // Make the young generation seem undersized
         mockRcaIssues(10, ResourceUtil.YOUNG_GEN_PROMOTION_RATE);
         // The policy should suggest increasing young gen when it is undersized
@@ -175,5 +179,14 @@ public class JvmGenTuningPolicyTest {
         Assert.assertEquals(1, actions.size());
         Assert.assertTrue(actions.get(0) instanceof JvmGenAction);
         Assert.assertEquals(3, ((JvmGenAction) actions.get(0)).getTargetRatio());
+        mockCurrentRatio(5);
+        actions = policy.evaluate();
+        Assert.assertEquals(1, actions.size());
+        Assert.assertTrue(actions.get(0) instanceof JvmGenAction);
+        Assert.assertEquals(4, ((JvmGenAction) actions.get(0)).getTargetRatio());
+        // Should not increase the young gen size if the ratio is not beyond 3:1
+        mockCurrentRatio(3);
+        actions = policy.evaluate();
+        Assert.assertTrue(actions.isEmpty());
     }
 }
