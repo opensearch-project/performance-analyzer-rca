@@ -1,0 +1,52 @@
+/*
+ * SPDX-License-Identifier: Apache-2.0
+ *
+ * The OpenSearch Contributors require contributions made to
+ * this file be licensed under the Apache-2.0 license or a
+ * compatible open source license.
+ *
+ * Modifications Copyright OpenSearch Contributors. See
+ * GitHub history for details.
+ */
+
+/*
+ * Copyright 2021 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License").
+ * You may not use this file except in compliance with the License.
+ * A copy of the License is located at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * or in the "license" file accompanying this file. This file is distributed
+ * on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+ * express or implied. See the License for the specific language governing
+ * permissions and limitations under the License.
+ */
+
+package org.opensearch.performanceanalyzer.rca.integTests.framework.configs;
+
+public class Consts {
+    public static final String RCA_IT_BASE_DIR = "/tmp/rcaIt";
+
+    // This format is used to create a directory that will be used by the simulated host for the
+    // current test run.
+    public static final String RCA_IT_CLUSTER_DIR_FORMAT = "yyyy.MM.dd.HH.mm.ss";
+    public static final String TEST_RESOURCES_DIR = "./src/test/resources/rca/";
+    public static final String RCAIT_DEFAULT_RCA_CONF_ELECTED_MASTER_NODE =
+            TEST_RESOURCES_DIR + "rca_elected_master.conf";
+    public static final String RCAIT_DEFAULT_RCA_CONF_STANDBY_MASTER_NODE =
+            TEST_RESOURCES_DIR + "rca_master.conf";
+    public static final String RCAIT_DEFAULT_RCA_CONF_DATA_NODE = TEST_RESOURCES_DIR + "rca.conf";
+
+    public static final String INTEG_TESTS_SRC_DIR =
+            "./src/test/java/org/opensearch/performanceanalyzer/rca/integTests/";
+
+    public static final String HOST_ID_KEY = "hostId";
+    public static final String HOST_ROLE_KEY = "hostRole";
+    public static final String DATA_KEY = "data";
+
+    // Node count constants.
+    public static final int numDataNodes = 2;
+    public static final int numStandbyMasterNodes = 2;
+}

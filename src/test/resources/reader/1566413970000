@@ -39,7 +39,7 @@ $
 {"ThreadPoolType":"index","ThreadPool_QueueSize":0,"ThreadPool_RejectedReqs":0,"ThreadPool_TotalThreads":0,"ThreadPool_ActiveThreads":0}
 {"ThreadPoolType":"listener","ThreadPool_QueueSize":0,"ThreadPool_RejectedReqs":0,"ThreadPool_TotalThreads":1,"ThreadPool_ActiveThreads":0}
 {"ThreadPoolType":"management","ThreadPool_QueueSize":0,"ThreadPool_RejectedReqs":0,"ThreadPool_TotalThreads":5,"ThreadPool_ActiveThreads":0}
-{"ThreadPoolType":"opendistro_monitor_runner","ThreadPool_QueueSize":0,"ThreadPool_RejectedReqs":0,"ThreadPool_TotalThreads":0,"ThreadPool_ActiveThreads":0}
+{"ThreadPoolType":"opensearch_monitor_runner","ThreadPool_QueueSize":0,"ThreadPool_RejectedReqs":0,"ThreadPool_TotalThreads":0,"ThreadPool_ActiveThreads":0}
 {"ThreadPoolType":"refresh","ThreadPool_QueueSize":0,"ThreadPool_RejectedReqs":0,"ThreadPool_TotalThreads":2,"ThreadPool_ActiveThreads":1}
 {"ThreadPoolType":"search","ThreadPool_QueueSize":0,"ThreadPool_RejectedReqs":0,"ThreadPool_TotalThreads":7,"ThreadPool_ActiveThreads":0}
 {"ThreadPoolType":"search_throttled","ThreadPool_QueueSize":0,"ThreadPool_RejectedReqs":0,"ThreadPool_TotalThreads":0,"ThreadPool_ActiveThreads":0}
@@ -186,7 +186,7 @@ Sched_Runtime:0.0
 Sched_Waittime:0.0
 Sched_CtxRate:0.0
 Heap_AllocRate:0.0
-threadName:opendistro_job_sweeper[T#1]
+threadName:opensearch_job_sweeper[T#1]
 Thread_Blocked_Time:0.0
 Thread_Blocked_Event:0
 IO_ReadThroughput:0.0
