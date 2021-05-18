@@ -46,7 +46,7 @@ plugins {
 }
 
 application {
-    mainClassName = 'com.amazon.opendistro.opensearch.performanceanalyzer.PerformanceAnalyzerApp'
+    mainClassName = 'org.opensearch.performanceanalyzer.PerformanceAnalyzerApp'
     applicationDefaultJvmArgs = ['-Xms64M',
                                  '-Xmx64M',
                                  '-XX:+UseSerialGC',
@@ -173,12 +173,12 @@ jacocoTestReport {
         classDirectories.from = files(classDirectories.files.collect {
             fileTree(dir: it,
                     include: [
-                            '**/com/amazon/opendistro/opensearch/performanceanalyzer/**'
+                            '**/org/opensearch/performanceanalyzer/**'
                     ],
                     exclude: [
-                            '**/com/amazon/opendistro/opensearch/performanceanalyzer/grpc/**',
-                            '**/com/amazon/opendistro/opensearch/performanceanalyzer/rca/framework/api/metrics/**',
-                            '**/com/amazon/opendistro/opensearch/performanceanalyzer/rca/net/requests**'
+                            '**/org/opensearch/performanceanalyzer/grpc/**',
+                            '**/org/opensearch/performanceanalyzer/rca/framework/api/metrics/**',
+                            '**/org/opensearch/performanceanalyzer/rca/net/requests**'
                     ])
         })
     }
@@ -189,11 +189,11 @@ jacocoTestCoverageVerification {
         classDirectories.from = files(classDirectories.files.collect {
             fileTree(dir: it,
                     include: [
-                            '**/com/amazon/opendistro/opensearch/performanceanalyzer/rca/**',
-                            '**/com/amazon/opendistro/opensearch/performanceanalyzer/reader/**'
+                            '**/org/opensearch/performanceanalyzer/rca/**',
+                            '**/org/opensearch/performanceanalyzer/reader/**'
                     ],
                     exclude: [
-                            '**/com/amazon/opendistro/opensearch/performanceanalyzer/grpc/**'])
+                            '**/org/opensearch/performanceanalyzer/grpc/**'])
         })
     }
     violationRules {
@@ -217,9 +217,9 @@ if (isSnapshot) {
 test {
     filter { // Ignore failing tests
         // Test testMissingHeapMetrics failed
-        excludeTestsMatching 'com.amazon.opendistro.opensearch.performanceanalyzer.rca.integTests.tests.jvmsizing.HeapSizeIncreaseMissingMetricsTest'
+        excludeTestsMatching 'org.opensearch.performanceanalyzer.rca.integTests.tests.jvmsizing.HeapSizeIncreaseMissingMetricsTest'
         // Test testJvmActions failed
-        excludeTestsMatching 'com.amazon.opendistro.opensearch.performanceanalyzer.rca.integTests.tests.consolidate_tuning.JvmFlipFlopITest'
+        excludeTestsMatching 'org.opensearch.performanceanalyzer.rca.integTests.tests.consolidate_tuning.JvmFlipFlopITest'
     }
     enabled = true
     retry {
@@ -229,7 +229,7 @@ test {
 
 task rcaTest(type: Test) {
     useJUnit {
-        includeCategories 'com.amazon.opendistro.opensearch.performanceanalyzer.rca.GradleTaskForRca'
+        includeCategories 'org.opensearch.performanceanalyzer.rca.GradleTaskForRca'
     }
     testLogging.showStandardStreams = true
 }
@@ -237,7 +237,7 @@ task rcaTest(type: Test) {
 task rcaIt(type: Test) {
     dependsOn spotbugsMain
     useJUnit {
-        includeCategories 'com.amazon.opendistro.opensearch.performanceanalyzer.rca.integTests.framework.RcaItMarker'
+        includeCategories 'org.opensearch.performanceanalyzer.rca.integTests.framework.RcaItMarker'
     }
     //testLogging.showStandardStreams = true
 }

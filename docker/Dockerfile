@@ -77,8 +77,8 @@ RUN cp -r performance-analyzer-rca/* plugins/opensearch-performance-analyzer/
 RUN chmod 755 /usr/share/opensearch/plugins/opensearch-performance-analyzer/pa_bin/performance-analyzer-agent
 RUN chmod -R 755 /dev/shm
 ################################################################################
-# Build stage 1 (the actual opendistroforelasticsearch image):
-# Copy opendistroforelasticsearch from stage 0
+# Build stage 1 (the actual OpenSearch image):
+# Copy OpenSearch from stage 0
 # Add entrypoint
 ################################################################################
 
@@ -143,10 +143,10 @@ RUN sed -i "s|#webservice-bind-host =|webservice-bind-host = 0.0.0.0|g" /usr/sha
 EXPOSE 9200 9300 9600 9650
 
 LABEL org.label-schema.schema-version="1.0" \
-  org.label-schema.name="opendistroforelasticsearch" \
+  org.label-schema.name="opensearch" \
   org.label-schema.version="1.2.0" \
   org.label-schema.url="https://opendistro.github.io" \
-  org.label-schema.vcs-url="https://github.com/opendistro-for-elasticsearch/opendistro-build" \
+  org.label-schema.vcs-url="https://github.com/opensearch-project/opensearch-build" \
   org.label-schema.license="Apache-2.0" \
   org.label-schema.vendor="Amazon" \
   org.label-schema.build-date="19.12.13"

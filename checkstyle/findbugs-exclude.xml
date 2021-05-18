@@ -3,88 +3,88 @@
         <Bug pattern="DM_DEFAULT_ENCODING"/>
     </Match>
     <Match>
-        <Class name="com.amazon.opendistro.opensearch.performanceanalyzer.hwnet.Disks"/>
+        <Class name="org.opensearch.performanceanalyzer.hwnet.Disks"/>
         <Bug pattern="DMI_HARDCODED_ABSOLUTE_FILENAME"/>
     </Match>
     <Match>
-        <Class name="com.amazon.opendistro.opensearch.performanceanalyzer.reader.ReaderMetricsProcessor"/>
+        <Class name="org.opensearch.performanceanalyzer.reader.ReaderMetricsProcessor"/>
         <Bug pattern="MS_CANNOT_BE_FINAL"/>
     </Match>
     <Match>
-        <Class name="com.amazon.opendistro.opensearch.performanceanalyzer.hwnet.NetworkInterface"/>
+        <Class name="org.opensearch.performanceanalyzer.hwnet.NetworkInterface"/>
         <Bug pattern="LI_LAZY_INIT_STATIC"/>
     </Match>
     <Match>
-        <Class name="com.amazon.opendistro.opensearch.performanceanalyzer.hwnet.NetworkInterface"/>
+        <Class name="org.opensearch.performanceanalyzer.hwnet.NetworkInterface"/>
         <Bug pattern="REC_CATCH_EXCEPTION"/>
     </Match>
     <Match>
-        <Class name="com.amazon.opendistro.opensearch.performanceanalyzer.collectors.StatsCollector"/>
+        <Class name="org.opensearch.performanceanalyzer.collectors.StatsCollector"/>
         <Bug pattern="LI_LAZY_INIT_STATIC"/>
     </Match>
     <Match>
-        <Class name="com.amazon.opendistro.opensearch.performanceanalyzer.collectors.StatsCollector"/>
+        <Class name="org.opensearch.performanceanalyzer.collectors.StatsCollector"/>
         <Bug pattern="MS_CANNOT_BE_FINAL"/>
     </Match>
     <Match>
-        <Class name="com.amazon.opendistro.opensearch.performanceanalyzer.collectors.StatsCollector"/>
+        <Class name="org.opensearch.performanceanalyzer.collectors.StatsCollector"/>
         <Bug pattern="MS_SHOULD_BE_FINAL"/>
     </Match>
     <Match>
-        <Class name="com.amazon.opendistro.opensearch.performanceanalyzer.collectors.StatsCollector"/>
+        <Class name="org.opensearch.performanceanalyzer.collectors.StatsCollector"/>
         <Bug pattern="REC_CATCH_EXCEPTION"/>
     </Match>
     <Match>
-        <Class name="com.amazon.opendistro.opensearch.performanceanalyzer.collectors.StatsCollector"/>
+        <Class name="org.opensearch.performanceanalyzer.collectors.StatsCollector"/>
         <Bug pattern="DC_DOUBLECHECK"/>
     </Match>
     <Match>
-        <Class name="com.amazon.opendistro.opensearch.performanceanalyzer.rca.stats.collectors.SampleAggregator"/>
+        <Class name="org.opensearch.performanceanalyzer.rca.stats.collectors.SampleAggregator"/>
         <Bug pattern="EI_EXPOSE_REP2"/>
     </Match>
     <Match>
-        <Class name="com.amazon.opendistro.opensearch.performanceanalyzer.jvm.ThreadList"/>
+        <Class name="org.opensearch.performanceanalyzer.jvm.ThreadList"/>
         <Bug pattern="RCN_REDUNDANT_NULLCHECK_WOULD_HAVE_BEEN_A_NPE"/>
     </Match>
     <Match>
-        <Class name="com.amazon.opendistro.opensearch.performanceanalyzer.rest.QueryRcaRequestHandler"/>
+        <Class name="org.opensearch.performanceanalyzer.rest.QueryRcaRequestHandler"/>
         <Bug pattern="RCN_REDUNDANT_NULLCHECK_WOULD_HAVE_BEEN_A_NPE"/>
     </Match>
     <Match>
-        <Class name="com.amazon.opendistro.opensearch.performanceanalyzer.rest.QueryMetricsRequestHandler"/>
+        <Class name="org.opensearch.performanceanalyzer.rest.QueryMetricsRequestHandler"/>
         <Bug pattern="RCN_REDUNDANT_NULLCHECK_WOULD_HAVE_BEEN_A_NPE"/>
     </Match>
     <Match>
-        <Class name="com.amazon.opendistro.opensearch.performanceanalyzer.rest.QueryBatchRequestHandler"/>
+        <Class name="org.opensearch.performanceanalyzer.rest.QueryBatchRequestHandler"/>
         <Bug pattern="RCN_REDUNDANT_NULLCHECK_WOULD_HAVE_BEEN_A_NPE"/>
     </Match>
     <Match>
-        <Class name="com.amazon.opendistro.opensearch.performanceanalyzer.reader_writer_shared.EventLogFileHandler"/>
+        <Class name="org.opensearch.performanceanalyzer.reader_writer_shared.EventLogFileHandler"/>
         <Bug pattern="RCN_REDUNDANT_NULLCHECK_WOULD_HAVE_BEEN_A_NPE"/>
     </Match>
     <Match>
-        <Class name="com.amazon.opendistro.opensearch.performanceanalyzer.metricsdb.MetricsDB"/>
+        <Class name="org.opensearch.performanceanalyzer.metricsdb.MetricsDB"/>
         <Bug pattern="RCN_REDUNDANT_NULLCHECK_WOULD_HAVE_BEEN_A_NPE"/>
     </Match>
     <Match>
-        <Class name="com.amazon.opendistro.opensearch.performanceanalyzer.metrics.MetricsConfiguration"/>
+        <Class name="org.opensearch.performanceanalyzer.metrics.MetricsConfiguration"/>
         <Bug pattern="MS_MUTABLE_COLLECTION"/>
     </Match>
     <Match>
-        <Class name="com.amazon.opendistro.opensearch.performanceanalyzer.rca.persistence.FileRotate"/>
+        <Class name="org.opensearch.performanceanalyzer.rca.persistence.FileRotate"/>
         <Bug pattern="NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE"/>
     </Match>
     <Match>
-        <Class name="com.amazon.opendistro.opensearch.performanceanalyzer.rca.samplers.MetricsDBFileSampler"/>
+        <Class name="org.opensearch.performanceanalyzer.rca.samplers.MetricsDBFileSampler"/>
         <Bug pattern="RCN_REDUNDANT_NULLCHECK_WOULD_HAVE_BEEN_A_NPE"/>
     </Match>
     <Match>
-        <Class name="com.amazon.opendistro.opensearch.performanceanalyzer.reader.AdmissionControlProcessor"/>
+        <Class name="org.opensearch.performanceanalyzer.reader.AdmissionControlProcessor"/>
         <Bug pattern="URF_UNREAD_FIELD"/>
     </Match>
     <!--Exclude gRPC generated classes-->
     <Match>
-        <Package name="com.amazon.opendistro.opensearch.performanceanalyzer.grpc"/>
+        <Package name="org.opensearch.performanceanalyzer.grpc"/>
         <Or>
             <Bug pattern="SE_BAD_FIELD"/>
             <Bug pattern="UCF_USELESS_CONTROL_FLOW"/>

@@ -1,12 +1,12 @@
 syntax = "proto3";
 
 option java_multiple_files = true;
-option java_package = "com.amazon.opendistro.opensearch.performanceanalyzer.grpc";
+option java_package = "org.opensearch.performanceanalyzer.grpc";
 option java_outer_classname = "PANetworking";
 
 import "google/protobuf/descriptor.proto";
 
-package com.amazon.opendistro.opensearch.performanceanalyzer.grpc;
+package org.opensearch.performanceanalyzer.grpc;
 
 service InterNodeRpcService {
     // Sends a flowunit to whoever is interested in it.
