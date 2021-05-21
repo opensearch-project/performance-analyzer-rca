@@ -21,17 +21,17 @@ All the raw metrics data from a period of time may be too high granularity for s
 ## API
 
 **performance-analyzer.properties**
-* retention-period: The number of minutes worth of metrics data to collect. The configured retention period can be read via the “/_opendistro/performanceanalyzer/batch/config” api. Default=7 (7 minutes), min=1, max = 60.
+* retention-period: The number of minutes worth of metrics data to collect. The configured retention period can be read via the “/_plugins/performanceanalyzer/batch/config” api. Default=7 (7 minutes), min=1, max = 60.
   * Note, the default is 7 minutes because a typical use-case would be to query for 5 minutes worth of data from the node. In order to do this, a client would actually select a starttime of now-6min and an endtime of now-1min (this one minute offset will give sufficient time for the metrics in the time range to be available at the node). Atop this 6 minutes of retention, we need an extra 1 minute of retention to account for the time that would have passed by the time the query arrives at the node, and for the fact that starttime and endtime will be rounded down to the nearest samplingperiod.
 
 **API**
 
 Queries:
 
-* POST \<endpoint\>:9200/_opendistro/performanceanalyzer/batch/config -H ‘Content-Type: application/json’ -d ‘{“enabled”: true}’
-* POST \<endpoint\>:9200/_opendistro/performanceanalyzer/batch/cluster/config -H ‘Content-Type: application/json’ -d ‘{“enabled”: true}’
-* GET \<endpoint\>:9200/_opendistro/_performanceanalyzer/_agent/batch?metrics=\<metrics\>&starttime=\<starttime\>&endtime=\<endtime\>&samplingperiod=\<samplingperiod\>
-* GET \<endpoint\>:9600/_opendistro/_performanceanalyzer/batch?metrics=\<metrics\>&starttime=\<starttime\>&endtime=\<endtime\>&samplingperiod=\<samplingperiod\>
+* POST \<endpoint\>:9200/_plugins/performanceanalyzer/batch/config -H ‘Content-Type: application/json’ -d ‘{“enabled”: true}’
+* POST \<endpoint\>:9200/_plugins/performanceanalyzer/batch/cluster/config -H ‘Content-Type: application/json’ -d ‘{“enabled”: true}’
+* GET \<endpoint\>:9200/_plugins/_performanceanalyzer/_agent/batch?metrics=\<metrics\>&starttime=\<starttime\>&endtime=\<endtime\>&samplingperiod=\<samplingperiod\>
+* GET \<endpoint\>:9600/_plugins/_performanceanalyzer/batch?metrics=\<metrics\>&starttime=\<starttime\>&endtime=\<endtime\>&samplingperiod=\<samplingperiod\>
 
 Parameters:
 * metrics - Comma separated list of metrics you are interested in. For a full list of metrics, see Metrics Reference.
@@ -43,7 +43,7 @@ Note, the maximum number of datapoints that a single query can request for via A
 
 Sample Query:
 
-GET localhost:9600/_opendistro/_performanceanalyzer/batch?metrics=CPU_Utilization,IO_TotThroughput&starttime=1594412250000&endtime=1594412260000&samplingperiod=5
+GET localhost:9600/_plugins/_performanceanalyzer/batch?metrics=CPU_Utilization,IO_TotThroughput&starttime=1594412250000&endtime=1594412260000&samplingperiod=5
 
 Output
 ```

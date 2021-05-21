@@ -55,11 +55,11 @@ __Tags__: Tags are key-value pairs that are specified in the configuration file(
 ## Rest API to get the RCAs
 * To get response for all the available RCA, use:
 ```
-curl --url "localhost:9650/_opendistro/_performanceanalyzer/rca" -XGET
+curl --url "localhost:9600/_plugins/_performanceanalyzer/rca" -XGET
 ```
 * To get response for a specific RCA, use:
 ```
-curl --url "localhost:9650/_opendistro/_performanceanalyzer/rca?name=HighHeapUsageClusterRca" -XGET
+curl --url "localhost:9600/_plugins/_performanceanalyzer/rca?name=HighHeapUsageClusterRca" -XGET
 ```
 The sample RCA response from above api
 ```
@@ -117,18 +117,18 @@ There are ways to get the temperature profile of a cluster and of individual nod
 
 The cluster level RCA can only be queried from the elected master using the following rest API.
 
-`curl "localhost:9600/_opendistro/_performanceanalyzer/rca?name=ClusterTemperatureRca"`
+`curl "localhost:9600/_plugins/_performanceanalyzer/rca?name=ClusterTemperatureRca"`
 
 In order to get the temperature of a particular node, we can use:
 
-`curl "localhost:9600/_opendistro/_performanceanalyzer/rca?name=AllTemperatureDimensions&local=true"`
+`curl "localhost:9600/_plugins/_performanceanalyzer/rca?name=AllTemperatureDimensions&local=true"`
 
 ## Rest API to get the ACTIONS suggested by the decider
 
 This api returns the last suggested action set by the decider framework.
 
 ```
-curl --url "localhost:9650/_opendistro/_performanceanalyzer/actions" -XGET
+curl --url "localhost:9600/_plugins/_performanceanalyzer/actions" -XGET
 ```
 
 The sample response from the above API:

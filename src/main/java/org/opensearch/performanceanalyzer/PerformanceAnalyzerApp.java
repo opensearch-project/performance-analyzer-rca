@@ -82,8 +82,8 @@ import org.opensearch.performanceanalyzer.threads.exceptions.PAThreadException;
 public class PerformanceAnalyzerApp {
 
     private static final int EXCEPTION_QUEUE_LENGTH = 1;
-    public static final String QUERY_URL = "/_opendistro/_performanceanalyzer/metrics";
-    public static final String BATCH_METRICS_URL = "/_opendistro/_performanceanalyzer/batch";
+    public static final String QUERY_URL = "/_plugins/_performanceanalyzer/metrics";
+    public static final String BATCH_METRICS_URL = "/_plugins/_performanceanalyzer/batch";
     private static final Logger LOG = LogManager.getLogger(PerformanceAnalyzerApp.class);
     private static final ScheduledMetricCollectorsExecutor METRIC_COLLECTOR_EXECUTOR =
             new ScheduledMetricCollectorsExecutor(1, false);

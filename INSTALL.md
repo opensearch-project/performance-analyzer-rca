@@ -128,12 +128,12 @@ Once the cluster is up and running, you will need to enable Performance Analyzer
   
  1. Enable Performance Analyzer
  
-    `curl localhost:9200/_opendistro/_performanceanalyzer/cluster/config -H 'Content-Type: application/json' -d '{"enabled": true}' `
+    `curl localhost:9200/_plugins/_performanceanalyzer/cluster/config -H 'Content-Type: application/json' -d '{"enabled": true}' `
  
  2. Enable RCA Framework
  
-    `curl localhost:9200/_opendistro/_performanceanalyzer/rca/cluster/config -H 'Content-Type: application/json' -d '{"enabled": true}' `
+    `curl localhost:9200/_plugins/_performanceanalyzer/rca/cluster/config -H 'Content-Type: application/json' -d '{"enabled": true}' `
     
  3. Verify the Settings
-    `curl -XGET localhost:9200/_opendistro/_performanceanalyzer/cluster/config`. 
+    `curl -XGET localhost:9200/_plugins/_performanceanalyzer/cluster/config`. 
     It should give you `{"currentPerformanceAnalyzerClusterState":3}`

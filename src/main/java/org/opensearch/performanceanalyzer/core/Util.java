@@ -37,9 +37,9 @@ import org.apache.logging.log4j.message.ParameterizedMessage;
 
 public class Util {
     private static final Logger LOG = LogManager.getLogger(Util.class);
-    public static final String METRICS_QUERY_URL = "/_opendistro/_performanceanalyzer/metrics";
-    public static final String RCA_QUERY_URL = "/_opendistro/_performanceanalyzer/rca";
-    public static final String ACTIONS_QUERY_URL = "/_opendistro/_performanceanalyzer/actions";
+    public static final String METRICS_QUERY_URL = "/_plugins/_performanceanalyzer/metrics";
+    public static final String RCA_QUERY_URL = "/_plugins/_performanceanalyzer/rca";
+    public static final String ACTIONS_QUERY_URL = "/_plugins/_performanceanalyzer/actions";
     public static final String OPENSEARCH_HOME = System.getProperty("opensearch.path.home");
     public static final String PLUGIN_LOCATION =
             OPENSEARCH_HOME
