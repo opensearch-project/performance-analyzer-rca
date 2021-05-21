@@ -74,7 +74,7 @@ public class QueryBatchRequestHandlerTest {
         handler = new QueryBatchRequestHandler(null, new MetricsRestUtil());
         rootLocation = "build/resources/test/reader/";
         setBatchMetricsEnabled(false);
-        queryPrefix = "http://localhost:9600/_opendistro/_performanceanalyzer/batch?";
+        queryPrefix = "http://localhost:9600/_plugins/_performanceanalyzer/batch?";
         timestamp = 1566413970000L;
     }
 

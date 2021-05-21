@@ -54,22 +54,22 @@ import org.opensearch.performanceanalyzer.rca.persistence.Persistable;
  * Request handler that supports querying RCAs
  *
  * <p>To dump all RCA related tables from SQL : curl --url
- * "localhost:9650/_opendistro/_performanceanalyzer/rca?all" -XGET
+ * "localhost:9650/_plugins/_performanceanalyzer/rca?all" -XGET
  *
  * <p>To get response for all the available RCA, use: curl --url
- * "localhost:9650/_opendistro/_performanceanalyzer/rca" -XGET
+ * "localhost:9650/_plugins/_performanceanalyzer/rca" -XGET
  *
  * <p>To get response for a specific RCA, use: curl --url
- * "localhost:9650/_opendistro/_performanceanalyzer/rca?name=HighHeapUsageClusterRca" -XGET
+ * "localhost:9650/_plugins/_performanceanalyzer/rca?name=HighHeapUsageClusterRca" -XGET
  *
  * <p>For temperature profiles, one can get the local node temperature using a request url as: curl
- * "localhost:9600/_opendistro/_performanceanalyzer/rca?name=NodeTemperatureRca&local=true"
+ * "localhost:9600/_plugins/_performanceanalyzer/rca?name=NodeTemperatureRca&local=true"
  *
  * <p>The cluster level RCA can only be queried from the elected master using this rest API: curl
- * "localhost:9600/_opendistro/_performanceanalyzer/rca?name=ClusterTemperatureRca"
+ * "localhost:9600/_plugins/_performanceanalyzer/rca?name=ClusterTemperatureRca"
  *
  * <p>curl
- * "localhost:9600/_opendistro/_performanceanalyzer/rca?name=NodeTemperatureRca&local=true"|jq {
+ * "localhost:9600/_plugins/_performanceanalyzer/rca?name=NodeTemperatureRca&local=true"|jq {
  * "NodeTemperatureRca": [ { "rca_name": "NodeTemperatureRca", "timestamp": 1589592178829, "state":
  * "unknown", "CompactNodeSummary": [ { "node_id": "v9_TNhEeSP2Q3DJO8fd6BA", "host_address":
  * "172.17.0.2", "CPU_Utilization_mean": 0, "CPU_Utilization_total": 0.0310837676896351,

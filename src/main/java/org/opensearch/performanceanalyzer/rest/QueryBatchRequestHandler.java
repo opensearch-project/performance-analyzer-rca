@@ -60,10 +60,10 @@ import org.opensearch.performanceanalyzer.reader.ReaderMetricsProcessor;
  * Request handler that supports querying batch metrics from an EC2 instance
  *
  * <p>Return 1 minute of CPU_Utilization metrics sampled at a 5s sampling period:
- * "http://localhost:9600/_opendistro/_performanceanalyzer/batch?metrics=CPU_Utilization&starttime=1566413975000&endtime=1566413980000"
+ * "http://localhost:9600/_plugins/_performanceanalyzer/batch?metrics=CPU_Utilization&starttime=1566413975000&endtime=1566413980000"
  *
  * <p>Return 1 minute of CPU_Utilization and Latency metrics sampled at a 10s sampling period:
- * "http://localhost:9600/_opendistro/_performanceanalyzer/batch?metrics=CPU_Utilization,Latency&starttime=1566413975000&endtime=1566413980000&samplingperiod=10"
+ * "http://localhost:9600/_plugins/_performanceanalyzer/batch?metrics=CPU_Utilization,Latency&starttime=1566413975000&endtime=1566413980000&samplingperiod=10"
  *
  * <p>Return format: { "1594412650000": { "CPU_Utilization": { "fields": [ { "name: "IndexName",
  * "type": "VARCHAR" }, <...> ] "records": [ [ "pmc", <...> ], <...> ] } } }

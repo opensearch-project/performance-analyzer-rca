@@ -581,7 +581,7 @@ def openSearchUpChecker = {
 // Attempts to enable PA for up to 2 minutes. Returns when PA is successfully enabled or
 // throws an Exception if the timeout is exceeded
 def paUpChecker = {
-    String server = "localhost:9200/_opendistro/_performanceanalyzer/cluster/config"
+    String server = "localhost:9200/_plugins/_performanceanalyzer/cluster/config"
     int timeoutSeconds = 2 * 60
     enableComponent(server, 1, timeoutSeconds)
 }
@@ -589,7 +589,7 @@ def paUpChecker = {
 // Attempts to enable RCA for up to 2 minutes. Returns when RCA is successfully enabled or
 // throws an Exception if the timeout is exceeded
 def rcaUpChecker = {
-    String server = "localhost:9200/_opendistro/_performanceanalyzer/rca/cluster/config"
+    String server = "localhost:9200/_plugins/_performanceanalyzer/rca/cluster/config"
     int timeoutSeconds = 2 * 60
     enableComponent(server, 3, timeoutSeconds)
 }
@@ -714,7 +714,7 @@ task runRally {
         while (true) {
             runCommand(opensearchrally, null, wdir, true)
             println('Get all RCAs using:')
-            println('curl localhost:9600/_opendistro/_performanceanalyzer/rca?all | python -m json.tool')
+            println('curl localhost:9600/_plugins/_performanceanalyzer/rca?all | python -m json.tool')
             Thread.sleep(1000)
         }
     }
