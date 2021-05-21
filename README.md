@@ -59,7 +59,7 @@ curl --url "localhost:9600/_plugins/_performanceanalyzer/rca" -XGET
 ```
 * To get response for a specific RCA, use:
 ```
-curl --url "localhost:9650/_plugins/_performanceanalyzer/rca?name=HighHeapUsageClusterRca" -XGET
+curl --url "localhost:9600/_plugins/_performanceanalyzer/rca?name=HighHeapUsageClusterRca" -XGET
 ```
 The sample RCA response from above api
 ```
@@ -128,7 +128,7 @@ In order to get the temperature of a particular node, we can use:
 This api returns the last suggested action set by the decider framework.
 
 ```
-curl --url "localhost:9650/_plugins/_performanceanalyzer/actions" -XGET
+curl --url "localhost:9600/_plugins/_performanceanalyzer/actions" -XGET
 ```
 
 The sample response from the above API:

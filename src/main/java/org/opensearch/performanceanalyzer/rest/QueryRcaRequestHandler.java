@@ -54,13 +54,13 @@ import org.opensearch.performanceanalyzer.rca.persistence.Persistable;
  * Request handler that supports querying RCAs
  *
  * <p>To dump all RCA related tables from SQL : curl --url
- * "localhost:9650/_plugins/_performanceanalyzer/rca?all" -XGET
+ * "localhost:9600/_plugins/_performanceanalyzer/rca?all" -XGET
  *
  * <p>To get response for all the available RCA, use: curl --url
- * "localhost:9650/_plugins/_performanceanalyzer/rca" -XGET
+ * "localhost:9600/_plugins/_performanceanalyzer/rca" -XGET
  *
  * <p>To get response for a specific RCA, use: curl --url
- * "localhost:9650/_plugins/_performanceanalyzer/rca?name=HighHeapUsageClusterRca" -XGET
+ * "localhost:9600/_plugins/_performanceanalyzer/rca?name=HighHeapUsageClusterRca" -XGET
  *
  * <p>For temperature profiles, one can get the local node temperature using a request url as: curl
  * "localhost:9600/_plugins/_performanceanalyzer/rca?name=NodeTemperatureRca&local=true"
