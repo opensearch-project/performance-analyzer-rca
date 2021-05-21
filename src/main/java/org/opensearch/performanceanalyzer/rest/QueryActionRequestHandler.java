@@ -49,7 +49,6 @@ import org.opensearch.performanceanalyzer.rca.persistence.actions.PersistedActio
 
 /**
  * Request Handler that supports querying the latest action set
- *
  * spotless:off
  * <p>To get the response for the latest action set suggested via DM Framework curl --url
  * "localhost:9600/_plugins/_performanceanalyzer/actions" -XGET @<code>

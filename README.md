@@ -55,7 +55,7 @@ __Tags__: Tags are key-value pairs that are specified in the configuration file(
 ## Rest API to get the RCAs
 * To get response for all the available RCA, use:
 ```
-curl --url "localhost:9650/_plugins/_performanceanalyzer/rca" -XGET
+curl --url "localhost:9600/_plugins/_performanceanalyzer/rca" -XGET
 ```
 * To get response for a specific RCA, use:
 ```

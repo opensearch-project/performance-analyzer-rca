@@ -68,16 +68,15 @@ import org.opensearch.performanceanalyzer.rca.persistence.Persistable;
  * <p>The cluster level RCA can only be queried from the elected master using this rest API: curl
  * "localhost:9600/_plugins/_performanceanalyzer/rca?name=ClusterTemperatureRca"
  *
- * <p>curl
- * "localhost:9600/_plugins/_performanceanalyzer/rca?name=NodeTemperatureRca&local=true"|jq {
- * "NodeTemperatureRca": [ { "rca_name": "NodeTemperatureRca", "timestamp": 1589592178829, "state":
- * "unknown", "CompactNodeSummary": [ { "node_id": "v9_TNhEeSP2Q3DJO8fd6BA", "host_address":
- * "172.17.0.2", "CPU_Utilization_mean": 0, "CPU_Utilization_total": 0.0310837676896351,
- * "CPU_Utilization_num_shards": 2, "Heap_AllocRate_mean": 0, "Heap_AllocRate_total":
- * 4021355.87442904, "Heap_AllocRate_num_shards": 2, "IO_READ_SYSCALL_RATE_mean": 0,
- * "IO_READ_SYSCALL_RATE_total": 0, "IO_READ_SYSCALL_RATE_num_shards": 0,
- * "IO_WriteSyscallRate_mean": 0, "IO_WriteSyscallRate_total": 0, "IO_WriteSyscallRate_num_shards":
- * 0 } ] } ] }
+ * <p>curl "localhost:9600/_plugins/_performanceanalyzer/rca?name=NodeTemperatureRca&local=true"|jq
+ * { "NodeTemperatureRca": [ { "rca_name": "NodeTemperatureRca", "timestamp": 1589592178829,
+ * "state": "unknown", "CompactNodeSummary": [ { "node_id": "v9_TNhEeSP2Q3DJO8fd6BA",
+ * "host_address": "172.17.0.2", "CPU_Utilization_mean": 0, "CPU_Utilization_total":
+ * 0.0310837676896351, "CPU_Utilization_num_shards": 2, "Heap_AllocRate_mean": 0,
+ * "Heap_AllocRate_total": 4021355.87442904, "Heap_AllocRate_num_shards": 2,
+ * "IO_READ_SYSCALL_RATE_mean": 0, "IO_READ_SYSCALL_RATE_total": 0,
+ * "IO_READ_SYSCALL_RATE_num_shards": 0, "IO_WriteSyscallRate_mean": 0, "IO_WriteSyscallRate_total":
+ * 0, "IO_WriteSyscallRate_num_shards": 0 } ] } ] }
  */
 public class QueryRcaRequestHandler extends MetricsHandler implements HttpHandler {
 
