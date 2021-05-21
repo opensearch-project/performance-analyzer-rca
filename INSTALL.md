@@ -106,7 +106,7 @@ You can use the packaged Dockerfile and docker-compose.yml files [here](./docker
 4. Copy the RCA framework artifact and the Performance Analyzer plugin JAR into this folder
  
     `cp <RCA framework root>/build/distributions/performance-analyzer-rca.zip ./`  
-    `cp <Performance Analyzer plugin root>/build/distributions/opensearch-performance-analyzer-1.0.0.0-beta1-SNAPSHOT.zip ./` 
+    `cp <Performance Analyzer plugin root>/build/distributions/opensearch-performance-analyzer-1.0.0.0-rc1-SNAPSHOT.zip ./` 
  
  ### Installation
  
