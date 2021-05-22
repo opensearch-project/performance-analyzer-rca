@@ -48,7 +48,7 @@ public @interface AMetric {
     Class name();
 
     // The names of the dimension columns that the metrics has. The dimensions can be found here:
-    // https://opendistro.github.io/for-elasticsearch-docs/docs/pa/reference/
+    // https://docs-beta.opensearch.org/docs/pa/reference/
     String[] dimensionNames();
 
     // Specify one or more tables for the metric where each table belongs to a host or a group of

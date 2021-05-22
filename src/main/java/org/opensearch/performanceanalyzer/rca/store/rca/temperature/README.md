@@ -16,7 +16,7 @@ node and cluster) based on resource utilization.
 ### Temperature RCA Graph construction
 Temperature along each dimension is contributed by a shard-dependent and a shard-independent
  components. For all the metrics
- [here](https://opendistro.github.io/for-elasticsearch-docs/docs/pa/reference/), the metrics that
+ [here](https://docs-beta.opensearch.org/docs/pa/reference/), the metrics that
  have shardID as dimension will have a shard contributed factor to the temperature along that
  dimension. But that metric also might have a factor that is shard independent. For example
  , _CPU_utilization_, has a shard dependent components for the CPU that is spent for various

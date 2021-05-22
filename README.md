@@ -1,6 +1,6 @@
 [![Java CI](https://github.com/opensearch-project/performance-analyzer-rca/workflows/Java%20CI/badge.svg)](https://github.com/opensearch-project/performance-analyzer-rca/actions?query=workflow%3A%22Java+CI%22)
 [![codecov](https://codecov.io/gh/opensearch-project/performance-analyzer-rca/branch/master/graph/badge.svg)](https://codecov.io/gh/opensearch-project/performance-analyzer-rca)
-[![Documentation](https://img.shields.io/badge/api-reference-blue.svg)](https://opendistro.github.io/for-elasticsearch-docs/docs/rca/)
+[![Documentation](https://img.shields.io/badge/api-reference-blue.svg)](https://docs-beta.opensearch.org/docs/pa/reference/)
 [![Chat](https://img.shields.io/badge/chat-on%20forums-blue)](https://discuss.opendistrocommunity.dev/c/performance-analyzer/)
 ![PRs welcome!](https://img.shields.io/badge/PRs-welcome!-success)
 
@@ -171,7 +171,7 @@ We invite developers from the larger Open Distro community to contribute and hel
 
 ## Code of Conduct
 
-This project has adopted an [Open Source Code of Conduct](https://opendistro.github.io/for-elasticsearch/codeofconduct.html).
+This project has adopted an [Open Source Code of Conduct](https://opensearch.org/codeofconduct.html).
 
 
 ## Security Issue Notifications
