@@ -37,9 +37,26 @@ import org.apache.logging.log4j.message.ParameterizedMessage;
 
 public class Util {
     private static final Logger LOG = LogManager.getLogger(Util.class);
-    public static final String METRICS_QUERY_URL = "/_plugins/_performanceanalyzer/metrics";
-    public static final String RCA_QUERY_URL = "/_plugins/_performanceanalyzer/rca";
-    public static final String ACTIONS_QUERY_URL = "/_plugins/_performanceanalyzer/actions";
+
+    public static final String PA_BASE_URL = "/_plugins/_performanceanalyzer";
+    public static final String LEGACY_OPENDISTRO_PA_BASE_URL = "/_opendistro/_performanceanalyzer";
+
+    public static final String METRICS_QUERY_URL = PA_BASE_URL + "/metrics";
+    public static final String LEGACY_OPENDISTRO_METRICS_QUERY_URL =
+            LEGACY_OPENDISTRO_PA_BASE_URL + "/metrics";
+
+    public static final String BATCH_METRICS_URL = PA_BASE_URL + "/batch";
+    public static final String LEGACY_OPENDISTRO_BATCH_METRICS_URL =
+            LEGACY_OPENDISTRO_PA_BASE_URL + "/batch";
+
+    public static final String RCA_QUERY_URL = PA_BASE_URL + "/rca";
+    public static final String LEGACY_OPENDISTRO_RCA_QUERY_URL =
+            LEGACY_OPENDISTRO_PA_BASE_URL + "/rca";
+
+    public static final String ACTIONS_QUERY_URL = PA_BASE_URL + "/actions";
+    public static final String LEGACY_OPENDISTRO_ACTIONS_QUERY_URL =
+            LEGACY_OPENDISTRO_PA_BASE_URL + "/actions";
+
     public static final String OPENSEARCH_HOME = System.getProperty("opensearch.path.home");
     public static final String PLUGIN_LOCATION =
             OPENSEARCH_HOME

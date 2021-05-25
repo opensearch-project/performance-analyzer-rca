@@ -82,12 +82,6 @@ import org.opensearch.performanceanalyzer.threads.exceptions.PAThreadException;
 public class PerformanceAnalyzerApp {
 
     private static final int EXCEPTION_QUEUE_LENGTH = 1;
-    public static final String QUERY_URL = "/_plugins/_performanceanalyzer/metrics";
-    public static final String LEGACY_OPENDISTRO_QUERY_URL =
-            "/_opendistro/_performanceanalyzer/metrics";
-    public static final String BATCH_METRICS_URL = "/_plugins/_performanceanalyzer/batch";
-    public static final String LEGACY_OPENDISTRO_BATCH_METRICS_URL =
-            "/_opendistro/_performanceanalyzer/batch";
     private static final Logger LOG = LogManager.getLogger(PerformanceAnalyzerApp.class);
     private static final ScheduledMetricCollectorsExecutor METRIC_COLLECTOR_EXECUTOR =
             new ScheduledMetricCollectorsExecutor(1, false);
@@ -353,13 +347,15 @@ public class PerformanceAnalyzerApp {
         if (metricsRestUtil != null) {
             QueryMetricsRequestHandler queryMetricsRequestHandler =
                     new QueryMetricsRequestHandler(netClient, metricsRestUtil, appContext);
-            httpServer.createContext(QUERY_URL, queryMetricsRequestHandler);
-            httpServer.createContext(LEGACY_OPENDISTRO_QUERY_URL, queryMetricsRequestHandler);
+            httpServer.createContext(Util.METRICS_QUERY_URL, queryMetricsRequestHandler);
+            httpServer.createContext(
+                    Util.LEGACY_OPENDISTRO_METRICS_QUERY_URL, queryMetricsRequestHandler);
 
             QueryBatchRequestHandler queryBatchRequestHandler =
                     new QueryBatchRequestHandler(netClient, metricsRestUtil);
-            httpServer.createContext(BATCH_METRICS_URL, queryBatchRequestHandler);
-            httpServer.createContext(LEGACY_OPENDISTRO_BATCH_METRICS_URL, queryBatchRequestHandler);
+            httpServer.createContext(Util.BATCH_METRICS_URL, queryBatchRequestHandler);
+            httpServer.createContext(
+                    Util.LEGACY_OPENDISTRO_BATCH_METRICS_URL, queryBatchRequestHandler);
         }
 
         return new ClientServers(httpServer, netServer, netClient);
