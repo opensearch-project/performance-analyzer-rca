@@ -511,6 +511,13 @@ public class RcaController {
         } catch (IllegalArgumentException e) {
             LOG.debug("Http(s) context for path: {} was not found to remove.", Util.RCA_QUERY_URL);
         }
+        try {
+            httpServer.removeContext(Util.LEGACY_OPENDISTRO_RCA_QUERY_URL);
+        } catch (IllegalArgumentException e) {
+            LOG.debug(
+                    "Http(s) context for path: {} was not found to remove.",
+                    Util.LEGACY_OPENDISTRO_RCA_QUERY_URL);
+        }
     }
 
     public static String getCatMasterUrl() {
@@ -540,10 +547,13 @@ public class RcaController {
 
     private void addRcaRequestHandler() {
         httpServer.createContext(Util.RCA_QUERY_URL, queryRcaRequestHandler);
+        httpServer.createContext(Util.LEGACY_OPENDISTRO_RCA_QUERY_URL, queryRcaRequestHandler);
     }
 
     private void addActionsRequestHandler() {
         httpServer.createContext(Util.ACTIONS_QUERY_URL, queryActionRequestHandler);
+        httpServer.createContext(
+                Util.LEGACY_OPENDISTRO_ACTIONS_QUERY_URL, queryActionRequestHandler);
     }
 
     public void setDeliberateInterrupt() {
