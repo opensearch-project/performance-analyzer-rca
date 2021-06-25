@@ -1,6 +1,6 @@
 [![Java CI](https://github.com/opensearch-project/performance-analyzer-rca/workflows/Java%20CI/badge.svg)](https://github.com/opensearch-project/performance-analyzer-rca/actions?query=workflow%3A%22Java+CI%22)
 [![codecov](https://codecov.io/gh/opensearch-project/performance-analyzer-rca/branch/main/graph/badge.svg)](https://codecov.io/gh/opensearch-project/performance-analyzer-rca)
-[![Documentation](https://img.shields.io/badge/api-reference-blue.svg)](https://docs-beta.opensearch.org/docs/pa/reference/)
+[![Documentation](https://img.shields.io/badge/api-reference-blue.svg)](https://docs-beta.opensearch.org/monitoring-plugins/pa/reference/)
 [![Chat](https://img.shields.io/badge/chat-on%20forums-blue)](https://discuss.opendistrocommunity.dev/c/performance-analyzer/)
 ![PRs welcome!](https://img.shields.io/badge/PRs-welcome!-success)
 
