@@ -145,6 +145,14 @@ public enum WriterMetrics implements MeasurementSet {
                     Statistics.SUM)),
 
     STALE_METRICS("StaleMetrics", "count", Arrays.asList(Statistics.COUNT)),
+
+    EMPTY_METRIC_QUEUE("EmptyMetricQueue", "count", Arrays.asList(Statistics.COUNT)),
+
+    METRICS_WRITE_ERROR("MetricsWriteError", "count", Arrays.asList(Statistics.COUNT)),
+
+    METRICS_REMOVE_ERROR("MetricsRemoveError", "count", Arrays.asList(Statistics.COUNT)),
+
+    METRICS_REMOVE_FAILURE("MetricsRemoveFailure", "count", Arrays.asList(Statistics.COUNT)),
     ;
 
     /** What we want to appear as the metric name. */

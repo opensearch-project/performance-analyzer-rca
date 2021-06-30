@@ -32,12 +32,10 @@ import java.util.Map;
 import org.opensearch.performanceanalyzer.collectors.DisksCollector;
 import org.opensearch.performanceanalyzer.collectors.GCInfoCollector;
 import org.opensearch.performanceanalyzer.collectors.HeapMetricsCollector;
-import org.opensearch.performanceanalyzer.collectors.MetricsPurgeActivity;
 import org.opensearch.performanceanalyzer.collectors.MountedPartitionMetricsCollector;
 import org.opensearch.performanceanalyzer.collectors.NetworkE2ECollector;
 import org.opensearch.performanceanalyzer.collectors.NetworkInterfaceCollector;
 import org.opensearch.performanceanalyzer.collectors.StatsCollector;
-import org.opensearch.performanceanalyzer.config.PluginSettings;
 import org.opensearch.performanceanalyzer.jvm.GCMetrics;
 import org.opensearch.performanceanalyzer.jvm.HeapMetrics;
 import org.opensearch.performanceanalyzer.jvm.ThreadList;
@@ -50,8 +48,6 @@ public class MetricsConfiguration {
     public static final int SAMPLING_INTERVAL = 5000;
     public static final int ROTATION_INTERVAL = 30000;
     public static final int STATS_ROTATION_INTERVAL = 60000;
-    public static final int DELETION_INTERVAL =
-            PluginSettings.instance().getMetricsDeletionInterval();
 
     public static class MetricConfig {
         public int samplingInterval;
@@ -81,9 +77,6 @@ public class MetricsConfiguration {
         CONFIG_MAP.put(NetworkInterfaceCollector.class, cdefault);
         CONFIG_MAP.put(OSGlobals.class, cdefault);
         CONFIG_MAP.put(PerformanceAnalyzerMetrics.class, new MetricConfig(0, ROTATION_INTERVAL, 0));
-        CONFIG_MAP.put(
-                MetricsPurgeActivity.class,
-                new MetricConfig(ROTATION_INTERVAL, 0, DELETION_INTERVAL));
         CONFIG_MAP.put(StatsCollector.class, new MetricConfig(STATS_ROTATION_INTERVAL, 0, 0));
         CONFIG_MAP.put(DisksCollector.class, cdefault);
         CONFIG_MAP.put(HeapMetricsCollector.class, cdefault);

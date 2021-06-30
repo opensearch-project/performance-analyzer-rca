@@ -42,7 +42,12 @@ import java.nio.file.StandardOpenOption;
 import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.message.ParameterizedMessage;
+import org.apache.logging.log4j.util.Supplier;
+import org.opensearch.performanceanalyzer.PerformanceAnalyzerApp;
 import org.opensearch.performanceanalyzer.core.Util;
+import org.opensearch.performanceanalyzer.metrics.PerformanceAnalyzerMetrics;
+import org.opensearch.performanceanalyzer.rca.framework.metrics.WriterMetrics;
 import org.opensearch.performanceanalyzer.reader.EventDispatcher;
 
 public class EventLogFileHandler {
@@ -78,7 +83,7 @@ public class EventLogFileHandler {
      * data.
      *
      * <p>If any of the above steps fail, then the tmp file is not deleted from the filesystem. This
-     * is fine as the MetricsPurgeActivity, will eventually clean it. The copies are atomic and
+     * is fine as the {@link deleteFiles()}, will eventually clean it. The copies are atomic and
      * therefore the reader never reads incompletely written file.
      *
      * @param dataEntries The metrics to be written to file.
@@ -164,6 +169,59 @@ public class EventLogFileHandler {
             }
         } catch (IOException ex) {
             LOG.error("Error reading file", ex);
+        }
+    }
+
+    private void deleteFiles(long referenceTime, int purgeInterval) {
+        LOG.debug("Starting to delete old writer files");
+        File root = new File(metricsLocation);
+        String[] children = root.list();
+        if (children == null) {
+            return;
+        }
+        int filesDeletedCount = 0;
+        for (String child : children) {
+            File fileToDelete = new File(root, child);
+            if (fileToDelete.lastModified()
+                    < PerformanceAnalyzerMetrics.getTimeInterval(referenceTime - purgeInterval)) {
+                removeMetrics(fileToDelete);
+                filesDeletedCount += 1;
+            }
+        }
+        LOG.debug("'{}' Old writer files cleaned up.", filesDeletedCount);
+    }
+
+    public static void removeMetrics(String keyPath) {
+        removeMetrics(new File(keyPath));
+    }
+
+    public static void removeMetrics(File keyPathFile) {
+        if (keyPathFile.isDirectory()) {
+            String[] children = keyPathFile.list();
+            if (children != null) {
+                for (String child : children) {
+                    removeMetrics(new File(keyPathFile, child));
+                }
+            }
+        }
+        try {
+            if (!keyPathFile.delete()) {
+                PerformanceAnalyzerApp.WRITER_METRICS_AGGREGATOR.updateStat(
+                        WriterMetrics.METRICS_REMOVE_FAILURE, "", 1);
+                LOG.debug("Purge Could not delete file {}", keyPathFile);
+            }
+        } catch (Exception ex) {
+            PerformanceAnalyzerApp.WRITER_METRICS_AGGREGATOR.updateStat(
+                    WriterMetrics.METRICS_REMOVE_ERROR, "", 1);
+            LOG.debug(
+                    (Supplier<?>)
+                            () ->
+                                    new ParameterizedMessage(
+                                            "Error in deleting file: {} for keyPath:{} with ExceptionCode: {}",
+                                            ex.toString(),
+                                            keyPathFile.getAbsolutePath(),
+                                            WriterMetrics.METRICS_REMOVE_ERROR.toString()),
+                    ex);
         }
     }
 }
