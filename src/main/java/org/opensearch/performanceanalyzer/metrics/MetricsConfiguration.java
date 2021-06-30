@@ -52,12 +52,10 @@ public class MetricsConfiguration {
     public static class MetricConfig {
         public int samplingInterval;
         public int rotationInterval;
-        public int deletionInterval;
 
-        public MetricConfig(int samplingInterval, int rotationInterval, int deletionInterval) {
+        public MetricConfig(int samplingInterval, int rotationInterval) {
             this.samplingInterval = samplingInterval;
             this.rotationInterval = rotationInterval;
-            this.deletionInterval = deletionInterval;
         }
     }
 
@@ -65,7 +63,7 @@ public class MetricsConfiguration {
     public static final MetricConfig cdefault;
 
     static {
-        cdefault = new MetricConfig(SAMPLING_INTERVAL, 0, 0);
+        cdefault = new MetricConfig(SAMPLING_INTERVAL, 0);
 
         CONFIG_MAP.put(ThreadCPU.class, cdefault);
         CONFIG_MAP.put(ThreadDiskIO.class, cdefault);
@@ -76,8 +74,8 @@ public class MetricsConfiguration {
         CONFIG_MAP.put(NetworkE2ECollector.class, cdefault);
         CONFIG_MAP.put(NetworkInterfaceCollector.class, cdefault);
         CONFIG_MAP.put(OSGlobals.class, cdefault);
-        CONFIG_MAP.put(PerformanceAnalyzerMetrics.class, new MetricConfig(0, ROTATION_INTERVAL, 0));
-        CONFIG_MAP.put(StatsCollector.class, new MetricConfig(STATS_ROTATION_INTERVAL, 0, 0));
+        CONFIG_MAP.put(PerformanceAnalyzerMetrics.class, new MetricConfig(0, ROTATION_INTERVAL));
+        CONFIG_MAP.put(StatsCollector.class, new MetricConfig(STATS_ROTATION_INTERVAL, 0));
         CONFIG_MAP.put(DisksCollector.class, cdefault);
         CONFIG_MAP.put(HeapMetricsCollector.class, cdefault);
         CONFIG_MAP.put(GCInfoCollector.class, cdefault);
