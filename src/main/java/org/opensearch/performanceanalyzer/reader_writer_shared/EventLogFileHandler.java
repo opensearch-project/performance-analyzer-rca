@@ -42,8 +42,10 @@ import java.nio.file.StandardOpenOption;
 import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.opensearch.performanceanalyzer.PerformanceAnalyzerApp;
 import org.opensearch.performanceanalyzer.core.Util;
 import org.opensearch.performanceanalyzer.metrics.PerformanceAnalyzerMetrics;
+import org.opensearch.performanceanalyzer.rca.framework.metrics.WriterMetrics;
 import org.opensearch.performanceanalyzer.reader.EventDispatcher;
 
 public class EventLogFileHandler {
@@ -170,6 +172,8 @@ public class EventLogFileHandler {
 
     public void deleteFiles(long referenceTime, int purgeInterval) {
         LOG.debug("Starting to delete old writer files");
+        long startTime = System.currentTimeMillis();
+
         File root = new File(metricsLocation);
         String[] children = root.list();
         if (children == null) {
@@ -184,6 +188,11 @@ public class EventLogFileHandler {
                 filesDeletedCount += 1;
             }
         }
+        long duration = System.currentTimeMillis() - startTime;
+        PerformanceAnalyzerApp.WRITER_METRICS_AGGREGATOR.updateStat(
+                WriterMetrics.EVENT_LOG_FILES_DELETION_TIME, "", duration);
+        PerformanceAnalyzerApp.WRITER_METRICS_AGGREGATOR.updateStat(
+                WriterMetrics.EVENT_LOG_FILES_DELETED, "", filesDeletedCount);
         LOG.debug("'{}' Old writer files cleaned up.", filesDeletedCount);
     }
 }

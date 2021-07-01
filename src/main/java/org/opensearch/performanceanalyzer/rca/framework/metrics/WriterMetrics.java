@@ -35,10 +35,13 @@ import org.opensearch.performanceanalyzer.rca.stats.measurements.MeasurementSet;
 
 public enum WriterMetrics implements MeasurementSet {
     /** Measures the time spent in deleting the event log files */
-    DELETE_EVENT_LOG_FILES(
-            "OperateCall",
+    EVENT_LOG_FILES_DELETION_TIME(
+            "EventLogFilesDeletionTime",
             "millis",
             Arrays.asList(Statistics.MAX, Statistics.MEAN, Statistics.SUM)),
+    /** Measures the count of event log files deleted */
+    EVENT_LOG_FILES_DELETED(
+            "EventLogFilesDeleted", "count", Collections.singletonList(Statistics.COUNT)),
 
     SHARD_STATE_COLLECTOR_EXECUTION_TIME(
             "ShardStateCollectorExecutionTime",
