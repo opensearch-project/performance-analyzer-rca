@@ -27,13 +27,16 @@
 package org.opensearch.performanceanalyzer.metrics;
 
 
+import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
+import java.util.function.Supplier;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.message.ParameterizedMessage;
 import org.opensearch.performanceanalyzer.PerformanceAnalyzerApp;
 import org.opensearch.performanceanalyzer.config.PluginSettings;
 import org.opensearch.performanceanalyzer.rca.framework.metrics.WriterMetrics;
@@ -176,6 +179,39 @@ public class PerformanceAnalyzerMetrics {
             return metricVal.substring(startIndex + 1, endIndex);
         }
         return null;
+    }
+
+    public static void removeMetrics(String keyPath) {
+        removeMetrics(new File(keyPath));
+    }
+
+    public static void removeMetrics(File keyPathFile) {
+        if (keyPathFile.isDirectory()) {
+            String[] children = keyPathFile.list();
+            if (children != null) {
+                for (String child : children) {
+                    removeMetrics(new File(keyPathFile, child));
+                }
+            }
+        }
+        try {
+            if (!keyPathFile.delete()) {
+                // TODO: Add a metric so that we can alarm on file deletion failures.
+                LOG.debug("Purge Could not delete file {}", keyPathFile);
+            }
+        } catch (Exception ex) {
+            PerformanceAnalyzerApp.WRITER_METRICS_AGGREGATOR.updateStat(
+                    WriterMetrics.METRICS_REMOVE_ERROR, "", 1);
+            LOG.debug(
+                    (Supplier<?>)
+                            () ->
+                                    new ParameterizedMessage(
+                                            "Error in deleting file: {} for keyPath:{} with ExceptionCode: {}",
+                                            ex.toString(),
+                                            keyPathFile.getAbsolutePath(),
+                                            WriterMetrics.METRICS_REMOVE_ERROR.toString()),
+                    ex);
+        }
     }
 
     public static String getJsonCurrentMilliSeconds() {
