@@ -42,9 +42,9 @@ import java.nio.file.StandardOpenOption;
 import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.opensearch.performanceanalyzer.collectors.StatExceptionCode;
-import org.opensearch.performanceanalyzer.collectors.StatsCollector;
+import org.opensearch.performanceanalyzer.PerformanceAnalyzerApp;
 import org.opensearch.performanceanalyzer.core.Util;
+import org.opensearch.performanceanalyzer.rca.framework.metrics.WriterMetrics;
 import org.opensearch.performanceanalyzer.reader.EventDispatcher;
 
 public class EventLogFileHandler {
@@ -126,7 +126,8 @@ public class EventLogFileHandler {
                 LOG.error("Error moving file {} to {}.", tmpPath.toString(), path.toString(), e);
             }
         } else {
-            StatsCollector.instance().logException(StatExceptionCode.WRITER_FILE_NOT_CREATED_ERROR);
+            PerformanceAnalyzerApp.WRITER_METRICS_AGGREGATOR.updateStat(
+                    WriterMetrics.WRITER_FILE_NOT_CREATED, "", 1);
         }
     }
 

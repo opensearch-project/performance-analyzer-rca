@@ -44,9 +44,6 @@ public enum StatExceptionCode {
     COLLECTORS_MUTED("CollectorsMutedCount"),
     MASTER_METRICS_ERROR("MasterMetricsError"),
     DISK_METRICS_ERROR("DiskMetricsError"),
-    // This metrics indicates that the write file is not created.
-    // When there is no metrics to be written, the creation of writer file is skipped.
-    WRITER_FILE_NOT_CREATED_ERROR("WriterFileNotCreatedError"),
     THREAD_IO_ERROR("ThreadIOError"),
     SCHEMA_PARSER_ERROR("SchemaParserError"),
     JSON_PARSER_ERROR("JsonParserError"),

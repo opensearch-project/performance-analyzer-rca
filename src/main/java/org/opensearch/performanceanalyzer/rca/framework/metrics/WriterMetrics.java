@@ -145,7 +145,18 @@ public enum WriterMetrics implements MeasurementSet {
                     Statistics.SUM)),
 
     STALE_METRICS("StaleMetrics", "count", Arrays.asList(Statistics.COUNT)),
-    ;
+
+    // This metrics indicates that the write file is not created.
+    // When there is no metrics to be written, the creation of writer file is skipped.
+    WRITER_FILE_NOT_CREATED(
+            "WriterFileNotCreated",
+            "count",
+            Arrays.asList(
+                    Statistics.MAX,
+                    Statistics.MIN,
+                    Statistics.MEAN,
+                    Statistics.COUNT,
+                    Statistics.SUM));
 
     /** What we want to appear as the metric name. */
     private String name;
