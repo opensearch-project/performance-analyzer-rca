@@ -41,7 +41,7 @@ public enum WriterMetrics implements MeasurementSet {
             Arrays.asList(Statistics.MAX, Statistics.MEAN, Statistics.SUM)),
     /** Measures the count of event log files deleted */
     EVENT_LOG_FILES_DELETED(
-            "EventLogFilesDeleted", "count", Collections.singletonList(Statistics.COUNT)),
+            "EventLogFilesDeleted", "count", Arrays.asList(Statistics.MAX, Statistics.SUM)),
 
     SHARD_STATE_COLLECTOR_EXECUTION_TIME(
             "ShardStateCollectorExecutionTime",
