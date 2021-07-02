@@ -146,10 +146,9 @@ public enum WriterMetrics implements MeasurementSet {
 
     STALE_METRICS("StaleMetrics", "count", Arrays.asList(Statistics.COUNT)),
 
-    // This metrics indicates that the write file is not created.
-    // When there is no metrics to be written, the creation of writer file is skipped.
-    WRITER_FILE_NOT_CREATED(
-            "WriterFileNotCreated",
+    /** This metric indicates that the writer file creation was skipped. */
+    WRITER_FILE_CREATION_SKIPPED(
+            "WriterFileCreationSkipped",
             "count",
             Arrays.asList(
                     Statistics.MAX,

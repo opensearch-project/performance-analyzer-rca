@@ -127,7 +127,7 @@ public class EventLogFileHandler {
             }
         } else {
             PerformanceAnalyzerApp.WRITER_METRICS_AGGREGATOR.updateStat(
-                    WriterMetrics.WRITER_FILE_NOT_CREATED, "", 1);
+                    WriterMetrics.WRITER_FILE_CREATION_SKIPPED, "", 1);
         }
     }
 
