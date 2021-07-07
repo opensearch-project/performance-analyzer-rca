@@ -47,8 +47,7 @@ import org.apache.logging.log4j.util.Supplier;
 import org.jooq.Record;
 import org.jooq.Result;
 import org.opensearch.performanceanalyzer.AppContext;
-import org.opensearch.performanceanalyzer.collectors.StatExceptionCode;
-import org.opensearch.performanceanalyzer.collectors.StatsCollector;
+import org.opensearch.performanceanalyzer.PerformanceAnalyzerApp;
 import org.opensearch.performanceanalyzer.core.Util;
 import org.opensearch.performanceanalyzer.grpc.MetricsRequest;
 import org.opensearch.performanceanalyzer.grpc.MetricsResponse;
@@ -57,6 +56,7 @@ import org.opensearch.performanceanalyzer.metricsdb.MetricsDB;
 import org.opensearch.performanceanalyzer.model.MetricAttributes;
 import org.opensearch.performanceanalyzer.model.MetricsModel;
 import org.opensearch.performanceanalyzer.net.NetClient;
+import org.opensearch.performanceanalyzer.rca.framework.metrics.ExceptionsAndErrors;
 import org.opensearch.performanceanalyzer.rca.framework.util.InstanceDetails;
 import org.opensearch.performanceanalyzer.reader.ReaderMetricsProcessor;
 import org.opensearch.performanceanalyzer.util.JsonConverter;
@@ -184,24 +184,26 @@ public class QueryMetricsRequestHandler extends MetricsHandler implements HttpHa
                             collectRemoteStats(
                                     node, metricList, aggList, dimList, nodeResponses, doneSignal);
                         } catch (Exception e) {
+                            PerformanceAnalyzerApp.ERRORS_AND_EXCEPTIONS_AGGREGATOR.updateStat(
+                                    ExceptionsAndErrors.REQUEST_REMOTE_ERROR, "", 1);
                             LOG.error(
                                     "Unable to collect stats for node, addr:{}, exception: {} ExceptionCode: {}",
                                     node.getInstanceIp(),
                                     e,
-                                    StatExceptionCode.REQUEST_REMOTE_ERROR.toString());
-                            StatsCollector.instance()
-                                    .logException(StatExceptionCode.REQUEST_REMOTE_ERROR);
+                                    ExceptionsAndErrors.REQUEST_REMOTE_ERROR.toString());
                         }
                     }
                     boolean completed = doneSignal.await(TIME_OUT_VALUE, TIME_OUT_UNIT);
                     if (!completed) {
+                        PerformanceAnalyzerApp.ERRORS_AND_EXCEPTIONS_AGGREGATOR.updateStat(
+                                ExceptionsAndErrors.REQUEST_REMOTE_ERROR, "", 1);
                         LOG.debug("Timeout while collecting remote stats");
-                        StatsCollector.instance()
-                                .logException(StatExceptionCode.REQUEST_REMOTE_ERROR);
                     }
                     sendResponseWhenRequestCompleted(nodeResponses, exchange);
                 }
             } catch (InvalidParameterException e) {
+                PerformanceAnalyzerApp.ERRORS_AND_EXCEPTIONS_AGGREGATOR.updateStat(
+                        ExceptionsAndErrors.REQUEST_ERROR, "", 1);
                 LOG.error("DB file path : {}", db.getDBFilePath());
                 LOG.error(
                         (Supplier<?>)
@@ -209,12 +211,13 @@ public class QueryMetricsRequestHandler extends MetricsHandler implements HttpHa
                                         new ParameterizedMessage(
                                                 "QueryException {} ExceptionCode: {}.",
                                                 e.toString(),
-                                                StatExceptionCode.REQUEST_ERROR.toString()),
+                                                ExceptionsAndErrors.REQUEST_ERROR.toString()),
                         e);
-                StatsCollector.instance().logException(StatExceptionCode.REQUEST_ERROR);
                 String response = "{\"error\":\"" + e.getMessage() + "\"}";
                 sendResponse(exchange, response, HttpURLConnection.HTTP_BAD_REQUEST);
             } catch (Exception e) {
+                PerformanceAnalyzerApp.ERRORS_AND_EXCEPTIONS_AGGREGATOR.updateStat(
+                        ExceptionsAndErrors.REQUEST_ERROR, "", 1);
                 LOG.error("DB file path : {}", db.getDBFilePath());
                 LOG.error(
                         (Supplier<?>)
@@ -222,9 +225,8 @@ public class QueryMetricsRequestHandler extends MetricsHandler implements HttpHa
                                         new ParameterizedMessage(
                                                 "QueryException {} ExceptionCode: {}.",
                                                 e.toString(),
-                                                StatExceptionCode.REQUEST_ERROR.toString()),
+                                                ExceptionsAndErrors.REQUEST_ERROR.toString()),
                         e);
-                StatsCollector.instance().logException(StatExceptionCode.REQUEST_ERROR);
                 String response = "{\"error\":\"" + e.toString() + "\"}";
                 sendResponse(exchange, response, HttpURLConnection.HTTP_INTERNAL_ERROR);
             }

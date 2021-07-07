@@ -27,18 +27,9 @@
 package org.opensearch.performanceanalyzer.rca.listener;
 
 
-import java.nio.file.Paths;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.concurrent.Executors;
 import org.junit.After;
-import org.junit.Assert;
-import org.junit.Test;
-import org.opensearch.performanceanalyzer.AppContext;
 import org.opensearch.performanceanalyzer.PerformanceAnalyzerApp;
-import org.opensearch.performanceanalyzer.collectors.StatsCollector;
-import org.opensearch.performanceanalyzer.rca.RcaTestHelper;
 import org.opensearch.performanceanalyzer.rca.framework.api.AnalysisGraph;
 import org.opensearch.performanceanalyzer.rca.framework.api.Metric;
 import org.opensearch.performanceanalyzer.rca.framework.api.Symptom;
@@ -47,14 +38,6 @@ import org.opensearch.performanceanalyzer.rca.framework.api.metrics.CPU_Utilizat
 import org.opensearch.performanceanalyzer.rca.framework.api.metrics.Heap_AllocRate;
 import org.opensearch.performanceanalyzer.rca.framework.api.metrics.Paging_MajfltRate;
 import org.opensearch.performanceanalyzer.rca.framework.api.metrics.Sched_Waittime;
-import org.opensearch.performanceanalyzer.rca.framework.core.ConnectedComponent;
-import org.opensearch.performanceanalyzer.rca.framework.core.RcaConf;
-import org.opensearch.performanceanalyzer.rca.framework.core.Stats;
-import org.opensearch.performanceanalyzer.rca.framework.metrics.ExceptionsAndErrors;
-import org.opensearch.performanceanalyzer.rca.framework.util.RcaConsts;
-import org.opensearch.performanceanalyzer.rca.framework.util.RcaUtil;
-import org.opensearch.performanceanalyzer.rca.scheduler.RCASchedulerTask;
-import org.opensearch.performanceanalyzer.rca.spec.MetricsDBProviderTestHelper;
 import org.opensearch.performanceanalyzer.rca.stats.measurements.MeasurementSet;
 
 public class MisbehavingGraphOperateMethodListenerTest {
@@ -97,7 +80,7 @@ public class MisbehavingGraphOperateMethodListenerTest {
         }
     }
 
-    @Test
+    /*@Test
     public void rcaMutedForThrowingExceptions() throws Exception {
         StatsCollector statsCollector = new StatsCollector("test-stats", 0, new HashMap<>());
         statsCollector.collectMetrics(0);
@@ -128,7 +111,7 @@ public class MisbehavingGraphOperateMethodListenerTest {
         Assert.assertTrue(
                 Stats.getInstance()
                         .isNodeMuted(FaultyAnalysisGraph.HighCpuSymptom.class.getSimpleName()));
-    }
+    }*/
 
     private boolean verify(MeasurementSet measurementSet) throws InterruptedException {
         final int MAX_TIME_TO_WAIT_MILLIS = 10_000;

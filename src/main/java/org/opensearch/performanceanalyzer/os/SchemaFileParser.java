@@ -38,8 +38,8 @@ import java.util.List;
 import java.util.Map;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.opensearch.performanceanalyzer.collectors.StatExceptionCode;
-import org.opensearch.performanceanalyzer.collectors.StatsCollector;
+import org.opensearch.performanceanalyzer.PerformanceAnalyzerApp;
+import org.opensearch.performanceanalyzer.rca.framework.metrics.WriterMetrics;
 
 public class SchemaFileParser {
     private static final Logger LOGGER = LogManager.getLogger(SchemaFileParser.class);
@@ -94,12 +94,13 @@ public class SchemaFileParser {
         String[] splitvalues = content.trim().split(" +");
         String[] values = preProcess(splitvalues);
         if (values.length < types.length) {
+            PerformanceAnalyzerApp.WRITER_METRICS_AGGREGATOR.updateStat(
+                    WriterMetrics.SCHEMA_PARSER_ERROR, "", 1);
             LOGGER.debug(
                     "Content Values tokens {} length is less than types {} length with ExceptionCode: {}",
                     () -> Arrays.toString(values),
                     () -> Arrays.toString(types),
-                    () -> StatExceptionCode.SCHEMA_PARSER_ERROR.toString());
-            StatsCollector.instance().logException(StatExceptionCode.SCHEMA_PARSER_ERROR);
+                    () -> WriterMetrics.SCHEMA_PARSER_ERROR.toString());
         }
         int lim = Math.min(values.length, types.length);
         for (int idx = 0; idx < lim; idx++) {
@@ -152,11 +153,12 @@ public class SchemaFileParser {
         } catch (FileNotFoundException e) {
             LOGGER.debug("FileNotFound in parse with exception: {}", () -> e.toString());
         } catch (Exception e) {
+            PerformanceAnalyzerApp.WRITER_METRICS_AGGREGATOR.updateStat(
+                    WriterMetrics.SCHEMA_PARSER_ERROR, "", 1);
             LOGGER.debug(
                     "Error in parse with exception: {} with ExceptionCode: {}",
                     () -> e.toString(),
-                    () -> StatExceptionCode.SCHEMA_PARSER_ERROR.toString());
-            StatsCollector.instance().logException(StatExceptionCode.SCHEMA_PARSER_ERROR);
+                    () -> WriterMetrics.SCHEMA_PARSER_ERROR.toString());
         }
         return map;
     }
@@ -177,11 +179,12 @@ public class SchemaFileParser {
         } catch (FileNotFoundException e) {
             LOGGER.debug("FileNotFound in parse with exception: {}", () -> e.toString());
         } catch (Exception e) {
+            PerformanceAnalyzerApp.WRITER_METRICS_AGGREGATOR.updateStat(
+                    WriterMetrics.SCHEMA_PARSER_ERROR, "", 1);
             LOGGER.debug(
                     "Error in parseMultiple with exception: {} with ExceptionCode: {}",
                     () -> e.toString(),
-                    () -> StatExceptionCode.SCHEMA_PARSER_ERROR.toString());
-            StatsCollector.instance().logException(StatExceptionCode.SCHEMA_PARSER_ERROR);
+                    () -> WriterMetrics.SCHEMA_PARSER_ERROR.toString());
         }
         return mapList;
     }

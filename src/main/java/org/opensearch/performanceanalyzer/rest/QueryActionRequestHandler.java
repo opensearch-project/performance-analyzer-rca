@@ -43,7 +43,7 @@ import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.message.ParameterizedMessage;
 import org.apache.logging.log4j.util.Supplier;
 import org.opensearch.performanceanalyzer.AppContext;
-import org.opensearch.performanceanalyzer.collectors.StatExceptionCode;
+import org.opensearch.performanceanalyzer.rca.framework.metrics.ExceptionsAndErrors;
 import org.opensearch.performanceanalyzer.rca.persistence.Persistable;
 import org.opensearch.performanceanalyzer.rca.persistence.actions.PersistedAction;
 
@@ -111,7 +111,7 @@ public class QueryActionRequestHandler extends MetricsHandler implements HttpHan
                                         new ParameterizedMessage(
                                                 "QueryException {} ExceptionCode: {}.",
                                                 e.toString(),
-                                                StatExceptionCode.REQUEST_ERROR.toString()),
+                                                ExceptionsAndErrors.REQUEST_ERROR.toString()),
                         e);
                 String response = "{\"error\":\"" + e.getMessage() + "\"}";
                 sendResponse(exchange, response, HttpURLConnection.HTTP_BAD_REQUEST);
@@ -122,7 +122,7 @@ public class QueryActionRequestHandler extends MetricsHandler implements HttpHan
                                         new ParameterizedMessage(
                                                 "QueryException {} ExceptionCode: {}.",
                                                 e.toString(),
-                                                StatExceptionCode.REQUEST_ERROR.toString()),
+                                                ExceptionsAndErrors.REQUEST_ERROR.toString()),
                         e);
                 String response = "{\"error\":\"" + e.toString() + "\"}";
                 sendResponse(exchange, response, HttpURLConnection.HTTP_INTERNAL_ERROR);

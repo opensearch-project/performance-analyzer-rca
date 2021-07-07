@@ -31,7 +31,9 @@ import com.google.common.annotations.VisibleForTesting;
 import java.util.concurrent.atomic.AtomicBoolean;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.opensearch.performanceanalyzer.PerformanceAnalyzerApp;
 import org.opensearch.performanceanalyzer.core.Util;
+import org.opensearch.performanceanalyzer.rca.framework.metrics.ExceptionsAndErrors;
 
 public abstract class PerformanceAnalyzerMetricsCollector implements Runnable {
     enum State {
@@ -89,13 +91,13 @@ public abstract class PerformanceAnalyzerMetricsCollector implements Runnable {
         } catch (Exception ex) {
             // - should not be any...but in case, absorbing here
             // - logging...we shouldn't be doing as it will slow down; as well as fill up the log.
-            // Need to
-            // find a way to catch these
+            // Need to find a way to catch these
+            PerformanceAnalyzerApp.ERRORS_AND_EXCEPTIONS_AGGREGATOR.updateStat(
+                    ExceptionsAndErrors.OTHER_COLLECTION_ERROR, "", 1);
             LOG.error(
                     "Error In Collect Metrics: {} with ExceptionCode: {}",
                     () -> ex.toString(),
-                    () -> StatExceptionCode.OTHER_COLLECTION_ERROR.toString());
-            StatsCollector.instance().logException(StatExceptionCode.OTHER_COLLECTION_ERROR);
+                    () -> ExceptionsAndErrors.OTHER_COLLECTION_ERROR.toString());
         } finally {
             bInProgress.set(false);
         }

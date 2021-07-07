@@ -36,9 +36,9 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.opensearch.performanceanalyzer.collectors.StatExceptionCode;
-import org.opensearch.performanceanalyzer.collectors.StatsCollector;
+import org.opensearch.performanceanalyzer.PerformanceAnalyzerApp;
 import org.opensearch.performanceanalyzer.grpc.FlowUnitMessage;
+import org.opensearch.performanceanalyzer.rca.framework.metrics.RcaGraphMetrics;
 import org.opensearch.performanceanalyzer.rca.framework.util.RcaConsts;
 
 /**
@@ -80,9 +80,9 @@ public class ReceivedFlowUnitStore {
         BlockingQueue<FlowUnitMessage> existingQueue = flowUnitMap.get(graphNode);
         boolean retValue = existingQueue.offer(flowUnitMessage);
         if (!retValue) {
+            PerformanceAnalyzerApp.RCA_GRAPH_METRICS_AGGREGATOR.updateStat(
+                    RcaGraphMetrics.RCA_VERTEX_RX_BUFFER_FULL_ERROR, graphNode, 1);
             LOG.warn("Dropped flow unit because per vertex queue is full");
-            StatsCollector.instance()
-                    .logException(StatExceptionCode.RCA_VERTEX_RX_BUFFER_FULL_ERROR);
         }
 
         return retValue;

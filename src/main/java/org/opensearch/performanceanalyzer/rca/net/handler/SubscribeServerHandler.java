@@ -34,8 +34,6 @@ import java.util.concurrent.atomic.AtomicReference;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.opensearch.performanceanalyzer.PerformanceAnalyzerApp;
-import org.opensearch.performanceanalyzer.collectors.StatExceptionCode;
-import org.opensearch.performanceanalyzer.collectors.StatsCollector;
 import org.opensearch.performanceanalyzer.grpc.SubscribeMessage;
 import org.opensearch.performanceanalyzer.grpc.SubscribeResponse;
 import org.opensearch.performanceanalyzer.rca.framework.metrics.RcaGraphMetrics;
@@ -72,10 +70,10 @@ public class SubscribeServerHandler {
                         subscribeRequest.getSubscribeMessage().getRequesterGraphNode(),
                         subscribeRequest.getSubscribeMessage().getSerializedSize());
             } catch (final RejectedExecutionException ree) {
+                PerformanceAnalyzerApp.RCA_GRAPH_METRICS_AGGREGATOR.updateStat(
+                        RcaGraphMetrics.RCA_NETWORK_THREADPOOL_QUEUE_FULL_ERROR, "", 1);
                 LOG.warn(
                         "Dropped processing subscription request because the network threadpool is full");
-                StatsCollector.instance()
-                        .logException(StatExceptionCode.RCA_NETWORK_THREADPOOL_QUEUE_FULL_ERROR);
             }
         }
     }

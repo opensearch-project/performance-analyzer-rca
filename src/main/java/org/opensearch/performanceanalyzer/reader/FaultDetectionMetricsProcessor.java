@@ -34,10 +34,10 @@ import java.util.NavigableMap;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jooq.BatchBindStep;
-import org.opensearch.performanceanalyzer.collectors.StatExceptionCode;
-import org.opensearch.performanceanalyzer.collectors.StatsCollector;
+import org.opensearch.performanceanalyzer.PerformanceAnalyzerApp;
 import org.opensearch.performanceanalyzer.metrics.AllMetrics;
 import org.opensearch.performanceanalyzer.metrics.PerformanceAnalyzerMetrics;
+import org.opensearch.performanceanalyzer.rca.framework.metrics.ReaderMetrics;
 import org.opensearch.performanceanalyzer.reader_writer_shared.Event;
 
 public class FaultDetectionMetricsProcessor implements EventProcessor {
@@ -142,8 +142,9 @@ public class FaultDetectionMetricsProcessor implements EventProcessor {
             // A keyItem is of the form : [fault_detection, follower_check, 76543, start]
             handle.bind(rid, sourceNodeId, targetNodeId, fault_detection_type, st, null, 0);
         } catch (NumberFormatException e) {
+            PerformanceAnalyzerApp.READER_METRICS_AGGREGATOR.updateStat(
+                    ReaderMetrics.READER_PARSER_ERROR, "", 1);
             LOG.error("Unable to parse string. StartTime:{}", startTimeVal);
-            StatsCollector.instance().logException(StatExceptionCode.READER_PARSER_ERROR);
             throw e;
         }
     }
@@ -176,8 +177,9 @@ public class FaultDetectionMetricsProcessor implements EventProcessor {
             // A keyItem is of the form : [fault_detection, follower_check, 76543, finish]
             handle.bind(rid, sourceNodeId, targetNodeId, fault_detection_type, null, et, fault);
         } catch (NumberFormatException e) {
+            PerformanceAnalyzerApp.READER_METRICS_AGGREGATOR.updateStat(
+                    ReaderMetrics.READER_PARSER_ERROR, "", 1);
             LOG.error("Unable to parse string. StartTime:{}, Error:{}", finishTimeVal, faultString);
-            StatsCollector.instance().logException(StatExceptionCode.READER_PARSER_ERROR);
             throw e;
         }
     }

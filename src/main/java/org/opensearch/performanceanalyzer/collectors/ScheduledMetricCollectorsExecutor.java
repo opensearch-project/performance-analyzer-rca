@@ -36,6 +36,8 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.opensearch.performanceanalyzer.PerformanceAnalyzerApp;
+import org.opensearch.performanceanalyzer.rca.framework.metrics.WriterMetrics;
 
 public class ScheduledMetricCollectorsExecutor extends Thread {
     private static final Logger LOG = LogManager.getLogger(ScheduledMetricCollectorsExecutor.class);
@@ -120,8 +122,8 @@ public class ScheduledMetricCollectorsExecutor extends Thread {
                         PerformanceAnalyzerMetricsCollector collector = entry.getKey();
                         if (collector.getState()
                                 == PerformanceAnalyzerMetricsCollector.State.MUTED) {
-                            StatsCollector.instance()
-                                    .logMetric(StatExceptionCode.COLLECTORS_MUTED.toString());
+                            PerformanceAnalyzerApp.WRITER_METRICS_AGGREGATOR.updateStat(
+                                    WriterMetrics.COLLECTORS_MUTED, "", 1);
                             continue;
                         }
                         metricsCollectors.put(

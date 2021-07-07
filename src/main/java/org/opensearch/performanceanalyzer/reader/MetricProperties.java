@@ -47,12 +47,12 @@ import org.jooq.Condition;
 import org.jooq.Field;
 import org.jooq.impl.DSL;
 import org.opensearch.performanceanalyzer.DBUtils;
-import org.opensearch.performanceanalyzer.collectors.StatExceptionCode;
-import org.opensearch.performanceanalyzer.collectors.StatsCollector;
+import org.opensearch.performanceanalyzer.PerformanceAnalyzerApp;
 import org.opensearch.performanceanalyzer.metrics.MetricDimension;
 import org.opensearch.performanceanalyzer.metrics.MetricValue;
 import org.opensearch.performanceanalyzer.metrics.MetricsConfiguration;
 import org.opensearch.performanceanalyzer.metrics.PerformanceAnalyzerMetrics;
+import org.opensearch.performanceanalyzer.rca.framework.metrics.ExceptionsAndErrors;
 import org.opensearch.performanceanalyzer.reader_writer_shared.Event;
 import org.opensearch.performanceanalyzer.util.JsonConverter;
 import org.opensearch.performanceanalyzer.util.JsonPathNotFoundException;
@@ -211,12 +211,14 @@ public class MetricProperties {
             }
             return processed;
         } catch (JsonPathNotFoundException | JsonProcessingException e) {
+            PerformanceAnalyzerApp.ERRORS_AND_EXCEPTIONS_AGGREGATOR.updateStat(
+                    ExceptionsAndErrors.JSON_PARSER_ERROR, "", 1);
             LOG.warn(
                     String.format(
                             "Fail to get last modified time of %s ExceptionCode: %s",
-                            file.getAbsolutePath(), StatExceptionCode.JSON_PARSER_ERROR.toString()),
+                            file.getAbsolutePath(),
+                            ExceptionsAndErrors.JSON_PARSER_ERROR.toString()),
                     e);
-            StatsCollector.instance().logException(StatExceptionCode.JSON_PARSER_ERROR);
             return false;
         }
     }
@@ -241,22 +243,26 @@ public class MetricProperties {
                     JsonConverter.getLongValue(
                             lines[0], PerformanceAnalyzerMetrics.METRIC_CURRENT_TIME);
         } catch (JsonPathNotFoundException ex) {
+            PerformanceAnalyzerApp.ERRORS_AND_EXCEPTIONS_AGGREGATOR.updateStat(
+                    ExceptionsAndErrors.JSON_PARSER_ERROR, "", 1);
             LOG.warn(
                     String.format(
                             "Fail to get last modified time of %s ExceptionCode: %s",
-                            event.key, StatExceptionCode.JSON_PARSER_ERROR.toString()),
+                            event.key, ExceptionsAndErrors.JSON_PARSER_ERROR.toString()),
                     ex);
-            StatsCollector.instance().logException(StatExceptionCode.JSON_PARSER_ERROR);
             return false;
         } catch (JsonProcessingException ex) {
+            PerformanceAnalyzerApp.ERRORS_AND_EXCEPTIONS_AGGREGATOR.updateStat(
+                    ExceptionsAndErrors.JSON_PARSER_ERROR, "", 1);
             LOG.warn(
                     String.format(
                             "Malformed json (%s) ExceptionCode: %s",
-                            lines[0], StatExceptionCode.JSON_PARSER_ERROR.toString()),
+                            lines[0], ExceptionsAndErrors.JSON_PARSER_ERROR.toString()),
                     ex);
-            StatsCollector.instance().logException(StatExceptionCode.JSON_PARSER_ERROR);
             return false;
         } catch (IOException ex) {
+            PerformanceAnalyzerApp.ERRORS_AND_EXCEPTIONS_AGGREGATOR.updateStat(
+                    ExceptionsAndErrors.JSON_PARSER_ERROR, "", 1);
             LOG.warn(
                     String.format(
                             "I/O exception processing metric %s with value: %s.%s"
@@ -264,9 +270,8 @@ public class MetricProperties {
                             event.key,
                             lines[0],
                             File.separator,
-                            StatExceptionCode.JSON_PARSER_ERROR.toString()),
+                            ExceptionsAndErrors.JSON_PARSER_ERROR.toString()),
                     ex);
-            StatsCollector.instance().logException(StatExceptionCode.JSON_PARSER_ERROR);
             return false;
         }
 

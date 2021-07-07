@@ -34,10 +34,10 @@ import java.util.NavigableMap;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jooq.BatchBindStep;
-import org.opensearch.performanceanalyzer.collectors.StatExceptionCode;
-import org.opensearch.performanceanalyzer.collectors.StatsCollector;
+import org.opensearch.performanceanalyzer.PerformanceAnalyzerApp;
 import org.opensearch.performanceanalyzer.metrics.AllMetrics;
 import org.opensearch.performanceanalyzer.metrics.PerformanceAnalyzerMetrics;
+import org.opensearch.performanceanalyzer.rca.framework.metrics.ReaderMetrics;
 import org.opensearch.performanceanalyzer.reader_writer_shared.Event;
 
 public class HttpRequestEventProcessor implements EventProcessor {
@@ -132,13 +132,14 @@ public class HttpRequestEventProcessor implements EventProcessor {
             String operation = keyItems[2];
             handle.bind(rid, operation, indices, null, null, itemCount, st, null);
         } catch (NumberFormatException e) {
+            PerformanceAnalyzerApp.READER_METRICS_AGGREGATOR.updateStat(
+                    ReaderMetrics.READER_PARSER_ERROR, "", 1);
             LOG.error(
                     "Unable to parse string. StartTime:{}, itemCount:{}, ExcepionCode: {},\n startMetrics:{}",
                     startTimeVal,
                     itemCountVal,
-                    StatExceptionCode.READER_PARSER_ERROR.toString(),
+                    ReaderMetrics.READER_PARSER_ERROR.toString(),
                     entry.key);
-            StatsCollector.instance().logException(StatExceptionCode.READER_PARSER_ERROR);
             throw e;
         }
     }
@@ -161,12 +162,13 @@ public class HttpRequestEventProcessor implements EventProcessor {
             String operation = keyItems[2];
             handle.bind(rid, operation, null, status, exception, null, null, ft);
         } catch (NumberFormatException e) {
+            PerformanceAnalyzerApp.READER_METRICS_AGGREGATOR.updateStat(
+                    ReaderMetrics.READER_PARSER_ERROR, "", 1);
             LOG.error(
                     "Unable to parse string. FinishTime:{} ExcepionCode: {} \n finishMetrics:{}",
                     finishTimeVal,
-                    StatExceptionCode.READER_PARSER_ERROR.toString(),
+                    ReaderMetrics.READER_PARSER_ERROR.toString(),
                     entry.key);
-            StatsCollector.instance().logException(StatExceptionCode.READER_PARSER_ERROR);
             throw e;
         }
     }

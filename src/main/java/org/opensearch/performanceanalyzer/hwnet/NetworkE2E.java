@@ -40,10 +40,10 @@ import java.util.Map;
 import java.util.Set;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.opensearch.performanceanalyzer.collectors.StatExceptionCode;
-import org.opensearch.performanceanalyzer.collectors.StatsCollector;
+import org.opensearch.performanceanalyzer.PerformanceAnalyzerApp;
 import org.opensearch.performanceanalyzer.metrics_generator.linux.LinuxTCPMetricsGenerator;
 import org.opensearch.performanceanalyzer.os.OSGlobals;
+import org.opensearch.performanceanalyzer.rca.framework.metrics.ExceptionsAndErrors;
 
 public class NetworkE2E {
     /* Data sources:
@@ -147,11 +147,12 @@ public class NetworkE2E {
                 ln++;
             }
         } catch (Exception e) {
+            PerformanceAnalyzerApp.ERRORS_AND_EXCEPTIONS_AGGREGATOR.updateStat(
+                    ExceptionsAndErrors.NETWORK_COLLECTOR_ERROR, "", 1);
             LOG.debug(
                     "Error in mapTCPMetrics: {} with ExceptionCode: {}",
                     () -> e,
-                    () -> StatExceptionCode.NETWORK_COLLECTION_ERROR.toString());
-            StatsCollector.instance().logException(StatExceptionCode.NETWORK_COLLECTION_ERROR);
+                    () -> ExceptionsAndErrors.NETWORK_COLLECTOR_ERROR.toString());
         }
     }
 

@@ -34,8 +34,7 @@ import org.apache.logging.log4j.Logger;
 import org.jooq.Field;
 import org.jooq.Record;
 import org.jooq.Result;
-import org.opensearch.performanceanalyzer.collectors.StatExceptionCode;
-import org.opensearch.performanceanalyzer.collectors.StatsCollector;
+import org.opensearch.performanceanalyzer.PerformanceAnalyzerApp;
 import org.opensearch.performanceanalyzer.metrics.AllMetrics;
 import org.opensearch.performanceanalyzer.metricsdb.MetricsDB;
 import org.opensearch.performanceanalyzer.rca.framework.api.Metric;
@@ -45,6 +44,7 @@ import org.opensearch.performanceanalyzer.rca.framework.api.aggregators.SlidingW
 import org.opensearch.performanceanalyzer.rca.framework.api.flow_units.MetricFlowUnit;
 import org.opensearch.performanceanalyzer.rca.framework.api.flow_units.ResourceFlowUnit;
 import org.opensearch.performanceanalyzer.rca.framework.api.persist.SQLParsingUtil;
+import org.opensearch.performanceanalyzer.rca.framework.metrics.RcaVerticesMetrics;
 
 public abstract class OldGenRca<T extends ResourceFlowUnit<?>> extends Rca<T> {
 
@@ -71,8 +71,8 @@ public abstract class OldGenRca<T extends ResourceFlowUnit<?>> extends Rca<T> {
 
     protected double getMaxHeapSizeOrDefault(final double defaultValue) {
         if (heap_Max == null) {
-            StatsCollector.instance()
-                    .logException(StatExceptionCode.MISCONFIGURED_OLD_GEN_RCA_HEAP_MAX_MISSING);
+            PerformanceAnalyzerApp.RCA_VERTICES_METRICS_AGGREGATOR.updateStat(
+                    RcaVerticesMetrics.OLD_GEN_RCA_HEAP_MAX_MISSING, "", 1);
             throw new IllegalStateException(
                     "RCA: "
                             + this.name()
@@ -106,8 +106,8 @@ public abstract class OldGenRca<T extends ResourceFlowUnit<?>> extends Rca<T> {
 
     protected double getMaxOldGenSizeOrDefault(final double defaultValue) {
         if (heap_Max == null) {
-            StatsCollector.instance()
-                    .logException(StatExceptionCode.MISCONFIGURED_OLD_GEN_RCA_HEAP_MAX_MISSING);
+            PerformanceAnalyzerApp.RCA_VERTICES_METRICS_AGGREGATOR.updateStat(
+                    RcaVerticesMetrics.OLD_GEN_RCA_HEAP_MAX_MISSING, "", 1);
             throw new IllegalStateException(
                     "RCA: "
                             + this.name()
@@ -141,8 +141,8 @@ public abstract class OldGenRca<T extends ResourceFlowUnit<?>> extends Rca<T> {
 
     protected int getFullGcEventsOrDefault(final double defaultValue) {
         if (gc_event == null) {
-            StatsCollector.instance()
-                    .logException(StatExceptionCode.MISCONFIGURED_OLD_GEN_RCA_GC_EVENTS_MISSING);
+            PerformanceAnalyzerApp.RCA_VERTICES_METRICS_AGGREGATOR.updateStat(
+                    RcaVerticesMetrics.OLD_GEN_RCA_GC_EVENTS_MISSING, "", 1);
             throw new IllegalStateException(
                     "RCA: "
                             + this.name()
@@ -177,8 +177,8 @@ public abstract class OldGenRca<T extends ResourceFlowUnit<?>> extends Rca<T> {
 
     protected double getOldGenUsedOrDefault(final double defaultValue) {
         if (heap_Used == null) {
-            StatsCollector.instance()
-                    .logException(StatExceptionCode.MISCONFIGURED_OLD_GEN_RCA_HEAP_USED_MISSING);
+            PerformanceAnalyzerApp.RCA_VERTICES_METRICS_AGGREGATOR.updateStat(
+                    RcaVerticesMetrics.OLD_GEN_RCA_HEAP_USED_MISSING, "", 1);
             throw new IllegalStateException(
                     "RCA: "
                             + this.name()

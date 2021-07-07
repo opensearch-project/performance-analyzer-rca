@@ -36,9 +36,9 @@ import java.util.List;
 import java.util.Map;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.opensearch.performanceanalyzer.collectors.StatExceptionCode;
-import org.opensearch.performanceanalyzer.collectors.StatsCollector;
+import org.opensearch.performanceanalyzer.PerformanceAnalyzerApp;
 import org.opensearch.performanceanalyzer.metrics_generator.linux.LinuxDiskIOMetricsGenerator;
+import org.opensearch.performanceanalyzer.rca.framework.metrics.WriterMetrics;
 
 public class ThreadDiskIO {
     private static String pid = OSGlobals.getPid();
@@ -125,12 +125,13 @@ public class ThreadDiskIO {
         } catch (FileNotFoundException e) {
             LOGGER.debug("FileNotFound in parse with exception: {}", () -> e.toString());
         } catch (Exception e) {
+            PerformanceAnalyzerApp.WRITER_METRICS_AGGREGATOR.updateStat(
+                    WriterMetrics.THREAD_IO_ERROR, "", 1);
             LOGGER.debug(
                     "Error In addSample Tid for: {}  with error: {} with ExceptionCode: {}",
                     () -> tid,
                     () -> e.toString(),
-                    () -> StatExceptionCode.THREAD_IO_ERROR.toString());
-            StatsCollector.instance().logException(StatExceptionCode.THREAD_IO_ERROR);
+                    () -> WriterMetrics.THREAD_IO_ERROR.toString());
         }
     }
 

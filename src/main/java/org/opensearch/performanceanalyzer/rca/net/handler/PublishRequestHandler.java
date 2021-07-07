@@ -37,8 +37,6 @@ import java.util.concurrent.atomic.AtomicReference;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.opensearch.performanceanalyzer.PerformanceAnalyzerApp;
-import org.opensearch.performanceanalyzer.collectors.StatExceptionCode;
-import org.opensearch.performanceanalyzer.collectors.StatsCollector;
 import org.opensearch.performanceanalyzer.grpc.FlowUnitMessage;
 import org.opensearch.performanceanalyzer.grpc.PublishResponse;
 import org.opensearch.performanceanalyzer.grpc.PublishResponse.PublishResponseStatus;
@@ -108,12 +106,11 @@ public class PublishRequestHandler {
                             flowUnitMessage.getGraphNode(),
                             flowUnitMessage.getSerializedSize());
                 } catch (final RejectedExecutionException ree) {
+                    PerformanceAnalyzerApp.RCA_GRAPH_METRICS_AGGREGATOR.updateStat(
+                            RcaGraphMetrics.RCA_NETWORK_THREADPOOL_QUEUE_FULL_ERROR, "", 1);
                     LOG.warn(
                             "Dropped handling received flow unit because the netwwork threadpool queue is "
                                     + "full");
-                    StatsCollector.instance()
-                            .logException(
-                                    StatExceptionCode.RCA_NETWORK_THREADPOOL_QUEUE_FULL_ERROR);
                 }
             }
         }

@@ -33,8 +33,8 @@ import java.nio.file.Paths;
 import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.opensearch.performanceanalyzer.collectors.StatExceptionCode;
-import org.opensearch.performanceanalyzer.collectors.StatsCollector;
+import org.opensearch.performanceanalyzer.PerformanceAnalyzerApp;
+import org.opensearch.performanceanalyzer.rca.framework.metrics.ReaderMetrics;
 
 public class MemInfoParser {
 
@@ -52,8 +52,9 @@ public class MemInfoParser {
                 }
             }
         } catch (IOException e) {
+            PerformanceAnalyzerApp.READER_METRICS_AGGREGATOR.updateStat(
+                    ReaderMetrics.TOTAL_MEM_READ_ERROR, "", 1);
             LOG.error("Unable to read total memory", e);
-            StatsCollector.instance().logException(StatExceptionCode.TOTAL_MEM_READ_ERROR);
         }
 
         return -1;
@@ -68,8 +69,9 @@ public class MemInfoParser {
         try {
             return Long.parseLong(parsedLine[1]) * KB_TO_B;
         } catch (NumberFormatException numberFormatException) {
+            PerformanceAnalyzerApp.READER_METRICS_AGGREGATOR.updateStat(
+                    ReaderMetrics.TOTAL_MEM_READ_ERROR, "", 1);
             LOG.error("Unable to parse memInfoLine: " + memLine, numberFormatException);
-            StatsCollector.instance().logException(StatExceptionCode.TOTAL_MEM_READ_ERROR);
         }
 
         return -1;

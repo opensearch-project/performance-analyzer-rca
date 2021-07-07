@@ -91,7 +91,7 @@ public enum ExceptionsAndErrors implements MeasurementSet {
 
     NODESTATS_COLLECTION_ERROR("NodeStatsCollectionError"),
 
-    OTHER_COLLECTION_ERROR("OtherCollectionError"),
+    OTHER_COLLECTION_ERROR("OtherCollectionError");
 
     /** What we want to appear as the metric name. */
     private String name;

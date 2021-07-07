@@ -30,11 +30,13 @@ package org.opensearch.performanceanalyzer.collectors;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.opensearch.performanceanalyzer.OSMetricsGeneratorFactory;
+import org.opensearch.performanceanalyzer.PerformanceAnalyzerApp;
 import org.opensearch.performanceanalyzer.metrics.MetricsConfiguration;
 import org.opensearch.performanceanalyzer.metrics.MetricsProcessor;
 import org.opensearch.performanceanalyzer.metrics.PerformanceAnalyzerMetrics;
 import org.opensearch.performanceanalyzer.metrics_generator.IPMetricsGenerator;
 import org.opensearch.performanceanalyzer.metrics_generator.OSMetricsGenerator;
+import org.opensearch.performanceanalyzer.rca.framework.metrics.ExceptionsAndErrors;
 
 public class NetworkInterfaceCollector extends PerformanceAnalyzerMetricsCollector
         implements MetricsProcessor {
@@ -100,11 +102,12 @@ public class NetworkInterfaceCollector extends PerformanceAnalyzerMetricsCollect
             value.append(outNetwork.serialize())
                     .append(PerformanceAnalyzerMetrics.sMetricNewLineDelimitor);
         } catch (Exception e) {
+            PerformanceAnalyzerApp.ERRORS_AND_EXCEPTIONS_AGGREGATOR.updateStat(
+                    ExceptionsAndErrors.NETWORK_COLLECTOR_ERROR, "", 1);
             LOG.debug(
                     "Exception in NetworkInterfaceCollector: {} with ExceptionCode: {}",
                     () -> e.toString(),
-                    () -> StatExceptionCode.NETWORK_COLLECTION_ERROR.toString());
-            StatsCollector.instance().logException(StatExceptionCode.NETWORK_COLLECTION_ERROR);
+                    () -> ExceptionsAndErrors.NETWORK_COLLECTOR_ERROR.toString());
         }
 
         return value.toString();

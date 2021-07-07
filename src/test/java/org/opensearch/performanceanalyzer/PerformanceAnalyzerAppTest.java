@@ -29,7 +29,6 @@ package org.opensearch.performanceanalyzer;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.opensearch.performanceanalyzer.collectors.StatsCollector;
 
 public class PerformanceAnalyzerAppTest {
 
@@ -37,7 +36,7 @@ public class PerformanceAnalyzerAppTest {
     public void testMain() {
         PerformanceAnalyzerApp.main(new String[0]);
         Assert.assertFalse(ConfigStatus.INSTANCE.haveValidConfig());
-        Assert.assertEquals(
-                StatsCollector.instance().getCounters().get("ReaderThreadStopped").get(), 1);
+        /*Assert.assertEquals(
+        StatsCollector.instance().getCounters().get("ReaderThreadStopped").get(), 1);*/
     }
 }

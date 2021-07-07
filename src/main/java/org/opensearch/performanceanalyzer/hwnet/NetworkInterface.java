@@ -35,10 +35,10 @@ import java.util.HashMap;
 import java.util.Map;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.opensearch.performanceanalyzer.PerformanceAnalyzerApp;
 import org.opensearch.performanceanalyzer.collectors.NetInterfaceSummary;
-import org.opensearch.performanceanalyzer.collectors.StatExceptionCode;
-import org.opensearch.performanceanalyzer.collectors.StatsCollector;
 import org.opensearch.performanceanalyzer.metrics_generator.linux.LinuxIPMetricsGenerator;
+import org.opensearch.performanceanalyzer.rca.framework.metrics.ExceptionsAndErrors;
 
 public class NetworkInterface {
     private static final Logger LOG = LogManager.getLogger(NetworkInterface.class);
@@ -238,11 +238,12 @@ public class NetworkInterface {
                 ln++;
             }
         } catch (Exception e) {
+            PerformanceAnalyzerApp.ERRORS_AND_EXCEPTIONS_AGGREGATOR.updateStat(
+                    ExceptionsAndErrors.NETWORK_COLLECTOR_ERROR, "", 1);
             LOG.debug(
                     "Exception in calling addSample4 with details: {} with ExceptionCode: {}",
                     () -> e.toString(),
-                    () -> StatExceptionCode.NETWORK_COLLECTION_ERROR.toString());
-            StatsCollector.instance().logException(StatExceptionCode.NETWORK_COLLECTION_ERROR);
+                    () -> ExceptionsAndErrors.NETWORK_COLLECTOR_ERROR.toString());
         }
     }
 
@@ -261,11 +262,12 @@ public class NetworkInterface {
                 }
             }
         } catch (Exception e) {
+            PerformanceAnalyzerApp.ERRORS_AND_EXCEPTIONS_AGGREGATOR.updateStat(
+                    ExceptionsAndErrors.NETWORK_COLLECTOR_ERROR, "", 1);
             LOG.debug(
                     "Exception in calling addSample6 with details: {} with ExceptionCode: {}",
                     () -> e.toString(),
-                    () -> StatExceptionCode.NETWORK_COLLECTION_ERROR.toString());
-            StatsCollector.instance().logException(StatExceptionCode.NETWORK_COLLECTION_ERROR);
+                    () -> ExceptionsAndErrors.NETWORK_COLLECTOR_ERROR.toString());
         }
     }
 
@@ -293,11 +295,12 @@ public class NetworkInterface {
             currentMetrics.PHYmetrics.put("outbytes", outtotbytes);
             currentMetrics.PHYmetrics.put("outpackets", outtotpackets);
         } catch (Exception e) {
+            PerformanceAnalyzerApp.ERRORS_AND_EXCEPTIONS_AGGREGATOR.updateStat(
+                    ExceptionsAndErrors.NETWORK_COLLECTOR_ERROR, "", 1);
             LOG.debug(
                     "Exception in calling addDeviceStats with details: {} with ExceptionCode: {}",
                     () -> e.toString(),
-                    () -> StatExceptionCode.NETWORK_COLLECTION_ERROR.toString());
-            StatsCollector.instance().logException(StatExceptionCode.NETWORK_COLLECTION_ERROR);
+                    () -> ExceptionsAndErrors.NETWORK_COLLECTOR_ERROR.toString());
         }
     }
 

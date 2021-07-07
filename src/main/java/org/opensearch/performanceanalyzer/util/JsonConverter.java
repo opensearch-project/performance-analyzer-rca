@@ -38,8 +38,8 @@ import java.util.Collections;
 import java.util.Map;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.opensearch.performanceanalyzer.collectors.StatExceptionCode;
-import org.opensearch.performanceanalyzer.collectors.StatsCollector;
+import org.opensearch.performanceanalyzer.PerformanceAnalyzerApp;
+import org.opensearch.performanceanalyzer.rca.framework.metrics.ExceptionsAndErrors;
 
 public class JsonConverter {
     private static final ObjectMapper MAPPER = new ObjectMapper();
@@ -74,12 +74,13 @@ public class JsonConverter {
                 return MAPPER.readValue(json, new TypeReference<Map<String, Object>>() {});
             }
         } catch (IOException e) {
+            PerformanceAnalyzerApp.ERRORS_AND_EXCEPTIONS_AGGREGATOR.updateStat(
+                    ExceptionsAndErrors.JSON_PARSER_ERROR, "", 1);
             LOG.debug(
                     "IO error: {} for json {} with ExceptionCode: {}",
                     () -> e.toString(),
                     () -> json,
-                    () -> StatExceptionCode.JSON_PARSER_ERROR.toString());
-            StatsCollector.instance().logException(StatExceptionCode.JSON_PARSER_ERROR);
+                    () -> ExceptionsAndErrors.JSON_PARSER_ERROR.toString());
         }
         return Collections.emptyMap();
     }

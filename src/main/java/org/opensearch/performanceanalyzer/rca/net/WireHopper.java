@@ -37,11 +37,11 @@ import java.util.concurrent.atomic.AtomicReference;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.opensearch.performanceanalyzer.AppContext;
-import org.opensearch.performanceanalyzer.collectors.StatExceptionCode;
-import org.opensearch.performanceanalyzer.collectors.StatsCollector;
+import org.opensearch.performanceanalyzer.PerformanceAnalyzerApp;
 import org.opensearch.performanceanalyzer.grpc.FlowUnitMessage;
 import org.opensearch.performanceanalyzer.net.NetClient;
 import org.opensearch.performanceanalyzer.rca.framework.core.Node;
+import org.opensearch.performanceanalyzer.rca.framework.metrics.RcaGraphMetrics;
 import org.opensearch.performanceanalyzer.rca.framework.util.InstanceDetails;
 import org.opensearch.performanceanalyzer.rca.messages.DataMsg;
 import org.opensearch.performanceanalyzer.rca.messages.IntentMsg;
@@ -87,9 +87,9 @@ public class WireHopper {
                         new BroadcastSubscriptionTxTask(
                                 netClient, msg, subscriptionManager, nodeStateManager, appContext));
             } catch (final RejectedExecutionException ree) {
+                PerformanceAnalyzerApp.RCA_GRAPH_METRICS_AGGREGATOR.updateStat(
+                        RcaGraphMetrics.RCA_NETWORK_THREADPOOL_QUEUE_FULL_ERROR, "", 1);
                 LOG.warn("Dropped sending subscription because the threadpool queue is full");
-                StatsCollector.instance()
-                        .logException(StatExceptionCode.RCA_NETWORK_THREADPOOL_QUEUE_FULL_ERROR);
             }
         }
     }
@@ -101,9 +101,9 @@ public class WireHopper {
                 executor.execute(
                         new FlowUnitTxTask(netClient, subscriptionManager, msg, appContext));
             } catch (final RejectedExecutionException ree) {
+                PerformanceAnalyzerApp.RCA_GRAPH_METRICS_AGGREGATOR.updateStat(
+                        RcaGraphMetrics.RCA_NETWORK_THREADPOOL_QUEUE_FULL_ERROR, "", 1);
                 LOG.warn("Dropped sending flow unit because the threadpool queue is full");
-                StatsCollector.instance()
-                        .logException(StatExceptionCode.RCA_NETWORK_THREADPOOL_QUEUE_FULL_ERROR);
             }
         }
     }
@@ -150,12 +150,11 @@ public class WireHopper {
                                     nodeStateManager,
                                     appContext));
                 } catch (final RejectedExecutionException ree) {
+                    PerformanceAnalyzerApp.RCA_GRAPH_METRICS_AGGREGATOR.updateStat(
+                            RcaGraphMetrics.RCA_NETWORK_THREADPOOL_QUEUE_FULL_ERROR, "", 1);
                     LOG.warn(
                             "Dropped sending subscription request because the threadpool queue is "
                                     + "full");
-                    StatsCollector.instance()
-                            .logException(
-                                    StatExceptionCode.RCA_NETWORK_THREADPOOL_QUEUE_FULL_ERROR);
                 }
             }
         }

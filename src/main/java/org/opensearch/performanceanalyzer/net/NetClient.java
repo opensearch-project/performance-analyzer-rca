@@ -36,8 +36,6 @@ import java.util.concurrent.atomic.AtomicReference;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.opensearch.performanceanalyzer.PerformanceAnalyzerApp;
-import org.opensearch.performanceanalyzer.collectors.StatExceptionCode;
-import org.opensearch.performanceanalyzer.collectors.StatsCollector;
 import org.opensearch.performanceanalyzer.grpc.FlowUnitMessage;
 import org.opensearch.performanceanalyzer.grpc.InterNodeRpcServiceGrpc;
 import org.opensearch.performanceanalyzer.grpc.MetricsRequest;
@@ -93,8 +91,9 @@ public class NetClient {
                     subscribeMessage.getRequesterGraphNode(),
                     subscribeMessage.getSerializedSize());
         } catch (StatusRuntimeException sre) {
+            PerformanceAnalyzerApp.RCA_GRAPH_METRICS_AGGREGATOR.updateStat(
+                    RcaGraphMetrics.RCA_NETWORK_ERROR, remoteHost.getInstanceIp().toString(), 1);
             LOG.error("Encountered an error trying to subscribe. Status: {}", sre.getStatus(), sre);
-            StatsCollector.instance().logException(StatExceptionCode.RCA_NETWORK_ERROR);
         }
     }
 
@@ -121,11 +120,12 @@ public class NetClient {
                     flowUnitMessage.getGraphNode(),
                     flowUnitMessage.getSerializedSize());
         } catch (StatusRuntimeException sre) {
+            PerformanceAnalyzerApp.RCA_GRAPH_METRICS_AGGREGATOR.updateStat(
+                    RcaGraphMetrics.RCA_NETWORK_ERROR, remoteHost.getInstanceIp().toString(), 1);
             LOG.error(
                     "rca: Encountered an error trying to publish a flow unit. Status: {}",
                     sre.getStatus(),
                     sre);
-            StatsCollector.instance().logException(StatExceptionCode.RCA_NETWORK_ERROR);
         }
     }
 
