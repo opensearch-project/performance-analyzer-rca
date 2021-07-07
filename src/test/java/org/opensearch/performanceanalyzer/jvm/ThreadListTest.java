@@ -28,14 +28,9 @@ package org.opensearch.performanceanalyzer.jvm;
 
 
 import java.lang.management.ThreadInfo;
-import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.opensearch.performanceanalyzer.OSMetricsGeneratorFactory;
-import org.opensearch.performanceanalyzer.collectors.StatExceptionCode;
-import org.opensearch.performanceanalyzer.collectors.StatsCollector;
 
 // This test only runs in linux systems as the some of the static members of the ThreadList
 // class are specific to Linux.
@@ -57,10 +52,10 @@ public class ThreadListTest {
 
         ThreadList.parseAllThreadInfos(infos);
 
-        Map<String, AtomicInteger> counters = StatsCollector.instance().getCounters();
+        /*Map<String, AtomicInteger> counters = StatsCollector.instance().getCounters();
 
         Assert.assertEquals(
-                counters.get(StatExceptionCode.JVM_THREAD_ID_NO_LONGER_EXISTS.toString()).get(), 1);
+                counters.get(PerformanceAnalyzerApp.WRITER_METRICS_AGGREGATOR.getValues(WriterMetrics.JVM_THREAD_ID_NO_LONGER_EXISTS).toString()).get(), 1);*/
 
         if (old_clk_tck != null) {
             System.setProperty(propertyName, old_clk_tck);

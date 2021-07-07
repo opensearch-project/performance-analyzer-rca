@@ -46,11 +46,11 @@ import java.util.regex.Pattern;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.opensearch.performanceanalyzer.OSMetricsGeneratorFactory;
+import org.opensearch.performanceanalyzer.PerformanceAnalyzerApp;
 import org.opensearch.performanceanalyzer.collectors.ScheduledMetricCollectorsExecutor;
-import org.opensearch.performanceanalyzer.collectors.StatExceptionCode;
-import org.opensearch.performanceanalyzer.collectors.StatsCollector;
 import org.opensearch.performanceanalyzer.core.Util;
 import org.opensearch.performanceanalyzer.metrics.MetricsConfiguration;
+import org.opensearch.performanceanalyzer.rca.framework.metrics.WriterMetrics;
 import sun.tools.attach.HotSpotVirtualMachine;
 
 /** Traverses and prints the stack traces for all Java threads in the remote VM */
@@ -141,8 +141,8 @@ public class ThreadList {
                 vmAttachLock.unlock();
             }
         } else {
-            StatsCollector.instance()
-                    .logException(StatExceptionCode.JVM_ATTACH_LOCK_ACQUISITION_FAILED);
+            PerformanceAnalyzerApp.WRITER_METRICS_AGGREGATOR.updateStat(
+                    WriterMetrics.JVM_ATTACH_LOCK_ACQUISITION_FAILED, "", 1);
         }
 
         // - sending a copy so that if runThreadDump next iteration clears it; caller still has the
@@ -167,7 +167,8 @@ public class ThreadList {
     public static ThreadState getThreadState(long threadId) {
         ThreadState retVal = jTidMap.get(threadId);
         if (retVal == null) {
-            StatsCollector.instance().logException(StatExceptionCode.NO_THREAD_STATE_INFO);
+            PerformanceAnalyzerApp.WRITER_METRICS_AGGREGATOR.updateStat(
+                    WriterMetrics.NO_THREAD_STATE_INFO, "", 1);
         }
         return retVal;
     }
@@ -179,10 +180,11 @@ public class ThreadList {
             vm = VirtualMachine.attach(pid);
         } catch (Exception ex) {
             if (ex.getMessage().contains("java_pid")) {
-                StatsCollector.instance()
-                        .logException(StatExceptionCode.JVM_ATTACH_ERROR_JAVA_PID_FILE_MISSING);
+                PerformanceAnalyzerApp.WRITER_METRICS_AGGREGATOR.updateStat(
+                        WriterMetrics.JVM_ATTACH_ERROR_JAVA_PID_FILE_MISSING, "", 1);
             } else {
-                StatsCollector.instance().logException(StatExceptionCode.JVM_ATTACH_ERROR);
+                PerformanceAnalyzerApp.WRITER_METRICS_AGGREGATOR.updateStat(
+                        WriterMetrics.JVM_ATTACH_ERROR, "", 1);
             }
             // If the thread dump failed then we clean up the old map. So, next time when the
             // collection
@@ -194,16 +196,18 @@ public class ThreadList {
         try (InputStream in = ((HotSpotVirtualMachine) vm).remoteDataDump(args); ) {
             createMap(in);
         } catch (Exception ex) {
-            StatsCollector.instance().logException(StatExceptionCode.JVM_ATTACH_ERROR);
+            PerformanceAnalyzerApp.WRITER_METRICS_AGGREGATOR.updateStat(
+                    WriterMetrics.JVM_ATTACH_ERROR, "", 1);
             oldNativeTidMap.clear();
         }
 
         try {
             vm.detach();
-            StatsCollector.instance()
-                    .logMetric(StatExceptionCode.JVM_THREAD_DUMP_SUCCESSFUL.toString());
+            PerformanceAnalyzerApp.WRITER_METRICS_AGGREGATOR.updateStat(
+                    WriterMetrics.JVM_THREAD_DUMP_SUCCESSFUL, "", 1);
         } catch (Exception ex) {
-            StatsCollector.instance().logException(StatExceptionCode.JVM_ATTACH_ERROR);
+            PerformanceAnalyzerApp.WRITER_METRICS_AGGREGATOR.updateStat(
+                    WriterMetrics.JVM_ATTACH_ERROR, "", 1);
         }
     }
 
@@ -215,8 +219,8 @@ public class ThreadList {
                 // If the ids provided to the getThreadInfo() call are not valid ids or the threads
                 // no
                 // longer exists, then the corresponding info object will contain null.
-                StatsCollector.instance()
-                        .logException(StatExceptionCode.JVM_THREAD_ID_NO_LONGER_EXISTS);
+                PerformanceAnalyzerApp.WRITER_METRICS_AGGREGATOR.updateStat(
+                        WriterMetrics.JVM_THREAD_ID_NO_LONGER_EXISTS, "", 1);
             }
         }
     }

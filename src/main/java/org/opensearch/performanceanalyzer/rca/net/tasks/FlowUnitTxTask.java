@@ -33,8 +33,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.opensearch.performanceanalyzer.AppContext;
 import org.opensearch.performanceanalyzer.PerformanceAnalyzerApp;
-import org.opensearch.performanceanalyzer.collectors.StatExceptionCode;
-import org.opensearch.performanceanalyzer.collectors.StatsCollector;
 import org.opensearch.performanceanalyzer.grpc.PublishResponse;
 import org.opensearch.performanceanalyzer.grpc.PublishResponse.PublishResponseStatus;
 import org.opensearch.performanceanalyzer.net.NetClient;
@@ -108,9 +106,9 @@ public class FlowUnitTxTask implements Runnable {
 
                                 @Override
                                 public void onError(final Throwable t) {
+                                    PerformanceAnalyzerApp.RCA_GRAPH_METRICS_AGGREGATOR.updateStat(
+                                            RcaGraphMetrics.RCA_NETWORK_ERROR, sourceGraphNode, 1);
                                     LOG.error("rca: Encountered an exception at the server: ", t);
-                                    StatsCollector.instance()
-                                            .logException(StatExceptionCode.RCA_NETWORK_ERROR);
                                     subscriptionManager.unsubscribeAndTerminateConnection(
                                             sourceGraphNode, downstreamHostId);
                                     client.flushStream(downstreamHostId);

@@ -58,6 +58,12 @@ public enum RcaRuntimeMetrics implements MeasurementSet {
     NO_INCREASE_ACTION_SUGGESTED(
             "NoIncreaseAction", "namedCount", Collections.singletonList(Statistics.NAMED_COUNTERS)),
 
+    /** Metric tracking the Heap Size increase action published by the publisher. */
+    HEAP_SIZE_INCREASE_ACTION_SUGGESTED(
+            "HeapSizeIncreaseAction",
+            "namedCount",
+            Collections.singletonList(Statistics.NAMED_COUNTERS)),
+
     /** Metric tracking the actions published by the publisher that are persisted in sqlite. */
     ACTIONS_PUBLISHED(
             "ActionsPublished", "namedCount", Collections.singletonList(Statistics.NAMED_COUNTERS));

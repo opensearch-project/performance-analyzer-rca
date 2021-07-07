@@ -31,15 +31,14 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.opensearch.performanceanalyzer.PerformanceAnalyzerApp;
 import org.opensearch.performanceanalyzer.PerformanceAnalyzerThreads;
-import org.opensearch.performanceanalyzer.collectors.StatsCollector;
+import org.opensearch.performanceanalyzer.rca.framework.metrics.ReaderMetrics;
+import org.opensearch.performanceanalyzer.rca.stats.measurements.MeasurementSet;
 import org.opensearch.performanceanalyzer.threads.exceptions.PAThreadException;
 
 /** Class that wraps a given runnable in a thread with exception handling capabilities. */
 public class ThreadProvider {
 
     private static final Logger LOG = LogManager.getLogger(ThreadProvider.class);
-    private static final String PA_THREADS_STARTED_METRIC_NAME = "NumberOfPAThreadsStarted";
-    private static final String PA_THREADS_ENDED_METRIC_NAME = "NumberOfPAThreadsEnded";
 
     /**
      * Creates a thread which executes the given runnable when started. If the given runnable throws
@@ -59,7 +58,7 @@ public class ThreadProvider {
             threadName.append("-").append(threadNameAppender);
         }
         String threadNameStr = threadName.toString();
-
+        MeasurementSet metric = paThread.getThreadExceptionCode();
         Thread t =
                 new Thread(
                         () -> {
@@ -71,6 +70,8 @@ public class ThreadProvider {
                                     PerformanceAnalyzerApp.exceptionQueue.put(
                                             new PAThreadException(paThread, innerThrowable));
                                 } catch (InterruptedException e) {
+                                    PerformanceAnalyzerApp.READER_METRICS_AGGREGATOR.updateStat(
+                                            metric, "", 1);
                                     LOG.error(
                                             "Thread was interrupted while waiting to put an exception into the queue. "
                                                     + "Message: {}",
@@ -78,13 +79,19 @@ public class ThreadProvider {
                                             e);
                                 }
                             }
-                            StatsCollector.instance().logMetric(PA_THREADS_ENDED_METRIC_NAME);
+                            PerformanceAnalyzerApp.READER_METRICS_AGGREGATOR.updateStat(
+                                    ReaderMetrics.NUM_PA_THREADS_ENDED,
+                                    ReaderMetrics.NUM_PA_THREADS_ENDED.toString(),
+                                    1);
                             LOG.info("Thread: {} completed.", threadNameStr);
                         },
                         threadNameStr);
 
+        PerformanceAnalyzerApp.READER_METRICS_AGGREGATOR.updateStat(
+                ReaderMetrics.NUM_PA_THREADS_STARTED,
+                ReaderMetrics.NUM_PA_THREADS_STARTED.toString(),
+                1);
         LOG.info("Spun up a thread with name: {}", threadNameStr);
-        StatsCollector.instance().logMetric(PA_THREADS_STARTED_METRIC_NAME);
         return t;
     }
 

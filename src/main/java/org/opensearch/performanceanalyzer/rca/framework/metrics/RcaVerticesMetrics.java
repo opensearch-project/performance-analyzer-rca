@@ -36,6 +36,21 @@ import org.opensearch.performanceanalyzer.rca.stats.measurements.MeasurementSet;
  * metrics added by each RCA vertex in RCA graph. All metrics under this category are RCA specific
  */
 public enum RcaVerticesMetrics implements MeasurementSet {
+    INVALID_OLD_GEN_SIZE("InvalidOldGenSize", "count", Collections.singletonList(Statistics.COUNT)),
+    OLD_GEN_RCA_HEAP_MAX_MISSING(
+            "OldGenRcaHeapMaxMissing", "count", Collections.singletonList(Statistics.COUNT)),
+    OLD_GEN_RCA_HEAP_USED_MISSING(
+            "OldGenRcaHeapUsedMissing", "count", Collections.singletonList(Statistics.COUNT)),
+    OLD_GEN_RCA_GC_EVENTS_MISSING(
+            "OldGenRcaGcEventsMissing", "count", Collections.singletonList(Statistics.COUNT)),
+    OLD_GEN_RECLAMATION_INEFFECTIVE(
+            "OldGenReclamationIneffective", "count", Collections.singletonList(Statistics.COUNT)),
+    OLD_GEN_CONTENDED("OldGenContended", "count", Collections.singletonList(Statistics.COUNT)),
+    OLD_GEN_OVER_OCCUPIED(
+            "OldGenOverOccupied", "count", Collections.singletonList(Statistics.COUNT)),
+
+    HOT_SHARD_RCA_ERROR("HotShardRcaError", "count", Collections.singletonList(Statistics.COUNT)),
+
     NUM_YOUNG_GEN_RCA_TRIGGERED(
             "YoungGenRcaCount", "count", Collections.singletonList(Statistics.COUNT)),
     NUM_OLD_GEN_RCA_TRIGGERED(
@@ -54,7 +69,6 @@ public enum RcaVerticesMetrics implements MeasurementSet {
             "ClusterRcaNamedCount",
             "namedCount",
             Collections.singletonList(Statistics.NAMED_COUNTERS));
-
     /** What we want to appear as the metric name. */
     private String name;
 

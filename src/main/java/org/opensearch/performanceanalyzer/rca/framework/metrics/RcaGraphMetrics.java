@@ -57,16 +57,10 @@ public enum RcaGraphMetrics implements MeasurementSet {
             "millis",
             Arrays.asList(Statistics.MAX, Statistics.MEAN, Statistics.SUM)),
 
-    /** Measures the time spent in the persistence layer. */
-    RCA_PERSIST_CALL(
-            "RcaPersistCall",
-            "micros",
-            Arrays.asList(Statistics.MAX, Statistics.MEAN, Statistics.SUM)),
-
     NUM_GRAPH_NODES("NumGraphNodes", "count", Collections.singletonList(Statistics.SAMPLE)),
 
     NUM_GRAPH_NODES_MUTED(
-            "NUMOfMutedGraphNodes", "count", Collections.singletonList(Statistics.SAMPLE)),
+            "NumOfMutedGraphNodes", "count", Collections.singletonList(Statistics.SAMPLE)),
 
     NUM_NODES_EXECUTED_LOCALLY(
             "NodesExecutedLocally", "count", Collections.singletonList(Statistics.COUNT)),
@@ -79,6 +73,28 @@ public enum RcaGraphMetrics implements MeasurementSet {
 
     /** Measures number of bytes that was received as part of a protobuf message. */
     NET_BYTES_IN("TotalRcaBytesInSerialized", "bytes", Collections.singletonList(Statistics.SUM)),
+
+    /** Number of Network Error encountered per node. */
+    RCA_NETWORK_ERROR(
+            "RcaNetworkError", "namedCount", Collections.singletonList(Statistics.NAMED_COUNTERS)),
+
+    /** Number of Vertex Received queue full Error encountered per node. */
+    RCA_VERTEX_RX_BUFFER_FULL_ERROR(
+            "RcaVertexRxBufferFullError",
+            "namedCount",
+            Collections.singletonList(Statistics.NAMED_COUNTERS)),
+
+    /** Number of Network Threadpool queue Full encountered per node. */
+    RCA_NETWORK_THREADPOOL_QUEUE_FULL_ERROR(
+            "RcaNetworkThreadpoolQueueFullError",
+            "count",
+            Collections.singletonList(Statistics.COUNT)),
+
+    /** Measures the time spent in the persistence layer. */
+    RCA_PERSIST_CALL(
+            "RcaPersistCall",
+            "micros",
+            Arrays.asList(Statistics.MAX, Statistics.MEAN, Statistics.SUM)),
 
     /** Number of nodes that are currently publishing flow units to downstream nodes. */
     RCA_NODES_FU_PUBLISH_COUNT(
