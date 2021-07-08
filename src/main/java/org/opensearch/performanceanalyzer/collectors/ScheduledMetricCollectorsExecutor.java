@@ -132,6 +132,18 @@ public class ScheduledMetricCollectorsExecutor extends Thread {
                             collector.setStartTime(currentTime);
                             metricsCollectorsTP.execute(collector);
                         } else {
+                            /**
+                             * Always run StatsCollector; we rely on StatsCollector for framework
+                             * service metrics
+                             */
+                            if (collector
+                                    .getCollectorName()
+                                    .equals(StatsCollector.COLLECTOR_NAME)) {
+                                LOG.info(
+                                        " {} is still in progress; skipping.",
+                                        StatsCollector.COLLECTOR_NAME);
+                                return;
+                            }
                             if (collector.getState()
                                     == PerformanceAnalyzerMetricsCollector.State.HEALTHY) {
                                 collector.setState(PerformanceAnalyzerMetricsCollector.State.SLOW);

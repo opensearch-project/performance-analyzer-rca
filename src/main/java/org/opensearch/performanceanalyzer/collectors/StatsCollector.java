@@ -49,6 +49,7 @@ import org.opensearch.performanceanalyzer.rca.Version;
 import org.opensearch.performanceanalyzer.rca.formatter.StatsCollectorFormatter;
 
 public class StatsCollector extends PerformanceAnalyzerMetricsCollector {
+    public static final String COLLECTOR_NAME = "StatsCollector";
     private static final String LOG_ENTRY_INIT =
             "------------------------------------------------------------------------";
     private static final String LOG_ENTRY_END = "EOE";
@@ -75,7 +76,7 @@ public class StatsCollector extends PerformanceAnalyzerMetricsCollector {
 
     private StatsCollector(Map<String, String> metadata) {
         this(
-                "StatsCollector",
+                COLLECTOR_NAME,
                 MetricsConfiguration.CONFIG_MAP.get(StatsCollector.class).samplingInterval,
                 metadata);
     }
