@@ -78,18 +78,6 @@ public enum RcaGraphMetrics implements MeasurementSet {
     RCA_NETWORK_ERROR(
             "RcaNetworkError", "namedCount", Collections.singletonList(Statistics.NAMED_COUNTERS)),
 
-    /** Number of Vertex Received queue full Error encountered per node. */
-    RCA_VERTEX_RX_BUFFER_FULL_ERROR(
-            "RcaVertexRxBufferFullError",
-            "namedCount",
-            Collections.singletonList(Statistics.NAMED_COUNTERS)),
-
-    /** Number of Network Threadpool queue Full encountered per node. */
-    RCA_NETWORK_THREADPOOL_QUEUE_FULL_ERROR(
-            "RcaNetworkThreadpoolQueueFullError",
-            "count",
-            Collections.singletonList(Statistics.COUNT)),
-
     /** Measures the time spent in the persistence layer. */
     RCA_PERSIST_CALL(
             "RcaPersistCall",

@@ -37,12 +37,6 @@ import org.opensearch.performanceanalyzer.rca.stats.measurements.MeasurementSet;
  */
 public enum RcaVerticesMetrics implements MeasurementSet {
     INVALID_OLD_GEN_SIZE("InvalidOldGenSize", "count", Collections.singletonList(Statistics.COUNT)),
-    OLD_GEN_RCA_HEAP_MAX_MISSING(
-            "OldGenRcaHeapMaxMissing", "count", Collections.singletonList(Statistics.COUNT)),
-    OLD_GEN_RCA_HEAP_USED_MISSING(
-            "OldGenRcaHeapUsedMissing", "count", Collections.singletonList(Statistics.COUNT)),
-    OLD_GEN_RCA_GC_EVENTS_MISSING(
-            "OldGenRcaGcEventsMissing", "count", Collections.singletonList(Statistics.COUNT)),
     OLD_GEN_RECLAMATION_INEFFECTIVE(
             "OldGenReclamationIneffective", "count", Collections.singletonList(Statistics.COUNT)),
     OLD_GEN_CONTENDED("OldGenContended", "count", Collections.singletonList(Statistics.COUNT)),

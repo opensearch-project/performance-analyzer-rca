@@ -70,16 +70,6 @@ public enum ReaderMetrics implements MeasurementSet {
     RCA_SCHEDULER_THREAD_STOPPED(
             "RcaSchedulerThreadStopped", "count", Collections.singletonList(Statistics.COUNT)),
 
-    /** Tracks errors in parsing metric entry by reader */
-    READER_PARSER_ERROR("ReaderParserError", "count", Collections.singletonList(Statistics.COUNT)),
-
-    /**
-     * Tracks restart issued for {@link
-     * org.opensearch.performanceanalyzer.reader.ReaderMetricsProcessor}
-     */
-    READER_RESTART_PROCESSING(
-            "ReaderRestartProcessing", "count", Collections.singletonList(Statistics.COUNT)),
-
     /** Tracks time taken by Reader thread to emit event metrics . */
     READER_METRICS_EMIT_TIME(
             "ReaderMetricsEmitTime",
@@ -92,12 +82,6 @@ public enum ReaderMetrics implements MeasurementSet {
      */
     RCA_SCHEDULER_RESTART(
             "RcaSchedulerRestart", "count", Collections.singletonList(Statistics.COUNT)),
-
-    /**
-     * Tracks errors in parsing memory information by {@link
-     * org.opensearch.performanceanalyzer.rca.util.MemInfoParser}
-     */
-    TOTAL_MEM_READ_ERROR("TotalMemReadError", "count", Collections.singletonList(Statistics.COUNT)),
 
     /** Size of generated metricsdb files. */
     METRICSDB_FILE_SIZE(

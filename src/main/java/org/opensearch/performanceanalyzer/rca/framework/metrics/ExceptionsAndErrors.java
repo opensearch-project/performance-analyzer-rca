@@ -35,12 +35,6 @@ import org.opensearch.performanceanalyzer.rca.stats.measurements.MeasurementSet;
 public enum ExceptionsAndErrors implements MeasurementSet {
     RCA_FRAMEWORK_CRASH("RcaFrameworkCrash"),
 
-    JSON_PARSER_ERROR("JsonParserError"),
-
-    REQUEST_ERROR("RequestError"),
-
-    REQUEST_REMOTE_ERROR("RequestRemoteError"),
-
     CONFIG_DIR_NOT_FOUND("ConfigDirectoryNotFound"),
 
     WRITE_UPDATED_RCA_CONF_ERROR("WriteUpdatedRcaConfError"),
@@ -87,11 +81,7 @@ public enum ExceptionsAndErrors implements MeasurementSet {
 
     SHARD_INDEXING_PRESSURE_COLLECTOR_ERROR("ShardIndexingPressureMetricsCollectorError"),
 
-    NETWORK_COLLECTOR_ERROR("NetworkCollectionError"),
-
-    NODESTATS_COLLECTION_ERROR("NodeStatsCollectionError"),
-
-    OTHER_COLLECTION_ERROR("OtherCollectionError"),
+    NODESTATS_COLLECTION_ERROR("NodeStatsCollectionError");
 
     /** What we want to appear as the metric name. */
     private String name;

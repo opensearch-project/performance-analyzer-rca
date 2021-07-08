@@ -50,7 +50,6 @@ import org.opensearch.performanceanalyzer.AppContext;
 import org.opensearch.performanceanalyzer.ClientServers;
 import org.opensearch.performanceanalyzer.PerformanceAnalyzerApp;
 import org.opensearch.performanceanalyzer.PerformanceAnalyzerThreads;
-import org.opensearch.performanceanalyzer.collectors.StatsCollector;
 import org.opensearch.performanceanalyzer.config.PluginSettings;
 import org.opensearch.performanceanalyzer.core.Util;
 import org.opensearch.performanceanalyzer.metrics.AllMetrics;
@@ -63,7 +62,9 @@ import org.opensearch.performanceanalyzer.rca.framework.core.Queryable;
 import org.opensearch.performanceanalyzer.rca.framework.core.RcaConf;
 import org.opensearch.performanceanalyzer.rca.framework.core.Stats;
 import org.opensearch.performanceanalyzer.rca.framework.core.ThresholdMain;
+import org.opensearch.performanceanalyzer.rca.framework.metrics.ExceptionsAndErrors;
 import org.opensearch.performanceanalyzer.rca.framework.metrics.RcaRuntimeMetrics;
+import org.opensearch.performanceanalyzer.rca.framework.metrics.ReaderMetrics;
 import org.opensearch.performanceanalyzer.rca.framework.util.InstanceDetails;
 import org.opensearch.performanceanalyzer.rca.framework.util.RcaConsts;
 import org.opensearch.performanceanalyzer.rca.framework.util.RcaUtil;
@@ -303,7 +304,8 @@ public class RcaController {
     private void restart() {
         stop();
         start();
-        StatsCollector.instance().logMetric(RcaConsts.RCA_SCHEDULER_RESTART_METRIC);
+        PerformanceAnalyzerApp.READER_METRICS_AGGREGATOR.updateStat(
+                ReaderMetrics.RCA_SCHEDULER_RESTART, "", 1);
     }
 
     protected RcaConf getRcaConfForMyRole(AllMetrics.NodeRole role) {
@@ -444,8 +446,9 @@ public class RcaController {
                 rcaScheduler.updateAppContextWithMutedActions(actionsForMute);
             }
         } catch (Exception e) {
+            PerformanceAnalyzerApp.ERRORS_AND_EXCEPTIONS_AGGREGATOR.updateStat(
+                    ExceptionsAndErrors.MUTE_ERROR, "", 1);
             LOG.error("Couldn't read/update the muted RCAs", e);
-            StatsCollector.instance().logMetric(RcaConsts.MUTE_ERROR_METRIC);
             return false;
         }
 

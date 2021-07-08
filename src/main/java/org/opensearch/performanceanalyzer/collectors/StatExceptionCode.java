@@ -28,20 +28,6 @@ package org.opensearch.performanceanalyzer.collectors;
 
 public enum StatExceptionCode {
     TOTAL_ERROR("TotalError"),
-    METRICS_WRITE_ERROR("MetricsWriteError"),
-    METRICS_REMOVE_ERROR("MetricsRemoveError"),
-    // Tracks the number of VM attach/dataDump or detach failures.
-    JVM_ATTACH_ERROR("JvmAttachErrror"),
-    // This error is thrown if the java_pid file is missing.
-    JVM_ATTACH_ERROR_JAVA_PID_FILE_MISSING("JvmAttachErrorJavaPidFileMissing"),
-    // The lock could not be acquired within the timeout.
-    JVM_ATTACH_LOCK_ACQUISITION_FAILED("JvmAttachLockAcquisitionFailed"),
-    // ThreadState could not be found for an OpenSearch thread in the critical OpenSearch path.
-    NO_THREAD_STATE_INFO("NoThreadStateInfo"),
-    // This metric indicates that we successfully completed a thread-dump. Likewise,
-    // an omission of this should indicate that the thread taking the dump got stuck.
-    JVM_THREAD_DUMP_SUCCESSFUL("JvmThreadDumpSuccessful"),
-    COLLECTORS_MUTED("CollectorsMutedCount"),
     MASTER_METRICS_ERROR("MasterMetricsError"),
     DISK_METRICS_ERROR("DiskMetricsError"),
     THREAD_IO_ERROR("ThreadIOError"),
@@ -59,21 +45,11 @@ public enum StatExceptionCode {
     RCA_VERTEX_RX_BUFFER_FULL_ERROR("RcaVertexRxBufferFullError"),
     RCA_NETWORK_THREADPOOL_QUEUE_FULL_ERROR("RcaNetworkThreadpoolQueueFullError"),
     RCA_SCHEDULER_STOPPED_ERROR("RcaSchedulerStoppedError"),
-    READER_THREAD_STOPPED("ReaderThreadStopped"),
-    ERROR_HANDLER_THREAD_STOPPED("ErrorHandlerThreadStopped"),
-    GRPC_SERVER_THREAD_STOPPED("GRPCServerThreadStopped"),
-    WEB_SERVER_THREAD_STOPPED("WebServerThreadStopped"),
-    RCA_CONTROLLER_THREAD_STOPPED("RcaControllerThreadStopped"),
-    RCA_SCHEDULER_THREAD_STOPPED("RcaSchedulerThreadStopped"),
-    JVM_THREAD_ID_NO_LONGER_EXISTS("JVMThreadIdNoLongerExists"),
     OPENSEARCH_REQUEST_INTERCEPTOR_ERROR("OpenSearchRequestInterceptorError"),
-    INVALID_OLD_GEN_SIZE("InvalidOldGenSize"),
     MISCONFIGURED_OLD_GEN_RCA_HEAP_MAX_MISSING("MisconfiguredOldGenRcaHeapMaxMissing"),
     MISCONFIGURED_OLD_GEN_RCA_HEAP_USED_MISSING("MisconfiguredOldGenRcaHeapUsedMissing"),
     MISCONFIGURED_OLD_GEN_RCA_GC_EVENTS_MISSING("MisconfiguredOldGenRcaGcEventsMissing"),
-    TOTAL_MEM_READ_ERROR("TotalMemReadError"),
-    CONFIG_DIR_NOT_FOUND("ConfigDirectoryNotFound"),
-    OTHER("Other");
+    TOTAL_MEM_READ_ERROR("TotalMemReadError");
 
     private final String value;
 

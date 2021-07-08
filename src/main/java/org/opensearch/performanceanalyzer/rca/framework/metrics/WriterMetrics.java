@@ -65,11 +65,8 @@ public enum WriterMetrics implements MeasurementSet {
     COLLECTORS_MUTED("CollectorsMutedCount"),
 
     METRICS_REMOVE_ERROR("MetricsRemoveError"),
-    METRICS_REMOVE_FAILURE("MetricsRemoveFailure"),
     MASTER_METRICS_ERROR("MasterMetricsError"),
     MASTER_NODE_NOT_UP("MasterNodeNotUp"),
-    THREAD_IO_ERROR("ThreadIOError"),
-    SCHEMA_PARSER_ERROR("SchemaParserError"),
     OPENSEARCH_REQUEST_INTERCEPTOR_ERROR("OpenSearchRequestInterceptorError"),
 
     /** Collector specific metrics */
