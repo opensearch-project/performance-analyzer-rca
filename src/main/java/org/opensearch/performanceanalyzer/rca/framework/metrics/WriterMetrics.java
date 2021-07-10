@@ -148,14 +148,7 @@ public enum WriterMetrics implements MeasurementSet {
 
     /** This metric indicates that the writer file creation was skipped. */
     WRITER_FILE_CREATION_SKIPPED(
-            "WriterFileCreationSkipped",
-            "count",
-            Arrays.asList(
-                    Statistics.MAX,
-                    Statistics.MIN,
-                    Statistics.MEAN,
-                    Statistics.COUNT,
-                    Statistics.SUM));
+            "WriterFileCreationSkipped", "count", Arrays.asList(Statistics.COUNT));
 
     /** What we want to appear as the metric name. */
     private String name;
