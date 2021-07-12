@@ -155,7 +155,10 @@ public enum WriterMetrics implements MeasurementSet {
 
     STALE_METRICS("StaleMetrics", "count", Arrays.asList(Statistics.COUNT)),
 
-    METRICS_WRITE_ERROR("MetricsWriteError", "count", Arrays.asList(Statistics.COUNT)),
+    METRICS_WRITE_ERROR(
+            "MetricsWriteError",
+            "namedCount",
+            Collections.singletonList(Statistics.NAMED_COUNTERS)),
 
     METRICS_REMOVE_ERROR("MetricsRemoveError", "count", Arrays.asList(Statistics.COUNT)),
 

@@ -30,6 +30,7 @@ import static java.nio.file.StandardCopyOption.ATOMIC_MOVE;
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 
 import java.io.File;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.Buffer;
@@ -39,6 +40,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
+import java.util.Arrays;
 import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -170,23 +172,27 @@ public class EventLogFileHandler {
         }
     }
 
-    public void deleteFiles(long referenceTime, int purgeInterval) {
+    public void deleteAllFiles() {
+        LOG.debug("Cleaning up any leftover files.");
+        File root = new File(metricsLocation);
+        // Filter out '.tmp' files, we do not want to delete currBucket .tmp files
+        String[] filesToDelete = root.list((dir, name) -> !name.endsWith(TMP_FILE_EXT));
+        deleteFiles(Arrays.asList(filesToDelete));
+    }
+
+    public void deleteFiles(List<String> filesToDelete) {
         LOG.debug("Starting to delete old writer files");
         long startTime = System.currentTimeMillis();
 
-        File root = new File(metricsLocation);
-        String[] children = root.list();
-        if (children == null) {
+        if (filesToDelete == null) {
             return;
         }
         int filesDeletedCount = 0;
-        for (String child : children) {
-            File fileToDelete = new File(root, child);
-            if (fileToDelete.lastModified()
-                    < PerformanceAnalyzerMetrics.getTimeInterval(referenceTime - purgeInterval)) {
-                PerformanceAnalyzerMetrics.removeMetrics(fileToDelete);
-                filesDeletedCount += 1;
-            }
+        File root = new File(metricsLocation);
+        for (String fileToDelete : filesToDelete) {
+            File file = new File(root, fileToDelete);
+            PerformanceAnalyzerMetrics.removeMetrics(file);
+            filesDeletedCount += 1;
         }
         long duration = System.currentTimeMillis() - startTime;
         PerformanceAnalyzerApp.WRITER_METRICS_AGGREGATOR.updateStat(
