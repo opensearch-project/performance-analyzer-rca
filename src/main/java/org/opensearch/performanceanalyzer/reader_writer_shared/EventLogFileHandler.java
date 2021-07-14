@@ -174,8 +174,10 @@ public class EventLogFileHandler {
     public void deleteAllFiles() {
         LOG.debug("Cleaning up any leftover files.");
         File root = new File(metricsLocation);
-        // Filter out '.tmp' files, we do not want to delete currBucket .tmp files
-        String[] filesToDelete = root.list((dir, name) -> !name.endsWith(TMP_FILE_EXT));
+        String[] filesToDelete = root.list();
+        if (filesToDelete == null) {
+            return;
+        }
         deleteFiles(Arrays.asList(filesToDelete));
     }
 
