@@ -155,6 +155,10 @@ public enum WriterMetrics implements MeasurementSet {
 
     STALE_METRICS("StaleMetrics", "count", Arrays.asList(Statistics.COUNT)),
 
+    /** This metric indicates that the writer file creation was skipped. */
+    WRITER_FILE_CREATION_SKIPPED(
+            "WriterFileCreationSkipped", "count", Arrays.asList(Statistics.COUNT)),
+
     METRICS_WRITE_ERROR(
             "MetricsWriteError",
             "namedCount",
