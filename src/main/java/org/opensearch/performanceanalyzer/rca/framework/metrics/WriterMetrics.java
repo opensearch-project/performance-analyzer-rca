@@ -34,6 +34,15 @@ import org.opensearch.performanceanalyzer.rca.stats.eval.Statistics;
 import org.opensearch.performanceanalyzer.rca.stats.measurements.MeasurementSet;
 
 public enum WriterMetrics implements MeasurementSet {
+    /** Measures the time spent in deleting the event log files */
+    EVENT_LOG_FILES_DELETION_TIME(
+            "EventLogFilesDeletionTime",
+            "millis",
+            Arrays.asList(Statistics.MAX, Statistics.MEAN, Statistics.SUM)),
+    /** Measures the count of event log files deleted */
+    EVENT_LOG_FILES_DELETED(
+            "EventLogFilesDeleted", "count", Arrays.asList(Statistics.MAX, Statistics.SUM)),
+
     SHARD_STATE_COLLECTOR_EXECUTION_TIME(
             "ShardStateCollectorExecutionTime",
             "millis",
@@ -149,6 +158,16 @@ public enum WriterMetrics implements MeasurementSet {
     /** This metric indicates that the writer file creation was skipped. */
     WRITER_FILE_CREATION_SKIPPED(
             "WriterFileCreationSkipped", "count", Arrays.asList(Statistics.COUNT));
+
+    METRICS_WRITE_ERROR(
+            "MetricsWriteError",
+            "namedCount",
+            Collections.singletonList(Statistics.NAMED_COUNTERS)),
+
+    METRICS_REMOVE_ERROR("MetricsRemoveError", "count", Arrays.asList(Statistics.COUNT)),
+
+    METRICS_REMOVE_FAILURE("MetricsRemoveFailure", "count", Arrays.asList(Statistics.COUNT)),
+    ;
 
     /** What we want to appear as the metric name. */
     private String name;

@@ -85,7 +85,7 @@ Let's see an example:
  metrics class that you specify, should have a `static final` field called `NAME` (`CPU_Utilization`)
  and that will be used to determine the name of the metric table.
 - _dimensionNames_ : For the dimension names for a metric, please refer to the docs 
-[here](https://docs-beta.opensearch.org/docs/pa/reference/). Each of the dimension
+[here](https://opensearch.org/docs/monitoring-plugins/pa/reference/). Each of the dimension
 will be a column in the rca.sqlite table.
 - _tables_ : This specifies one or more table(s). The table should be a 5 second snapshot
  of the metrics, similar to what exists in metricsdb files. The table is an array type

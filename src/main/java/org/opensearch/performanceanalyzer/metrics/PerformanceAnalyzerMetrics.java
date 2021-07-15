@@ -33,13 +33,13 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
+import java.util.function.Supplier;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.message.ParameterizedMessage;
-import org.apache.logging.log4j.util.Supplier;
-import org.opensearch.performanceanalyzer.collectors.StatExceptionCode;
-import org.opensearch.performanceanalyzer.collectors.StatsCollector;
+import org.opensearch.performanceanalyzer.PerformanceAnalyzerApp;
 import org.opensearch.performanceanalyzer.config.PluginSettings;
+import org.opensearch.performanceanalyzer.rca.framework.metrics.WriterMetrics;
 import org.opensearch.performanceanalyzer.reader_writer_shared.Event;
 
 @SuppressWarnings("checkstyle:constantname")
@@ -139,7 +139,8 @@ public class PerformanceAnalyzerMetrics {
 
     private static void emitMetric(BlockingQueue<Event> q, Event entry) {
         if (!q.offer(entry)) {
-            // TODO: Emit a metric here.
+            PerformanceAnalyzerApp.WRITER_METRICS_AGGREGATOR.updateStat(
+                    WriterMetrics.METRICS_WRITE_ERROR, entry.key, 1);
             LOG.debug("Could not enter metric {}", entry);
         }
     }
@@ -199,7 +200,8 @@ public class PerformanceAnalyzerMetrics {
                 LOG.debug("Purge Could not delete file {}", keyPathFile);
             }
         } catch (Exception ex) {
-            StatsCollector.instance().logException(StatExceptionCode.METRICS_REMOVE_ERROR);
+            PerformanceAnalyzerApp.WRITER_METRICS_AGGREGATOR.updateStat(
+                    WriterMetrics.METRICS_REMOVE_ERROR, "", 1);
             LOG.debug(
                     (Supplier<?>)
                             () ->
@@ -207,7 +209,7 @@ public class PerformanceAnalyzerMetrics {
                                             "Error in deleting file: {} for keyPath:{} with ExceptionCode: {}",
                                             ex.toString(),
                                             keyPathFile.getAbsolutePath(),
-                                            StatExceptionCode.METRICS_REMOVE_ERROR.toString()),
+                                            WriterMetrics.METRICS_REMOVE_ERROR.toString()),
                     ex);
         }
     }

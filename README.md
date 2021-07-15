@@ -1,10 +1,26 @@
 [![Java CI](https://github.com/opensearch-project/performance-analyzer-rca/workflows/Java%20CI/badge.svg)](https://github.com/opensearch-project/performance-analyzer-rca/actions?query=workflow%3A%22Java+CI%22)
-[![codecov](https://codecov.io/gh/opensearch-project/performance-analyzer-rca/branch/master/graph/badge.svg)](https://codecov.io/gh/opensearch-project/performance-analyzer-rca)
-[![Documentation](https://img.shields.io/badge/api-reference-blue.svg)](https://docs-beta.opensearch.org/docs/pa/reference/)
+[![codecov](https://codecov.io/gh/opensearch-project/performance-analyzer-rca/branch/main/graph/badge.svg)](https://codecov.io/gh/opensearch-project/performance-analyzer-rca)
+[![Documentation](https://img.shields.io/badge/api-reference-blue.svg)](https://opensearch.org/docs/monitoring-plugins/pa/reference/)
 [![Chat](https://img.shields.io/badge/chat-on%20forums-blue)](https://discuss.opendistrocommunity.dev/c/performance-analyzer/)
 ![PRs welcome!](https://img.shields.io/badge/PRs-welcome!-success)
 
-## Performance Analyzer RCA
+<img src="https://opensearch.org/assets/brand/SVG/Logo/opensearch_logo_default.svg" height="64px"/>
+
+<!-- TOC -->
+
+- [OpenSearch Performance Analyzer RCA](#opensearch-performace-analyzer-rca)
+- [RCA Overview](#rca-overview)
+- [Design RFC](#design-rfc)
+- [Documentation](#documentation)
+- [Contributing](#contributing)
+- [Code of Conduct](#code-of-conduct)
+- [Security](#security)
+- [License](#license)
+- [Copyright](#copyright)
+
+<!-- /TOC -->
+
+## OpenSearch Performance Analyzer RCA
 
 The Performance Analyzer RCA is a framework that builds on the Performance Analyzer engine to
 support Root Cause Analysis (RCA) of performance and reliability problems in OpenSearch
@@ -166,23 +182,26 @@ Please refer to the [Install Guide](./INSTALL.md) for detailed information on bu
 * We don't have 100% unit test coverage yet and will continue to add new unit tests. 
 * We have tested and verified RCA artifacts only for Docker images. Other distributions are yet to be built and tested and will be available as a part of the final release.
 
-## Contribute
-We invite developers from the larger Open Distro community to contribute and help improve test coverage and give us feedback on where improvements can be made in design, code and documentation. You can look at [Contributing.md](./CONTRIBUTING.md) for more information on how to contribute. 
+## Documentation
+
+Please refer to the [technical documentation](https://opensearch.org/docs/monitoring-plugins/pa/index/) detailed information on installing and configuring Performance Analyzer.
+
+## Contributing
+
+See [developer guide](DEVELOPER_GUIDE.md) and [how to contribute to this project](CONTRIBUTING.md).
 
 ## Code of Conduct
 
-This project has adopted an [Open Source Code of Conduct](https://opensearch.org/codeofconduct.html).
+This project has adopted the [Amazon Open Source Code of Conduct](CODE_OF_CONDUCT.md). For more information see the [Code of Conduct FAQ](https://aws.github.io/code-of-conduct-faq), or contact [opensource-codeofconduct@amazon.com](mailto:opensource-codeofconduct@amazon.com) with any additional questions or comments.
 
-
-## Security Issue Notifications
+## Security
 
 If you discover a potential security issue in this project we ask that you notify AWS/Amazon Security via our [vulnerability reporting page](http://aws.amazon.com/security/vulnerability-reporting/). Please do **not** create a public GitHub issue.
 
-
 ## License
 
-This library is licensed under the Apache 2.0 License.
+This project is licensed under the [Apache v2.0 License](LICENSE.txt).
 
 ## Copyright
 
-Copyright 2021 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+Copyright 2020-2021 Amazon.com, Inc. or its affiliates. All Rights Reserved.

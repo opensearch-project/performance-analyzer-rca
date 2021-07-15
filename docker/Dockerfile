@@ -49,7 +49,7 @@ WORKDIR /usr/share/opensearch
 ENV BUST_CACHE 1576286189
 
 # Download and extract defined OpenSearch version.
-RUN curl -fsSL https://artifacts.opensearch.org/releases/core/opensearch/1.0.0-rc1/opensearch-1.0.0-rc1-linux-x64.tar.gz | \
+RUN curl -fsSL https://artifacts.opensearch.org/snapshots/core/opensearch/1.0.0-SNAPSHOT/opensearch-min-1.0.0-SNAPSHOT-linux-arm64-latest.tar.gz | \
     tar zx --strip-components=1
 
 RUN set -ex && for opensearchdirs in config data logs; do \
@@ -60,10 +60,10 @@ COPY --chown=1000:0 opensearch.yml log4j2.properties config/
 
 COPY --chown=1000:0 performance-analyzer-rca.zip config/
 
-COPY --chown=1000:0 opensearch-performance-analyzer-1.0.0.0-rc1-SNAPSHOT.zip /tmp/
+COPY --chown=1000:0 opensearch-performance-analyzer-1.0.0.0-SNAPSHOT.zip /tmp/
 
-RUN opensearch-plugin install --batch file:///tmp/opensearch-performance-analyzer-1.0.0.0-rc1-SNAPSHOT.zip; \
-        rm /tmp/opensearch-performance-analyzer-1.0.0.0-rc1-SNAPSHOT.zip
+RUN opensearch-plugin install --batch file:///tmp/opensearch-performance-analyzer-1.0.0.0-SNAPSHOT.zip; \
+        rm /tmp/opensearch-performance-analyzer-1.0.0.0-SNAPSHOT.zip
 
 USER 0
 
