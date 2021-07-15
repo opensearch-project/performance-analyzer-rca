@@ -82,8 +82,11 @@ public class EventLogFileHandler {
      * data.
      *
      * <p>If any of the above steps fail, then the tmp file is not deleted from the filesystem. This
-     * is fine as the {@link org.opensearch.performanceanalyzer.reader_writer_shared.EventLogFileHandler#deleteFiles},
-     * will eventually clean it. The copies are atomic and therefore the reader never reads incompletely written file.
+     * is fine as the {@link
+     * org.opensearch.performanceanalyzer.reader_writer_shared.EventLogFileHandler#deleteFiles},
+     * will eventually clean it. The copies are atomic and therefore the reader never reads
+     * incompletely written file.
+     *
      * @param dataEntries The metrics to be written to file.
      * @param epoch The epoch all the metrics belong to.
      */
