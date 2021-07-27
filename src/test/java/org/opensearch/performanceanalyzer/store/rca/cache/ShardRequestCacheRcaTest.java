@@ -123,6 +123,15 @@ public class ShardRequestCacheRcaTest {
                         "index_1", "0", String.valueOf(cacheSize), String.valueOf(cacheSize)));
     }
 
+    private void mockEmptyFlowUnits(double cacheSize) {
+        shardRequestCacheEvictions.createEmptyTestFlowUnits();
+        shardRequestCacheHits.createEmptyTestFlowUnits();
+        shardRequestCacheSize.createTestFlowUnits(
+                columnName,
+                Arrays.asList(
+                        "index_1", "0", String.valueOf(cacheSize), String.valueOf(cacheSize)));
+    }
+
     @Test
     public void testShardRequestCache() {
         ResourceFlowUnit<HotNodeSummary> flowUnit;
@@ -255,6 +264,65 @@ public class ShardRequestCacheRcaTest {
 
         mockFlowUnits(0, 0, 2.0);
         shardRequestCacheRca.setClock(Clock.offset(constantClock, Duration.ofMinutes(27)));
+        flowUnit = shardRequestCacheRca.operate();
+        Assert.assertFalse(flowUnit.getResourceContext().isUnhealthy());
+    }
+
+    @Test
+    public void testShardRequestCacheEmptyFU() {
+        ResourceFlowUnit<HotNodeSummary> flowUnit;
+        Clock constantClock = Clock.fixed(ofEpochMilli(0), ZoneId.systemDefault());
+        appContext
+                .getNodeConfigCache()
+                .put(
+                        new NodeKey(
+                                new InstanceDetails.Id("node1"),
+                                new InstanceDetails.Ip("127.0.0.1")),
+                        ResourceUtil.SHARD_REQUEST_CACHE_MAX_SIZE,
+                        3.0);
+
+        mockFlowUnits(0, 0, 0.0);
+        shardRequestCacheRca.setClock(constantClock);
+        Assert.assertFalse(shardRequestCacheRca.operate().getResourceContext().isUnhealthy());
+
+        mockFlowUnits(1, 0, 4.0);
+        shardRequestCacheRca.setClock(Clock.offset(constantClock, Duration.ofMinutes(3)));
+        Assert.assertFalse(shardRequestCacheRca.operate().getResourceContext().isUnhealthy());
+
+        mockFlowUnits(1, 0, 4.0);
+        shardRequestCacheRca.setClock(Clock.offset(constantClock, Duration.ofMinutes(4)));
+        Assert.assertFalse(shardRequestCacheRca.operate().getResourceContext().isUnhealthy());
+
+        mockFlowUnits(1, 1, 4.0);
+        shardRequestCacheRca.setClock(Clock.offset(constantClock, Duration.ofMinutes(7)));
+        Assert.assertFalse(shardRequestCacheRca.operate().getResourceContext().isUnhealthy());
+
+        mockFlowUnits(1, 1, 4.0);
+        shardRequestCacheRca.setClock(Clock.offset(constantClock, Duration.ofMinutes(10)));
+        Assert.assertFalse(shardRequestCacheRca.operate().getResourceContext().isUnhealthy());
+
+        mockFlowUnits(1, 1, 4.0);
+        shardRequestCacheRca.setClock(Clock.offset(constantClock, Duration.ofMinutes(12)));
+        Assert.assertTrue(shardRequestCacheRca.operate().getResourceContext().isUnhealthy());
+
+        // Put empty flow unit for Eviction metrics
+        mockEmptyFlowUnits(7.0);
+        shardRequestCacheRca.setClock(Clock.offset(constantClock, Duration.ofMinutes(14)));
+        Assert.assertTrue(shardRequestCacheRca.operate().getResourceContext().isUnhealthy());
+
+        mockEmptyFlowUnits(7.0);
+        shardRequestCacheRca.setClock(Clock.offset(constantClock, Duration.ofMinutes(17)));
+        flowUnit = shardRequestCacheRca.operate();
+        Assert.assertTrue(flowUnit.getResourceContext().isUnhealthy());
+
+        mockEmptyFlowUnits(7.0);
+        shardRequestCacheRca.setClock(Clock.offset(constantClock, Duration.ofMinutes(20)));
+        Assert.assertTrue(shardRequestCacheRca.operate().getResourceContext().isUnhealthy());
+
+        // After empty flow unit in 3rd execution cycle, RCA will mark the hasEviction as false
+        // and result in Healthy context
+        mockEmptyFlowUnits(7.0);
+        shardRequestCacheRca.setClock(Clock.offset(constantClock, Duration.ofMinutes(25)));
         flowUnit = shardRequestCacheRca.operate();
         Assert.assertFalse(flowUnit.getResourceContext().isUnhealthy());
     }
