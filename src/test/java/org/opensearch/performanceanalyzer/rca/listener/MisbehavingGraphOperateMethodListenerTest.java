@@ -36,7 +36,6 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Test;
 import org.opensearch.performanceanalyzer.AppContext;
-import org.opensearch.performanceanalyzer.PerformanceAnalyzerApp;
 import org.opensearch.performanceanalyzer.collectors.StatsCollector;
 import org.opensearch.performanceanalyzer.rca.RcaTestHelper;
 import org.opensearch.performanceanalyzer.rca.framework.api.AnalysisGraph;
@@ -55,7 +54,6 @@ import org.opensearch.performanceanalyzer.rca.framework.util.RcaConsts;
 import org.opensearch.performanceanalyzer.rca.framework.util.RcaUtil;
 import org.opensearch.performanceanalyzer.rca.scheduler.RCASchedulerTask;
 import org.opensearch.performanceanalyzer.rca.spec.MetricsDBProviderTestHelper;
-import org.opensearch.performanceanalyzer.rca.stats.measurements.MeasurementSet;
 
 public class MisbehavingGraphOperateMethodListenerTest {
     class FaultyAnalysisGraph extends AnalysisGraph {
@@ -121,25 +119,13 @@ public class MisbehavingGraphOperateMethodListenerTest {
 
         for (int i = 0; i <= MisbehavingGraphOperateMethodListener.TOLERANCE_LIMIT; i++) {
             rcaSchedulerTask.run();
-            Assert.assertTrue(verify(ExceptionsAndErrors.EXCEPTION_IN_OPERATE));
+            Assert.assertTrue(RcaTestHelper.verify(ExceptionsAndErrors.EXCEPTION_IN_OPERATE));
         }
 
         Assert.assertEquals(1, Stats.getInstance().getMutedGraphNodesCount());
         Assert.assertTrue(
                 Stats.getInstance()
                         .isNodeMuted(FaultyAnalysisGraph.HighCpuSymptom.class.getSimpleName()));
-    }
-
-    private boolean verify(MeasurementSet measurementSet) throws InterruptedException {
-        final int MAX_TIME_TO_WAIT_MILLIS = 10_000;
-        int waited_for_millis = 0;
-        while (waited_for_millis++ < MAX_TIME_TO_WAIT_MILLIS) {
-            if (PerformanceAnalyzerApp.RCA_STATS_REPORTER.isMeasurementCollected(measurementSet)) {
-                return true;
-            }
-            Thread.sleep(1);
-        }
-        return false;
     }
 
     @After
