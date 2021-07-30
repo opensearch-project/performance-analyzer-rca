@@ -63,6 +63,7 @@ import org.opensearch.performanceanalyzer.net.GRPCConnectionManager;
 import org.opensearch.performanceanalyzer.rca.framework.core.ConnectedComponent;
 import org.opensearch.performanceanalyzer.rca.framework.core.RcaConf;
 import org.opensearch.performanceanalyzer.rca.framework.core.Stats;
+import org.opensearch.performanceanalyzer.rca.framework.metrics.ExceptionsAndErrors;
 import org.opensearch.performanceanalyzer.rca.framework.util.RcaConsts;
 import org.opensearch.performanceanalyzer.rca.scheduler.RCAScheduler;
 import org.opensearch.performanceanalyzer.rca.scheduler.RcaSchedulerState;
@@ -201,6 +202,12 @@ public class RcaControllerTest {
         } catch (InterruptedException ie) {
             ie.printStackTrace();
         }
+    }
+
+    @Test
+    public void rcaFrameworkCrash() throws InterruptedException {
+        controllerThread.interrupt();
+        Assert.assertTrue(RcaTestHelper.verify(ExceptionsAndErrors.RCA_FRAMEWORK_CRASH));
     }
 
     @Test

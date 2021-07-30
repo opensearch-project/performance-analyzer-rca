@@ -63,6 +63,7 @@ import org.opensearch.performanceanalyzer.rca.framework.core.Queryable;
 import org.opensearch.performanceanalyzer.rca.framework.core.RcaConf;
 import org.opensearch.performanceanalyzer.rca.framework.core.Stats;
 import org.opensearch.performanceanalyzer.rca.framework.core.ThresholdMain;
+import org.opensearch.performanceanalyzer.rca.framework.metrics.ExceptionsAndErrors;
 import org.opensearch.performanceanalyzer.rca.framework.metrics.RcaRuntimeMetrics;
 import org.opensearch.performanceanalyzer.rca.framework.util.InstanceDetails;
 import org.opensearch.performanceanalyzer.rca.framework.util.RcaConsts;
@@ -338,6 +339,8 @@ public class RcaController {
                     Thread.sleep(rcaStateCheckIntervalMillis - duration);
                 }
             } catch (InterruptedException ie) {
+                PerformanceAnalyzerApp.ERRORS_AND_EXCEPTIONS_AGGREGATOR.updateStat(
+                        ExceptionsAndErrors.RCA_FRAMEWORK_CRASH, "", 1);
                 if (deliberateInterrupt) {
                     // This should only happen in case of tests. So, its okay for this log level to
                     // be info.
