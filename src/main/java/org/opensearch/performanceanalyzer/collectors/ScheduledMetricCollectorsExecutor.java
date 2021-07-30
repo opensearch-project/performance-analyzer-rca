@@ -123,7 +123,9 @@ public class ScheduledMetricCollectorsExecutor extends Thread {
                         if (collector.getState()
                                 == PerformanceAnalyzerMetricsCollector.State.MUTED) {
                             PerformanceAnalyzerApp.WRITER_METRICS_AGGREGATOR.updateStat(
-                                    WriterMetrics.COLLECTORS_MUTED, "", 1);
+                                    WriterMetrics.COLLECTORS_MUTED,
+                                    collector.getCollectorName(),
+                                    1);
                             continue;
                         }
                         metricsCollectors.put(

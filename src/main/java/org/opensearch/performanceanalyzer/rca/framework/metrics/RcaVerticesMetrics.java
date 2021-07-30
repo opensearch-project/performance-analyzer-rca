@@ -37,9 +37,12 @@ import org.opensearch.performanceanalyzer.rca.stats.measurements.MeasurementSet;
  */
 public enum RcaVerticesMetrics implements MeasurementSet {
     INVALID_OLD_GEN_SIZE("InvalidOldGenSize", "count", Collections.singletonList(Statistics.COUNT)),
+
     OLD_GEN_RECLAMATION_INEFFECTIVE(
             "OldGenReclamationIneffective", "count", Collections.singletonList(Statistics.COUNT)),
+
     OLD_GEN_CONTENDED("OldGenContended", "count", Collections.singletonList(Statistics.COUNT)),
+
     OLD_GEN_OVER_OCCUPIED(
             "OldGenOverOccupied", "count", Collections.singletonList(Statistics.COUNT)),
 

@@ -196,7 +196,8 @@ public class PerformanceAnalyzerMetrics {
         }
         try {
             if (!keyPathFile.delete()) {
-                // TODO: Add a metric so that we can alarm on file deletion failures.
+                PerformanceAnalyzerApp.WRITER_METRICS_AGGREGATOR.updateStat(
+                        WriterMetrics.METRICS_REMOVE_ERROR, "", 1);
                 LOG.debug("Purge Could not delete file {}", keyPathFile);
             }
         } catch (Exception ex) {

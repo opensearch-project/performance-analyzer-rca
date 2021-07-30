@@ -70,10 +70,15 @@ public enum WriterMetrics implements MeasurementSet {
     JVM_THREAD_ID_NO_LONGER_EXISTS("JVMThreadIdNoLongerExists"),
 
     /** Tracks the number of muted collectors */
-    COLLECTORS_MUTED("CollectorsMutedCount"),
+    COLLECTORS_MUTED(
+            "CollectorsMutedCount",
+            "namedCount",
+            Collections.singletonList(Statistics.NAMED_COUNTERS)),
 
+    /** This metric indicates faiure in collecting MasterServiceEventMetrics */
     MASTER_METRICS_ERROR("MasterMetricsError"),
-    MASTER_NODE_NOT_UP("MasterNodeNotUp"),
+
+    /** This metric indicates faiure in intercepting opensearch requests at transport channel */
     OPENSEARCH_REQUEST_INTERCEPTOR_ERROR("OpenSearchRequestInterceptorError"),
 
     /** Collector specific metrics */
@@ -191,13 +196,16 @@ public enum WriterMetrics implements MeasurementSet {
     WRITER_FILE_CREATION_SKIPPED(
             "WriterFileCreationSkipped", "count", Arrays.asList(Statistics.COUNT)),
 
+    /** This metric indicates metric entry insertion to event log queue failed */
     METRICS_WRITE_ERROR(
             "MetricsWriteError",
             "namedCount",
             Collections.singletonList(Statistics.NAMED_COUNTERS)),
 
+    /** This metric indicates faiure in cleaning up the event log files */
     METRICS_REMOVE_ERROR("MetricsRemoveError", "count", Arrays.asList(Statistics.COUNT)),
 
+    /** This metric indicates faiure in cleaning up the event log files */
     METRICS_REMOVE_FAILURE("MetricsRemoveFailure", "count", Arrays.asList(Statistics.COUNT)),
     ;
 
