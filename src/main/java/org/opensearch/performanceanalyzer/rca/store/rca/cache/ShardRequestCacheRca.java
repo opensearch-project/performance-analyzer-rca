@@ -247,7 +247,7 @@ public class ShardRequestCacheRca extends Rca<ResourceFlowUnit<HotNodeSummary>> 
                         // If the RCA receives 3 empty flow units, re-set the 'hasCacheMetric' value
                         hasCacheMetric = false;
                         clearCounter = 0;
-                        LOG.error(
+                        LOG.debug(
                                 "{} encountered {} empty flow units, re-setting the hasCacheMetric value.",
                                 this.getClass().getSimpleName(),
                                 consecutivePeriodsToClear);
