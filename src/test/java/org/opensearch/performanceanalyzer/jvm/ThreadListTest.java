@@ -28,14 +28,12 @@ package org.opensearch.performanceanalyzer.jvm;
 
 
 import java.lang.management.ThreadInfo;
-import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.opensearch.performanceanalyzer.OSMetricsGeneratorFactory;
-import org.opensearch.performanceanalyzer.collectors.StatExceptionCode;
-import org.opensearch.performanceanalyzer.collectors.StatsCollector;
+import org.opensearch.performanceanalyzer.rca.RcaTestHelper;
+import org.opensearch.performanceanalyzer.rca.framework.metrics.WriterMetrics;
 
 // This test only runs in linux systems as the some of the static members of the ThreadList
 // class are specific to Linux.
@@ -46,7 +44,7 @@ public class ThreadListTest {
     }
 
     @Test
-    public void testNullThreadInfo() {
+    public void testNullThreadInfo() throws InterruptedException {
         String propertyName = "clk.tck";
         String old_clk_tck = System.getProperty(propertyName);
         System.setProperty(propertyName, "100");
@@ -56,12 +54,7 @@ public class ThreadListTest {
         infos[0] = null;
 
         ThreadList.parseAllThreadInfos(infos);
-
-        Map<String, AtomicInteger> counters = StatsCollector.instance().getCounters();
-
-        Assert.assertEquals(
-                counters.get(StatExceptionCode.JVM_THREAD_ID_NO_LONGER_EXISTS.toString()).get(), 1);
-
+        Assert.assertTrue(RcaTestHelper.verify(WriterMetrics.JVM_THREAD_ID_NO_LONGER_EXISTS));
         if (old_clk_tck != null) {
             System.setProperty(propertyName, old_clk_tck);
         }

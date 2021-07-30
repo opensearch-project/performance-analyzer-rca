@@ -32,7 +32,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.opensearch.performanceanalyzer.collectors.StatsCollector;
+import org.opensearch.performanceanalyzer.PerformanceAnalyzerApp;
 import org.opensearch.performanceanalyzer.grpc.FlowUnitMessage;
 import org.opensearch.performanceanalyzer.rca.configs.OldGenContendedRcaConfig;
 import org.opensearch.performanceanalyzer.rca.framework.api.Rca;
@@ -42,6 +42,7 @@ import org.opensearch.performanceanalyzer.rca.framework.api.flow_units.ResourceF
 import org.opensearch.performanceanalyzer.rca.framework.api.summaries.HotNodeSummary;
 import org.opensearch.performanceanalyzer.rca.framework.api.summaries.HotResourceSummary;
 import org.opensearch.performanceanalyzer.rca.framework.core.RcaConf;
+import org.opensearch.performanceanalyzer.rca.framework.metrics.RcaVerticesMetrics;
 import org.opensearch.performanceanalyzer.rca.framework.util.InstanceDetails;
 import org.opensearch.performanceanalyzer.rca.scheduler.FlowUnitOperationArgWrapper;
 import org.opensearch.performanceanalyzer.rca.util.MemInfoParser;
@@ -49,7 +50,6 @@ import org.opensearch.performanceanalyzer.rca.util.MemInfoParser;
 public class OldGenContendedRca extends Rca<ResourceFlowUnit<HotNodeSummary>> {
 
     private static final Logger LOG = LogManager.getLogger(OldGenContendedRca.class);
-    private static final String OLD_GEN_CONTENDED_METRIC = "OldGenContended";
     private static final long GB_TO_B = 1024 * 1024 * 1024;
     private static final long EVAL_INTERVAL_IN_S = 5;
     private Rca<ResourceFlowUnit<HotResourceSummary>> highOldGenOccupancyRca;
@@ -124,7 +124,8 @@ public class OldGenContendedRca extends Rca<ResourceFlowUnit<HotNodeSummary>> {
                 summary.appendNestedSummary(oldGenReclamationFlowUnit.getSummary());
 
                 ResourceContext context = new ResourceContext(Resources.State.CONTENDED);
-                StatsCollector.instance().logMetric(OLD_GEN_CONTENDED_METRIC);
+                PerformanceAnalyzerApp.RCA_VERTICES_METRICS_AGGREGATOR.updateStat(
+                        RcaVerticesMetrics.OLD_GEN_CONTENDED, "", 1);
                 return new ResourceFlowUnit<>(currTime, context, summary);
             }
         }

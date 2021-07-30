@@ -37,7 +37,7 @@ import java.util.concurrent.TimeUnit;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jooq.Record;
-import org.opensearch.performanceanalyzer.collectors.StatsCollector;
+import org.opensearch.performanceanalyzer.PerformanceAnalyzerApp;
 import org.opensearch.performanceanalyzer.grpc.FlowUnitMessage;
 import org.opensearch.performanceanalyzer.metrics.AllMetrics;
 import org.opensearch.performanceanalyzer.metricsdb.MetricsDB;
@@ -53,8 +53,8 @@ import org.opensearch.performanceanalyzer.rca.framework.api.flow_units.ResourceF
 import org.opensearch.performanceanalyzer.rca.framework.api.summaries.HotNodeSummary;
 import org.opensearch.performanceanalyzer.rca.framework.api.summaries.HotShardSummary;
 import org.opensearch.performanceanalyzer.rca.framework.core.RcaConf;
+import org.opensearch.performanceanalyzer.rca.framework.metrics.RcaVerticesMetrics;
 import org.opensearch.performanceanalyzer.rca.framework.util.InstanceDetails;
-import org.opensearch.performanceanalyzer.rca.framework.util.RcaConsts;
 import org.opensearch.performanceanalyzer.rca.scheduler.FlowUnitOperationArgWrapper;
 
 /**
@@ -136,8 +136,9 @@ public class HotShardRca extends Rca<ResourceFlowUnit<HotNodeSummary>> {
                     usageDeque.next(new SlidingWindowData(this.clock.millis(), usage));
                 }
             } catch (Exception e) {
-                StatsCollector.instance().logMetric(RcaConsts.HOT_SHARD_RCA_ERROR_METRIC);
-                LOG.error("Failed to parse metric in FlowUnit: {} from {}", record, metricType);
+                PerformanceAnalyzerApp.RCA_VERTICES_METRICS_AGGREGATOR.updateStat(
+                        RcaVerticesMetrics.HOT_SHARD_RCA_ERROR, "", 1);
+                LOG.error("Failed to parse metric in FlowUnit: {} from {}", record, metricType, e);
             }
         }
     }

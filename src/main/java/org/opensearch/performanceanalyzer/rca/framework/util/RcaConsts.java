@@ -34,11 +34,9 @@ import org.opensearch.performanceanalyzer.core.Util;
 public class RcaConsts {
 
     public static final String RCA_CONF_MASTER_FILENAME = "rca_master.conf";
-    public static final String VERTEX_BUFFER_FULL_METRIC = "RcaVertexBufferFull";
     public static final String RCA_NETWORK_THREAD_NAME_FORMAT = "rca-net-%d";
     public static final int NETWORK_CORE_THREAD_COUNT = 1;
     public static final int NETWORK_MAX_THREAD_COUNT = 1;
-    public static final String RCA_SCHEDULER_RESTART_METRIC = "RcaSchedulerRestart";
     public static final int DEFAULT_PER_NODE_FLOWUNIT_Q_SIZE = 200;
     public static final long RCA_STATE_CHECK_INTERVAL_IN_MS = 5000;
     private static final String RCA_CONF_FILENAME = "rca.conf";
@@ -54,9 +52,6 @@ public class RcaConsts {
             Paths.get(CONFIG_DIR_PATH, RCA_CONF_IDLE_MASTER_FILENAME).toString();
     public static final String THRESHOLDS_PATH =
             Paths.get(CONFIG_DIR_PATH, THRESHOLDS_DIR_NAME).toString();
-    public static final String MUTE_ERROR_METRIC = "MuteError";
-    public static final String HOT_SHARD_RCA_ERROR_METRIC = "HotShardError";
-    public static final String WRITE_UPDATED_RCA_CONF_ERROR = "WriteUpdatedRcaConfError";
 
     static final String dir = System.getProperty("user.dir");
     public static final String TEST_CONFIG_PATH =

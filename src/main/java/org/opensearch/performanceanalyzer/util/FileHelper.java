@@ -32,9 +32,9 @@ import java.io.File;
 import java.io.FileReader;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.opensearch.performanceanalyzer.collectors.StatExceptionCode;
-import org.opensearch.performanceanalyzer.collectors.StatsCollector;
+import org.opensearch.performanceanalyzer.PerformanceAnalyzerApp;
 import org.opensearch.performanceanalyzer.metrics.PerformanceAnalyzerMetrics;
+import org.opensearch.performanceanalyzer.rca.framework.metrics.ReaderMetrics;
 
 public class FileHelper {
     private static final Logger log = LogManager.getLogger(FileHelper.class);
@@ -78,11 +78,11 @@ public class FileHelper {
                 }
             }
         } catch (Exception ex) {
-            StatsCollector.instance().logException();
+            PerformanceAnalyzerApp.READER_METRICS_AGGREGATOR.updateStat(ReaderMetrics.OTHER, "", 1);
             log.debug(
-                    "Having issue to read current time from the content of file. Using file metadata; excpetion: {} ExceptionCode: {}",
+                    "Having issue to read current time from the content of file. Using file metadata; exception: {} ExceptionCode: {}",
                     () -> ex,
-                    () -> StatExceptionCode.OTHER.toString());
+                    () -> ReaderMetrics.OTHER.toString());
         }
         return file.lastModified();
     }

@@ -35,6 +35,54 @@ import org.opensearch.performanceanalyzer.rca.stats.measurements.MeasurementSet;
 
 public enum ReaderMetrics implements MeasurementSet {
 
+    /**
+     * We start 6 threads within RCA Agent, details at {@link
+     * org.opensearch.performanceanalyzer.PerformanceAnalyzerThreads}. Below metrics track count of
+     * thread started and ended.
+     */
+    NUM_PA_THREADS_STARTED(
+            "NumberOfPAThreadsStarted", "namedCount", Collections.singletonList(Statistics.COUNT)),
+
+    NUM_PA_THREADS_ENDED(
+            "NumberOfPAThreadsEnded", "namedCount", Collections.singletonList(Statistics.COUNT)),
+
+    /**
+     * For each thread defined in {@link
+     * org.opensearch.performanceanalyzer.PerformanceAnalyzerThreads}, we add a respective
+     * 'threadExceptionCode' metric. These metrics are emitted in catch block of {@link
+     * org.opensearch.performanceanalyzer.threads.ThreadProvider#createThreadForRunnable}
+     */
+    READER_THREAD_STOPPED(
+            "ReaderThreadStopped", "count", Collections.singletonList(Statistics.COUNT)),
+
+    ERROR_HANDLER_THREAD_STOPPED(
+            "ErrorHandlerThreadStopped", "count", Collections.singletonList(Statistics.COUNT)),
+
+    GRPC_SERVER_THREAD_STOPPED(
+            "GRPCServerThreadStopped", "count", Collections.singletonList(Statistics.COUNT)),
+
+    WEB_SERVER_THREAD_STOPPED(
+            "WebServerThreadStopped", "count", Collections.singletonList(Statistics.COUNT)),
+
+    RCA_CONTROLLER_THREAD_STOPPED(
+            "RcaControllerThreadStopped", "count", Collections.singletonList(Statistics.COUNT)),
+
+    RCA_SCHEDULER_THREAD_STOPPED(
+            "RcaSchedulerThreadStopped", "count", Collections.singletonList(Statistics.COUNT)),
+
+    /** Tracks time taken by Reader thread to emit event metrics . */
+    READER_METRICS_EMIT_TIME(
+            "ReaderMetricsEmitTime",
+            "millis",
+            Arrays.asList(Statistics.MAX, Statistics.MEAN, Statistics.SUM)),
+
+    /**
+     * Tracks scheduler restart issued at {@link
+     * org.opensearch.performanceanalyzer.rca.RcaController#restart}
+     */
+    RCA_SCHEDULER_RESTART(
+            "RcaSchedulerRestart", "count", Collections.singletonList(Statistics.COUNT)),
+
     /** Size of generated metricsdb files. */
     METRICSDB_FILE_SIZE(
             "MetricsdbFileSize", "bytes", Arrays.asList(Statistics.MAX, Statistics.MEAN)),
@@ -106,7 +154,14 @@ public enum ReaderMetrics implements MeasurementSet {
                     Statistics.MIN,
                     Statistics.MEAN,
                     Statistics.COUNT,
-                    Statistics.SUM));
+                    Statistics.SUM)),
+
+    /**
+     * A blanket exception code for {@link
+     * org.opensearch.performanceanalyzer.reader.ReaderMetricsProcessor} failures.
+     */
+    OTHER("Other", "count", Collections.singletonList(Statistics.COUNT));
+
     /** What we want to appear as the metric name. */
     private String name;
 

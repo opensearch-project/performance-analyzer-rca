@@ -55,8 +55,6 @@ import org.jooq.SQLDialect;
 import org.jooq.impl.DSL;
 import org.opensearch.performanceanalyzer.AppContext;
 import org.opensearch.performanceanalyzer.PerformanceAnalyzerApp;
-import org.opensearch.performanceanalyzer.collectors.StatExceptionCode;
-import org.opensearch.performanceanalyzer.collectors.StatsCollector;
 import org.opensearch.performanceanalyzer.config.PluginSettings;
 import org.opensearch.performanceanalyzer.config.overrides.ConfigOverridesApplier;
 import org.opensearch.performanceanalyzer.core.Util;
@@ -100,8 +98,6 @@ public class ReaderMetricsProcessor implements Runnable {
     private static final int MASTER_THROTTLING_SNAPSHOTS = 2;
     private static final int AC_SNAPSHOTS = 2;
     private final String rootLocation;
-    private static final Map<String, Double> TIMING_STATS = new HashMap<>();
-    private static final Map<String, String> STATS_DATA = new HashMap<>();
 
     private final AppContext appContext;
     private final ConfigOverridesApplier configOverridesApplier;
@@ -112,10 +108,6 @@ public class ReaderMetricsProcessor implements Runnable {
     // This needs to be concurrent since it may be concurrently accessed by the metrics processor
     // thread and the query handler thread.
     private ConcurrentSkipListSet<Long> batchMetricsDBSet;
-
-    static {
-        STATS_DATA.put("MethodName", "ProcessMetrics");
-    }
 
     private final boolean processNewFormat;
     private final EventLogFileHandler eventLogFileHandler;
@@ -206,16 +198,15 @@ public class ReaderMetricsProcessor implements Runnable {
                 }
             }
         } catch (Throwable e) {
+            PerformanceAnalyzerApp.READER_METRICS_AGGREGATOR.updateStat(ReaderMetrics.OTHER, "", 1);
             LOG.error(
                     (Supplier<?>)
                             () ->
                                     new ParameterizedMessage(
                                             "READER PROCESSOR ERROR. NEEDS DEBUGGING {} ExceptionCode: {}.",
-                                            StatExceptionCode.OTHER.toString(),
+                                            ReaderMetrics.OTHER.toString(),
                                             e.toString()),
                     e);
-            StatsCollector.instance().logException();
-
             try {
                 long duration = System.currentTimeMillis() - startTime;
                 if (duration < MetricsConfiguration.SAMPLING_INTERVAL) {
@@ -425,8 +416,9 @@ public class ReaderMetricsProcessor implements Runnable {
             batchMetricsDBSet.add(prevWindowStartTime);
         }
         mFinalT = System.currentTimeMillis();
+        PerformanceAnalyzerApp.READER_METRICS_AGGREGATOR.updateStat(
+                ReaderMetrics.READER_METRICS_EMIT_TIME, "", (double) (mFinalT - mCurrT));
         LOG.debug("Total time taken for emitting Metrics: {}", mFinalT - mCurrT);
-        TIMING_STATS.put("emitMetrics", (double) (mFinalT - mCurrT));
     }
 
     private void emitFaultDetectionMetrics(long prevWindowStartTime, MetricsDB metricsDB) {
@@ -575,8 +567,6 @@ public class ReaderMetricsProcessor implements Runnable {
      * @throws Exception It can throw exception
      */
     public void processMetrics(String rootLocation, long currTimestamp) throws Exception {
-        TIMING_STATS.clear();
-
         /*
          Querying a file by timestamp:
          1. Get the current system timestamp.
@@ -695,9 +685,6 @@ public class ReaderMetricsProcessor implements Runnable {
         if (appContext != null && !clusterDetailsEventsProcessor.getNodesDetails().isEmpty()) {
             appContext.setClusterDetailsEventProcessor(clusterDetailsEventsProcessor);
         }
-
-        StatsCollector.instance()
-                .logStatsRecord(null, STATS_DATA, TIMING_STATS, start, System.currentTimeMillis());
     }
 
     /**

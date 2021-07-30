@@ -142,8 +142,6 @@ public class PerformanceAnalyzerApp {
                                     / 2,
                             TimeUnit.MILLISECONDS);
             METRIC_COLLECTOR_EXECUTOR.addScheduledMetricCollector(StatsCollector.instance());
-            StatsCollector.instance()
-                    .addDefaultExceptionCode(StatExceptionCode.READER_RESTART_PROCESSING);
             METRIC_COLLECTOR_EXECUTOR.setEnabled(true);
             METRIC_COLLECTOR_EXECUTOR.start();
 
@@ -158,7 +156,6 @@ public class PerformanceAnalyzerApp {
             startRcaTopLevelThread(clientServers, connectionManager, appContext, THREAD_PROVIDER);
         } else {
             LOG.error("Performance analyzer app stopped due to invalid config status.");
-            StatsCollector.instance().logException(StatExceptionCode.READER_THREAD_STOPPED);
         }
     }
 
@@ -235,12 +232,12 @@ public class PerformanceAnalyzerApp {
         // As an improvement to this functionality, once we know what exceptions are retryable, we
         // can have each thread also register an error handler for itself. This handler will know
         // what to do when the thread has stopped due to an unexpected exception.
+        READER_METRICS_AGGREGATOR.updateStat(ReaderMetrics.OTHER, "", 1);
         LOG.error(
                 "Thread: {} ran into an uncaught exception: {}",
                 exception.getPaThreadName(),
                 exception.getInnerThrowable(),
                 exception);
-        StatsCollector.instance().logException(exception.getExceptionCode());
     }
 
     public static Thread startWebServerThread(

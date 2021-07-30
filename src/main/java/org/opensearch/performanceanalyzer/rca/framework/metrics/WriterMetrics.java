@@ -43,6 +43,45 @@ public enum WriterMetrics implements MeasurementSet {
     EVENT_LOG_FILES_DELETED(
             "EventLogFilesDeleted", "count", Arrays.asList(Statistics.MAX, Statistics.SUM)),
 
+    /** Metrics tracking Plugin level: 1. Errors 2. Exceptions */
+
+    /** Tracks stale metrics - metrics to be collected is behind current bucket */
+    STALE_METRICS("StaleMetrics"),
+
+    /** Tracks the number of VM attach/dataDump or detach failures. */
+    JVM_ATTACH_ERROR("JvmAttachErrror"),
+
+    /** java_pid file is missing. */
+    JVM_ATTACH_ERROR_JAVA_PID_FILE_MISSING("JvmAttachErrorJavaPidFileMissing"),
+
+    /** Lock could not be acquired within the timeout. */
+    JVM_ATTACH_LOCK_ACQUISITION_FAILED("JvmAttachLockAcquisitionFailed"),
+
+    /** ThreadState could not be found for an OpenSearch thread in the critical OpenSearch path. */
+    NO_THREAD_STATE_INFO("NoThreadStateInfo"),
+
+    /**
+     * Successfully completed a thread-dump. An omission of indicate thread taking the dump got
+     * stuck.
+     */
+    JVM_THREAD_DUMP_SUCCESSFUL("JvmThreadDumpSuccessful"),
+
+    /** Thread ID is no loner exists */
+    JVM_THREAD_ID_NO_LONGER_EXISTS("JVMThreadIdNoLongerExists"),
+
+    /** Tracks the number of muted collectors */
+    COLLECTORS_MUTED(
+            "CollectorsMutedCount",
+            "namedCount",
+            Collections.singletonList(Statistics.NAMED_COUNTERS)),
+
+    /** This metric indicates faiure in collecting MasterServiceEventMetrics */
+    MASTER_METRICS_ERROR("MasterMetricsError"),
+
+    /** This metric indicates faiure in intercepting opensearch requests at transport channel */
+    OPENSEARCH_REQUEST_INTERCEPTOR_ERROR("OpenSearchRequestInterceptorError"),
+
+    /** Collector specific metrics */
     SHARD_STATE_COLLECTOR_EXECUTION_TIME(
             "ShardStateCollectorExecutionTime",
             "millis",
@@ -153,19 +192,20 @@ public enum WriterMetrics implements MeasurementSet {
                     Statistics.COUNT,
                     Statistics.SUM)),
 
-    STALE_METRICS("StaleMetrics", "count", Arrays.asList(Statistics.COUNT)),
-
     /** This metric indicates that the writer file creation was skipped. */
     WRITER_FILE_CREATION_SKIPPED(
             "WriterFileCreationSkipped", "count", Arrays.asList(Statistics.COUNT)),
 
+    /** This metric indicates metric entry insertion to event log queue failed */
     METRICS_WRITE_ERROR(
             "MetricsWriteError",
             "namedCount",
             Collections.singletonList(Statistics.NAMED_COUNTERS)),
 
+    /** This metric indicates faiure in cleaning up the event log files */
     METRICS_REMOVE_ERROR("MetricsRemoveError", "count", Arrays.asList(Statistics.COUNT)),
 
+    /** This metric indicates faiure in cleaning up the event log files */
     METRICS_REMOVE_FAILURE("MetricsRemoveFailure", "count", Arrays.asList(Statistics.COUNT)),
     ;
 
@@ -183,6 +223,12 @@ public enum WriterMetrics implements MeasurementSet {
      * collection of one or more such statistics.
      */
     private List<Statistics> statsList;
+
+    WriterMetrics(String name) {
+        this.name = name;
+        this.unit = "count";
+        this.statsList = Collections.singletonList(Statistics.COUNT);
+    }
 
     WriterMetrics(String name, String unit, List<Statistics> stats) {
         this.name = name;
