@@ -112,12 +112,20 @@ public class FieldDataCacheRcaTest {
                         "index_1", "0", String.valueOf(cacheWeight), String.valueOf(cacheWeight)));
     }
 
+    private void mockEmptyEvictFlowUnits(double cacheWeight) {
+        fieldDataCacheEvictions.createEmptyTestFlowUnits();
+        fieldDataCacheWeight.createTestFlowUnits(
+                columnName,
+                Arrays.asList(
+                        "index_1", "0", String.valueOf(cacheWeight), String.valueOf(cacheWeight)));
+    }
+
     @Test
     public void testFieldDataCache() {
         ResourceFlowUnit<HotNodeSummary> flowUnit;
         Clock constantClock = Clock.fixed(ofEpochMilli(0), ZoneId.systemDefault());
 
-        // TimeWindow 41of size 300sec
+        // TimeWindow 1 of size 300sec
         mockFlowUnits(0, 1.0);
         fieldDataCacheRca.setClock(constantClock);
         flowUnit = fieldDataCacheRca.operate();
@@ -165,6 +173,49 @@ public class FieldDataCacheRcaTest {
 
         // TimeWindow 4 of size 300sec
         mockFlowUnits(0, 7.0);
+        fieldDataCacheRca.setClock(Clock.offset(constantClock, Duration.ofMinutes(17)));
+        flowUnit = fieldDataCacheRca.operate();
+        Assert.assertFalse(flowUnit.getResourceContext().isUnhealthy());
+    }
+
+    @Test
+    public void testFieldDataCacheEmptyFU() {
+        ResourceFlowUnit<HotNodeSummary> flowUnit;
+        Clock constantClock = Clock.fixed(ofEpochMilli(0), ZoneId.systemDefault());
+
+        mockFlowUnits(1, 1.0);
+        fieldDataCacheRca.setClock(constantClock);
+        Assert.assertFalse(fieldDataCacheRca.operate().getResourceContext().isUnhealthy());
+
+        mockFlowUnits(1, 1.0);
+        fieldDataCacheRca.setClock(Clock.offset(constantClock, Duration.ofMinutes(3)));
+        Assert.assertFalse(fieldDataCacheRca.operate().getResourceContext().isUnhealthy());
+
+        mockFlowUnits(1, 1.0);
+        fieldDataCacheRca.setClock(Clock.offset(constantClock, Duration.ofMinutes(4)));
+        Assert.assertFalse(fieldDataCacheRca.operate().getResourceContext().isUnhealthy());
+
+        mockFlowUnits(1, 7.0);
+        fieldDataCacheRca.setClock(Clock.offset(constantClock, Duration.ofMinutes(7)));
+        Assert.assertTrue(fieldDataCacheRca.operate().getResourceContext().isUnhealthy());
+
+        // Put empty flow unit for Eviction metrics
+        mockEmptyEvictFlowUnits(7.0);
+        fieldDataCacheRca.setClock(Clock.offset(constantClock, Duration.ofMinutes(10)));
+        Assert.assertTrue(fieldDataCacheRca.operate().getResourceContext().isUnhealthy());
+
+        mockEmptyEvictFlowUnits(7.0);
+        fieldDataCacheRca.setClock(Clock.offset(constantClock, Duration.ofMinutes(12)));
+        flowUnit = fieldDataCacheRca.operate();
+        Assert.assertTrue(flowUnit.getResourceContext().isUnhealthy());
+
+        mockEmptyEvictFlowUnits(7.0);
+        fieldDataCacheRca.setClock(Clock.offset(constantClock, Duration.ofMinutes(14)));
+        Assert.assertTrue(fieldDataCacheRca.operate().getResourceContext().isUnhealthy());
+
+        // After empty flow unit in 3rd execution cycle, RCA will mark the hasEviction as false
+        // and result in Healthy context
+        mockEmptyEvictFlowUnits(7.0);
         fieldDataCacheRca.setClock(Clock.offset(constantClock, Duration.ofMinutes(17)));
         flowUnit = fieldDataCacheRca.operate();
         Assert.assertFalse(flowUnit.getResourceContext().isUnhealthy());

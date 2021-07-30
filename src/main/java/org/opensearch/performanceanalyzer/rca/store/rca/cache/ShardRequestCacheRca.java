@@ -53,6 +53,7 @@ import org.opensearch.performanceanalyzer.rca.framework.api.summaries.HotNodeSum
 import org.opensearch.performanceanalyzer.rca.framework.api.summaries.HotResourceSummary;
 import org.opensearch.performanceanalyzer.rca.framework.api.summaries.ResourceUtil;
 import org.opensearch.performanceanalyzer.rca.framework.core.RcaConf;
+import org.opensearch.performanceanalyzer.rca.framework.metrics.RcaGraphMetrics;
 import org.opensearch.performanceanalyzer.rca.framework.metrics.RcaVerticesMetrics;
 import org.opensearch.performanceanalyzer.rca.framework.util.InstanceDetails;
 import org.opensearch.performanceanalyzer.rca.scheduler.FlowUnitOperationArgWrapper;
@@ -217,17 +218,21 @@ public class ShardRequestCacheRca extends Rca<ResourceFlowUnit<HotNodeSummary>> 
     private static class CacheCollector {
         private final Resource cache;
         private final Metric cacheMetrics;
-        private boolean hasMetric;
+        private boolean hasCacheMetric;
         private long metricTimestamp;
         private long metricTimePeriodInMillis;
+        private int clearCounter;
+        private int consecutivePeriodsToClear;
 
         public CacheCollector(
                 final Resource cache, final Metric cacheMetrics, final int metricTimePeriodInSec) {
             this.cache = cache;
             this.cacheMetrics = cacheMetrics;
-            this.hasMetric = false;
+            this.hasCacheMetric = false;
             this.metricTimestamp = 0;
             this.metricTimePeriodInMillis = TimeUnit.SECONDS.toMillis(metricTimePeriodInSec);
+            this.clearCounter = 0;
+            this.consecutivePeriodsToClear = 3;
         }
 
         public void setCollectorTimePeriod(long metricTimePeriodInMillis) {
@@ -237,6 +242,18 @@ public class ShardRequestCacheRca extends Rca<ResourceFlowUnit<HotNodeSummary>> 
         public void collect(final long currTimestamp) {
             for (MetricFlowUnit flowUnit : cacheMetrics.getFlowUnits()) {
                 if (flowUnit.isEmpty()) {
+                    clearCounter += 1;
+                    if (clearCounter > consecutivePeriodsToClear) {
+                        // If the RCA receives 3 empty flow units, re-set the 'hasCacheMetric' value
+                        hasCacheMetric = false;
+                        clearCounter = 0;
+                        LOG.debug(
+                                "{} encountered {} empty flow units, re-setting the hasCacheMetric value.",
+                                this.getClass().getSimpleName(),
+                                consecutivePeriodsToClear);
+                    }
+                    PerformanceAnalyzerApp.RCA_GRAPH_METRICS_AGGREGATOR.updateStat(
+                            RcaGraphMetrics.RCA_RX_EMPTY_FU, this.getClass().getSimpleName(), 1);
                     continue;
                 }
 
@@ -247,12 +264,12 @@ public class ShardRequestCacheRca extends Rca<ResourceFlowUnit<HotNodeSummary>> 
                                 .sum();
                 if (!Double.isNaN(metricCount)) {
                     if (metricCount > 0) {
-                        if (!hasMetric) {
+                        if (!hasCacheMetric) {
                             metricTimestamp = currTimestamp;
                         }
-                        hasMetric = true;
+                        hasCacheMetric = true;
                     } else {
-                        hasMetric = false;
+                        hasCacheMetric = false;
                     }
                 } else {
                     LOG.error("Failed to parse metric from cache {}", cache.toString());
@@ -261,7 +278,7 @@ public class ShardRequestCacheRca extends Rca<ResourceFlowUnit<HotNodeSummary>> 
         }
 
         public boolean isUnhealthy(final long currTimestamp) {
-            return hasMetric && (currTimestamp - metricTimestamp) >= metricTimePeriodInMillis;
+            return hasCacheMetric && (currTimestamp - metricTimestamp) >= metricTimePeriodInMillis;
         }
 
         private HotResourceSummary generateSummary(final long currTimestamp) {

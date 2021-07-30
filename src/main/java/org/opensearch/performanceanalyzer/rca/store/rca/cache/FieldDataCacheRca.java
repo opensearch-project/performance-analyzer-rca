@@ -51,6 +51,7 @@ import org.opensearch.performanceanalyzer.rca.framework.api.summaries.HotNodeSum
 import org.opensearch.performanceanalyzer.rca.framework.api.summaries.HotResourceSummary;
 import org.opensearch.performanceanalyzer.rca.framework.api.summaries.ResourceUtil;
 import org.opensearch.performanceanalyzer.rca.framework.core.RcaConf;
+import org.opensearch.performanceanalyzer.rca.framework.metrics.RcaGraphMetrics;
 import org.opensearch.performanceanalyzer.rca.framework.metrics.RcaVerticesMetrics;
 import org.opensearch.performanceanalyzer.rca.framework.util.InstanceDetails;
 import org.opensearch.performanceanalyzer.rca.scheduler.FlowUnitOperationArgWrapper;
@@ -195,6 +196,8 @@ public class FieldDataCacheRca extends Rca<ResourceFlowUnit<HotNodeSummary>> {
         private boolean hasEvictions;
         private long evictionTimestamp;
         private long metricTimePeriodInMillis;
+        private int clearCounter;
+        private int consecutivePeriodsToClear;
 
         private CacheEvictionCollector(
                 final Resource cache,
@@ -205,6 +208,8 @@ public class FieldDataCacheRca extends Rca<ResourceFlowUnit<HotNodeSummary>> {
             this.hasEvictions = false;
             this.evictionTimestamp = 0;
             this.metricTimePeriodInMillis = TimeUnit.SECONDS.toMillis(metricTimePeriodInMillis);
+            this.clearCounter = 0;
+            this.consecutivePeriodsToClear = 3;
         }
 
         public void setCollectorTimePeriod(long metricTimePeriodInMillis) {
@@ -214,6 +219,18 @@ public class FieldDataCacheRca extends Rca<ResourceFlowUnit<HotNodeSummary>> {
         public void collect(final long currTimestamp) {
             for (MetricFlowUnit flowUnit : cacheEvictionMetrics.getFlowUnits()) {
                 if (flowUnit.isEmpty() || flowUnit.getData() == null) {
+                    clearCounter += 1;
+                    if (clearCounter > consecutivePeriodsToClear) {
+                        // If the RCA receives 3 empty flow units, re-set the 'hasMetric' value
+                        hasEvictions = false;
+                        clearCounter = 0;
+                        LOG.debug(
+                                "{} encountered {} empty flow units, re-setting the 'hasEvictions value'.",
+                                this.getClass().getSimpleName(),
+                                consecutivePeriodsToClear);
+                    }
+                    PerformanceAnalyzerApp.RCA_GRAPH_METRICS_AGGREGATOR.updateStat(
+                            RcaGraphMetrics.RCA_RX_EMPTY_FU, this.getClass().getSimpleName(), 1);
                     continue;
                 }
 

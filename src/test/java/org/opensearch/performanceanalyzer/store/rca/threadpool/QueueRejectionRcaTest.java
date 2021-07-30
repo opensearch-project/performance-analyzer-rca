@@ -70,6 +70,11 @@ public class QueueRejectionRcaTest {
                                 String.valueOf(searchRejectCnt))));
     }
 
+    private void mockEmptyFlowUnits() {
+        threadPool_RejectedReqs.createEmptyTestFlowUnits();
+        threadPool_RejectedReqs.createEmptyTestFlowUnits();
+    }
+
     @Before
     public void init() throws Exception {
         threadPool_RejectedReqs = new MetricTestHelper(5);
@@ -169,5 +174,60 @@ public class QueueRejectionRcaTest {
         resourceSummary = nodeSummary.getHotResourceSummaryList().get(0);
         Assert.assertEquals(ResourceUtil.WRITE_QUEUE_REJECTION, resourceSummary.getResource());
         Assert.assertEquals(0.01, 7.0, resourceSummary.getValue());
+    }
+
+    @Test
+    public void testWriteAndSearchQueuesEmptyFU() {
+        ResourceFlowUnit<HotNodeSummary> flowUnit;
+        Clock constantClock = Clock.fixed(ofEpochMilli(0), ZoneId.systemDefault());
+
+        mockFlowUnits(0, 0);
+        queueRejectionRca.setClock(constantClock);
+        Assert.assertFalse(queueRejectionRca.operate().getResourceContext().isUnhealthy());
+
+        mockFlowUnits(0, 1);
+        queueRejectionRca.setClock(Clock.offset(constantClock, Duration.ofMinutes(3)));
+        Assert.assertFalse(queueRejectionRca.operate().getResourceContext().isUnhealthy());
+
+        mockFlowUnits(1, 1);
+        queueRejectionRca.setClock(Clock.offset(constantClock, Duration.ofMinutes(5)));
+        Assert.assertFalse(queueRejectionRca.operate().getResourceContext().isUnhealthy());
+
+        mockFlowUnits(1, 1);
+        queueRejectionRca.setClock(Clock.offset(constantClock, Duration.ofMinutes(12)));
+        flowUnit = queueRejectionRca.operate();
+        Assert.assertTrue(flowUnit.getResourceContext().isUnhealthy());
+
+        Assert.assertTrue(flowUnit.hasResourceSummary());
+        HotNodeSummary nodeSummary = flowUnit.getSummary();
+        Assert.assertEquals(2, nodeSummary.getNestedSummaryList().size());
+        Assert.assertEquals(2, nodeSummary.getHotResourceSummaryList().size());
+        HotResourceSummary resourceSummary = nodeSummary.getHotResourceSummaryList().get(1);
+        Assert.assertEquals(ResourceUtil.SEARCH_QUEUE_REJECTION, resourceSummary.getResource());
+        Assert.assertEquals(0.01, 9.0, resourceSummary.getValue());
+        resourceSummary = nodeSummary.getHotResourceSummaryList().get(0);
+        Assert.assertEquals(ResourceUtil.WRITE_QUEUE_REJECTION, resourceSummary.getResource());
+        Assert.assertEquals(0.01, 7.0, resourceSummary.getValue());
+
+        // Put empty flow unit for Eviction metrics
+        mockEmptyFlowUnits();
+        queueRejectionRca.setClock(Clock.offset(constantClock, Duration.ofMinutes(14)));
+        Assert.assertTrue(queueRejectionRca.operate().getResourceContext().isUnhealthy());
+
+        mockEmptyFlowUnits();
+        queueRejectionRca.setClock(Clock.offset(constantClock, Duration.ofMinutes(17)));
+        flowUnit = queueRejectionRca.operate();
+        Assert.assertTrue(flowUnit.getResourceContext().isUnhealthy());
+
+        mockEmptyFlowUnits();
+        queueRejectionRca.setClock(Clock.offset(constantClock, Duration.ofMinutes(20)));
+        Assert.assertTrue(queueRejectionRca.operate().getResourceContext().isUnhealthy());
+
+        // After empty flow unit in 3rd execution cycle, RCA will mark the hasEviction as false
+        // and result in Healthy context
+        mockEmptyFlowUnits();
+        queueRejectionRca.setClock(Clock.offset(constantClock, Duration.ofMinutes(25)));
+        flowUnit = queueRejectionRca.operate();
+        Assert.assertFalse(flowUnit.getResourceContext().isUnhealthy());
     }
 }

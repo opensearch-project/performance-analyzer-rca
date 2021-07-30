@@ -80,6 +80,12 @@ public enum RcaGraphMetrics implements MeasurementSet {
     /** Measures number of bytes that was received as part of a protobuf message. */
     NET_BYTES_IN("TotalRcaBytesInSerialized", "bytes", Collections.singletonList(Statistics.SUM)),
 
+    /** RCA Node received an empty Flow Unit */
+    RCA_RX_EMPTY_FU(
+            "RcaReceivedEmptyFU",
+            "namedCount",
+            Collections.singletonList(Statistics.NAMED_COUNTERS)),
+
     /** Number of nodes that are currently publishing flow units to downstream nodes. */
     RCA_NODES_FU_PUBLISH_COUNT(
             "RcaFlowUnitPublishCount",
