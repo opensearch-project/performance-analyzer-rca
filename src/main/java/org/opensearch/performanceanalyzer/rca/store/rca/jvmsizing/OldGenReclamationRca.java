@@ -28,7 +28,7 @@ package org.opensearch.performanceanalyzer.rca.store.rca.jvmsizing;
 
 
 import java.util.concurrent.TimeUnit;
-import org.opensearch.performanceanalyzer.collectors.StatsCollector;
+import org.opensearch.performanceanalyzer.PerformanceAnalyzerApp;
 import org.opensearch.performanceanalyzer.rca.framework.api.Metric;
 import org.opensearch.performanceanalyzer.rca.framework.api.Resources;
 import org.opensearch.performanceanalyzer.rca.framework.api.aggregators.SlidingWindow;
@@ -37,13 +37,12 @@ import org.opensearch.performanceanalyzer.rca.framework.api.contexts.ResourceCon
 import org.opensearch.performanceanalyzer.rca.framework.api.flow_units.ResourceFlowUnit;
 import org.opensearch.performanceanalyzer.rca.framework.api.summaries.HotResourceSummary;
 import org.opensearch.performanceanalyzer.rca.framework.api.summaries.ResourceUtil;
+import org.opensearch.performanceanalyzer.rca.framework.metrics.RcaVerticesMetrics;
 import org.opensearch.performanceanalyzer.rca.scheduler.FlowUnitOperationArgWrapper;
 import org.opensearch.performanceanalyzer.rca.store.rca.OldGenRca;
 
 public class OldGenReclamationRca extends OldGenRca<ResourceFlowUnit<HotResourceSummary>> {
 
-    private static final String OLD_GEN_RECLAMATION_INEFFECTIVE_METRIC =
-            "OldGenReclamationIneffective";
     private static final long EVAL_INTERVAL_IN_S = 5;
     private static final double DEFAULT_TARGET_UTILIZATION_AFTER_GC = 75.0d;
     private static final int DEFAULT_RCA_EVALUATION_INTERVAL_IN_S = 60;
@@ -127,7 +126,8 @@ public class OldGenReclamationRca extends OldGenRca<ResourceFlowUnit<HotResource
                                     minOldGenSlidingWindow.readMin(),
                                     rcaEvaluationIntervalInS);
                     context = new ResourceContext(Resources.State.UNHEALTHY);
-                    StatsCollector.instance().logMetric(OLD_GEN_RECLAMATION_INEFFECTIVE_METRIC);
+                    PerformanceAnalyzerApp.RCA_VERTICES_METRICS_AGGREGATOR.updateStat(
+                            RcaVerticesMetrics.OLD_GEN_RECLAMATION_INEFFECTIVE, "", 1);
                     prevSummary = summary;
                     prevContext = context;
                     return new ResourceFlowUnit<>(currTime, context, summary);

@@ -62,21 +62,11 @@ public enum StatExceptionCode {
     RCA_VERTEX_RX_BUFFER_FULL_ERROR("RcaVertexRxBufferFullError"),
     RCA_NETWORK_THREADPOOL_QUEUE_FULL_ERROR("RcaNetworkThreadpoolQueueFullError"),
     RCA_SCHEDULER_STOPPED_ERROR("RcaSchedulerStoppedError"),
-    READER_THREAD_STOPPED("ReaderThreadStopped"),
-    ERROR_HANDLER_THREAD_STOPPED("ErrorHandlerThreadStopped"),
-    GRPC_SERVER_THREAD_STOPPED("GRPCServerThreadStopped"),
-    WEB_SERVER_THREAD_STOPPED("WebServerThreadStopped"),
-    RCA_CONTROLLER_THREAD_STOPPED("RcaControllerThreadStopped"),
-    RCA_SCHEDULER_THREAD_STOPPED("RcaSchedulerThreadStopped"),
-    JVM_THREAD_ID_NO_LONGER_EXISTS("JVMThreadIdNoLongerExists"),
     OPENSEARCH_REQUEST_INTERCEPTOR_ERROR("OpenSearchRequestInterceptorError"),
-    INVALID_OLD_GEN_SIZE("InvalidOldGenSize"),
     MISCONFIGURED_OLD_GEN_RCA_HEAP_MAX_MISSING("MisconfiguredOldGenRcaHeapMaxMissing"),
     MISCONFIGURED_OLD_GEN_RCA_HEAP_USED_MISSING("MisconfiguredOldGenRcaHeapUsedMissing"),
     MISCONFIGURED_OLD_GEN_RCA_GC_EVENTS_MISSING("MisconfiguredOldGenRcaGcEventsMissing"),
-    TOTAL_MEM_READ_ERROR("TotalMemReadError"),
-    CONFIG_DIR_NOT_FOUND("ConfigDirectoryNotFound"),
-    OTHER("Other");
+    TOTAL_MEM_READ_ERROR("TotalMemReadError");
 
     private final String value;
 

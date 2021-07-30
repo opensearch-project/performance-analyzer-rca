@@ -49,6 +49,7 @@ import org.opensearch.performanceanalyzer.rca.Version;
 import org.opensearch.performanceanalyzer.rca.formatter.StatsCollectorFormatter;
 
 public class StatsCollector extends PerformanceAnalyzerMetricsCollector {
+    public static final String COLLECTOR_NAME = "StatsCollector";
     private static final String LOG_ENTRY_INIT =
             "------------------------------------------------------------------------";
     private static final String LOG_ENTRY_END = "EOE";
@@ -66,6 +67,20 @@ public class StatsCollector extends PerformanceAnalyzerMetricsCollector {
 
     private List<StatExceptionCode> defaultExceptionCodes = new Vector<>();
 
+    public StatsCollector(String name, int samplingIntervalMillis, Map<String, String> metadata) {
+        super(samplingIntervalMillis, name);
+        this.metadata = metadata;
+        addRcaVersionMetadata(this.metadata);
+        defaultExceptionCodes.add(StatExceptionCode.TOTAL_ERROR);
+    }
+
+    private StatsCollector(Map<String, String> metadata) {
+        this(
+                COLLECTOR_NAME,
+                MetricsConfiguration.CONFIG_MAP.get(StatsCollector.class).samplingInterval,
+                metadata);
+    }
+
     public static StatsCollector instance() {
         if (statsCollector == null) {
             synchronized (StatsCollector.class) {
@@ -82,22 +97,56 @@ public class StatsCollector extends PerformanceAnalyzerMetricsCollector {
         return statsCollector;
     }
 
+    @Override
+    public void collectMetrics(long startTime) {
+        Map<String, AtomicInteger> currentCounters = counters;
+        counters = new ConcurrentHashMap<>();
+
+        // currentCounters.putIfAbsent(StatExceptionCode.TOTAL_ERROR.toString(), new
+        // AtomicInteger(0));
+
+        for (StatExceptionCode statExceptionCode : defaultExceptionCodes) {
+            currentCounters.putIfAbsent(statExceptionCode.toString(), new AtomicInteger(0));
+        }
+
+        writeStats(
+                metadata,
+                currentCounters,
+                null,
+                null,
+                objectCreationTime.getTime(),
+                new Date().getTime());
+        collectAndWriteRcaStats();
+        objectCreationTime = new Date();
+    }
+
+    private void collectAndWriteRcaStats() {
+        boolean hasNext;
+        do {
+            StatsCollectorFormatter formatter = new StatsCollectorFormatter();
+            hasNext = PerformanceAnalyzerApp.RCA_STATS_REPORTER.getNextReport(formatter);
+            for (StatsCollectorFormatter.StatsCollectorReturn statsReturn :
+                    formatter.getAllMetrics()) {
+                if (!statsReturn.isEmpty()) {
+                    logStatsRecord(
+                            statsReturn.getCounters(),
+                            statsReturn.getStatsdata(),
+                            statsReturn.getLatencies(),
+                            statsReturn.getStartTimeMillis(),
+                            statsReturn.getEndTimeMillis());
+                }
+            }
+        } while (hasNext);
+    }
+
     @VisibleForTesting
     public Map<String, AtomicInteger> getCounters() {
         return counters;
     }
 
-    public void logException() {
-        logException(StatExceptionCode.OTHER);
-    }
-
     public void logException(StatExceptionCode statExceptionCode) {
         incCounter(statExceptionCode.toString());
         incErrorCounter();
-    }
-
-    public void logMetric(final String metricName) {
-        incCounter(metricName);
     }
 
     public void logStatsRecord(
@@ -134,47 +183,6 @@ public class StatsCollector extends PerformanceAnalyzerMetricsCollector {
         }
 
         return retVal;
-    }
-
-    public StatsCollector(String name, int samplingIntervalMillis, Map<String, String> metadata) {
-        super(samplingIntervalMillis, name);
-        this.metadata = metadata;
-        addRcaVersionMetadata(this.metadata);
-        defaultExceptionCodes.add(StatExceptionCode.TOTAL_ERROR);
-    }
-
-    private StatsCollector(Map<String, String> metadata) {
-        this(
-                "StatsCollector",
-                MetricsConfiguration.CONFIG_MAP.get(StatsCollector.class).samplingInterval,
-                metadata);
-    }
-
-    public void addDefaultExceptionCode(StatExceptionCode statExceptionCode) {
-        defaultExceptionCodes.add(statExceptionCode);
-    }
-
-    @Override
-    public void collectMetrics(long startTime) {
-        Map<String, AtomicInteger> currentCounters = counters;
-        counters = new ConcurrentHashMap<>();
-
-        // currentCounters.putIfAbsent(StatExceptionCode.TOTAL_ERROR.toString(), new
-        // AtomicInteger(0));
-
-        for (StatExceptionCode statExceptionCode : defaultExceptionCodes) {
-            currentCounters.putIfAbsent(statExceptionCode.toString(), new AtomicInteger(0));
-        }
-
-        writeStats(
-                metadata,
-                currentCounters,
-                null,
-                null,
-                objectCreationTime.getTime(),
-                new Date().getTime());
-        collectAndWriteRcaStats();
-        objectCreationTime = new Date();
     }
 
     private void incCounter(String counterName) {
@@ -288,24 +296,5 @@ public class StatsCollector extends PerformanceAnalyzerMetricsCollector {
                 .append("/")
                 .append(attempts)
                 .append(",");
-    }
-
-    private void collectAndWriteRcaStats() {
-        boolean hasNext;
-        do {
-            StatsCollectorFormatter formatter = new StatsCollectorFormatter();
-            hasNext = PerformanceAnalyzerApp.RCA_STATS_REPORTER.getNextReport(formatter);
-            for (StatsCollectorFormatter.StatsCollectorReturn statsReturn :
-                    formatter.getAllMetrics()) {
-                if (!statsReturn.isEmpty()) {
-                    logStatsRecord(
-                            statsReturn.getCounters(),
-                            statsReturn.getStatsdata(),
-                            statsReturn.getLatencies(),
-                            statsReturn.getStartTimeMillis(),
-                            statsReturn.getEndTimeMillis());
-                }
-            }
-        } while (hasNext);
     }
 }

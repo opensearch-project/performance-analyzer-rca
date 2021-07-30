@@ -35,7 +35,7 @@ import java.util.List;
 import java.util.Map;
 import javax.annotation.Nonnull;
 import org.opensearch.performanceanalyzer.AppContext;
-import org.opensearch.performanceanalyzer.collectors.StatsCollector;
+import org.opensearch.performanceanalyzer.PerformanceAnalyzerApp;
 import org.opensearch.performanceanalyzer.decisionmaker.actions.Action;
 import org.opensearch.performanceanalyzer.decisionmaker.actions.HeapSizeIncreaseAction;
 import org.opensearch.performanceanalyzer.decisionmaker.deciders.AlarmMonitor;
@@ -46,13 +46,13 @@ import org.opensearch.performanceanalyzer.rca.framework.api.flow_units.ResourceF
 import org.opensearch.performanceanalyzer.rca.framework.api.summaries.HotClusterSummary;
 import org.opensearch.performanceanalyzer.rca.framework.api.summaries.HotNodeSummary;
 import org.opensearch.performanceanalyzer.rca.framework.core.RcaConf;
+import org.opensearch.performanceanalyzer.rca.framework.metrics.RcaRuntimeMetrics;
 import org.opensearch.performanceanalyzer.rca.framework.util.RcaConsts;
 import org.opensearch.performanceanalyzer.rca.store.rca.cluster.NodeKey;
 import org.opensearch.performanceanalyzer.rca.store.rca.jvmsizing.LargeHeapClusterRca;
 
 public class HeapSizeIncreasePolicy implements DecisionPolicy {
 
-    private static final String HEAP_SIZE_INCREASE_ACTION_RECOMMENDED = "RecommendHeapSizeIncrease";
     private final LargeHeapClusterRca largeHeapClusterRca;
     private AppContext appContext;
     private RcaConf rcaConf;
@@ -73,7 +73,8 @@ public class HeapSizeIncreasePolicy implements DecisionPolicy {
         if (!heapSizeIncreaseClusterMonitor.isHealthy()) {
             Action heapSizeIncreaseAction = new HeapSizeIncreaseAction(appContext);
             if (heapSizeIncreaseAction.isActionable()) {
-                StatsCollector.instance().logMetric(HEAP_SIZE_INCREASE_ACTION_RECOMMENDED);
+                PerformanceAnalyzerApp.RCA_RUNTIME_METRICS_AGGREGATOR.updateStat(
+                        RcaRuntimeMetrics.HEAP_SIZE_INCREASE_ACTION_SUGGESTED, "", 1);
                 actions.add(heapSizeIncreaseAction);
             }
         }

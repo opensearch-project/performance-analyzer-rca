@@ -35,6 +35,12 @@ import org.opensearch.performanceanalyzer.rca.stats.measurements.MeasurementSet;
 public enum ExceptionsAndErrors implements MeasurementSet {
     RCA_FRAMEWORK_CRASH("RcaFrameworkCrash"),
 
+    CONFIG_DIR_NOT_FOUND("ConfigDirectoryNotFound"),
+
+    WRITE_UPDATED_RCA_CONF_ERROR("WriteUpdatedRcaConfError"),
+
+    MUTE_ERROR("MuteError"),
+
     /**
      * These are the cases when an exception was throws in the {@code operate()} method, that each
      * RCA graph node implements.
@@ -73,7 +79,9 @@ public enum ExceptionsAndErrors implements MeasurementSet {
 
     ELECTION_TERM_COLLECTOR_ERROR("ElectionTermCollectorError"),
 
-    SHARD_INDEXING_PRESSURE_COLLECTOR_ERROR("ShardIndexingPressureMetricsCollectorError");
+    SHARD_INDEXING_PRESSURE_COLLECTOR_ERROR("ShardIndexingPressureMetricsCollectorError"),
+
+    NODESTATS_COLLECTION_ERROR("NodeStatsCollectionError");
 
     /** What we want to appear as the metric name. */
     private String name;

@@ -57,16 +57,10 @@ public enum RcaGraphMetrics implements MeasurementSet {
             "millis",
             Arrays.asList(Statistics.MAX, Statistics.MEAN, Statistics.SUM)),
 
-    /** Measures the time spent in the persistence layer. */
-    RCA_PERSIST_CALL(
-            "RcaPersistCall",
-            "micros",
-            Arrays.asList(Statistics.MAX, Statistics.MEAN, Statistics.SUM)),
-
     NUM_GRAPH_NODES("NumGraphNodes", "count", Collections.singletonList(Statistics.SAMPLE)),
 
     NUM_GRAPH_NODES_MUTED(
-            "NUMOfMutedGraphNodes", "count", Collections.singletonList(Statistics.SAMPLE)),
+            "NumOfMutedGraphNodes", "count", Collections.singletonList(Statistics.SAMPLE)),
 
     NUM_NODES_EXECUTED_LOCALLY(
             "NodesExecutedLocally", "count", Collections.singletonList(Statistics.COUNT)),
@@ -85,6 +79,16 @@ public enum RcaGraphMetrics implements MeasurementSet {
             "RcaReceivedEmptyFU",
             "namedCount",
             Collections.singletonList(Statistics.NAMED_COUNTERS)),
+
+    /** Number of Network Error encountered per node. */
+    RCA_NETWORK_ERROR(
+            "RcaNetworkError", "namedCount", Collections.singletonList(Statistics.NAMED_COUNTERS)),
+
+    /** Measures the time spent in the persistence layer. */
+    RCA_PERSIST_CALL(
+            "RcaPersistCall",
+            "micros",
+            Arrays.asList(Statistics.MAX, Statistics.MEAN, Statistics.SUM)),
 
     /** Number of nodes that are currently publishing flow units to downstream nodes. */
     RCA_NODES_FU_PUBLISH_COUNT(

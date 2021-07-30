@@ -35,7 +35,8 @@ import org.opensearch.performanceanalyzer.rca.stats.measurements.MeasurementSet;
 
 /**
  * This is meant to be the registry for all the stats that are collected by the Rca framework and
- * needs to be reported periodically by the {@code StatsCollector.collectMetrics}
+ * needs to be reported periodically by the {@link
+ * org.opensearch.performanceanalyzer.collectors.StatsCollector#collectMetrics}
  */
 public class RcaStatsReporter {
     /** The list of collectors for which a report can be generated. */

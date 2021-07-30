@@ -30,8 +30,7 @@ package org.opensearch.performanceanalyzer.rca.store.rca.jvmsizing;
 import java.util.concurrent.TimeUnit;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.opensearch.performanceanalyzer.collectors.StatExceptionCode;
-import org.opensearch.performanceanalyzer.collectors.StatsCollector;
+import org.opensearch.performanceanalyzer.PerformanceAnalyzerApp;
 import org.opensearch.performanceanalyzer.rca.configs.HighOldGenOccupancyRcaConfig;
 import org.opensearch.performanceanalyzer.rca.framework.api.Metric;
 import org.opensearch.performanceanalyzer.rca.framework.api.Resources;
@@ -42,13 +41,13 @@ import org.opensearch.performanceanalyzer.rca.framework.api.flow_units.ResourceF
 import org.opensearch.performanceanalyzer.rca.framework.api.summaries.HotResourceSummary;
 import org.opensearch.performanceanalyzer.rca.framework.api.summaries.ResourceUtil;
 import org.opensearch.performanceanalyzer.rca.framework.core.RcaConf;
+import org.opensearch.performanceanalyzer.rca.framework.metrics.RcaVerticesMetrics;
 import org.opensearch.performanceanalyzer.rca.scheduler.FlowUnitOperationArgWrapper;
 import org.opensearch.performanceanalyzer.rca.store.rca.OldGenRca;
 
 public class HighOldGenOccupancyRca extends OldGenRca<ResourceFlowUnit<HotResourceSummary>> {
 
     private static final Logger LOG = LogManager.getLogger(HighOldGenOccupancyRca.class);
-    private static final String OLD_GEN_OVER_OCCUPIED_METRIC = "OldGenOverOccupied";
     private static final long EVAL_INTERVAL_IN_S = 5;
     private static final int B_TO_MB = 1024 * 1024;
 
@@ -135,7 +134,8 @@ public class HighOldGenOccupancyRca extends OldGenRca<ResourceFlowUnit<HotResour
                         averageUtilizationPercentage,
                         (int) rcaEvaluationIntervalInS);
         if (averageUtilizationPercentage >= heapUtilizationThreshold) {
-            StatsCollector.instance().logMetric(OLD_GEN_OVER_OCCUPIED_METRIC);
+            PerformanceAnalyzerApp.RCA_VERTICES_METRICS_AGGREGATOR.updateStat(
+                    RcaVerticesMetrics.OLD_GEN_OVER_OCCUPIED, "", 1);
             context = new ResourceContext(Resources.State.UNHEALTHY);
         }
         this.previousSummary = summary;
@@ -148,9 +148,9 @@ public class HighOldGenOccupancyRca extends OldGenRca<ResourceFlowUnit<HotResour
         double maxOldGen = getMaxOldGenSizeOrDefault(Double.MAX_VALUE);
 
         if (maxOldGen == 0d) {
+            PerformanceAnalyzerApp.RCA_VERTICES_METRICS_AGGREGATOR.updateStat(
+                    RcaVerticesMetrics.INVALID_OLD_GEN_SIZE, "", 1);
             LOG.info("Max Old Gen capacity cannot be 0. Skipping.");
-
-            StatsCollector.instance().logException(StatExceptionCode.INVALID_OLD_GEN_SIZE);
             return;
         }
 
