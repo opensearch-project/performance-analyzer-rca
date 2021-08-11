@@ -39,7 +39,8 @@ public class ImpactVector {
         CPU,
         RAM,
         DISK,
-        NETWORK
+        NETWORK,
+        ADMISSION_CONTROL
     }
 
     public enum Impact {

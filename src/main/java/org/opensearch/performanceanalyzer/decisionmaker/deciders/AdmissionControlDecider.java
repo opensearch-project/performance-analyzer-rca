@@ -26,26 +26,31 @@
 
 package org.opensearch.performanceanalyzer.decisionmaker.deciders;
 
+import static org.opensearch.performanceanalyzer.rca.store.rca.admissioncontrol.AdmissionControlRca.REQUEST_SIZE;
 
-import java.time.Instant;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.opensearch.performanceanalyzer.decisionmaker.actions.AdmissionControlAction;
+import org.opensearch.performanceanalyzer.grpc.ResourceEnum;
 import org.opensearch.performanceanalyzer.rca.framework.api.flow_units.ResourceFlowUnit;
-import org.opensearch.performanceanalyzer.rca.framework.api.summaries.HotClusterSummary;
-import org.opensearch.performanceanalyzer.rca.store.rca.admission_control.AdmissionControlClusterRca;
+import org.opensearch.performanceanalyzer.rca.framework.api.summaries.HotNodeSummary;
+import org.opensearch.performanceanalyzer.rca.framework.api.summaries.HotResourceSummary;
+import org.opensearch.performanceanalyzer.rca.store.rca.admissioncontrol.AdmissionControlClusterRca;
+import org.opensearch.performanceanalyzer.rca.store.rca.cluster.NodeKey;
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Objects;
 
 public class AdmissionControlDecider extends Decider {
 
-    private static final Logger LOG = LogManager.getLogger(AdmissionControlDecider.class);
-    private static final String NAME = "AdmissionControlDecider";
-
     private int counter = 0;
+    private static final String NAME = "admissionControlDecider";
     private AdmissionControlClusterRca admissionControlClusterRca;
 
     public AdmissionControlDecider(
-            long evalIntervalSeconds,
-            int decisionFrequency,
-            AdmissionControlClusterRca admissionControlClusterRca) {
+        long evalIntervalSeconds,
+        int decisionFrequency,
+        AdmissionControlClusterRca admissionControlClusterRca) {
         super(evalIntervalSeconds, decisionFrequency);
         this.admissionControlClusterRca = admissionControlClusterRca;
     }
@@ -63,14 +68,44 @@ public class AdmissionControlDecider extends Decider {
             return decision;
         }
         counter = 0;
-        for (ResourceFlowUnit<HotClusterSummary> flowUnit :
-                admissionControlClusterRca.getFlowUnits()) {
-            if (flowUnit.hasResourceSummary()) {
-                LOG.warn("encountered an unhealthy admissionControlClusterRca flowUnit");
-                return decision;
-            }
-        }
-        LOG.warn("no unhealthy admissionControlClusterRca flowUnits");
+
+        List<AdmissionControlAction> heapBasedActions = getHeapBasedActions();
+        heapBasedActions.stream()
+            .max(Comparator.comparingDouble(AdmissionControlAction::getDesiredValue))
+            .ifPresent(decision::addAction);
+
         return decision;
+    }
+
+    private List<AdmissionControlAction> getHeapBasedActions() {
+        List<AdmissionControlAction> heapBasedActions = new ArrayList<>();
+        admissionControlClusterRca.getFlowUnits().stream()
+            .filter(ResourceFlowUnit::hasResourceSummary)
+            .flatMap(clusterRcaFlowUnits -> clusterRcaFlowUnits.getSummary().getHotNodeSummaryList().stream())
+            .forEach(hotNodeSummary -> {
+                hotNodeSummary.getHotResourceSummaryList().stream()
+                    .filter(this::isHeapResource)
+                    .map(hotResourceSummary -> getAction(hotNodeSummary, hotResourceSummary))
+                    .filter(Objects::nonNull)
+                    .forEach(heapBasedActions::add);
+            });
+        return heapBasedActions;
+    }
+
+    private boolean isHeapResource(HotResourceSummary hotResourceSummary) {
+        return hotResourceSummary.getResource().getResourceEnum() == ResourceEnum.HEAP;
+    }
+
+    private AdmissionControlAction getAction(
+        HotNodeSummary hotNodeSummary, HotResourceSummary hotResourceSummary) {
+        double currentHeapPercent = hotResourceSummary.getValue();
+        double desiredThreshold = hotResourceSummary.getThreshold();
+        NodeKey esNode = new NodeKey(hotNodeSummary.getNodeID(), hotNodeSummary.getHostAddress());
+        AdmissionControlAction action =
+            AdmissionControlAction.newBuilder(esNode, REQUEST_SIZE, getAppContext(), rcaConf)
+                .currentValue(currentHeapPercent)
+                .desiredValue(desiredThreshold)
+                .build();
+        return action.isActionable() ? action : null;
     }
 }
