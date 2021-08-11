@@ -28,11 +28,14 @@ package org.opensearch.performanceanalyzer.hwnet;
 
 
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.Splitter;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.opensearch.performanceanalyzer.collectors.NetInterfaceSummary;
@@ -97,6 +100,8 @@ public class NetworkInterface {
     //    static private String[] ICMPkeys = null;
 
     private static LinuxIPMetricsGenerator linuxIPMetricsGenerator = new LinuxIPMetricsGenerator();
+
+    private static final Splitter STRING_PATTERN_SPLITTER = Splitter.on(Pattern.compile("[ \\t]+"));
 
     static {
         addSampleHelper();
@@ -255,9 +260,9 @@ public class NetworkInterface {
                 BufferedReader bufferedReader = new BufferedReader(fileReader); ) {
             String line = null;
             while ((line = bufferedReader.readLine()) != null) {
-                String[] toks = line.split("[ \\t]+");
-                if (toks.length > 1) {
-                    currentMetrics6.put(toks[0], Long.parseLong(toks[1]));
+                List<String> toks = STRING_PATTERN_SPLITTER.splitToList(line);
+                if (toks.size() > 1) {
+                    currentMetrics6.put(toks.get(0), Long.parseLong(toks.get(1)));
                 }
             }
         } catch (Exception e) {
