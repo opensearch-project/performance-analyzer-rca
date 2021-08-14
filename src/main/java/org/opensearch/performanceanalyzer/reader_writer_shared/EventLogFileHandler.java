@@ -182,7 +182,11 @@ public class EventLogFileHandler {
     }
 
     public void deleteAllFiles() {
-        LOG.debug("Cleaning up any leftover files.");
+        Util.invokePrivileged(this::deleteAllFilesWithPrivilege);
+    }
+
+    public void deleteAllFilesWithPrivilege() {
+        LOG.debug("Cleaning up any leftover files in [{}]", metricsLocation);
         File root = new File(metricsLocation);
         String[] filesToDelete = root.list();
         if (filesToDelete == null) {
@@ -202,7 +206,7 @@ public class EventLogFileHandler {
         File root = new File(metricsLocation);
         for (String fileToDelete : filesToDelete) {
             File file = new File(root, fileToDelete);
-            PerformanceAnalyzerMetrics.removeMetrics(file);
+            removeFilesWithPrivilege(file);
             filesDeletedCount += 1;
         }
         long duration = System.currentTimeMillis() - startTime;
@@ -211,5 +215,9 @@ public class EventLogFileHandler {
         PerformanceAnalyzerApp.WRITER_METRICS_AGGREGATOR.updateStat(
                 WriterMetrics.EVENT_LOG_FILES_DELETED, "", filesDeletedCount);
         LOG.debug("'{}' Old writer files cleaned up.", filesDeletedCount);
+    }
+
+    public void removeFilesWithPrivilege(File file) {
+        Util.invokePrivileged(() -> PerformanceAnalyzerMetrics.removeMetrics(file));
     }
 }
