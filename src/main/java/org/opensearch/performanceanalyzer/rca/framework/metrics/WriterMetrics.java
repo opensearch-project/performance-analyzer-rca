@@ -75,8 +75,11 @@ public enum WriterMetrics implements MeasurementSet {
             "namedCount",
             Collections.singletonList(Statistics.NAMED_COUNTERS)),
 
-    /** This metric indicates faiure in collecting MasterServiceEventMetrics */
+    /** This metric indicates failure in collecting MasterServiceEventMetrics */
     MASTER_METRICS_ERROR("MasterMetricsError"),
+
+    /** This metric indicates master is not up */
+    MASTER_NODE_NOT_UP("MasterNodeNotUp"),
 
     /** This metric indicates faiure in intercepting opensearch requests at transport channel */
     OPENSEARCH_REQUEST_INTERCEPTOR_ERROR("OpenSearchRequestInterceptorError"),
