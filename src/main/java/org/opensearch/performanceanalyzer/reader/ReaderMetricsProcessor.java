@@ -600,9 +600,6 @@ public class ReaderMetricsProcessor implements Runnable {
             on reader to avoid this.
         */
 
-        // Step 1 from above.
-        long start = System.currentTimeMillis();
-
         // Step 2 from above.
         long currWindowStartTime =
                 PerformanceAnalyzerMetrics.getTimeInterval(
