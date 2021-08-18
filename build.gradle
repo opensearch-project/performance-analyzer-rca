@@ -41,7 +41,7 @@ plugins {
     id 'com.github.spotbugs' version '4.6.0'
     id "de.undercouch.download" version "4.0.4"
     id 'com.adarshr.test-logger' version '2.1.0'
-    id 'org.gradle.test-retry' version '1.2.0'
+    id 'org.gradle.test-retry' version '1.3.1'
     id 'com.diffplug.spotless' version '5.11.0'
 }
 
@@ -222,6 +222,17 @@ test {
         excludeTestsMatching 'org.opensearch.performanceanalyzer.rca.integTests.tests.consolidate_tuning.JvmFlipFlopITest'
     }
     enabled = true
+    retry {
+        maxRetries = 2
+        maxFailures = 20
+        filter {
+            // filter by qualified class name (* matches zero or more of any character)
+            // ignoring retries on all the integ test as the retries on them fails
+            // retry plugin is unable to retry the following test methods as the method name differs for these tests.
+            // java.lang.Class#testDataNodeMissingGcMetrics
+            excludeClasses.add("*integTests*")
+        }
+    }
 }
 
 task rcaTest(type: Test) {
