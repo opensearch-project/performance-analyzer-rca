@@ -393,7 +393,7 @@ task buildPa(type: Exec) {
     dependsOn(assemble, publishToMavenLocal, regenerateLicenses)
     workingDir paDir
     println String.format('pa in dir: (%s) will be built.', paDir)
-    commandLine './gradlew', 'assemble'
+    commandLine './gradlew', 'assemble', "-Dopensearch.version=${opensearch_version}"
     println "PA repo located at '" + paDir + "' will be used."
 }
 
