@@ -14,26 +14,30 @@ jobs:
     runs-on: [ubuntu-latest]
     name: Building RCA package
     steps:
-    - name: Checkout RCA package
+    - name: Set up JDK
+      uses: actions/setup-java@v1
+      with:
+        java-version: 14
+
+    # PA depends on OpenSearch. Checkout and publish to maven local for PA build.
+    - name: Checkout OpenSearch
+      uses: actions/checkout@v2
+      with:
+        repository: 'opensearch-project/OpenSearch'
+        path: OpenSearch
+        ref: '1.x'
+    - name: Build OpenSearch
+      working-directory: ./OpenSearch
+      run: ./gradlew publishToMavenLocal
+
+    # RCA in ./tmp/performance-analyzer-rca
+    - name: Checkout RCA
       uses: actions/checkout@v2
       with:
         path: ./tmp/performance-analyzer-rca
-    # fetch the main branch to make it available for spotless ratcheting
-    - name: Fetch 'main' branch
+    - name: Build RCA
       working-directory:  ./tmp/performance-analyzer-rca
-      run: git fetch --depth=1 origin main
-    - name: Checkout Performance Analyzer package
-      uses: actions/checkout@v2
-      with:
-        repository: opensearch-project/performance-analyzer
-        path: ./tmp/pa
-    - name: Set up JDK 1.12
-      uses: actions/setup-java@v1
-      with:
-        java-version: 1.12
-    - name: Build RCA with Gradle
-      working-directory:  ./tmp/performance-analyzer-rca
-      run: ./gradlew build --stacktrace
+      run: ./gradlew build --stacktrace -Dopensearch.version=1.1.0-SNAPSHOT
     - name: Upload reports
       uses: actions/upload-artifact@v2
       with:
@@ -49,22 +53,20 @@ jobs:
       run: bash <(curl -s https://codecov.io/bash) -f ./build/reports/jacoco/test/jacocoTestReport.xml
     - name: Publish RCA jar to maven local
       working-directory: ./tmp/performance-analyzer-rca
-      run: ./gradlew publishToMavenLocal
-    - name: Build PA gradle using the new RCA jar
-      working-directory: ./tmp/pa
-      run: rm -f licenses/performanceanalyzer-rca-*.jar.sha1
-    # PA depends on OpenSearch. Checkout and publish to maven local for PA build.
-    - name: Checkout OpenSearch
+      run: ./gradlew publishToMavenLocal -Dopensearch.version=1.1.0-SNAPSHOT
+
+    # PA in ./tmp/performance-analyzer
+    - name: Checkout Performance Analyzer
       uses: actions/checkout@v2
       with:
-        repository: 'opensearch-project/OpenSearch'
-        path: OpenSearch
-        ref: '1.x'
-    - name: Build OpenSearch
-      working-directory: ./OpenSearch
-      run: ./gradlew publishToMavenLocal
+        repository: dblock/performance-analyzer
+        ref: fix-snapshot-build
+        path: ./tmp/performance-analyzer
+    - name: Build PA gradle using the new RCA jar
+      working-directory: ./tmp/performance-analyzer
+      run: rm -f licenses/performanceanalyzer-rca-*.jar.sha1
     - name: Update SHA
-      working-directory: ./tmp/pa
+      working-directory: ./tmp/performance-analyzer
       run: ./gradlew updateShas -Dopensearch.version=1.1.0-SNAPSHOT
     - name: Set docker-compose path
       run: echo "DOCKER_COMPOSE_LOCATION=$(which docker-compose)" >> $GITHUB_ENV
@@ -72,11 +74,15 @@ jobs:
     - name: Set vm.max_map_count
       run: sudo sysctl -w vm.max_map_count=262144
     - name: Build PA and run Unit Tests
-      working-directory: ./tmp/pa
+      working-directory: ./tmp/performance-analyzer
       run: ./gradlew build -i -Dopensearch.version=1.1.0-SNAPSHOT
+
+    # Enable RCA for Integration Tests
     - name: Spin up Docker cluster for integ testing
       working-directory: ./tmp/performance-analyzer-rca
       run: ./gradlew enableRca -Dopensearch.version=1.1.0-SNAPSHOT
+
+    # Run Integration Tests in PA
     - name: Run integration tests
-      working-directory: ./tmp/pa
+      working-directory: ./tmp/performance-analyzer
       run: ./gradlew integTest --info --stacktrace -Dtests.enableIT=true -Dopensearch.version=1.1.0-SNAPSHOT

@@ -76,7 +76,8 @@ distributions {
 ext {
     opensearch_version = System.getProperty("opensearch.version", "1.1.0-SNAPSHOT")
     isSnapshot = "true" == System.getProperty("build.snapshot", "true")
-    gitDefaultBranch = 'main'
+    gitPaBranch = 'main'
+    gitPaRepo = "https://github.com/opensearch-project/performance-analyzer.git"
 }
 
 spotless {
@@ -358,7 +359,7 @@ String paDir
 String dockerBuildDir
 String dockerArtifactsDir
 
-task cloneGitRepo(type: GitClone) {
+task clonePaGitRepo(type: GitClone) {
     dockerBuildDir = Paths.get(getProject().getBuildDir().toString(), "docker-build").toString()
     mkdir dockerBuildDir
     if (localPaDir != null && !localPaDir.empty) {
@@ -370,15 +371,15 @@ task cloneGitRepo(type: GitClone) {
     }
 
     def destination = file(paDir)
-    uri = "https://github.com/opensearch-project/performance-analyzer.git"
-    branch = gitDefaultBranch
+    uri = gitPaRepo
+    branch = gitPaBranch
     destinationPath = destination
     bare = false
     enabled = !destination.exists() //to clone only once
 }
 
 task removeLicenses(type: Delete) {
-    dependsOn(cloneGitRepo)
+    dependsOn(clonePaGitRepo)
     def toDelete = Paths.get(paDir, 'licenses', "performanceanalyzer-rca-${version}.jar.sha1")
     delete(toDelete)
 }
