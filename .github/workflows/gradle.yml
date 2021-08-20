@@ -59,10 +59,10 @@ jobs:
       with:
         repository: 'opensearch-project/OpenSearch'
         path: OpenSearch
-        ref: '1.0'
+        ref: '1.x'
     - name: Build OpenSearch
       working-directory: ./OpenSearch
-      run: ./gradlew publishToMavenLocal -Dbuild.snapshot=false
+      run: ./gradlew publishToMavenLocal
     - name: Update SHA
       working-directory: ./tmp/pa
       run: ./gradlew updateShas

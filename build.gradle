@@ -74,7 +74,7 @@ distributions {
 }
 
 distZip {
-    archiveName 'performance-analyzer-rca.zip'
+    archiveName 'performance-analyzer-rca-${version}.zip'
 }
 
 publishing {
@@ -82,14 +82,14 @@ publishing {
         maven(MavenPublication) {
             groupId = 'org.opensearch'
             artifactId = 'performanceanalyzer-rca'
-            version = '1.0.0.0'
+            version = project.version
             from components.java
         }
     }
 }
 
 ext {
-    rca_version = '1.0'
+    rca_version = '1.1'
     isSnapshot = "true" == System.getProperty("build.snapshot", "true")
     gitDefaultBranch = 'main'
 }
@@ -381,7 +381,7 @@ task cloneGitRepo(type: GitClone) {
 
 task removeLicenses(type: Delete) {
     dependsOn(cloneGitRepo)
-    def toDelete = Paths.get(paDir, 'licenses', 'performanceanalyzer-rca-1.0.0.0.jar.sha1')
+    def toDelete = Paths.get(paDir, 'licenses', 'performanceanalyzer-rca-${version}.jar.sha1')
     delete(toDelete)
 }
 
@@ -403,8 +403,8 @@ task copyAllArtifacts(type: Copy) {
     dependsOn(buildPa)
     def projectPathStr = getProjectDir().toPath().toString()
     def dockerArtifacts = Paths.get(projectPathStr, 'docker').toString()
-    def rcaArtifacts = Paths.get(projectPathStr, 'build', 'distributions', 'performance-analyzer-rca.zip')
-    def paArtifacts = Paths.get(paDir, 'build', 'distributions', 'opensearch-performance-analyzer-1.0.0.0-SNAPSHOT.zip')
+    def rcaArtifacts = Paths.get(projectPathStr, 'build', 'distributions', 'performance-analyzer-rca-${version}.zip')
+    def paArtifacts = Paths.get(paDir, 'build', 'distributions', 'opensearch-performance-analyzer-${version}.zip')
 
     dockerArtifactsDir = Paths.get(dockerBuildDir, 'rca-docker')
     from(dockerArtifacts)
