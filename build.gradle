@@ -74,22 +74,11 @@ distributions {
 }
 
 distZip {
-    archiveName 'performance-analyzer-rca-${version}.zip'
-}
-
-publishing {
-    publications {
-        maven(MavenPublication) {
-            groupId = 'org.opensearch'
-            artifactId = 'performanceanalyzer-rca'
-            version = project.version
-            from components.java
-        }
-    }
+    archiveName "performance-analyzer-rca-${version}.zip"
 }
 
 ext {
-    rca_version = '1.1'
+    opensearch_version = System.getProperty("opensearch.version", "1.1.0-SNAPSHOT")
     isSnapshot = "true" == System.getProperty("build.snapshot", "true")
     gitDefaultBranch = 'main'
 }
@@ -205,10 +194,19 @@ jacocoTestCoverageVerification {
 // to run coverage verification during the build (and fail when appropriate)
 check.dependsOn jacocoTestCoverageVerification
 
-
-version = "${rca_version}.0.0"
+version = opensearch_version - '-SNAPSHOT' + '.0'
 if (isSnapshot) {
     version += "-SNAPSHOT"
+}
+
+publishing {
+    publications {
+        maven(MavenPublication) {
+            groupId = 'org.opensearch'
+            artifactId = 'performanceanalyzer-rca'
+            from components.java
+        }
+    }
 }
 
 test {
@@ -381,7 +379,7 @@ task cloneGitRepo(type: GitClone) {
 
 task removeLicenses(type: Delete) {
     dependsOn(cloneGitRepo)
-    def toDelete = Paths.get(paDir, 'licenses', 'performanceanalyzer-rca-${version}.jar.sha1')
+    def toDelete = Paths.get(paDir, 'licenses', "performanceanalyzer-rca-${version}.jar.sha1")
     delete(toDelete)
 }
 
@@ -403,8 +401,8 @@ task copyAllArtifacts(type: Copy) {
     dependsOn(buildPa)
     def projectPathStr = getProjectDir().toPath().toString()
     def dockerArtifacts = Paths.get(projectPathStr, 'docker').toString()
-    def rcaArtifacts = Paths.get(projectPathStr, 'build', 'distributions', 'performance-analyzer-rca-${version}.zip')
-    def paArtifacts = Paths.get(paDir, 'build', 'distributions', 'opensearch-performance-analyzer-${version}.zip')
+    def rcaArtifacts = Paths.get(projectPathStr, 'build', 'distributions', "performance-analyzer-rca-${version}.zip")
+    def paArtifacts = Paths.get(paDir, 'build', 'distributions', "opensearch-performance-analyzer-${version}.zip")
 
     dockerArtifactsDir = Paths.get(dockerBuildDir, 'rca-docker')
     from(dockerArtifacts)
