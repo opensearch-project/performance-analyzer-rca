@@ -76,7 +76,7 @@ distributions {
 ext {
     opensearch_version = System.getProperty("opensearch.version", "1.0.0-SNAPSHOT")
     isSnapshot = "true" == System.getProperty("build.snapshot", "true")
-    gitPaBranch = 'main'
+    gitPaBranch = "1.0.1"
     gitPaRepo = "https://github.com/opensearch-project/performance-analyzer.git"
 }
 
