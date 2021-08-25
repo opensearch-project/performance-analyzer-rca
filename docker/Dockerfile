@@ -49,7 +49,7 @@ WORKDIR /usr/share/opensearch
 ENV BUST_CACHE 1576286189
 
 # Download and extract defined OpenSearch version.
-RUN curl -fsSL https://artifacts.opensearch.org/snapshots/core/opensearch/1.1.0-SNAPSHOT/opensearch-min-1.1.0-SNAPSHOT-linux-arm64-latest.tar.gz | \
+RUN curl -fsSL https://artifacts.opensearch.org/snapshots/core/opensearch/1.0.0-SNAPSHOT/opensearch-min-1.0.0-SNAPSHOT-linux-arm64-latest.tar.gz | \
     tar zx --strip-components=1
 
 RUN set -ex && for opensearchdirs in config data logs; do \
@@ -58,12 +58,12 @@ RUN set -ex && for opensearchdirs in config data logs; do \
 
 COPY --chown=1000:0 opensearch.yml log4j2.properties config/
 
-COPY --chown=1000:0 performance-analyzer-rca-1.1.0.0-SNAPSHOT.zip config/
+COPY --chown=1000:0 performance-analyzer-rca-1.0.1.0-SNAPSHOT.zip config/
 
-COPY --chown=1000:0 opensearch-performance-analyzer-1.1.0.0-SNAPSHOT.zip /tmp/
+COPY --chown=1000:0 opensearch-performance-analyzer-1.0.1.0-SNAPSHOT.zip /tmp/
 
-RUN opensearch-plugin install --batch file:///tmp/opensearch-performance-analyzer-1.1.0.0-SNAPSHOT.zip; \
-        rm /tmp/opensearch-performance-analyzer-1.1.0.0-SNAPSHOT.zip
+RUN opensearch-plugin install --batch file:///tmp/opensearch-performance-analyzer-1.0.1.0-SNAPSHOT.zip; \
+        rm /tmp/opensearch-performance-analyzer-1.0.1.0-SNAPSHOT.zip
 
 USER 0
 
@@ -71,7 +71,7 @@ USER 0
 RUN chown -R opensearch:0 . && \
     chmod -R g=u /usr/share/opensearch
 
-RUN unzip config/performance-analyzer-rca-1.1.0.0-SNAPSHOT.zip
+RUN unzip config/performance-analyzer-rca-1.0.1.0-SNAPSHOT.zip
 
 RUN cp -r performance-analyzer-rca/* plugins/opensearch-performance-analyzer/
 RUN chmod 755 /usr/share/opensearch/plugins/opensearch-performance-analyzer/pa_bin/performance-analyzer-agent
