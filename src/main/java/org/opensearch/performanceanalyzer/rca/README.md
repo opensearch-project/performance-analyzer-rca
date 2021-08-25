@@ -19,7 +19,7 @@ will run through the entirety of this discussion.
 ### Metrics ###
 This is the input to the system. These are essentially key-value pairs. For
 details on what metrics are available, please take a look at the  online
- reference [here](https://docs-beta.opensearch.org/monitoring-plugins/pa/reference/).
+ reference [here](https://opensearch.org/docs/monitoring-plugins/pa/reference/).
 
 ### Symptoms ###
 
