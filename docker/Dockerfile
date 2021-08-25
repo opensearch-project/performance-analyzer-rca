@@ -58,7 +58,7 @@ RUN set -ex && for opensearchdirs in config data logs; do \
 
 COPY --chown=1000:0 opensearch.yml log4j2.properties config/
 
-COPY --chown=1000:0 performance-analyzer-rca.zip config/
+COPY --chown=1000:0 performance-analyzer-rca-1.0.1.0-SNAPSHOT.zip config/
 
 COPY --chown=1000:0 opensearch-performance-analyzer-1.0.1.0-SNAPSHOT.zip /tmp/
 
@@ -71,7 +71,7 @@ USER 0
 RUN chown -R opensearch:0 . && \
     chmod -R g=u /usr/share/opensearch
 
-RUN unzip config/performance-analyzer-rca.zip
+RUN unzip config/performance-analyzer-rca-1.0.1.0-SNAPSHOT.zip
 
 RUN cp -r performance-analyzer-rca/* plugins/opensearch-performance-analyzer/
 RUN chmod 755 /usr/share/opensearch/plugins/opensearch-performance-analyzer/pa_bin/performance-analyzer-agent
