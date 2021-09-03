@@ -59,6 +59,7 @@ import org.opensearch.performanceanalyzer.decisionmaker.actions.configs.CacheAct
 import org.opensearch.performanceanalyzer.decisionmaker.actions.configs.QueueActionConfig;
 import org.opensearch.performanceanalyzer.decisionmaker.deciders.configs.DeciderConfig;
 import org.opensearch.performanceanalyzer.rca.RcaControllerHelper;
+import org.opensearch.performanceanalyzer.rca.configs.AdmissionControlRcaConfig;
 import org.opensearch.performanceanalyzer.rca.configs.FieldDataCacheRcaConfig;
 import org.opensearch.performanceanalyzer.rca.configs.HeapSizeIncreasePolicyConfig;
 import org.opensearch.performanceanalyzer.rca.configs.HighHeapUsageOldGenRcaConfig;
@@ -173,6 +174,10 @@ public class RcaConf {
 
     public int getPerVertexBufferLength() {
         return conf.getPerVertexBufferLength();
+    }
+
+    public AdmissionControlRcaConfig getAdmissionControlRcaConfig() {
+        return new AdmissionControlRcaConfig(this);
     }
 
     public HighOldGenOccupancyRcaConfig getHighOldGenOccupancyRcaConfig() {
