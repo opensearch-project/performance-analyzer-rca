@@ -78,6 +78,7 @@ ext {
     isSnapshot = "true" == System.getProperty("build.snapshot", "true")
     gitPaBranch = 'main'
     gitPaRepo = "https://github.com/opensearch-project/performance-analyzer.git"
+    runGauntletTests = "true" == System.getProperty("run.gauntlet.tests", "false")
 }
 
 spotless {
@@ -211,14 +212,19 @@ publishing {
 }
 
 test {
-    filter { 
-        // TODO: slow integration tests were disabled
-        // see https://github.com/opensearch-project/performance-analyzer-rca/issues/57
-        excludeTestsMatching 'org.opensearch.performanceanalyzer.reader.OSMetricsSnapshotTests'
-        excludeTestsMatching 'org.opensearch.performanceanalyzer.rca.RcaControllerTest'
-        excludeTestsMatching 'org.opensearch.performanceanalyzer.rca.persistence.SQLitePersistorTest'
-        excludeTestsMatching 'org.opensearch.performanceanalyzer.rca.integTests.*'
+    if (!runGauntletTests) {
+        filter {
+            excludeTestsMatching 'org.opensearch.performanceanalyzer.rca.integTests.*'
+        }
     }
+    else {
+        filter {
+            includeTestsMatching 'org.opensearch.performanceanalyzer.rca.integTests.*'
+            // Ignore failing tests (known issues with the test)
+            excludeTestsMatching 'org.opensearch.performanceanalyzer.rca.integTests.tests.jvmsizing.HeapSizeIncreaseMissingMetricsTest'
+            excludeTestsMatching 'org.opensearch.performanceanalyzer.rca.integTests.tests.consolidate_tuning.JvmFlipFlopITest'
+        }
+    }    
     enabled = true
     retry {
         maxRetries = 2
