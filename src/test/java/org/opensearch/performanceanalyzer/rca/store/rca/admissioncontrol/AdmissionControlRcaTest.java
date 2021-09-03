@@ -1,4 +1,15 @@
 /*
+ * SPDX-License-Identifier: Apache-2.0
+ *
+ * The OpenSearch Contributors require contributions made to
+ * this file be licensed under the Apache-2.0 license or a
+ * compatible open source license.
+ *
+ * Modifications Copyright OpenSearch Contributors. See
+ * GitHub history for details.
+ */
+
+/*
  * Copyright 2021 Amazon.com, Inc. or its affiliates. All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License").
@@ -20,6 +31,13 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.IntStream;
+import org.junit.Before;
+import org.junit.Test;
+import org.mockito.Mock;
 import org.opensearch.performanceanalyzer.metrics.AllMetrics;
 import org.opensearch.performanceanalyzer.metricsdb.MetricsDB;
 import org.opensearch.performanceanalyzer.rca.framework.api.Metric;
@@ -30,13 +48,6 @@ import org.opensearch.performanceanalyzer.rca.framework.api.metrics.MetricTestHe
 import org.opensearch.performanceanalyzer.rca.framework.api.summaries.HotNodeSummary;
 import org.opensearch.performanceanalyzer.rca.store.rca.admissioncontrol.AdmissionControlRca;
 import org.opensearch.performanceanalyzer.util.range.Range;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.stream.IntStream;
-import org.junit.Before;
-import org.junit.Test;
-import org.mockito.Mock;
 
 public class AdmissionControlRcaTest {
 
@@ -48,12 +59,12 @@ public class AdmissionControlRcaTest {
     private MetricTestHelper metricTestHelper;
 
     private final List<String> heapTableColumns =
-        Arrays.asList(
-            AllMetrics.HeapDimension.MEM_TYPE.toString(),
-            MetricsDB.SUM,
-            MetricsDB.AVG,
-            MetricsDB.MIN,
-            MetricsDB.MAX);
+            Arrays.asList(
+                    AllMetrics.HeapDimension.MEM_TYPE.toString(),
+                    MetricsDB.SUM,
+                    MetricsDB.AVG,
+                    MetricsDB.MIN,
+                    MetricsDB.MAX);
 
     @Before
     public void setup() throws Exception {
@@ -93,11 +104,11 @@ public class AdmissionControlRcaTest {
     @Test
     public void testAdmissionControlRcaRangeGapConfigured() {
         rca.getRequestSizeHeapRange()
-            .setRangeConfiguration(
-                Arrays.asList(
-                    new Range(0, 75, 15),
-                    // Simulating configuration gap from 75% to 85%
-                    new Range(85, 100, 10)));
+                .setRangeConfiguration(
+                        Arrays.asList(
+                                new Range(0, 75, 15),
+                                // Simulating configuration gap from 75% to 85%
+                                new Range(85, 100, 10)));
 
         setupMockHeapMetric(mockHeapMaxValue, 100);
         setupMockHeapMetric(mockHeapUsedValue, 70);
@@ -126,18 +137,18 @@ public class AdmissionControlRcaTest {
     private void setupMockHeapMetric(final Metric metric, final double value) {
         String valueString = Double.toString(value);
         List<String> data =
-            Arrays.asList(
-                AllMetrics.GCType.HEAP.toString(),
-                valueString,
-                valueString,
-                valueString,
-                valueString);
+                Arrays.asList(
+                        AllMetrics.GCType.HEAP.toString(),
+                        valueString,
+                        valueString,
+                        valueString,
+                        valueString);
         when(metric.getFlowUnits())
-            .thenReturn(
-                Collections.singletonList(
-                    new MetricFlowUnit(
-                        0,
-                        metricTestHelper.createTestResult(
-                            heapTableColumns, data))));
+                .thenReturn(
+                        Collections.singletonList(
+                                new MetricFlowUnit(
+                                        0,
+                                        metricTestHelper.createTestResult(
+                                                heapTableColumns, data))));
     }
 }

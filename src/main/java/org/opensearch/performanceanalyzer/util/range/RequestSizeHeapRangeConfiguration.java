@@ -1,4 +1,15 @@
 /*
+ * SPDX-License-Identifier: Apache-2.0
+ *
+ * The OpenSearch Contributors require contributions made to
+ * this file be licensed under the Apache-2.0 license or a
+ * compatible open source license.
+ *
+ * Modifications Copyright OpenSearch Contributors. See
+ * GitHub history for details.
+ */
+
+/*
  * Copyright 2021 Amazon.com, Inc. or its affiliates. All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License").
@@ -28,14 +39,14 @@ public class RequestSizeHeapRangeConfiguration implements RangeConfiguration {
      * Range(0, 75, 15.0) => for heap percent between 0% and 75% set threshold to 15%
      */
     private final Collection<Range> DEFAULT_RANGE_CONFIGURATION =
-        Collections.unmodifiableList(
-            Arrays.asList(
-                new Range(0, 75, 15.0),
-                new Range(76, 80, 12.5),
-                new Range(81, 85, 10.0),
-                new Range(86, 90, 7.5),
-                new Range(91, 95, 5.0),
-                new Range(96, 100, 2.5)));
+            Collections.unmodifiableList(
+                    Arrays.asList(
+                            new Range(0, 75, 15.0),
+                            new Range(76, 80, 12.5),
+                            new Range(81, 85, 10.0),
+                            new Range(86, 90, 7.5),
+                            new Range(91, 95, 5.0),
+                            new Range(96, 100, 2.5)));
 
     private Collection<Range> rangeConfiguration;
 
@@ -46,9 +57,9 @@ public class RequestSizeHeapRangeConfiguration implements RangeConfiguration {
     @Override
     public Range getRange(double value) {
         return rangeConfiguration.stream()
-            .filter(range -> range.contains(value))
-            .findFirst()
-            .orElse(null);
+                .filter(range -> range.contains(value))
+                .findFirst()
+                .orElse(null);
     }
 
     @Override

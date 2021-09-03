@@ -47,9 +47,6 @@ import org.opensearch.performanceanalyzer.rca.framework.api.AnalysisGraph;
 import org.opensearch.performanceanalyzer.rca.framework.api.Metric;
 import org.opensearch.performanceanalyzer.rca.framework.api.Rca;
 import org.opensearch.performanceanalyzer.rca.framework.api.flow_units.ResourceFlowUnit;
-import org.opensearch.performanceanalyzer.rca.framework.api.metrics.AdmissionControl_CurrentValue;
-import org.opensearch.performanceanalyzer.rca.framework.api.metrics.AdmissionControl_RejectionCount;
-import org.opensearch.performanceanalyzer.rca.framework.api.metrics.AdmissionControl_ThresholdValue;
 import org.opensearch.performanceanalyzer.rca.framework.api.metrics.Bitset_Memory;
 import org.opensearch.performanceanalyzer.rca.framework.api.metrics.CPU_Utilization;
 import org.opensearch.performanceanalyzer.rca.framework.api.metrics.Cache_FieldData_Eviction;
@@ -428,18 +425,28 @@ public class OpenSearchAnalysisGraph extends AnalysisGraph {
                         shardRequestCacheClusterRca,
                         highHeapUsageClusterRca));
 
-        AdmissionControlDecider admissionControlDecider = buildAdmissionControlDecider(heapUsed, heapMax);
+        AdmissionControlDecider admissionControlDecider =
+                buildAdmissionControlDecider(heapUsed, heapMax);
 
         constructShardResourceUsageGraph();
 
         constructResourceHeatMapGraph();
 
         // Collator - Collects actions from all deciders and aligns impact vectors
-        Collator collator = new Collator(queueHealthDecider, cacheHealthDecider, heapHealthDecider, admissionControlDecider);
+        Collator collator =
+                new Collator(
+                        queueHealthDecider,
+                        cacheHealthDecider,
+                        heapHealthDecider,
+                        admissionControlDecider);
         collator.addTag(
                 RcaConsts.RcaTagConstants.TAG_LOCUS, RcaConsts.RcaTagConstants.LOCUS_MASTER_NODE);
         collator.addAllUpstreams(
-                Arrays.asList(queueHealthDecider, cacheHealthDecider, heapHealthDecider, admissionControlDecider));
+                Arrays.asList(
+                        queueHealthDecider,
+                        cacheHealthDecider,
+                        heapHealthDecider,
+                        admissionControlDecider));
 
         // Publisher - Executes decisions output from collator
         Publisher publisher = new Publisher(EVALUATION_INTERVAL_SECONDS, collator);
@@ -454,22 +461,25 @@ public class OpenSearchAnalysisGraph extends AnalysisGraph {
     }
 
     private AdmissionControlDecider buildAdmissionControlDecider(Metric heapUsed, Metric heapMax) {
-        AdmissionControlRca admissionControlRca = new AdmissionControlRca(RCA_PERIOD, heapUsed, heapMax);
+        AdmissionControlRca admissionControlRca =
+                new AdmissionControlRca(RCA_PERIOD, heapUsed, heapMax);
         admissionControlRca.addTag(
-            RcaConsts.RcaTagConstants.TAG_LOCUS, RcaConsts.RcaTagConstants.LOCUS_DATA_NODE);
+                RcaConsts.RcaTagConstants.TAG_LOCUS, RcaConsts.RcaTagConstants.LOCUS_DATA_NODE);
         admissionControlRca.addAllUpstreams(Arrays.asList(heapUsed, heapMax));
 
-        AdmissionControlClusterRca admissionControlClusterRca = new AdmissionControlClusterRca(
-            RCA_PERIOD, admissionControlRca);
+        AdmissionControlClusterRca admissionControlClusterRca =
+                new AdmissionControlClusterRca(RCA_PERIOD, admissionControlRca);
         admissionControlClusterRca.addTag(
-            RcaConsts.RcaTagConstants.TAG_LOCUS, RcaConsts.RcaTagConstants.LOCUS_MASTER_NODE);
+                RcaConsts.RcaTagConstants.TAG_LOCUS, RcaConsts.RcaTagConstants.LOCUS_MASTER_NODE);
         admissionControlClusterRca.addAllUpstreams(Collections.singletonList(admissionControlRca));
 
-        AdmissionControlDecider admissionControlDecider = new AdmissionControlDecider(
-            EVALUATION_INTERVAL_SECONDS, 12, admissionControlClusterRca);
+        AdmissionControlDecider admissionControlDecider =
+                new AdmissionControlDecider(
+                        EVALUATION_INTERVAL_SECONDS, 12, admissionControlClusterRca);
         admissionControlDecider.addTag(
-            RcaConsts.RcaTagConstants.TAG_LOCUS, RcaConsts.RcaTagConstants.LOCUS_MASTER_NODE);
-        admissionControlDecider.addAllUpstreams(Collections.singletonList(admissionControlClusterRca));
+                RcaConsts.RcaTagConstants.TAG_LOCUS, RcaConsts.RcaTagConstants.LOCUS_MASTER_NODE);
+        admissionControlDecider.addAllUpstreams(
+                Collections.singletonList(admissionControlClusterRca));
 
         return admissionControlDecider;
     }

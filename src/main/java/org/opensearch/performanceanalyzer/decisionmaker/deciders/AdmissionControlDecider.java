@@ -28,6 +28,11 @@ package org.opensearch.performanceanalyzer.decisionmaker.deciders;
 
 import static org.opensearch.performanceanalyzer.rca.store.rca.admissioncontrol.AdmissionControlRca.REQUEST_SIZE;
 
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Objects;
 import org.opensearch.performanceanalyzer.decisionmaker.actions.AdmissionControlAction;
 import org.opensearch.performanceanalyzer.grpc.ResourceEnum;
 import org.opensearch.performanceanalyzer.rca.framework.api.flow_units.ResourceFlowUnit;
@@ -35,11 +40,6 @@ import org.opensearch.performanceanalyzer.rca.framework.api.summaries.HotNodeSum
 import org.opensearch.performanceanalyzer.rca.framework.api.summaries.HotResourceSummary;
 import org.opensearch.performanceanalyzer.rca.store.rca.admissioncontrol.AdmissionControlClusterRca;
 import org.opensearch.performanceanalyzer.rca.store.rca.cluster.NodeKey;
-import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Objects;
 
 public class AdmissionControlDecider extends Decider {
 
@@ -48,9 +48,9 @@ public class AdmissionControlDecider extends Decider {
     private AdmissionControlClusterRca admissionControlClusterRca;
 
     public AdmissionControlDecider(
-        long evalIntervalSeconds,
-        int decisionFrequency,
-        AdmissionControlClusterRca admissionControlClusterRca) {
+            long evalIntervalSeconds,
+            int decisionFrequency,
+            AdmissionControlClusterRca admissionControlClusterRca) {
         super(evalIntervalSeconds, decisionFrequency);
         this.admissionControlClusterRca = admissionControlClusterRca;
     }
@@ -71,8 +71,8 @@ public class AdmissionControlDecider extends Decider {
 
         List<AdmissionControlAction> heapBasedActions = getHeapBasedActions();
         heapBasedActions.stream()
-            .max(Comparator.comparingDouble(AdmissionControlAction::getDesiredValue))
-            .ifPresent(decision::addAction);
+                .max(Comparator.comparingDouble(AdmissionControlAction::getDesiredValue))
+                .ifPresent(decision::addAction);
 
         return decision;
     }
@@ -80,15 +80,20 @@ public class AdmissionControlDecider extends Decider {
     private List<AdmissionControlAction> getHeapBasedActions() {
         List<AdmissionControlAction> heapBasedActions = new ArrayList<>();
         admissionControlClusterRca.getFlowUnits().stream()
-            .filter(ResourceFlowUnit::hasResourceSummary)
-            .flatMap(clusterRcaFlowUnits -> clusterRcaFlowUnits.getSummary().getHotNodeSummaryList().stream())
-            .forEach(hotNodeSummary -> {
-                hotNodeSummary.getHotResourceSummaryList().stream()
-                    .filter(this::isHeapResource)
-                    .map(hotResourceSummary -> getAction(hotNodeSummary, hotResourceSummary))
-                    .filter(Objects::nonNull)
-                    .forEach(heapBasedActions::add);
-            });
+                .filter(ResourceFlowUnit::hasResourceSummary)
+                .flatMap(
+                        clusterRcaFlowUnits ->
+                                clusterRcaFlowUnits.getSummary().getHotNodeSummaryList().stream())
+                .forEach(
+                        hotNodeSummary -> {
+                            hotNodeSummary.getHotResourceSummaryList().stream()
+                                    .filter(this::isHeapResource)
+                                    .map(
+                                            hotResourceSummary ->
+                                                    getAction(hotNodeSummary, hotResourceSummary))
+                                    .filter(Objects::nonNull)
+                                    .forEach(heapBasedActions::add);
+                        });
         return heapBasedActions;
     }
 
@@ -97,15 +102,15 @@ public class AdmissionControlDecider extends Decider {
     }
 
     private AdmissionControlAction getAction(
-        HotNodeSummary hotNodeSummary, HotResourceSummary hotResourceSummary) {
+            HotNodeSummary hotNodeSummary, HotResourceSummary hotResourceSummary) {
         double currentHeapPercent = hotResourceSummary.getValue();
         double desiredThreshold = hotResourceSummary.getThreshold();
         NodeKey esNode = new NodeKey(hotNodeSummary.getNodeID(), hotNodeSummary.getHostAddress());
         AdmissionControlAction action =
-            AdmissionControlAction.newBuilder(esNode, REQUEST_SIZE, getAppContext(), rcaConf)
-                .currentValue(currentHeapPercent)
-                .desiredValue(desiredThreshold)
-                .build();
+                AdmissionControlAction.newBuilder(esNode, REQUEST_SIZE, getAppContext(), rcaConf)
+                        .currentValue(currentHeapPercent)
+                        .desiredValue(desiredThreshold)
+                        .build();
         return action.isActionable() ? action : null;
     }
 }

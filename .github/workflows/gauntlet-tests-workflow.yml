@@ -1,0 +1,28 @@
+name: Gauntlet tests Runner
+
+on: 
+  push: 
+    branches: 
+      - "*"
+
+  pull_request:
+    branches: 
+      - "*"
+
+jobs:
+  build_rca_pkg:
+    runs-on: [ubuntu-latest]
+    name: Build and Run Gauntlet tests
+    steps:
+    - name: Set up JDK
+      uses: actions/setup-java@v1
+      with:
+        java-version: 14
+    # RCA in ./tmp/performance-analyzer-rca
+    - name: Checkout RCA
+      uses: actions/checkout@v2
+      with:
+        path: ./tmp/performance-analyzer-rca
+    - name: Build RCA and run Gauntlet tests
+      working-directory:  ./tmp/performance-analyzer-rca
+      run: ./gradlew build -Drun.gauntlet.tests=true -Dopensearch.version=1.1.0-SNAPSHOT
