@@ -516,11 +516,11 @@ public class MetricsEmitter {
         // emitWorkloadMetrics functions.
         // Hence these are ignored in this emitter.
         if (SEARCH_PATTERN.matcher(threadName).matches()) {
-            return null;
+            return "search";
         }
         if (BULK_PATTERN.matcher(threadName).matches()
                 || WRITE_PATTERN.matcher(threadName).matches()) {
-            return null;
+            return "write";
         }
 
         if (GC_PATTERN.matcher(threadName).matches()) {
