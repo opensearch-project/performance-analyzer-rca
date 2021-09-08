@@ -180,12 +180,23 @@ jacocoTestCoverageVerification {
                             '**/org/opensearch/performanceanalyzer/grpc/**'])
         })
     }
-    violationRules {
-        rule {
-            limit {
-                minimum = 0.7
+    if (runGauntletTests) {
+        violationRules {
+            rule {
+                limit {
+                    minimum = 0.4
+                }
             }
         }
+    } 
+    else {
+        violationRules {
+            rule {
+                limit {
+                    minimum = 0.7
+                }
+            }
+        }    
     }
 }
 
