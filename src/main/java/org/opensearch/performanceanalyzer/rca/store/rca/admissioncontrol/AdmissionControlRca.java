@@ -29,6 +29,7 @@ package org.opensearch.performanceanalyzer.rca.store.rca.admissioncontrol;
 import static org.opensearch.performanceanalyzer.PerformanceAnalyzerApp.RCA_VERTICES_METRICS_AGGREGATOR;
 import static org.opensearch.performanceanalyzer.metrics.AllMetrics.GCType.HEAP;
 import static org.opensearch.performanceanalyzer.metrics.AllMetrics.HeapDimension.MEM_TYPE;
+import static org.opensearch.performanceanalyzer.rca.framework.api.Resources.State.HEALTHY;
 import static org.opensearch.performanceanalyzer.rca.framework.api.Resources.State.UNHEALTHY;
 import static org.opensearch.performanceanalyzer.rca.framework.api.persist.SQLParsingUtil.readDataFromSqlResult;
 import static org.opensearch.performanceanalyzer.rca.framework.api.summaries.ResourceUtil.HEAP_MAX_SIZE;
@@ -146,10 +147,17 @@ public class AdmissionControlRca extends Rca<ResourceFlowUnit<HotNodeSummary>> {
         }
         counter = 0;
 
+        InstanceDetails instanceDetails = getInstanceDetails();
+        HotNodeSummary nodeSummary =
+                new HotNodeSummary(
+                        instanceDetails.getInstanceId(), instanceDetails.getInstanceIp());
+
         HeapMetrics heapMetrics = getHeapMetric();
         if (heapMetrics.usedHeap == 0 || heapMetrics.maxHeap == 0) {
-            return new ResourceFlowUnit<>(currentTimeMillis);
+            ResourceContext context = new ResourceContext(HEALTHY);
+            return new ResourceFlowUnit<>(currentTimeMillis, context, nodeSummary);
         }
+
         double currentHeapPercent = (heapMetrics.usedHeap / heapMetrics.maxHeap) * 100;
 
         // If we observe heap percent range change then we tune request-size controller threshold
@@ -158,7 +166,8 @@ public class AdmissionControlRca extends Rca<ResourceFlowUnit<HotNodeSummary>> {
             double desiredThreshold = getHeapBasedThreshold(currentHeapPercent);
             if (desiredThreshold == 0) {
                 // AdmissionControl rejects all requests if threshold is set to 0, thus ignoring
-                return new ResourceFlowUnit<>(currentTimeMillis);
+                ResourceContext context = new ResourceContext(HEALTHY);
+                return new ResourceFlowUnit<>(currentTimeMillis, context, nodeSummary);
             }
             LOG.debug(
                     "[AdmissionControl] Observed range change. previousHeapPercent={} currentHeapPercent={} desiredThreshold={}",
@@ -168,10 +177,6 @@ public class AdmissionControlRca extends Rca<ResourceFlowUnit<HotNodeSummary>> {
 
             previousHeapPercent = currentHeapPercent;
 
-            InstanceDetails instanceDetails = getInstanceDetails();
-            HotNodeSummary nodeSummary =
-                    new HotNodeSummary(
-                            instanceDetails.getInstanceId(), instanceDetails.getInstanceIp());
             HotResourceSummary resourceSummary =
                     new HotResourceSummary(HEAP_MAX_SIZE, desiredThreshold, currentHeapPercent, 0);
             nodeSummary.appendNestedSummary(resourceSummary);
@@ -179,14 +184,13 @@ public class AdmissionControlRca extends Rca<ResourceFlowUnit<HotNodeSummary>> {
             RCA_VERTICES_METRICS_AGGREGATOR.updateStat(
                     ADMISSION_CONTROL_RCA_TRIGGERED, instanceDetails.getInstanceId().toString(), 1);
 
+            ResourceContext context = new ResourceContext(UNHEALTHY);
             return new ResourceFlowUnit<>(
-                    currentTimeMillis,
-                    new ResourceContext(UNHEALTHY),
-                    nodeSummary,
-                    !instanceDetails.getIsMaster());
+                    currentTimeMillis, context, nodeSummary, !instanceDetails.getIsMaster());
         }
 
-        return new ResourceFlowUnit<>(currentTimeMillis);
+        ResourceContext context = new ResourceContext(HEALTHY);
+        return new ResourceFlowUnit<>(currentTimeMillis, context, nodeSummary);
     }
 
     private double getHeapBasedThreshold(double currentHeapPercent) {
