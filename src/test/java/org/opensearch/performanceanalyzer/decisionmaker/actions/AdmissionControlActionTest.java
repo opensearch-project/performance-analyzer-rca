@@ -1,4 +1,15 @@
 /*
+ * SPDX-License-Identifier: Apache-2.0
+ *
+ * The OpenSearch Contributors require contributions made to
+ * this file be licensed under the Apache-2.0 license or a
+ * compatible open source license.
+ *
+ * Modifications Copyright OpenSearch Contributors. See
+ * GitHub history for details.
+ */
+
+/*
  * Copyright 2021 Amazon.com, Inc. or its affiliates. All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License").
@@ -15,6 +26,9 @@
 
 package org.opensearch.performanceanalyzer.decisionmaker.actions;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.opensearch.performanceanalyzer.decisionmaker.actions.ImpactVector.Dimension.ADMISSION_CONTROL;
 import static org.opensearch.performanceanalyzer.decisionmaker.actions.ImpactVector.Dimension.CPU;
 import static org.opensearch.performanceanalyzer.decisionmaker.actions.ImpactVector.Dimension.DISK;
@@ -22,20 +36,17 @@ import static org.opensearch.performanceanalyzer.decisionmaker.actions.ImpactVec
 import static org.opensearch.performanceanalyzer.decisionmaker.actions.ImpactVector.Dimension.NETWORK;
 import static org.opensearch.performanceanalyzer.decisionmaker.actions.ImpactVector.Dimension.RAM;
 import static org.opensearch.performanceanalyzer.rca.store.rca.admissioncontrol.AdmissionControlRca.REQUEST_SIZE;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 
-import org.opensearch.performanceanalyzer.AppContext;
-import org.opensearch.performanceanalyzer.rca.framework.core.RcaConf;
-import org.opensearch.performanceanalyzer.rca.framework.util.InstanceDetails;
-import org.opensearch.performanceanalyzer.rca.framework.util.RcaConsts;
-import org.opensearch.performanceanalyzer.rca.store.rca.cluster.NodeKey;
 import com.google.common.collect.ImmutableSet;
 import java.nio.file.Paths;
 import java.util.Map;
 import org.junit.Assert;
 import org.junit.Test;
+import org.opensearch.performanceanalyzer.AppContext;
+import org.opensearch.performanceanalyzer.rca.framework.core.RcaConf;
+import org.opensearch.performanceanalyzer.rca.framework.util.InstanceDetails;
+import org.opensearch.performanceanalyzer.rca.framework.util.RcaConsts;
+import org.opensearch.performanceanalyzer.rca.store.rca.cluster.NodeKey;
 
 public class AdmissionControlActionTest {
 
@@ -51,22 +62,22 @@ public class AdmissionControlActionTest {
     @Test
     public void testAdmissionControlActionIncreasePressure() {
         NodeKey node1 =
-            new NodeKey(new InstanceDetails.Id("node-1"), new InstanceDetails.Ip("1.2.3.4"));
+                new NodeKey(new InstanceDetails.Id("node-1"), new InstanceDetails.Ip("1.2.3.4"));
         AdmissionControlAction.Builder builder =
-            AdmissionControlAction.newBuilder(node1, REQUEST_SIZE, testAppContext, rcaConf);
+                AdmissionControlAction.newBuilder(node1, REQUEST_SIZE, testAppContext, rcaConf);
         AdmissionControlAction admissionControlAction =
-            builder.currentValue(10.0).desiredValue(20.0).build();
+                builder.currentValue(10.0).desiredValue(20.0).build();
 
         Assert.assertNotNull(admissionControlAction);
         assertTrue(admissionControlAction.isActionable());
         assertEquals(
-            AdmissionControlAction.DEFAULT_COOL_OFF_PERIOD_IN_MILLIS,
-            admissionControlAction.coolOffPeriodInMillis());
+                AdmissionControlAction.DEFAULT_COOL_OFF_PERIOD_IN_MILLIS,
+                admissionControlAction.coolOffPeriodInMillis());
         assertEquals(REQUEST_SIZE, admissionControlAction.getControllerName());
         assertEquals(1, admissionControlAction.impactedNodes().size());
 
         Map<ImpactVector.Dimension, ImpactVector.Impact> impact =
-            admissionControlAction.impact().get(node1).getImpact();
+                admissionControlAction.impact().get(node1).getImpact();
         assertEquals(ImpactVector.Impact.INCREASES_PRESSURE, impact.get(ADMISSION_CONTROL));
         assertEquals(ImpactVector.Impact.NO_IMPACT, impact.get(HEAP));
         assertEquals(ImpactVector.Impact.NO_IMPACT, impact.get(CPU));
@@ -78,22 +89,22 @@ public class AdmissionControlActionTest {
     @Test
     public void testAdmissionControlActionDecreasePressure() {
         NodeKey node1 =
-            new NodeKey(new InstanceDetails.Id("node-1"), new InstanceDetails.Ip("1.2.3.4"));
+                new NodeKey(new InstanceDetails.Id("node-1"), new InstanceDetails.Ip("1.2.3.4"));
         AdmissionControlAction.Builder builder =
-            AdmissionControlAction.newBuilder(node1, REQUEST_SIZE, testAppContext, rcaConf);
+                AdmissionControlAction.newBuilder(node1, REQUEST_SIZE, testAppContext, rcaConf);
         AdmissionControlAction admissionControlAction =
-            builder.currentValue(20.0).desiredValue(10.0).build();
+                builder.currentValue(20.0).desiredValue(10.0).build();
 
         Assert.assertNotNull(admissionControlAction);
         assertTrue(admissionControlAction.isActionable());
         assertEquals(
-            AdmissionControlAction.DEFAULT_COOL_OFF_PERIOD_IN_MILLIS,
-            admissionControlAction.coolOffPeriodInMillis());
+                AdmissionControlAction.DEFAULT_COOL_OFF_PERIOD_IN_MILLIS,
+                admissionControlAction.coolOffPeriodInMillis());
         assertEquals(REQUEST_SIZE, admissionControlAction.getControllerName());
         assertEquals(1, admissionControlAction.impactedNodes().size());
 
         Map<ImpactVector.Dimension, ImpactVector.Impact> impact =
-            admissionControlAction.impact().get(node1).getImpact();
+                admissionControlAction.impact().get(node1).getImpact();
         assertEquals(ImpactVector.Impact.DECREASES_PRESSURE, impact.get(ADMISSION_CONTROL));
         assertEquals(ImpactVector.Impact.NO_IMPACT, impact.get(HEAP));
         assertEquals(ImpactVector.Impact.NO_IMPACT, impact.get(CPU));
@@ -105,11 +116,11 @@ public class AdmissionControlActionTest {
     @Test
     public void testMutedAction() {
         NodeKey node1 =
-            new NodeKey(new InstanceDetails.Id("node-1"), new InstanceDetails.Ip("1.2.3.4"));
+                new NodeKey(new InstanceDetails.Id("node-1"), new InstanceDetails.Ip("1.2.3.4"));
         AdmissionControlAction.Builder builder =
-            AdmissionControlAction.newBuilder(node1, REQUEST_SIZE, testAppContext, rcaConf);
+                AdmissionControlAction.newBuilder(node1, REQUEST_SIZE, testAppContext, rcaConf);
         AdmissionControlAction admissionControlAction =
-            builder.currentValue(10.0).desiredValue(20.0).build();
+                builder.currentValue(10.0).desiredValue(20.0).build();
         testAppContext.updateMutedActions(ImmutableSet.of(admissionControlAction.name()));
         assertFalse(admissionControlAction.isActionable());
     }
@@ -117,22 +128,22 @@ public class AdmissionControlActionTest {
     @Test
     public void testSummary() {
         NodeKey node1 =
-            new NodeKey(new InstanceDetails.Id("node-1"), new InstanceDetails.Ip("1.2.3.4"));
+                new NodeKey(new InstanceDetails.Id("node-1"), new InstanceDetails.Ip("1.2.3.4"));
         AdmissionControlAction.Builder builder =
-            AdmissionControlAction.newBuilder(node1, REQUEST_SIZE, testAppContext, rcaConf);
+                AdmissionControlAction.newBuilder(node1, REQUEST_SIZE, testAppContext, rcaConf);
         AdmissionControlAction admissionControlAction =
-            builder.currentValue(10.0).desiredValue(20.0).build();
+                builder.currentValue(10.0).desiredValue(20.0).build();
         String summary = admissionControlAction.summary();
         assertEquals(
-            new StringBuilder()
-                .append("{")
-                .append("\"Id\":\"node-1\",")
-                .append("\"Ip\":\"1.2.3.4\",")
-                .append("\"desiredValue\":20.0,")
-                .append("\"currentValue\":10.0,")
-                .append("\"coolOffPeriodInMillis\":900000,")
-                .append("\"canUpdate\":true}")
-                .toString(),
-            summary);
+                new StringBuilder()
+                        .append("{")
+                        .append("\"Id\":\"node-1\",")
+                        .append("\"Ip\":\"1.2.3.4\",")
+                        .append("\"desiredValue\":20.0,")
+                        .append("\"currentValue\":10.0,")
+                        .append("\"coolOffPeriodInMillis\":900000,")
+                        .append("\"canUpdate\":true}")
+                        .toString(),
+                summary);
     }
 }

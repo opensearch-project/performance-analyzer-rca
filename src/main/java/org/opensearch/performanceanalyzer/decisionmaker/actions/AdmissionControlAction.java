@@ -1,4 +1,15 @@
 /*
+ * SPDX-License-Identifier: Apache-2.0
+ *
+ * The OpenSearch Contributors require contributions made to
+ * this file be licensed under the Apache-2.0 license or a
+ * compatible open source license.
+ *
+ * Modifications Copyright OpenSearch Contributors. See
+ * GitHub history for details.
+ */
+
+/*
  * Copyright 2021 Amazon.com, Inc. or its affiliates. All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License").
@@ -17,9 +28,6 @@ package org.opensearch.performanceanalyzer.decisionmaker.actions;
 
 import static org.opensearch.performanceanalyzer.decisionmaker.actions.ImpactVector.Dimension.ADMISSION_CONTROL;
 
-import org.opensearch.performanceanalyzer.AppContext;
-import org.opensearch.performanceanalyzer.rca.framework.core.RcaConf;
-import org.opensearch.performanceanalyzer.rca.store.rca.cluster.NodeKey;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.SerializedName;
@@ -27,6 +35,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import org.opensearch.performanceanalyzer.AppContext;
+import org.opensearch.performanceanalyzer.rca.framework.core.RcaConf;
+import org.opensearch.performanceanalyzer.rca.store.rca.cluster.NodeKey;
 
 public class AdmissionControlAction extends SuppressibleAction {
 
@@ -41,12 +52,12 @@ public class AdmissionControlAction extends SuppressibleAction {
     private final double currentValue;
 
     public AdmissionControlAction(
-        AppContext appContext,
-        final NodeKey esNode,
-        final String controllerName,
-        final boolean canUpdate,
-        final double desiredValue,
-        final double currentValue) {
+            AppContext appContext,
+            final NodeKey esNode,
+            final String controllerName,
+            final boolean canUpdate,
+            final double desiredValue,
+            final double currentValue) {
         super(appContext);
         this.esNode = esNode;
         this.canUpdate = canUpdate;
@@ -56,10 +67,10 @@ public class AdmissionControlAction extends SuppressibleAction {
     }
 
     public static Builder newBuilder(
-        final NodeKey esNode,
-        final String controllerName,
-        final AppContext appContext,
-        final RcaConf conf) {
+            final NodeKey esNode,
+            final String controllerName,
+            final AppContext appContext,
+            final RcaConf conf) {
         return new Builder(esNode, controllerName, appContext, conf);
     }
 
@@ -103,13 +114,13 @@ public class AdmissionControlAction extends SuppressibleAction {
     @Override
     public String summary() {
         Summary summary =
-            new Summary(
-                esNode.getNodeId().toString(),
-                esNode.getHostAddress().toString(),
-                desiredValue,
-                currentValue,
-                DEFAULT_COOL_OFF_PERIOD_IN_MILLIS,
-                canUpdate);
+                new Summary(
+                        esNode.getNodeId().toString(),
+                        esNode.getHostAddress().toString(),
+                        desiredValue,
+                        currentValue,
+                        DEFAULT_COOL_OFF_PERIOD_IN_MILLIS,
+                        canUpdate);
         return summary.toJson();
     }
 
@@ -130,10 +141,10 @@ public class AdmissionControlAction extends SuppressibleAction {
         private Double desiredValue;
 
         private Builder(
-            final NodeKey esNode,
-            final String controllerName,
-            final AppContext appContext,
-            final RcaConf conf) {
+                final NodeKey esNode,
+                final String controllerName,
+                final AppContext appContext,
+                final RcaConf conf) {
             this.esNode = esNode;
             this.controllerName = controllerName;
             this.appContext = appContext;
@@ -153,7 +164,7 @@ public class AdmissionControlAction extends SuppressibleAction {
         public AdmissionControlAction build() {
             boolean canUpdate = desiredValue != 0;
             return new AdmissionControlAction(
-                appContext, esNode, controllerName, canUpdate, desiredValue, currentValue);
+                    appContext, esNode, controllerName, canUpdate, desiredValue, currentValue);
         }
     }
 
@@ -185,12 +196,12 @@ public class AdmissionControlAction extends SuppressibleAction {
         private boolean canUpdate;
 
         public Summary(
-            String id,
-            String ip,
-            double desiredValue,
-            double currentValue,
-            long coolOffPeriodInMillis,
-            boolean canUpdate) {
+                String id,
+                String ip,
+                double desiredValue,
+                double currentValue,
+                long coolOffPeriodInMillis,
+                boolean canUpdate) {
             this.id = id;
             this.ip = ip;
             this.desiredValue = desiredValue;

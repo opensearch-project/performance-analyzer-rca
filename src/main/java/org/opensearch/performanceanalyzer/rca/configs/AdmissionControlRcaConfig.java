@@ -1,4 +1,15 @@
 /*
+ * SPDX-License-Identifier: Apache-2.0
+ *
+ * The OpenSearch Contributors require contributions made to
+ * this file be licensed under the Apache-2.0 license or a
+ * compatible open source license.
+ *
+ * Modifications Copyright OpenSearch Contributors. See
+ * GitHub history for details.
+ */
+
+/*
  * Copyright 2021 Amazon.com, Inc. or its affiliates. All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License").
@@ -16,15 +27,16 @@
 package org.opensearch.performanceanalyzer.rca.configs;
 
 
-import org.opensearch.performanceanalyzer.rca.framework.core.NestedConfig;
-import org.opensearch.performanceanalyzer.rca.framework.core.RcaConf;
-import org.opensearch.performanceanalyzer.util.range.Range;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
+import org.opensearch.performanceanalyzer.rca.framework.core.NestedConfig;
+import org.opensearch.performanceanalyzer.rca.framework.core.RcaConf;
+import org.opensearch.performanceanalyzer.util.range.Range;
 
+// spotless:off
 /**
  * Defines config for request-size controller threshold tuning.
  * Example config below - for heap percent between 0% and 75% set threshold to 15%
@@ -50,6 +62,7 @@ import java.util.stream.Collectors;
  *   }
  * }
  */
+// spotless:on
 public class AdmissionControlRcaConfig {
     public static final String CONFIG_NAME = "admission-control-rca";
     private static final String REQUEST_SIZE = "request-size";
@@ -91,12 +104,27 @@ public class AdmissionControlRcaConfig {
             if (controllerConfig.getValue() != null) {
                 List<Map> rangeList = (List<Map>) controllerConfig.getValue().get(RANGE);
                 if (Objects.isNull(rangeList) == false) {
-                    heapRangeConfiguration = rangeList.stream()
-                        .map(r -> new Range(
-                            Double.parseDouble(r.getOrDefault(LOWER_BOUND, DEFAULT_LOWER_BOUND).toString()),
-                            Double.parseDouble(r.getOrDefault(UPPER_BOUND, DEFAULT_UPPER_BOUND).toString()),
-                            Double.parseDouble(r.getOrDefault(THRESHOLD, DEFAULT_REQUEST_SIZE_THRESHOLD).toString())))
-                        .collect(Collectors.toList());
+                    heapRangeConfiguration =
+                            rangeList.stream()
+                                    .map(
+                                            r ->
+                                                    new Range(
+                                                            Double.parseDouble(
+                                                                    r.getOrDefault(
+                                                                                    LOWER_BOUND,
+                                                                                    DEFAULT_LOWER_BOUND)
+                                                                            .toString()),
+                                                            Double.parseDouble(
+                                                                    r.getOrDefault(
+                                                                                    UPPER_BOUND,
+                                                                                    DEFAULT_UPPER_BOUND)
+                                                                            .toString()),
+                                                            Double.parseDouble(
+                                                                    r.getOrDefault(
+                                                                                    THRESHOLD,
+                                                                                    DEFAULT_REQUEST_SIZE_THRESHOLD)
+                                                                            .toString())))
+                                    .collect(Collectors.toList());
                 }
             }
         }
@@ -108,8 +136,8 @@ public class AdmissionControlRcaConfig {
         @Override
         public String toString() {
             return String.format(
-                "ControllerConfig{controllerConfig=%s, heapRangeConfiguration=%s}",
-                controllerConfig, heapRangeConfiguration);
+                    "ControllerConfig{controllerConfig=%s, heapRangeConfiguration=%s}",
+                    controllerConfig, heapRangeConfiguration);
         }
     }
 }

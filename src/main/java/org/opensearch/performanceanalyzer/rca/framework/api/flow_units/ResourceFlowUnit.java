@@ -169,7 +169,10 @@ public class ResourceFlowUnit<T extends GenericSummary> extends GenericFlowUnit 
                 // for this function. Make sure the summary type passed in as template are
                 // consistent
                 // between serialization and de-serializing.
-                LOG.error("RCA: casting to wrong summary type when de-serializing this flowunit");
+                LOG.error(
+                        "RCA: casting to wrong summary type when de-serializing this flowunit:[{}]",
+                        message,
+                        e);
             }
             return new ResourceFlowUnit<>(message.getTimeStamp(), newContext, newSummary);
         } else {
