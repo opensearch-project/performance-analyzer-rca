@@ -338,7 +338,7 @@ public class MetricsEmitterTests extends AbstractReaderTests {
                 MetricsEmitter.categorizeThreadName(
                         "Gang worker#0 (Parallel GC Threads)", dimensions));
         assertEquals(
-                null,
+                "search",
                 MetricsEmitter.categorizeThreadName(
                         "opensearch[I9AByra][search][T#4]", dimensions));
         assertEquals(
@@ -353,10 +353,10 @@ public class MetricsEmitterTests extends AbstractReaderTests {
                 "management",
                 MetricsEmitter.categorizeThreadName("opensearch[I9AByra][management]", dimensions));
         assertEquals(
-                null,
+                "search",
                 MetricsEmitter.categorizeThreadName("opensearch[I9AByra][search]", dimensions));
         assertEquals(
-                null, MetricsEmitter.categorizeThreadName("opensearch[I9AByra][bulk]", dimensions));
+                "write", MetricsEmitter.categorizeThreadName("opensearch[I9AByra][bulk]", dimensions));
         assertEquals("other", MetricsEmitter.categorizeThreadName("Top thread random", dimensions));
     }
 

@@ -1232,7 +1232,7 @@ Sched_Runtime:1.0505025000000001E-4
 Sched_Waittime:9.114875000000001E-6
 Sched_CtxRate:1.597444089456869
 Heap_AllocRate:1294.2471235617809
-threadName:opensearch[4sqG_AP][[transport_server_worker.default]][T#1]
+threadName:opensearch[4sqG_AP][[transport_worker]][T#1]
 Thread_Blocked_Time:0.0
 Thread_Blocked_Event:1959
 IO_ReadThroughput:0.0
@@ -1251,7 +1251,7 @@ Sched_Runtime:2.5541E-5
 Sched_Waittime:3.6084E-6
 Sched_CtxRate:0.9984025559105432
 Heap_AllocRate:0.0
-threadName:opensearch[4sqG_AP][[transport_server_worker.default]][T#2]
+threadName:opensearch[4sqG_AP][[transport_worker]][T#2]
 Thread_Blocked_Time:0.0
 Thread_Blocked_Event:0
 IO_ReadThroughput:0.0
@@ -1289,7 +1289,7 @@ Sched_Runtime:1.0867103846153847E-4
 Sched_Waittime:2.2198653846153846E-6
 Sched_CtxRate:10.383386581469649
 Heap_AllocRate:44964.88244122061
-threadName:opensearch[4sqG_AP][transport_client_boss][T#5]
+threadName:opensearch[4sqG_AP][transport_worker][T#5]
 Thread_Blocked_Time:0.0
 Thread_Blocked_Event:655
 IO_ReadThroughput:0.0
@@ -1308,7 +1308,7 @@ Sched_Runtime:2.299429E-4
 Sched_Waittime:6.015300000000001E-6
 Sched_CtxRate:1.9968051118210863
 Heap_AllocRate:11157.578789394698
-threadName:opensearch[4sqG_AP][[transport_server_worker.default]][T#7]
+threadName:opensearch[4sqG_AP][[transport_worker]][T#7]
 Thread_Blocked_Time:0.0
 Thread_Blocked_Event:1913
 IO_ReadThroughput:0.0
@@ -1346,7 +1346,7 @@ Sched_Runtime:1.905752857142857E-4
 Sched_Waittime:8.562285714285715E-6
 Sched_CtxRate:1.3977635782747604
 Heap_AllocRate:43147.9739869935
-threadName:opensearch[4sqG_AP][transport_client_boss][T#3]
+threadName:opensearch[4sqG_AP][transport_worker][T#3]
 Thread_Blocked_Time:0.016666666666666666
 Thread_Blocked_Event:194470
 IO_ReadThroughput:0.0
@@ -1384,7 +1384,7 @@ Sched_Runtime:2.15612E-5
 Sched_Waittime:4.737800000000001E-6
 Sched_CtxRate:0.9984025559105432
 Heap_AllocRate:0.0
-threadName:opensearch[4sqG_AP][[transport_server_worker.default]][T#3]
+threadName:opensearch[4sqG_AP][[transport_worker]][T#3]
 Thread_Blocked_Time:0.0
 Thread_Blocked_Event:7
 IO_ReadThroughput:0.0
@@ -1456,7 +1456,7 @@ Sched_Runtime:1.2917766666666668E-4
 Sched_Waittime:6.892333333333334E-6
 Sched_CtxRate:2.3961661341853033
 Heap_AllocRate:36619.90995497749
-threadName:opensearch[4sqG_AP][transport_client_boss][T#4]
+threadName:opensearch[4sqG_AP][transport_worker][T#4]
 Thread_Blocked_Time:0.0
 Thread_Blocked_Event:660
 IO_ReadThroughput:0.0
@@ -1494,7 +1494,7 @@ Sched_Runtime:1.178909E-4
 Sched_Waittime:4.4990000000000005E-6
 Sched_CtxRate:1.9968051118210863
 Heap_AllocRate:618.7093546773386
-threadName:opensearch[4sqG_AP][[transport_server_worker.default]][T#6]
+threadName:opensearch[4sqG_AP][[transport_worker]][T#6]
 Thread_Blocked_Time:0.0
 Thread_Blocked_Event:32231
 IO_ReadThroughput:0.0
@@ -1532,7 +1532,7 @@ Sched_Runtime:2.62108E-5
 Sched_Waittime:7.8414E-6
 Sched_CtxRate:0.9984025559105432
 Heap_AllocRate:0.0
-threadName:opensearch[4sqG_AP][transport_client_boss][T#6]
+threadName:opensearch[4sqG_AP][transport_worker][T#6]
 Thread_Blocked_Time:0.0
 Thread_Blocked_Event:2
 IO_ReadThroughput:0.0
@@ -1808,7 +1808,7 @@ Sched_Runtime:1.2160590000000001E-4
 Sched_Waittime:3.5187E-6
 Sched_CtxRate:1.9968051118210863
 Heap_AllocRate:605.9029514757378
-threadName:opensearch[4sqG_AP][[transport_server_worker.default]][T#5]
+threadName:opensearch[4sqG_AP][[transport_worker]][T#5]
 Thread_Blocked_Time:0.0
 Thread_Blocked_Event:32008
 IO_ReadThroughput:0.0
@@ -3168,7 +3168,7 @@ Sched_Runtime:2.196067142857143E-4
 Sched_Waittime:4.300571428571429E-6
 Sched_CtxRate:1.3977635782747604
 Heap_AllocRate:33954.57728864432
-threadName:opensearch[4sqG_AP][transport_client_boss][T#2]
+threadName:opensearch[4sqG_AP][transport_worker][T#2]
 Thread_Blocked_Time:0.0
 Thread_Blocked_Event:196238
 IO_ReadThroughput:0.0
@@ -3187,7 +3187,7 @@ Sched_Runtime:1.0810857142857144E-4
 Sched_Waittime:5.049428571428572E-6
 Sched_CtxRate:1.3977635782747604
 Heap_AllocRate:1237.4187093546773
-threadName:opensearch[4sqG_AP][[transport_server_worker.default]][T#8]
+threadName:opensearch[4sqG_AP][[transport_worker]][T#8]
 Thread_Blocked_Time:0.0
 Thread_Blocked_Event:31789
 IO_ReadThroughput:0.0
@@ -3320,7 +3320,7 @@ Sched_Runtime:2.4319000000000002E-5
 Sched_Waittime:1.1410200000000001E-5
 Sched_CtxRate:0.9984025559105432
 Heap_AllocRate:86261.53076538269
-threadName:opensearch[4sqG_AP][transport_client_boss][T#1]
+threadName:opensearch[4sqG_AP][transport_worker][T#1]
 Thread_Blocked_Time:0.0
 Thread_Blocked_Event:194814
 IO_ReadThroughput:0.0
@@ -3434,7 +3434,7 @@ Sched_Runtime:9.900928571428573E-5
 Sched_Waittime:4.588285714285715E-6
 Sched_CtxRate:1.3977635782747604
 Heap_AllocRate:1237.4187093546773
-threadName:opensearch[4sqG_AP][[transport_server_worker.default]][T#4]
+threadName:opensearch[4sqG_AP][[transport_worker]][T#4]
 Thread_Blocked_Time:0.0
 Thread_Blocked_Event:1945
 IO_ReadThroughput:0.0
@@ -3548,7 +3548,7 @@ Sched_Runtime:2.6876600000000003E-5
 Sched_Waittime:9.653400000000001E-6
 Sched_CtxRate:0.9984025559105432
 Heap_AllocRate:0.0
-threadName:opensearch[4sqG_AP][transport_client_boss][T#7]
+threadName:opensearch[4sqG_AP][transport_worker][T#7]
 Thread_Blocked_Time:0.0
 Thread_Blocked_Event:1
 IO_ReadThroughput:0.0
@@ -3776,7 +3776,7 @@ Sched_Runtime:7.420930000000001E-5
 Sched_Waittime:1.8960000000000001E-6
 Sched_CtxRate:1.9968051118210863
 Heap_AllocRate:67909.15457728865
-threadName:opensearch[4sqG_AP][transport_client_boss][T#8]
+threadName:opensearch[4sqG_AP][transport_worker][T#8]
 Thread_Blocked_Time:0.0
 Thread_Blocked_Event:626
 IO_ReadThroughput:0.0

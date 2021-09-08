@@ -78,10 +78,8 @@ public class MetricsEmitter {
     // Pattern otherPattern = Pattern.compile(".*(opensearch).*");
     private static final Pattern HTTP_SERVER_PATTERN =
             Pattern.compile(".*opensearch.*\\[http_server_worker\\].*");
-    private static final Pattern TRANS_SERVER_PATTERN =
-            Pattern.compile(".*opensearch.*\\[transport_server_worker.*");
-    private static final Pattern TRANS_CLIENT_PATTERN =
-            Pattern.compile(".*opensearch.*\\[transport_client_boss\\].*");
+    private static final Pattern TRANS_WORKER_PATTERN =
+            Pattern.compile(".*opensearch.*\\[transport_worker.*");
 
     private static final List<String> LATENCY_TABLE_DIMENSIONS =
             new ArrayList<String>() {
@@ -518,11 +516,11 @@ public class MetricsEmitter {
         // emitWorkloadMetrics functions.
         // Hence these are ignored in this emitter.
         if (SEARCH_PATTERN.matcher(threadName).matches()) {
-            return null;
+            return "search";
         }
         if (BULK_PATTERN.matcher(threadName).matches()
                 || WRITE_PATTERN.matcher(threadName).matches()) {
-            return null;
+            return "write";
         }
 
         if (GC_PATTERN.matcher(threadName).matches()) {
@@ -537,11 +535,8 @@ public class MetricsEmitter {
         if (HTTP_SERVER_PATTERN.matcher(threadName).matches()) {
             return "httpServer";
         }
-        if (TRANS_CLIENT_PATTERN.matcher(threadName).matches()) {
-            return "transportClient";
-        }
-        if (TRANS_SERVER_PATTERN.matcher(threadName).matches()) {
-            return "transportServer";
+        if (TRANS_WORKER_PATTERN.matcher(threadName).matches()) {
+            return "transportWorker";
         }
         if (GENERIC_PATTERN.matcher(threadName).matches()) {
             return "generic";
