@@ -24,7 +24,7 @@
  * permissions and limitations under the License.
  */
 
-package org.opensearch.performanceanalyzer.rca.store.rca.admisioncontrol;
+package org.opensearch.performanceanalyzer.rca.store.rca.admissioncontrol;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -46,7 +46,6 @@ import org.opensearch.performanceanalyzer.rca.framework.api.flow_units.MetricFlo
 import org.opensearch.performanceanalyzer.rca.framework.api.flow_units.ResourceFlowUnit;
 import org.opensearch.performanceanalyzer.rca.framework.api.metrics.MetricTestHelper;
 import org.opensearch.performanceanalyzer.rca.framework.api.summaries.HotNodeSummary;
-import org.opensearch.performanceanalyzer.rca.store.rca.admissioncontrol.AdmissionControlRca;
 import org.opensearch.performanceanalyzer.util.range.Range;
 
 public class AdmissionControlRcaTest {
@@ -91,7 +90,7 @@ public class AdmissionControlRcaTest {
     public void testAdmissionControlRcaNoRangeChange() {
         setupMockHeapMetric(mockHeapMaxValue, 100);
         setupMockHeapMetric(mockHeapUsedValue, 70);
-        IntStream.range(0, PERIOD).forEach(i -> rca.operate());
+        IntStream.range(0, PERIOD - 1).forEach(i -> rca.operate());
 
         setupMockHeapMetric(mockHeapUsedValue, 74);
         ResourceFlowUnit<HotNodeSummary> flowUnit = rca.operate();
@@ -112,7 +111,7 @@ public class AdmissionControlRcaTest {
 
         setupMockHeapMetric(mockHeapMaxValue, 100);
         setupMockHeapMetric(mockHeapUsedValue, 70);
-        IntStream.range(0, PERIOD).forEach(i -> rca.operate());
+        IntStream.range(0, PERIOD - 1).forEach(i -> rca.operate());
 
         setupMockHeapMetric(mockHeapUsedValue, 80);
         ResourceFlowUnit<HotNodeSummary> flowUnit = rca.operate();
@@ -126,7 +125,7 @@ public class AdmissionControlRcaTest {
     public void testAdmissionControlRcaInvalidMaxHeap() {
         setupMockHeapMetric(mockHeapMaxValue, 0);
         setupMockHeapMetric(mockHeapUsedValue, 0);
-        IntStream.range(0, PERIOD).forEach(i -> rca.operate());
+        IntStream.range(0, PERIOD - 1).forEach(i -> rca.operate());
         ResourceFlowUnit<HotNodeSummary> flowUnit = rca.operate();
 
         assertFalse(flowUnit.isEmpty());
