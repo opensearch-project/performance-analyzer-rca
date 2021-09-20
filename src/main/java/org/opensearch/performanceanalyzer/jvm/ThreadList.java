@@ -82,9 +82,12 @@ public class ThreadList {
         public Thread.State state;
         public long blockedCount;
         public long blockedTime;
+        public long waitedCount;
+        public long waitedTime;
 
         public double heapAllocRate;
         public double avgBlockedTime;
+        public double avgWaitedTime;
 
         ThreadState() {
             javaTid = -1;
@@ -93,7 +96,10 @@ public class ThreadList {
             heapAllocRate = 0;
             blockedCount = 0;
             blockedTime = 0;
+            waitedCount = 0;
+            waitedTime = 0;
             avgBlockedTime = 0;
+            avgWaitedTime = 0;
             threadName = "";
             tState = "";
         }
@@ -118,6 +124,10 @@ public class ThreadList {
                     .append(avgBlockedTime)
                     .append(":")
                     .append(blockedCount)
+                    .append(" wTime: ")
+                    .append(avgWaitedTime)
+                    .append(":")
+                    .append(waitedCount)
                     .toString();
         }
     }
@@ -254,7 +264,15 @@ public class ThreadList {
         t.state = state;
         t.blockedCount = info.getBlockedCount();
         t.blockedTime = info.getBlockedTime();
-        ThreadHistory.add(t.nativeTid, (state == Thread.State.BLOCKED) ? samplingInterval : 0);
+        t.waitedCount = info.getWaitedCount();
+        t.waitedTime = info.getWaitedTime();
+        ThreadHistory.addBlocked(
+                t.nativeTid, (state == Thread.State.BLOCKED) ? samplingInterval : 0);
+        ThreadHistory.addWaited(
+                t.nativeTid,
+                (state == Thread.State.WAITING || state == Thread.State.TIMED_WAITING)
+                        ? samplingInterval
+                        : 0);
 
         long curRunTime = System.currentTimeMillis();
         ThreadState oldt = oldNativeTidMap.get(t.nativeTid);
@@ -267,10 +285,22 @@ public class ThreadList {
                                 * (t.blockedTime - oldt.blockedTime)
                                 / (t.blockedCount - oldt.blockedCount);
             } else {
-                CircularLongArray arr = ThreadHistory.tidHistoryMap.get(t.nativeTid);
+                CircularLongArray arr = ThreadHistory.blockedTidHistoryMap.get(t.nativeTid);
                 // NOTE: this is an upper bound
                 if (arr != null) {
                     t.avgBlockedTime = 1.0 * arr.getAvgValue() / samplingInterval;
+                }
+            }
+            if (t.waitedTime != -1 && t.waitedCount > oldt.waitedCount) {
+                t.avgWaitedTime =
+                        1.0e-3
+                                * (t.waitedTime - oldt.waitedTime)
+                                / (t.waitedCount - oldt.waitedCount);
+            } else {
+                CircularLongArray arr = ThreadHistory.waitedTidHistoryMap.get(t.nativeTid);
+                // NOTE: this is an upper bound
+                if (arr != null) {
+                    t.avgWaitedTime = 1.0 * arr.getAvgValue() / samplingInterval;
                 }
             }
         }
@@ -352,10 +382,25 @@ public class ThreadList {
 
     // currently stores thread states to track locking periods
     static class ThreadHistory {
-        public static Map<Long, CircularLongArray> tidHistoryMap = new HashMap<>();
+        public static Map<Long, CircularLongArray> blockedTidHistoryMap = new HashMap<>();
+        public static Map<Long, CircularLongArray> waitedTidHistoryMap = new HashMap<>();
         private static final int HISTORY_SIZE = 60; // 60 * samplingInterval
 
-        public static void add(long tid, long value) {
+        public static void addBlocked(long tid, long value) {
+            add(tid, value, blockedTidHistoryMap);
+        }
+
+        public static void addWaited(long tid, long value) {
+            add(tid, value, waitedTidHistoryMap);
+        }
+
+        public static void cleanup() {
+            long curTime = System.currentTimeMillis();
+            cleanUp(curTime, blockedTidHistoryMap);
+            cleanUp(curTime, waitedTidHistoryMap);
+        }
+
+        private static void add(long tid, long value, Map<Long, CircularLongArray> tidHistoryMap) {
             CircularLongArray arr = tidHistoryMap.get(tid);
             if (arr == null) {
                 arr = new CircularLongArray(HISTORY_SIZE);
@@ -366,8 +411,7 @@ public class ThreadList {
             }
         }
 
-        public static void cleanup() {
-            long curTime = System.currentTimeMillis();
+        private static void cleanUp(long curTime, Map<Long, CircularLongArray> tidHistoryMap) {
             for (Iterator<Map.Entry<Long, CircularLongArray>> it =
                             tidHistoryMap.entrySet().iterator();
                     it.hasNext(); ) {

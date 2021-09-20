@@ -234,6 +234,8 @@ public class OSMetricsSnapshotTests {
                 this.put(AllMetrics.OSMetrics.Constants.TOTAL_SYSCALL_RATE_VALUE, 2342343223d);
                 this.put(AllMetrics.OSMetrics.Constants.BLOCKED_TIME_VALUE, 23432.32432d);
                 this.put(AllMetrics.OSMetrics.Constants.BLOCKED_COUNT_VALUE, 23432.32432d);
+                this.put(AllMetrics.OSMetrics.Constants.WAITED_TIME_VALUE, 23432.32432d);
+                this.put(AllMetrics.OSMetrics.Constants.WAITED_COUNT_VALUE, 23432.32432d);
             }
         };
     }
