@@ -140,7 +140,7 @@ public class PerformanceAnalyzerMetrics {
     private static void emitMetric(BlockingQueue<Event> q, Event entry) {
         if (!q.offer(entry)) {
             PerformanceAnalyzerApp.WRITER_METRICS_AGGREGATOR.updateStat(
-                    WriterMetrics.METRICS_WRITE_ERROR, entry.key, 1);
+                    WriterMetrics.METRICS_WRITE_ERROR, "", 1);
             LOG.debug("Could not enter metric {}", entry);
         }
     }

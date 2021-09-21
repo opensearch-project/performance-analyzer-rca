@@ -356,7 +356,8 @@ public class MetricsEmitterTests extends AbstractReaderTests {
                 "search",
                 MetricsEmitter.categorizeThreadName("opensearch[I9AByra][search]", dimensions));
         assertEquals(
-                "write", MetricsEmitter.categorizeThreadName("opensearch[I9AByra][bulk]", dimensions));
+                "write",
+                MetricsEmitter.categorizeThreadName("opensearch[I9AByra][bulk]", dimensions));
         assertEquals("other", MetricsEmitter.categorizeThreadName("Top thread random", dimensions));
     }
 
