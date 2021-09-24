@@ -26,19 +26,13 @@
 
 package org.opensearch.performanceanalyzer.rca.store.rca.admissioncontrol;
 
-import static org.opensearch.performanceanalyzer.PerformanceAnalyzerApp.RCA_VERTICES_METRICS_AGGREGATOR;
 import static org.opensearch.performanceanalyzer.metrics.AllMetrics.GCType.HEAP;
 import static org.opensearch.performanceanalyzer.metrics.AllMetrics.HeapDimension.MEM_TYPE;
 import static org.opensearch.performanceanalyzer.rca.framework.api.Resources.State.HEALTHY;
-import static org.opensearch.performanceanalyzer.rca.framework.api.Resources.State.UNHEALTHY;
 import static org.opensearch.performanceanalyzer.rca.framework.api.persist.SQLParsingUtil.readDataFromSqlResult;
-import static org.opensearch.performanceanalyzer.rca.framework.api.summaries.ResourceUtil.HEAP_MAX_SIZE;
-import static org.opensearch.performanceanalyzer.rca.framework.metrics.RcaVerticesMetrics.ADMISSION_CONTROL_RCA_TRIGGERED;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
-import java.util.concurrent.atomic.AtomicReference;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jooq.Field;
@@ -48,19 +42,22 @@ import org.opensearch.performanceanalyzer.rca.configs.AdmissionControlRcaConfig;
 import org.opensearch.performanceanalyzer.rca.framework.api.Metric;
 import org.opensearch.performanceanalyzer.rca.framework.api.Rca;
 import org.opensearch.performanceanalyzer.rca.framework.api.contexts.ResourceContext;
+import org.opensearch.performanceanalyzer.rca.framework.api.flow_units.MetricFlowUnit;
 import org.opensearch.performanceanalyzer.rca.framework.api.flow_units.ResourceFlowUnit;
 import org.opensearch.performanceanalyzer.rca.framework.api.summaries.HotNodeSummary;
-import org.opensearch.performanceanalyzer.rca.framework.api.summaries.HotResourceSummary;
 import org.opensearch.performanceanalyzer.rca.framework.core.RcaConf;
 import org.opensearch.performanceanalyzer.rca.framework.util.InstanceDetails;
 import org.opensearch.performanceanalyzer.rca.scheduler.FlowUnitOperationArgWrapper;
+import org.opensearch.performanceanalyzer.rca.store.rca.admissioncontrol.heap.AdmissionControlByHeap;
+import org.opensearch.performanceanalyzer.rca.store.rca.admissioncontrol.heap.AdmissionControlByHeapFactory;
+import org.opensearch.performanceanalyzer.rca.store.rca.admissioncontrol.model.HeapMetric;
 import org.opensearch.performanceanalyzer.util.range.Range;
 import org.opensearch.performanceanalyzer.util.range.RangeConfiguration;
 import org.opensearch.performanceanalyzer.util.range.RequestSizeHeapRangeConfiguration;
 
 public class AdmissionControlRca extends Rca<ResourceFlowUnit<HotNodeSummary>> {
     private static final Logger LOG = LogManager.getLogger(AdmissionControlRca.class);
-    private static final double BYTES_TO_MEGABYTES = Math.pow(1024, 2);
+    private static final double BYTES_TO_GIGABYTES = Math.pow(1024, 3);
 
     // Global JVM Memory Pressure Metric
     public static final String GLOBAL_JVMMP = "Global_JVMMP";
@@ -73,50 +70,37 @@ public class AdmissionControlRca extends Rca<ResourceFlowUnit<HotNodeSummary>> {
     private final RangeConfiguration requestSizeHeapRange;
     private final int rcaPeriod;
     private int counter;
-    private double previousHeapPercent;
 
     public <M extends Metric> AdmissionControlRca(
             final int rcaPeriodInSeconds, final M heapUsedValue, final M heapMaxValue) {
         super(rcaPeriodInSeconds);
         this.counter = 0;
-        this.previousHeapPercent = 0.0;
         this.rcaPeriod = rcaPeriodInSeconds;
         this.heapUsedValue = heapUsedValue;
         this.heapMaxValue = heapMaxValue;
         this.requestSizeHeapRange = new RequestSizeHeapRangeConfiguration();
     }
 
-    private <M extends Metric> double getMetric(
-            M metric, Field<String> field, String fieldName, String dataField) {
-        AtomicReference<Double> metricValue = new AtomicReference<>((double) 0);
-        metric.getFlowUnits().stream()
-                .filter(flowUnit -> !flowUnit.isEmpty() && !flowUnit.getData().isEmpty())
-                .mapToDouble(
-                        flowUnit ->
-                                readDataFromSqlResult(
-                                        flowUnit.getData(), field, fieldName, dataField))
-                .forEach(
-                        metricResponse -> {
-                            if (Double.isNaN(metricResponse)) {
-                                LOG.debug(
-                                        "[AdmissionControl] Failed to parse metric from {}",
-                                        metric.name());
-                            } else {
-                                metricValue.set(metricResponse);
-                            }
-                        });
-        return metricValue.get();
+    private <M extends Metric> double getMetric(M metric, Field<String> field, String fieldName) {
+        double response = 0;
+        for (MetricFlowUnit flowUnit : metric.getFlowUnits()) {
+            if (!flowUnit.isEmpty()) {
+                double metricResponse =
+                        readDataFromSqlResult(flowUnit.getData(), field, fieldName, MetricsDB.MAX);
+                if (!Double.isNaN(metricResponse) && metricResponse > 0) {
+                    response = metricResponse;
+                }
+            }
+        }
+        return response;
     }
 
-    private HeapMetrics getHeapMetric() {
-        HeapMetrics heapMetrics = new HeapMetrics();
-        heapMetrics.usedHeap =
-                getMetric(heapUsedValue, MEM_TYPE.getField(), HEAP.toString(), MetricsDB.MAX)
-                        / BYTES_TO_MEGABYTES;
-        heapMetrics.maxHeap =
-                getMetric(heapMaxValue, MEM_TYPE.getField(), HEAP.toString(), MetricsDB.MAX)
-                        / BYTES_TO_MEGABYTES;
-        return heapMetrics;
+    private HeapMetric getHeapMetric() {
+        double usedHeapInGb =
+                getMetric(heapUsedValue, MEM_TYPE.getField(), HEAP.toString()) / BYTES_TO_GIGABYTES;
+        double maxHeapInGb =
+                getMetric(heapMaxValue, MEM_TYPE.getField(), HEAP.toString()) / BYTES_TO_GIGABYTES;
+        return new HeapMetric(usedHeapInGb, maxHeapInGb);
     }
 
     /**
@@ -138,7 +122,7 @@ public class AdmissionControlRca extends Rca<ResourceFlowUnit<HotNodeSummary>> {
     }
 
     @Override
-    public ResourceFlowUnit operate() {
+    public ResourceFlowUnit<HotNodeSummary> operate() {
         long currentTimeMillis = System.currentTimeMillis();
 
         counter++;
@@ -152,50 +136,19 @@ public class AdmissionControlRca extends Rca<ResourceFlowUnit<HotNodeSummary>> {
                 new HotNodeSummary(
                         instanceDetails.getInstanceId(), instanceDetails.getInstanceIp());
 
-        HeapMetrics heapMetrics = getHeapMetric();
-        if (heapMetrics.usedHeap == 0 || heapMetrics.maxHeap == 0) {
-            ResourceContext context = new ResourceContext(HEALTHY);
-            return new ResourceFlowUnit<>(currentTimeMillis, context, nodeSummary);
-        }
-
-        double currentHeapPercent = (heapMetrics.usedHeap / heapMetrics.maxHeap) * 100;
-
-        // If we observe heap percent range change then we tune request-size controller threshold
-        // by marking resource as unhealthy and setting desired value as configured
-        if (requestSizeHeapRange.hasRangeChanged(previousHeapPercent, currentHeapPercent)) {
-            double desiredThreshold = getHeapBasedThreshold(currentHeapPercent);
-            if (desiredThreshold == 0) {
-                // AdmissionControl rejects all requests if threshold is set to 0, thus ignoring
-                ResourceContext context = new ResourceContext(HEALTHY);
-                return new ResourceFlowUnit<>(currentTimeMillis, context, nodeSummary);
-            }
-            LOG.debug(
-                    "[AdmissionControl] Observed range change. previousHeapPercent={} currentHeapPercent={} desiredThreshold={}",
-                    previousHeapPercent,
-                    currentHeapPercent,
-                    desiredThreshold);
-
-            previousHeapPercent = currentHeapPercent;
-
-            HotResourceSummary resourceSummary =
-                    new HotResourceSummary(HEAP_MAX_SIZE, desiredThreshold, currentHeapPercent, 0);
-            nodeSummary.appendNestedSummary(resourceSummary);
-
-            RCA_VERTICES_METRICS_AGGREGATOR.updateStat(
-                    ADMISSION_CONTROL_RCA_TRIGGERED, instanceDetails.getInstanceId().toString(), 1);
-
-            ResourceContext context = new ResourceContext(UNHEALTHY);
+        HeapMetric heapMetric = getHeapMetric();
+        if (!heapMetric.hasValues()) {
             return new ResourceFlowUnit<>(
-                    currentTimeMillis, context, nodeSummary, !instanceDetails.getIsMaster());
+                    currentTimeMillis,
+                    new ResourceContext(HEALTHY),
+                    nodeSummary,
+                    !instanceDetails.getIsMaster());
         }
 
-        ResourceContext context = new ResourceContext(HEALTHY);
-        return new ResourceFlowUnit<>(currentTimeMillis, context, nodeSummary);
-    }
-
-    private double getHeapBasedThreshold(double currentHeapPercent) {
-        Range range = requestSizeHeapRange.getRange(currentHeapPercent);
-        return Objects.isNull(range) ? 0 : range.getThreshold();
+        AdmissionControlByHeap admissionControlByHeap =
+                AdmissionControlByHeapFactory.getByMaxHeap(heapMetric.getMaxHeap());
+        admissionControlByHeap.init(instanceDetails, requestSizeHeapRange);
+        return admissionControlByHeap.generateFlowUnits(heapMetric);
     }
 
     public RangeConfiguration getRequestSizeHeapRange() {
@@ -206,16 +159,11 @@ public class AdmissionControlRca extends Rca<ResourceFlowUnit<HotNodeSummary>> {
     public void generateFlowUnitListFromWire(FlowUnitOperationArgWrapper args) {
         final List<FlowUnitMessage> flowUnitMessages =
                 args.getWireHopper().readFromWire(args.getNode());
-        List<ResourceFlowUnit<HotNodeSummary>> flowUnitList = new ArrayList<>();
+        final List<ResourceFlowUnit<HotNodeSummary>> flowUnitList = new ArrayList<>();
         LOG.debug("rca: Executing fromWire: {}", this.getClass().getSimpleName());
         for (FlowUnitMessage flowUnitMessage : flowUnitMessages) {
             flowUnitList.add(ResourceFlowUnit.buildFlowUnitFromWrapper(flowUnitMessage));
         }
         setFlowUnits(flowUnitList);
-    }
-
-    private static class HeapMetrics {
-        private double usedHeap;
-        private double maxHeap;
     }
 }

@@ -48,14 +48,9 @@ import org.opensearch.performanceanalyzer.util.range.Range;
  *       "heap-range": [
  *         {
  *           "lower-bound": 0,
- *           "upper-bound": 75,
- *           "threshold": 15
- *         },
- *         {
- *           "lower-bound": 76,
  *           "upper-bound": 80,
- *           "threshold": 12.5
- *         }
+ *           "threshold": 15.0
+ *         },
  *         ...
  *       ]
  *     }
