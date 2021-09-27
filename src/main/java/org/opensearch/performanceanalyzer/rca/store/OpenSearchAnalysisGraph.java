@@ -472,10 +472,13 @@ public class OpenSearchAnalysisGraph extends AnalysisGraph {
         admissionControlClusterRca.addTag(
                 RcaConsts.RcaTagConstants.TAG_LOCUS, RcaConsts.RcaTagConstants.LOCUS_MASTER_NODE);
         admissionControlClusterRca.addAllUpstreams(Collections.singletonList(admissionControlRca));
+        admissionControlClusterRca.addTag(
+                RcaConsts.RcaTagConstants.TAG_AGGREGATE_UPSTREAM,
+                RcaConsts.RcaTagConstants.LOCUS_DATA_NODE);
 
         AdmissionControlDecider admissionControlDecider =
                 new AdmissionControlDecider(
-                        EVALUATION_INTERVAL_SECONDS, 12, admissionControlClusterRca);
+                        EVALUATION_INTERVAL_SECONDS, RCA_PERIOD, admissionControlClusterRca);
         admissionControlDecider.addTag(
                 RcaConsts.RcaTagConstants.TAG_LOCUS, RcaConsts.RcaTagConstants.LOCUS_MASTER_NODE);
         admissionControlDecider.addAllUpstreams(

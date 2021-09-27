@@ -36,6 +36,7 @@ import java.util.Objects;
 import org.opensearch.performanceanalyzer.decisionmaker.actions.AdmissionControlAction;
 import org.opensearch.performanceanalyzer.grpc.ResourceEnum;
 import org.opensearch.performanceanalyzer.rca.framework.api.flow_units.ResourceFlowUnit;
+import org.opensearch.performanceanalyzer.rca.framework.api.summaries.HotClusterSummary;
 import org.opensearch.performanceanalyzer.rca.framework.api.summaries.HotNodeSummary;
 import org.opensearch.performanceanalyzer.rca.framework.api.summaries.HotResourceSummary;
 import org.opensearch.performanceanalyzer.rca.store.rca.admissioncontrol.AdmissionControlClusterRca;
@@ -45,7 +46,7 @@ public class AdmissionControlDecider extends Decider {
 
     private int counter = 0;
     private static final String NAME = "admissionControlDecider";
-    private AdmissionControlClusterRca admissionControlClusterRca;
+    private final AdmissionControlClusterRca admissionControlClusterRca;
 
     public AdmissionControlDecider(
             long evalIntervalSeconds,
@@ -79,21 +80,29 @@ public class AdmissionControlDecider extends Decider {
 
     private List<AdmissionControlAction> getHeapBasedActions() {
         List<AdmissionControlAction> heapBasedActions = new ArrayList<>();
-        admissionControlClusterRca.getFlowUnits().stream()
-                .filter(ResourceFlowUnit::hasResourceSummary)
-                .flatMap(
-                        clusterRcaFlowUnits ->
-                                clusterRcaFlowUnits.getSummary().getHotNodeSummaryList().stream())
+
+        if (admissionControlClusterRca.getFlowUnits().isEmpty()) {
+            return heapBasedActions;
+        }
+
+        ResourceFlowUnit<HotClusterSummary> flowUnit =
+                admissionControlClusterRca.getFlowUnits().get(0);
+        if (!flowUnit.hasResourceSummary()) {
+            return heapBasedActions;
+        }
+
+        HotClusterSummary clusterSummary = flowUnit.getSummary();
+        clusterSummary
+                .getHotNodeSummaryList()
                 .forEach(
-                        hotNodeSummary -> {
-                            hotNodeSummary.getHotResourceSummaryList().stream()
+                        nodeSummary -> {
+                            nodeSummary.getHotResourceSummaryList().stream()
                                     .filter(this::isHeapResource)
-                                    .map(
-                                            hotResourceSummary ->
-                                                    getAction(hotNodeSummary, hotResourceSummary))
+                                    .map(resourceSummary -> getAction(nodeSummary, resourceSummary))
                                     .filter(Objects::nonNull)
                                     .forEach(heapBasedActions::add);
                         });
+
         return heapBasedActions;
     }
 
@@ -103,12 +112,12 @@ public class AdmissionControlDecider extends Decider {
 
     private AdmissionControlAction getAction(
             HotNodeSummary hotNodeSummary, HotResourceSummary hotResourceSummary) {
-        double currentHeapPercent = hotResourceSummary.getValue();
+        double currentThreshold = hotResourceSummary.getValue();
         double desiredThreshold = hotResourceSummary.getThreshold();
         NodeKey esNode = new NodeKey(hotNodeSummary.getNodeID(), hotNodeSummary.getHostAddress());
         AdmissionControlAction action =
                 AdmissionControlAction.newBuilder(esNode, REQUEST_SIZE, getAppContext(), rcaConf)
-                        .currentValue(currentHeapPercent)
+                        .currentValue(currentThreshold)
                         .desiredValue(desiredThreshold)
                         .build();
         return action.isActionable() ? action : null;
