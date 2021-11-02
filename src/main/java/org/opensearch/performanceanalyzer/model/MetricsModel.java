@@ -133,7 +133,13 @@ public class MetricsModel {
         allMetricsInitializer.put(
                 OSMetrics.THREAD_BLOCKED_EVENT.toString(),
                 new MetricAttributes(MetricUnits.COUNT.toString(), AggregatedOSDimension.values()));
-
+        allMetricsInitializer.put(
+                OSMetrics.THREAD_WAITED_TIME.toString(),
+                new MetricAttributes(
+                        MetricUnits.SEC_PER_EVENT.toString(), AggregatedOSDimension.values()));
+        allMetricsInitializer.put(
+                OSMetrics.THREAD_WAITED_EVENT.toString(),
+                new MetricAttributes(MetricUnits.COUNT.toString(), AggregatedOSDimension.values()));
         // Latency Metric
         allMetricsInitializer.put(
                 CommonMetric.LATENCY.toString(),

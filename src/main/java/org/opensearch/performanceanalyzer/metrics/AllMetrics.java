@@ -962,7 +962,9 @@ public class AllMetrics {
         IO_WRITE_SYSCALL_RATE(Constants.WRITE_SYSCALL_RATE_VALUE),
         IO_TOTAL_SYSCALL_RATE(Constants.TOTAL_SYSCALL_RATE_VALUE),
         THREAD_BLOCKED_TIME(Constants.BLOCKED_TIME_VALUE),
-        THREAD_BLOCKED_EVENT(Constants.BLOCKED_COUNT_VALUE);
+        THREAD_BLOCKED_EVENT(Constants.BLOCKED_COUNT_VALUE),
+        THREAD_WAITED_TIME(Constants.WAITED_TIME_VALUE),
+        THREAD_WAITED_EVENT(Constants.WAITED_COUNT_VALUE);
 
         private final String value;
 
@@ -992,6 +994,8 @@ public class AllMetrics {
             public static final String TOTAL_SYSCALL_RATE_VALUE = "IO_TotalSyscallRate";
             public static final String BLOCKED_TIME_VALUE = "Thread_Blocked_Time";
             public static final String BLOCKED_COUNT_VALUE = "Thread_Blocked_Event";
+            public static final String WAITED_TIME_VALUE = "Thread_Waited_Time";
+            public static final String WAITED_COUNT_VALUE = "Thread_Waited_Event";
         }
     }
 

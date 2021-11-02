@@ -128,6 +128,14 @@ public class OSMetricsCollector extends PerformanceAnalyzerMetricsCollector
                         .append(OSMetrics.THREAD_BLOCKED_EVENT)
                         .append(PerformanceAnalyzerMetrics.sKeyValueDelimitor)
                         .append(threadState.blockedCount);
+                value.append(PerformanceAnalyzerMetrics.sMetricNewLineDelimitor)
+                        .append(OSMetrics.THREAD_WAITED_TIME)
+                        .append(PerformanceAnalyzerMetrics.sKeyValueDelimitor)
+                        .append(threadState.avgWaitedTime);
+                value.append(PerformanceAnalyzerMetrics.sMetricNewLineDelimitor)
+                        .append(OSMetrics.THREAD_WAITED_EVENT)
+                        .append(PerformanceAnalyzerMetrics.sKeyValueDelimitor)
+                        .append(threadState.waitedCount);
             }
 
             if (diskIOMetricsGenerator.hasDiskIOMetrics(threadId)) {
