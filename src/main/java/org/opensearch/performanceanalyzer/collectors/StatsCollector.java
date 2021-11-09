@@ -224,7 +224,9 @@ public class StatsCollector extends PerformanceAnalyzerMetricsCollector {
 
         addEntry("Counters", getCountersString(counters), builder);
         builder.append(LOG_ENTRY_END); // + LOG_LINE_BREAK);
-        STATS_LOGGER.info(builder.toString());
+        /* Setting this log level to debug (and not info) to avoid logging noisy plugin stats
+        logs to the console and opensearch.log file */
+        STATS_LOGGER.debug(builder.toString());
     }
 
     private static String getCountersString(Map<String, AtomicInteger> counters) {
