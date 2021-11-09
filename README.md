@@ -66,7 +66,7 @@ __Tags__: Tags are key-value pairs that are specified in the configuration file(
 * Tags are also used by hosts to find and subscribe to remote datastreams. For example, a cluster-wide RCA running on the master can subscribe to datastreams from all data hosts in the cluster.
 
 ## Design RFC
-[RFC](./rfc-rca.pdf)
+[RFC](https://github.com/opensearch-project/performance-analyzer-rca/blob/main/docs/rfc-rca.pdf)
 
 ## Rest API to get the RCAs
 * To get response for all the available RCA, use:
@@ -200,7 +200,7 @@ If you discover a potential security issue in this project we ask that you notif
 
 ## License
 
-This project is licensed under the [Apache v2.0 License](LICENSE.txt).
+This project is licensed under the [Apache v2.0 License](LICENSE).
 
 ## Copyright
 
