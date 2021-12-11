@@ -48,8 +48,8 @@ jobs:
     - name: Checkout Performance Analyzer
       uses: actions/checkout@v2
       with:
-        repository: sruti1312/performance-analyzer-1
-        ref: feature/upgrade-1.2.1
+        repository: opensearch-project/performance-analyzer
+        ref: 1.2
         path: ./tmp/performance-analyzer
     - name: Build PA gradle using the new RCA jar
       working-directory: ./tmp/performance-analyzer
