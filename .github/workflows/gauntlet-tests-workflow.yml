@@ -25,4 +25,4 @@ jobs:
         path: ./tmp/performance-analyzer-rca
     - name: Build RCA and run Gauntlet tests
       working-directory:  ./tmp/performance-analyzer-rca
-      run: ./gradlew build -Drun.gauntlet.tests=true -Dopensearch.version=1.2.1-SNAPSHOT
+      run: ./gradlew build -Drun.gauntlet.tests=true -Dopensearch.version=1.2.2-SNAPSHOT
