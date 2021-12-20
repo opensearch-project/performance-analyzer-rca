@@ -26,7 +26,7 @@ jobs:
         path: ./tmp/performance-analyzer-rca
     - name: Build RCA
       working-directory:  ./tmp/performance-analyzer-rca
-      run: ./gradlew build --stacktrace -Dopensearch.version=1.2.2-SNAPSHOT
+      run: ./gradlew build --stacktrace -Dopensearch.version=1.3.0-SNAPSHOT
     - name: Upload reports
       uses: actions/upload-artifact@v2
       with:
@@ -42,7 +42,7 @@ jobs:
       run: bash <(curl -s https://codecov.io/bash) -f ./build/reports/jacoco/test/jacocoTestReport.xml
     - name: Publish RCA jar to maven local
       working-directory: ./tmp/performance-analyzer-rca
-      run: ./gradlew publishToMavenLocal -Dopensearch.version=1.2.2-SNAPSHOT
+      run: ./gradlew publishToMavenLocal -Dopensearch.version=1.3.0-SNAPSHOT
 
     # PA in ./tmp/performance-analyzer
     - name: Checkout Performance Analyzer
@@ -56,7 +56,7 @@ jobs:
       run: rm -f licenses/performanceanalyzer-rca-*.jar.sha1
     - name: Update SHA
       working-directory: ./tmp/performance-analyzer
-      run: ./gradlew updateShas -Dopensearch.version=1.2.2-SNAPSHOT
+      run: ./gradlew updateShas -Dopensearch.version=1.3.0-SNAPSHOT
     - name: Set docker-compose path
       run: echo "DOCKER_COMPOSE_LOCATION=$(which docker-compose)" >> $GITHUB_ENV
       # Set the vm.max_map_count system property to the minimum required to run OpenSearch
@@ -64,14 +64,14 @@ jobs:
       run: sudo sysctl -w vm.max_map_count=262144
     - name: Build PA and run Unit Tests
       working-directory: ./tmp/performance-analyzer
-      run: ./gradlew build -i -Dopensearch.version=1.2.2-SNAPSHOT
+      run: ./gradlew build -i -Dopensearch.version=1.3.0-SNAPSHOT
 
     # Enable RCA for Integration Tests
     - name: Spin up Docker cluster for integ testing
       working-directory: ./tmp/performance-analyzer-rca
-      run: ./gradlew enableRca -Dopensearch.version=1.2.2-SNAPSHOT
+      run: ./gradlew enableRca -Dopensearch.version=1.3.0-SNAPSHOT
 
     # Run Integration Tests in PA
     - name: Run integration tests
       working-directory: ./tmp/performance-analyzer
-      run: ./gradlew integTest --info --stacktrace -Dtests.enableIT=true -Dopensearch.version=1.2.2-SNAPSHOT
+      run: ./gradlew integTest --info --stacktrace -Dtests.enableIT=true -Dopensearch.version=1.3.0-SNAPSHOT
