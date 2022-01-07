@@ -446,7 +446,7 @@ task buildDocker(type: Exec) {
     dependsOn(copyAllArtifacts)
 
     workingDir(dockerArtifactsDir)
-    commandLine 'docker', 'build', '-t', 'opensearch/pa-rca:1.2', '.'
+    commandLine 'docker', 'build', '-t', 'opensearch/pa-rca:1.3', '.'
 }
 
 task runDocker(type: Exec) {
