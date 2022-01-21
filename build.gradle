@@ -331,7 +331,7 @@ dependencies {
     compile(group: 'com.google.errorprone', name: 'error_prone_annotations', version: '2.9.0') {
         force = 'true'
     }
-    compile ('com.google.protobuf:protobuf-java:3.18.2') {
+    compile ('com.google.protobuf:protobuf-java:3.19.3') {
         force = 'true'
     }
     implementation 'io.grpc:grpc-netty-shaded:1.42.2'
@@ -357,7 +357,7 @@ dependencies {
 
 protobuf {
     protoc {
-        artifact = "com.google.protobuf:protoc:3.11.0"
+        artifact = "com.google.protobuf:protoc:3.19.3"
     }
 
     plugins {
