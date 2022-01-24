@@ -90,12 +90,4 @@
             <Bug pattern="UCF_USELESS_CONTROL_FLOW"/>
         </Or>
     </Match>
-    <Match>
-        <Class name="org.opensearch.performanceanalyzer.rca.store.rca.cluster.BaseClusterRca"/>
-        <Bug pattern="NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE"/>
-    </Match>
-    <Match>
-        <Class name="org.opensearch.performanceanalyzer.rca.store.rca.hotshard.HotShardClusterRca"/>
-        <Bug pattern="NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE"/>
-    </Match>
 </FindBugsFilter>
