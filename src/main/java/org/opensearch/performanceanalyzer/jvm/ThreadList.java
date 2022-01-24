@@ -52,6 +52,12 @@ public class ThreadList {
 
     private static Lock vmAttachLock = new ReentrantLock();
 
+    static {
+        if (threadBean.isThreadContentionMonitoringSupported()) {
+            threadBean.setThreadContentionMonitoringEnabled(true);
+        }
+    }
+
     public static class ThreadState {
         public long javaTid;
         public long nativeTid;
@@ -263,6 +269,9 @@ public class ThreadList {
                         1.0e-3
                                 * (t.blockedTime - oldt.blockedTime)
                                 / (t.blockedCount - oldt.blockedCount);
+            } else if (t.blockedCount == oldt.blockedCount && t.blockedTime > oldt.blockedTime) {
+                t.avgBlockedTime =
+                        1.0e-3 * (t.blockedTime - oldt.blockedTime + oldt.avgBlockedTime);
             } else {
                 CircularLongArray arr = ThreadHistory.blockedTidHistoryMap.get(t.nativeTid);
                 // NOTE: this is an upper bound
@@ -275,6 +284,8 @@ public class ThreadList {
                         1.0e-3
                                 * (t.waitedTime - oldt.waitedTime)
                                 / (t.waitedCount - oldt.waitedCount);
+            } else if (t.waitedCount == oldt.waitedCount && t.waitedTime > oldt.waitedTime) {
+                t.avgWaitedTime = 1.0e-3 * (t.waitedTime - oldt.waitedTime + oldt.avgWaitedTime);
             } else {
                 CircularLongArray arr = ThreadHistory.waitedTidHistoryMap.get(t.nativeTid);
                 // NOTE: this is an upper bound
