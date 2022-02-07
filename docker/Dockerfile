@@ -33,7 +33,7 @@ FROM centos:7 AS prep_open_search_files
 
 ENV PATH /usr/share/opensearch/bin:$PATH
 RUN curl -s https://download.java.net/java/GA/jdk11/13/GPL/openjdk-11.0.1_linux-x64_bin.tar.gz | tar -C /opt -zxf -
-ENV JAVA_HOME /opt/jdk-11.0.1
+ENV OPENSEARCH_JAVA_HOME /opt/jdk-11.0.1
 RUN yum install -y unzip
 RUN yum install -y lsof
 
@@ -109,13 +109,13 @@ RUN yum update -y && \
     yum clean all
 COPY CENTOS_LICENSING.txt /root
 COPY --from=prep_open_search_files --chown=1000:0 /opt/jdk-11.0.1 /opt/jdk-11.0.1
-ENV JAVA_HOME /opt/jdk-11.0.1
+ENV OPENSEARCH_JAVA_HOME /opt/jdk-11.0.1
 
 # Replace OpenJDK's built-in CA certificate keystore with the one from the OS
 # vendor. The latter is superior in several ways.
 RUN ln -sf /etc/pki/ca-trust/extracted/java/cacerts /opt/jdk-11.0.1/lib/security/cacerts
 
-ENV PATH $PATH:$JAVA_HOME/bin
+ENV PATH $PATH:$OPENSEARCH_JAVA_HOME/bin
 
 RUN mkdir /usr/share/opensearch && \
     groupadd -g 1000 opensearch && \

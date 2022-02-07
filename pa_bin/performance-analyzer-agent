@@ -15,13 +15,22 @@ else
 fi
 
 if [ -z "$2" ]; then
-    if [ -z "$JAVA_HOME" ]; then
-        echo "JAVA_HOME needs to be set or passed in as the second parameter."
+  # Check if OPENSEARCH_JAVA_HOME is present
+  if [ -z "$OPENSEARCH_JAVA_HOME" ]; then
+      # If OPENSEARCH_JAVA_HOME is not present, check JAVA_HOME next
+      if [ -z "$JAVA_HOME" ]; then
+        echo "OPENSEARCH_JAVA_HOME / JAVA_HOME needs to be set or passed in as the second parameter."
         exit 1
-    fi
+      fi
+  else
+    JAVA_HOME=$OPENSEARCH_JAVA_HOME
+  fi
 else
     JAVA_HOME=$2
 fi
+
+echo "Using JAVA_HOME: $JAVA_HOME"
+export JAVA_HOME=$JAVA_HOME
 
 if ! echo $* | grep -E '(^-d |-d$| -d |--daemonize$|--daemonize )' > /dev/null; then
     export JAVA_OPTS=-Dopensearch.path.home=$OPENSEARCH_HOME\ -Dlog4j.configurationFile=$OPENSEARCH_HOME/performance-analyzer-rca/pa_config/log4j2.xml\ -XX:+ExitOnOutOfMemoryError
