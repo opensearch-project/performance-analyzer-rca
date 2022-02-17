@@ -28,7 +28,7 @@ package org.opensearch.performanceanalyzer;
 
 
 import com.sun.net.httpserver.HttpServer;
-import io.grpc.netty.shaded.io.netty.handler.codec.http.HttpResponseStatus;
+import io.netty.handler.codec.http.HttpResponseStatus;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
