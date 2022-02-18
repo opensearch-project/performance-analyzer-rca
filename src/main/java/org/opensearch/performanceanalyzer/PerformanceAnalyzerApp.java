@@ -149,16 +149,7 @@ public class PerformanceAnalyzerApp {
                     new GRPCConnectionManager(settings.getHttpsEnabled());
             final ClientServers clientServers = createClientServers(connectionManager, appContext);
 
-            // Adds a hook to shut down resources after PA process exits due to some reason.
-            Runtime.getRuntime()
-                    .addShutdownHook(
-                            new Thread(
-                                    () -> {
-                                        LOG.info(
-                                                "Trying to shutdown  performance analyzer gracefully");
-                                        shutDownGracefully(clientServers);
-                                    }));
-
+            addShutdownHook(clientServers);
             startErrorHandlingThread(THREAD_PROVIDER, exceptionQueue);
 
             startReaderThread(appContext, THREAD_PROVIDER);
@@ -399,6 +390,18 @@ public class PerformanceAnalyzerApp {
     @VisibleForTesting
     public static void setRcaController(RcaController rcaController) {
         PerformanceAnalyzerApp.rcaController = rcaController;
+    }
+
+
+    // Adds a hook to shut down resources after PA process exits due to some reason.
+    private static void addShutdownHook(ClientServers clientServers) {
+        Runtime.getRuntime()
+                .addShutdownHook(
+                        new Thread(
+                                () -> {
+                                    LOG.info("Trying to shutdown performance analyzer gracefully");
+                                    shutDownGracefully(clientServers);
+                                }));
     }
 
     /**
