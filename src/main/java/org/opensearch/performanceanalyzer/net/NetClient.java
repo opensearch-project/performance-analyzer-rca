@@ -67,8 +67,18 @@ public class NetClient {
         return connectionManager;
     }
 
-    private ConcurrentMap<InstanceDetails.Id, AtomicReference<StreamObserver<FlowUnitMessage>>>
-            perHostOpenDataStreamMap = new ConcurrentHashMap<>();
+    private ConcurrentMap<
+                    InstanceDetails.Id,
+                    ConcurrentMap<String, AtomicReference<StreamObserver<FlowUnitMessage>>>>
+            perHostAndNodeOpenDataStreamMap = new ConcurrentHashMap<>();
+
+    // Visible for testing
+    protected ConcurrentMap<
+                    InstanceDetails.Id,
+                    ConcurrentMap<String, AtomicReference<StreamObserver<FlowUnitMessage>>>>
+            getPerHostAndNodeOpenDataStreamMap() {
+        return perHostAndNodeOpenDataStreamMap;
+    }
 
     /**
      * Sends a subscribe request to a remote host. If the subscribe request fails because the remote
@@ -114,7 +124,8 @@ public class NetClient {
         LOG.debug("Publishing {} data to {}", flowUnitMessage.getGraphNode(), remoteHost);
         try {
             final StreamObserver<FlowUnitMessage> stream =
-                    getDataStreamForHost(remoteHost, serverResponseStream);
+                    getDataStreamForHost(
+                            remoteHost, flowUnitMessage.getGraphNode(), serverResponseStream);
             stream.onNext(flowUnitMessage);
             PerformanceAnalyzerApp.RCA_GRAPH_METRICS_AGGREGATOR.updateStat(
                     RcaGraphMetrics.NET_BYTES_OUT,
@@ -141,33 +152,43 @@ public class NetClient {
     public void stop() {
         LOG.debug("Shutting down client streaming connections..");
         closeAllDataStreams();
+        this.connectionManager.shutdown();
     }
 
     public void flushStream(final InstanceDetails.Id remoteHost) {
         LOG.debug("removing data streams for {} as we are no publishing to it.", remoteHost);
-        perHostOpenDataStreamMap.remove(remoteHost);
+        perHostAndNodeOpenDataStreamMap.remove(remoteHost);
     }
 
     private void closeAllDataStreams() {
-        for (Map.Entry<InstanceDetails.Id, AtomicReference<StreamObserver<FlowUnitMessage>>> entry :
-                perHostOpenDataStreamMap.entrySet()) {
+        for (Map.Entry<
+                        InstanceDetails.Id,
+                        ConcurrentMap<String, AtomicReference<StreamObserver<FlowUnitMessage>>>>
+                entry : perHostAndNodeOpenDataStreamMap.entrySet()) {
             LOG.debug("Closing stream for host: {}", entry.getKey());
             // Sending an onCompleted should trigger the subscriber's node state manager
-            // and cause this host to be put under observation.f
-            entry.getValue().get().onCompleted();
-            perHostOpenDataStreamMap.remove(entry.getKey());
+            // and cause this host to be put under observation.
+            // Closes stream for each node for an instance.
+            for (Map.Entry<String, AtomicReference<StreamObserver<FlowUnitMessage>>>
+                    perInstanceEntry : entry.getValue().entrySet()) {
+                perInstanceEntry.getValue().get().onCompleted();
+            }
+            perHostAndNodeOpenDataStreamMap.remove(entry.getKey());
         }
     }
 
     private StreamObserver<FlowUnitMessage> getDataStreamForHost(
             final InstanceDetails remoteHost,
+            final String graphNode,
             final StreamObserver<PublishResponse> serverResponseStream) {
-        final AtomicReference<StreamObserver<FlowUnitMessage>> streamObserverAtomicReference =
-                perHostOpenDataStreamMap.get(remoteHost.getInstanceId());
-        if (streamObserverAtomicReference != null) {
-            return streamObserverAtomicReference.get();
+        final ConcurrentMap<String, AtomicReference<StreamObserver<FlowUnitMessage>>>
+                streamObserverAtomicReference =
+                        perHostAndNodeOpenDataStreamMap.get(remoteHost.getInstanceId());
+        if (streamObserverAtomicReference != null
+                && streamObserverAtomicReference.get(graphNode) != null) {
+            return streamObserverAtomicReference.get(graphNode).get();
         }
-        return addOrUpdateDataStreamForHost(remoteHost, serverResponseStream);
+        return addOrUpdateDataStreamForHost(remoteHost, graphNode, serverResponseStream);
     }
 
     /**
@@ -179,13 +200,24 @@ public class NetClient {
      */
     private synchronized StreamObserver<FlowUnitMessage> addOrUpdateDataStreamForHost(
             final InstanceDetails remoteHost,
+            final String graphNode,
             final StreamObserver<PublishResponse> serverResponseStream) {
         InterNodeRpcServiceGrpc.InterNodeRpcServiceStub stub =
                 connectionManager.getClientStubForHost(remoteHost);
         final StreamObserver<FlowUnitMessage> dataStream = stub.publish(serverResponseStream);
-        perHostOpenDataStreamMap.computeIfAbsent(
-                remoteHost.getInstanceId(), s -> new AtomicReference<>());
-        perHostOpenDataStreamMap.get(remoteHost.getInstanceId()).set(dataStream);
+        perHostAndNodeOpenDataStreamMap.computeIfAbsent(
+                remoteHost.getInstanceId(),
+                k ->
+                        new ConcurrentHashMap<
+                                String, AtomicReference<StreamObserver<FlowUnitMessage>>>() {
+                            {
+                                put(graphNode, new AtomicReference<>());
+                            }
+                        });
+        perHostAndNodeOpenDataStreamMap
+                .get(remoteHost.getInstanceId())
+                .computeIfAbsent(graphNode, k -> new AtomicReference<>())
+                .set(dataStream);
         return dataStream;
     }
 }

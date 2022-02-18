@@ -271,7 +271,9 @@ public class NetServer extends InterNodeRpcServiceGrpc.InterNodeRpcServiceImplBa
         if (server != null) {
             server.shutdown();
             try {
-                server.awaitTermination(1, TimeUnit.MINUTES);
+                if (!server.awaitTermination(1, TimeUnit.MINUTES)) {
+                    LOG.warn("Timed out while gracefully shutting down net server");
+                }
             } catch (InterruptedException e) {
                 server.shutdownNow();
                 Thread.currentThread().interrupt();
