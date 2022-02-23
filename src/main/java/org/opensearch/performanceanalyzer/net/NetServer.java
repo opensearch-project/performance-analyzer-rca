@@ -26,6 +26,7 @@
 
 package org.opensearch.performanceanalyzer.net;
 
+import static org.opensearch.performanceanalyzer.rca.framework.metrics.WriterMetrics.GRPC_SERVER_CLOSURE_ERROR;
 
 import com.google.common.annotations.VisibleForTesting;
 import io.grpc.Server;
@@ -44,6 +45,7 @@ import javax.net.ssl.SSLException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.opensearch.performanceanalyzer.CertificateUtils;
+import org.opensearch.performanceanalyzer.PerformanceAnalyzerApp;
 import org.opensearch.performanceanalyzer.grpc.FlowUnitMessage;
 import org.opensearch.performanceanalyzer.grpc.InterNodeRpcServiceGrpc;
 import org.opensearch.performanceanalyzer.grpc.MetricsRequest;
@@ -271,7 +273,10 @@ public class NetServer extends InterNodeRpcServiceGrpc.InterNodeRpcServiceImplBa
         if (server != null) {
             server.shutdown();
             try {
-                server.awaitTermination(1, TimeUnit.MINUTES);
+                if (!server.awaitTermination(1, TimeUnit.MINUTES)) {
+                    PerformanceAnalyzerApp.WRITER_METRICS_AGGREGATOR.updateStat(GRPC_SERVER_CLOSURE_ERROR, "", 1);
+                    LOG.warn("Timed out while gracefully shutting down net server");
+                }
             } catch (InterruptedException e) {
                 server.shutdownNow();
                 Thread.currentThread().interrupt();

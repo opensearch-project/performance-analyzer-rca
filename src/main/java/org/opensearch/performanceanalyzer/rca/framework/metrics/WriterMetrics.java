@@ -210,7 +210,18 @@ public enum WriterMetrics implements MeasurementSet {
 
     /** This metric indicates faiure in cleaning up the event log files */
     METRICS_REMOVE_FAILURE("MetricsRemoveFailure", "count", Arrays.asList(Statistics.COUNT)),
-    ;
+
+    /** This metric indicates that error occurred while closing grpc channels. */
+    GRPC_CHANNEL_CLOSURE_ERROR("GrpcChannelClosureError", "count", Arrays.asList(Statistics.COUNT)),
+
+    /** This metric indicates that error occurred while closing grpc server. */
+    GRPC_SERVER_CLOSURE_ERROR("GrpcServerClosureError", "count", Arrays.asList(Statistics.COUNT)),
+
+    /** This metric indicates that error occurred while closing metrics db. */
+    METRICS_DB_CLOSURE_ERROR("MetricsDbClosureError", "count", Arrays.asList(Statistics.COUNT)),
+
+    /** This metric indicates that error occurred while closing database connection. */
+    IN_MEMORY_DATABASE_CONN_CLOSURE_ERROR("InMemoryDatabaseConnClosureError", "count", Arrays.asList(Statistics.COUNT));
 
     /** What we want to appear as the metric name. */
     private String name;

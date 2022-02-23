@@ -74,12 +74,15 @@ public class PublishRequestHandler {
 
     public void terminateUpstreamConnections() {
         for (final StreamObserver<PublishResponse> responseStream : upstreamResponseStreamList) {
+            /* TODO: We need to check somehow to see if stream was already completed before calling onNext.
+            This is causing issues and causes RCA thread to crash in some cases. */
             responseStream.onNext(
                     PublishResponse.newBuilder()
                             .setDataStatus(PublishResponseStatus.NODE_SHUTDOWN)
                             .build());
             responseStream.onCompleted();
         }
+        upstreamResponseStreamList.clear();
     }
 
     private class SendDataClientStreamUpdateConsumer implements StreamObserver<FlowUnitMessage> {
