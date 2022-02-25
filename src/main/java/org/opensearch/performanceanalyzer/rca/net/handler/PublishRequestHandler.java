@@ -78,7 +78,7 @@ public class PublishRequestHandler {
         for (final SendDataClientStreamUpdateConsumer streamUpdateConsumer : dataClientStreamList) {
             StreamObserver<PublishResponse> responseStream =
                     streamUpdateConsumer.getServiceResponse();
-            // Check whether the desired stream was already closed by the client before invoking
+            // Check whether the desired stream was already completed by the client before invoking
             // onNext.
             // In case stream was closed/completed by client, calling onNext will result in an
             // exception.

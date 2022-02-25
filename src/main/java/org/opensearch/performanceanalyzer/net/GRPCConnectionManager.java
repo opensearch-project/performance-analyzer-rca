@@ -26,13 +26,14 @@
 
 package org.opensearch.performanceanalyzer.net;
 
+import static org.opensearch.performanceanalyzer.rca.framework.metrics.WriterMetrics.GRPC_CHANNEL_CLOSURE_ERROR;
 
 import com.google.common.annotations.VisibleForTesting;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
-import io.grpc.netty.shaded.io.grpc.netty.GrpcSslContexts;
-import io.grpc.netty.shaded.io.grpc.netty.NettyChannelBuilder;
-import io.grpc.netty.shaded.io.netty.handler.ssl.SslContextBuilder;
+import io.grpc.netty.GrpcSslContexts;
+import io.grpc.netty.NettyChannelBuilder;
+import io.netty.handler.ssl.SslContextBuilder;
 import java.io.File;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -43,6 +44,7 @@ import javax.net.ssl.SSLException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.opensearch.performanceanalyzer.CertificateUtils;
+import org.opensearch.performanceanalyzer.PerformanceAnalyzerApp;
 import org.opensearch.performanceanalyzer.grpc.InterNodeRpcServiceGrpc;
 import org.opensearch.performanceanalyzer.grpc.InterNodeRpcServiceGrpc.InterNodeRpcServiceStub;
 import org.opensearch.performanceanalyzer.rca.framework.util.InstanceDetails;
@@ -238,7 +240,10 @@ public class GRPCConnectionManager {
             ManagedChannel channel = entry.getValue().get();
             channel.shutdownNow();
             try {
-                channel.awaitTermination(1, TimeUnit.MINUTES);
+                if (!channel.awaitTermination(1, TimeUnit.MINUTES)) {
+                    PerformanceAnalyzerApp.WRITER_METRICS_AGGREGATOR.updateStat(GRPC_CHANNEL_CLOSURE_ERROR, "", 1);
+                    LOG.warn("Unable to close channel gracefully for host: {}", entry.getKey());
+                }
             } catch (InterruptedException e) {
                 LOG.warn("Channel interrupted while shutting down", e);
                 channel.shutdownNow();

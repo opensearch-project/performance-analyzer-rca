@@ -95,6 +95,7 @@ public class ReceivedFlowUnitStore {
      * @return An immutable list containing the flow units received from the network for the vertex.
      */
     public ImmutableList<FlowUnitMessage> drainNode(final String graphNode) {
+        LOG.debug("Draining flow units for vertex: {}", graphNode);
         final List<FlowUnitMessage> tempList = new ArrayList<>();
         BlockingQueue<FlowUnitMessage> existing = flowUnitMap.get(graphNode);
         if (existing == null) {

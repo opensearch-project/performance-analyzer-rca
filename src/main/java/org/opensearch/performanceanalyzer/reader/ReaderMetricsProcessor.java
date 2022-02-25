@@ -26,6 +26,8 @@
 
 package org.opensearch.performanceanalyzer.reader;
 
+import static org.opensearch.performanceanalyzer.rca.framework.metrics.WriterMetrics.IN_MEMORY_DATABASE_CONN_CLOSURE_ERROR;
+import static org.opensearch.performanceanalyzer.rca.framework.metrics.WriterMetrics.METRICS_DB_CLOSURE_ERROR;
 
 import com.google.common.annotations.VisibleForTesting;
 import java.io.File;
@@ -228,16 +230,20 @@ public class ReaderMetricsProcessor implements Runnable {
 
     public void shutdown() {
         try {
-            conn.close();
+            if (!conn.isClosed()) {
+                conn.close();
+            }
         } catch (Exception e) {
-            LOG.error("Unable to close inmemory database connection.");
+            PerformanceAnalyzerApp.WRITER_METRICS_AGGREGATOR.updateStat(IN_MEMORY_DATABASE_CONN_CLOSURE_ERROR, "", 1);
+            LOG.error("Unable to close inmemory database connection.", e);
         }
 
         for (MetricsDB db : metricsDBMap.values()) {
             try {
                 db.close();
             } catch (Exception e) {
-                LOG.error("Unable to close database - {}", db.getDBFilePath());
+                PerformanceAnalyzerApp.WRITER_METRICS_AGGREGATOR.updateStat(METRICS_DB_CLOSURE_ERROR, "", 1);
+                LOG.error("Unable to close database - " + db.getDBFilePath(), e);
             }
         }
     }

@@ -282,7 +282,7 @@ public class RcaController {
         }
     }
 
-    private void stop() {
+    public void stop() {
         rcaScheduler.shutdown();
         rcaNetClient.stop();
         rcaNetServer.stop();
