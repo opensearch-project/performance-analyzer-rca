@@ -29,12 +29,12 @@ echo "Using JAVA_HOME: $JAVA_HOME"
 export JAVA_HOME=$JAVA_HOME
 
 if ! echo $* | grep -E '(^-d |-d$| -d |--daemonize$|--daemonize )' > /dev/null; then
-    export JAVA_OPTS=-Dopensearch.path.home=$OPENSEARCH_HOME\ -Dlog4j.configurationFile=$OPENSEARCH_HOME/performance-analyzer-rca/pa_config/log4j2.xml\ -XX:+ExitOnOutOfMemoryError
-    exec $OPENSEARCH_HOME/performance-analyzer-rca/bin/performance-analyzer-rca
+    export JAVA_OPTS=-Dopensearch.path.home=$OPENSEARCH_HOME\ -Dlog4j.configurationFile=$OPENSEARCH_HOME/plugins/opensearch-performance-analyzer/pa_config/log4j2.xml\ -XX:+ExitOnOutOfMemoryError
+    exec $OPENSEARCH_HOME/plugins/opensearch-performance-analyzer/rca_bin/performance-analyzer-rca
 else
     echo 'Starting deamon'
-    export JAVA_OPTS=-Dopensearch.path.home=$OPENSEARCH_HOME\ -Dlog4j.configurationFile=$OPENSEARCH_HOME/performance-analyzer-rca/pa_config/log4j2.xml\ -XX:+ExitOnOutOfMemoryError
-    exec $OPENSEARCH_HOME/performance-analyzer-rca/bin/performance-analyzer-rca &
+    export JAVA_OPTS=-Dopensearch.path.home=$OPENSEARCH_HOME\ -Dlog4j.configurationFile=$OPENSEARCH_HOME/plugins/opensearch-performance-analyzer/pa_config/log4j2.xml\ -XX:+ExitOnOutOfMemoryError
+    exec $OPENSEARCH_HOME/plugins/opensearch-performance-analyzer/rca_bin/performance-analyzer-rca &
 
     pid=$!
     PID_LOC=/tmp/performance-analyzer-agent

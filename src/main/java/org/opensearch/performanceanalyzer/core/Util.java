@@ -65,8 +65,6 @@ public class Util {
                     + File.separator
                     + "opensearch-performance-analyzer"
                     + File.separator;
-    public static final String READER_LOCATION =
-            OPENSEARCH_HOME + File.separator + "performance-analyzer-rca" + File.separator;
     public static final String DATA_DIR =
             OPENSEARCH_HOME + File.separator + "data" + File.separator;
 
