@@ -1,27 +1,6 @@
 /*
+ * Copyright OpenSearch Contributors
  * SPDX-License-Identifier: Apache-2.0
- *
- * The OpenSearch Contributors require contributions made to
- * this file be licensed under the Apache-2.0 license or a
- * compatible open source license.
- *
- * Modifications Copyright OpenSearch Contributors. See
- * GitHub history for details.
- */
-
-/*
- * Copyright 2019-2021 Amazon.com, Inc. or its affiliates. All Rights Reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License").
- * You may not use this file except in compliance with the License.
- * A copy of the License is located at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * or in the "license" file accompanying this file. This file is distributed
- * on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
- * express or implied. See the License for the specific language governing
- * permissions and limitations under the License.
  */
 
 package org.opensearch.performanceanalyzer.rca.framework.metrics;
@@ -210,7 +189,19 @@ public enum WriterMetrics implements MeasurementSet {
 
     /** This metric indicates faiure in cleaning up the event log files */
     METRICS_REMOVE_FAILURE("MetricsRemoveFailure", "count", Arrays.asList(Statistics.COUNT)),
-    ;
+
+    /** This metric indicates that error occurred while closing grpc channels. */
+    GRPC_CHANNEL_CLOSURE_ERROR("GrpcChannelClosureError", "count", Arrays.asList(Statistics.COUNT)),
+
+    /** This metric indicates that error occurred while closing grpc server. */
+    GRPC_SERVER_CLOSURE_ERROR("GrpcServerClosureError", "count", Arrays.asList(Statistics.COUNT)),
+
+    /** This metric indicates that error occurred while closing metrics db. */
+    METRICS_DB_CLOSURE_ERROR("MetricsDbClosureError", "count", Arrays.asList(Statistics.COUNT)),
+
+    /** This metric indicates that error occurred while closing database connection. */
+    IN_MEMORY_DATABASE_CONN_CLOSURE_ERROR(
+            "InMemoryDatabaseConnClosureError", "count", Arrays.asList(Statistics.COUNT));
 
     /** What we want to appear as the metric name. */
     private String name;

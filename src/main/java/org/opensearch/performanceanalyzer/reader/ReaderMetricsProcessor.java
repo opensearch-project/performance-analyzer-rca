@@ -1,31 +1,12 @@
 /*
+ * Copyright OpenSearch Contributors
  * SPDX-License-Identifier: Apache-2.0
- *
- * The OpenSearch Contributors require contributions made to
- * this file be licensed under the Apache-2.0 license or a
- * compatible open source license.
- *
- * Modifications Copyright OpenSearch Contributors. See
- * GitHub history for details.
- */
-
-/*
- * Copyright 2019-2021 Amazon.com, Inc. or its affiliates. All Rights Reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License").
- * You may not use this file except in compliance with the License.
- * A copy of the License is located at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * or in the "license" file accompanying this file. This file is distributed
- * on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
- * express or implied. See the License for the specific language governing
- * permissions and limitations under the License.
  */
 
 package org.opensearch.performanceanalyzer.reader;
 
+import static org.opensearch.performanceanalyzer.rca.framework.metrics.WriterMetrics.IN_MEMORY_DATABASE_CONN_CLOSURE_ERROR;
+import static org.opensearch.performanceanalyzer.rca.framework.metrics.WriterMetrics.METRICS_DB_CLOSURE_ERROR;
 
 import com.google.common.annotations.VisibleForTesting;
 import java.io.File;
@@ -228,16 +209,22 @@ public class ReaderMetricsProcessor implements Runnable {
 
     public void shutdown() {
         try {
-            conn.close();
+            if (!conn.isClosed()) {
+                conn.close();
+            }
         } catch (Exception e) {
-            LOG.error("Unable to close inmemory database connection.");
+            PerformanceAnalyzerApp.WRITER_METRICS_AGGREGATOR.updateStat(
+                    IN_MEMORY_DATABASE_CONN_CLOSURE_ERROR, "", 1);
+            LOG.error("Unable to close inmemory database connection.", e);
         }
 
         for (MetricsDB db : metricsDBMap.values()) {
             try {
                 db.close();
             } catch (Exception e) {
-                LOG.error("Unable to close database - {}", db.getDBFilePath());
+                PerformanceAnalyzerApp.WRITER_METRICS_AGGREGATOR.updateStat(
+                        METRICS_DB_CLOSURE_ERROR, "", 1);
+                LOG.error("Unable to close database - " + db.getDBFilePath(), e);
             }
         }
     }

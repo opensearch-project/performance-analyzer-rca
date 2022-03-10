@@ -1,27 +1,6 @@
 /*
+ * Copyright OpenSearch Contributors
  * SPDX-License-Identifier: Apache-2.0
- *
- * The OpenSearch Contributors require contributions made to
- * this file be licensed under the Apache-2.0 license or a
- * compatible open source license.
- *
- * Modifications Copyright OpenSearch Contributors. See
- * GitHub history for details.
- */
-
-/*
- * Copyright 2019-2021 Amazon.com, Inc. or its affiliates. All Rights Reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License").
- * You may not use this file except in compliance with the License.
- * A copy of the License is located at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * or in the "license" file accompanying this file. This file is distributed
- * on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
- * express or implied. See the License for the specific language governing
- * permissions and limitations under the License.
  */
 
 package org.opensearch.performanceanalyzer;
@@ -148,6 +127,8 @@ public class PerformanceAnalyzerApp {
             final GRPCConnectionManager connectionManager =
                     new GRPCConnectionManager(settings.getHttpsEnabled());
             final ClientServers clientServers = createClientServers(connectionManager, appContext);
+
+            addShutdownHook(clientServers);
             startErrorHandlingThread(THREAD_PROVIDER, exceptionQueue);
 
             startReaderThread(appContext, THREAD_PROVIDER);
@@ -388,5 +369,28 @@ public class PerformanceAnalyzerApp {
     @VisibleForTesting
     public static void setRcaController(RcaController rcaController) {
         PerformanceAnalyzerApp.rcaController = rcaController;
+    }
+
+    // Adds a hook to shut down resources after PA process exits due to some reason.
+    private static void addShutdownHook(ClientServers clientServers) {
+        Runtime.getRuntime()
+                .addShutdownHook(
+                        new Thread(
+                                () -> {
+                                    LOG.info("Trying to shutdown performance analyzer gracefully");
+                                    shutDownGracefully(clientServers);
+                                }));
+    }
+
+    /**
+     * Shuts down all the resources/channels gracefully which were created initially.
+     *
+     * @param clientServers contains all the server created by the app.
+     */
+    private static void shutDownGracefully(ClientServers clientServers) {
+        rcaController.stop();
+        clientServers.getNetServer().shutdown();
+        clientServers.getHttpServer().stop(3);
+        ReaderMetricsProcessor.getInstance().shutdown();
     }
 }

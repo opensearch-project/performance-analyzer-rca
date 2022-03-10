@@ -1,27 +1,6 @@
 /*
+ * Copyright OpenSearch Contributors
  * SPDX-License-Identifier: Apache-2.0
- *
- * The OpenSearch Contributors require contributions made to
- * this file be licensed under the Apache-2.0 license or a
- * compatible open source license.
- *
- * Modifications Copyright OpenSearch Contributors. See
- * GitHub history for details.
- */
-
-/*
- * Copyright 2019-2021 Amazon.com, Inc. or its affiliates. All Rights Reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License").
- * You may not use this file except in compliance with the License.
- * A copy of the License is located at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * or in the "license" file accompanying this file. This file is distributed
- * on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
- * express or implied. See the License for the specific language governing
- * permissions and limitations under the License.
  */
 
 package org.opensearch.performanceanalyzer.rca.net.handler;
@@ -54,7 +33,7 @@ public class PublishRequestHandler {
     private final AtomicReference<ExecutorService> executorReference;
     private final NodeStateManager nodeStateManager;
     private final ReceivedFlowUnitStore receivedFlowUnitStore;
-    private List<StreamObserver<PublishResponse>> upstreamResponseStreamList =
+    private List<SendDataClientStreamUpdateConsumer> dataClientStreamList =
             Collections.synchronizedList(new ArrayList<>());
 
     public PublishRequestHandler(
@@ -68,26 +47,47 @@ public class PublishRequestHandler {
 
     public StreamObserver<FlowUnitMessage> getClientStream(
             final StreamObserver<PublishResponse> serviceResponse) {
-        upstreamResponseStreamList.add(serviceResponse);
-        return new SendDataClientStreamUpdateConsumer(serviceResponse);
+        SendDataClientStreamUpdateConsumer streamUpdateConsumer =
+                new SendDataClientStreamUpdateConsumer(serviceResponse);
+        dataClientStreamList.add(streamUpdateConsumer);
+        return streamUpdateConsumer;
     }
 
     public void terminateUpstreamConnections() {
-        for (final StreamObserver<PublishResponse> responseStream : upstreamResponseStreamList) {
-            responseStream.onNext(
-                    PublishResponse.newBuilder()
-                            .setDataStatus(PublishResponseStatus.NODE_SHUTDOWN)
-                            .build());
-            responseStream.onCompleted();
+        for (final SendDataClientStreamUpdateConsumer streamUpdateConsumer : dataClientStreamList) {
+            StreamObserver<PublishResponse> responseStream =
+                    streamUpdateConsumer.getServiceResponse();
+            // Check whether the desired stream was already completed by the client before invoking
+            // onNext.
+            // In case stream was closed/completed by client, calling onNext will result in an
+            // exception.
+            if (!streamUpdateConsumer.isCompleted()) {
+                responseStream.onNext(
+                        PublishResponse.newBuilder()
+                                .setDataStatus(PublishResponseStatus.NODE_SHUTDOWN)
+                                .build());
+                responseStream.onCompleted();
+            }
         }
+        dataClientStreamList.clear();
     }
 
-    private class SendDataClientStreamUpdateConsumer implements StreamObserver<FlowUnitMessage> {
+    // Visible for testing
+    protected List<SendDataClientStreamUpdateConsumer> getDataClientStreamList() {
+        return this.dataClientStreamList;
+    }
+
+    protected class SendDataClientStreamUpdateConsumer implements StreamObserver<FlowUnitMessage> {
 
         private final StreamObserver<PublishResponse> serviceResponse;
+        private boolean isCompleted;
 
         SendDataClientStreamUpdateConsumer(final StreamObserver<PublishResponse> serviceResponse) {
             this.serviceResponse = serviceResponse;
+        }
+
+        public StreamObserver<PublishResponse> getServiceResponse() {
+            return this.serviceResponse;
         }
 
         /**
@@ -133,6 +133,11 @@ public class PublishRequestHandler {
             LOG.debug("Client finished streaming flow units");
             serviceResponse.onNext(buildDataResponse(PublishResponseStatus.SUCCESS));
             serviceResponse.onCompleted();
+            this.isCompleted = true;
+        }
+
+        public boolean isCompleted() {
+            return this.isCompleted;
         }
 
         private PublishResponse buildDataResponse(final PublishResponseStatus status) {

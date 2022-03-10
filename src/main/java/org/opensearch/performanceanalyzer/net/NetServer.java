@@ -1,41 +1,21 @@
 /*
+ * Copyright OpenSearch Contributors
  * SPDX-License-Identifier: Apache-2.0
- *
- * The OpenSearch Contributors require contributions made to
- * this file be licensed under the Apache-2.0 license or a
- * compatible open source license.
- *
- * Modifications Copyright OpenSearch Contributors. See
- * GitHub history for details.
- */
-
-/*
- * Copyright 2019-2021 Amazon.com, Inc. or its affiliates. All Rights Reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License").
- * You may not use this file except in compliance with the License.
- * A copy of the License is located at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * or in the "license" file accompanying this file. This file is distributed
- * on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
- * express or implied. See the License for the specific language governing
- * permissions and limitations under the License.
  */
 
 package org.opensearch.performanceanalyzer.net;
 
+import static org.opensearch.performanceanalyzer.rca.framework.metrics.WriterMetrics.GRPC_SERVER_CLOSURE_ERROR;
 
 import com.google.common.annotations.VisibleForTesting;
 import io.grpc.Server;
-import io.grpc.netty.shaded.io.grpc.netty.GrpcSslContexts;
-import io.grpc.netty.shaded.io.grpc.netty.NettyServerBuilder;
-import io.grpc.netty.shaded.io.netty.channel.nio.NioEventLoopGroup;
-import io.grpc.netty.shaded.io.netty.channel.socket.nio.NioServerSocketChannel;
-import io.grpc.netty.shaded.io.netty.handler.ssl.ClientAuth;
-import io.grpc.netty.shaded.io.netty.handler.ssl.SslContextBuilder;
+import io.grpc.netty.GrpcSslContexts;
+import io.grpc.netty.NettyServerBuilder;
 import io.grpc.stub.StreamObserver;
+import io.netty.channel.nio.NioEventLoopGroup;
+import io.netty.channel.socket.nio.NioServerSocketChannel;
+import io.netty.handler.ssl.ClientAuth;
+import io.netty.handler.ssl.SslContextBuilder;
 import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.Executors;
@@ -44,6 +24,7 @@ import javax.net.ssl.SSLException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.opensearch.performanceanalyzer.CertificateUtils;
+import org.opensearch.performanceanalyzer.PerformanceAnalyzerApp;
 import org.opensearch.performanceanalyzer.grpc.FlowUnitMessage;
 import org.opensearch.performanceanalyzer.grpc.InterNodeRpcServiceGrpc;
 import org.opensearch.performanceanalyzer.grpc.MetricsRequest;
@@ -271,7 +252,11 @@ public class NetServer extends InterNodeRpcServiceGrpc.InterNodeRpcServiceImplBa
         if (server != null) {
             server.shutdown();
             try {
-                server.awaitTermination(1, TimeUnit.MINUTES);
+                if (!server.awaitTermination(1, TimeUnit.MINUTES)) {
+                    PerformanceAnalyzerApp.WRITER_METRICS_AGGREGATOR.updateStat(
+                            GRPC_SERVER_CLOSURE_ERROR, "", 1);
+                    LOG.warn("Timed out while gracefully shutting down net server");
+                }
             } catch (InterruptedException e) {
                 server.shutdownNow();
                 Thread.currentThread().interrupt();

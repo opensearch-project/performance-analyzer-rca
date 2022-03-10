@@ -202,6 +202,7 @@ If you discover a potential security issue in this project we ask that you notif
 
 This project is licensed under the [Apache v2.0 License](LICENSE).
 
-## Copyright
+#
+# Copyright
 
-Copyright 2020-2021 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+Copyright OpenSearch Contributors. See [NOTICE](NOTICE) for details.
