@@ -54,7 +54,7 @@ distributions {
 ext {
     opensearch_version = System.getProperty("opensearch.version", "1.3.0-SNAPSHOT")
     isSnapshot = "true" == System.getProperty("build.snapshot", "true")
-    gitPaBranch = 'main'
+    gitPaBranch = 'feature/remote-integTest'
     gitPaRepo = "https://github.com/opensearch-project/performance-analyzer.git"
     runGauntletTests = "true" == System.getProperty("run.gauntlet.tests", "false")
 }
