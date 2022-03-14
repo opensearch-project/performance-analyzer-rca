@@ -65,6 +65,8 @@ public class ScheduledMetricCollectorsExecutor extends Thread {
             ThreadFactory taskThreadFactory =
                     new ThreadFactoryBuilder()
                             .setNameFormat(COLLECTOR_THREAD_POOL_NAME)
+                            .setUncaughtExceptionHandler(
+                                    (t, e) -> LOG.info("Catching uncaught exception"))
                             .setDaemon(true)
                             .build();
             metricsCollectorsTP =
