@@ -257,7 +257,10 @@ compileJava {
 }
 
 javadoc {
-    options.addStringOption("-add-exports", "jdk.attach/sun.tools.attach=ALL-UNNAMED")
+    JavaVersion targetVersion = JavaVersion.toVersion(targetCompatibility);
+    if (targetVersion.isJava9Compatible()) {
+        options.addStringOption("-add-exports", "jdk.attach/sun.tools.attach=ALL-UNNAMED")
+    }
 }
 
 project.afterEvaluate {
