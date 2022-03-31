@@ -192,7 +192,7 @@ jacocoTestCoverageVerification {
 // to run coverage verification during the build (and fail when appropriate)
 check.dependsOn jacocoTestCoverageVerification
 
-version = opensearch_version
+version = opensearch_build
 
 distZip {
     archiveName "performance-analyzer-rca-${version}.zip"
