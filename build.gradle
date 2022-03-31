@@ -409,7 +409,7 @@ task buildPa(type: Exec) {
     workingDir paDir
     println String.format('pa in dir: (%s) will be built.', paDir)
     println String.format('opensearch_version: (%s), plugin_version: (%s), snapshot: (%s), qualifier: (%s).', opensearch_version, version, isSnapshot, buildVersionQualifier)
-    if (buildVersionQualifier != null || buildVersionQualifier != '' || buildVersionQualifier != 'null') {
+    if (buildVersionQualifier == null || buildVersionQualifier == '' || buildVersionQualifier == 'null') {
         commandLine './gradlew', 'assemble', "-Dopensearch.version=${opensearch_version}", "-Dbuild.snapshot=${isSnapshot}"
     }
     else {
