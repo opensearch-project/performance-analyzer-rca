@@ -25,6 +25,7 @@ public class ScheduledMetricCollectorsExecutor extends Thread {
     private static final int COLLECTOR_THREAD_KEEPALIVE_SECS = 1000;
     private final boolean checkFeatureDisabledFlag;
     private boolean paEnabled = false;
+    private boolean threadContentionMonitoringEnabled = false;
     private int minTimeIntervalToSleep = Integer.MAX_VALUE;
     private Map<PerformanceAnalyzerMetricsCollector, Long> metricsCollectors;
 
@@ -52,7 +53,19 @@ public class ScheduledMetricCollectorsExecutor extends Thread {
         return paEnabled;
     }
 
+    public synchronized void setThreadContentionMonitoringEnabled(final boolean enabled) {
+        metricsCollectors
+                .keySet()
+                .forEach(collector -> collector.setThreadContentionMonitoringEnabled(enabled));
+        threadContentionMonitoringEnabled = enabled;
+    }
+
+    private synchronized boolean getThreadContentionMonitoringEnabled() {
+        return threadContentionMonitoringEnabled;
+    }
+
     public void addScheduledMetricCollector(PerformanceAnalyzerMetricsCollector task) {
+        task.setThreadContentionMonitoringEnabled(getThreadContentionMonitoringEnabled());
         metricsCollectors.put(task, System.currentTimeMillis() + task.getTimeInterval());
         if (task.getTimeInterval() < minTimeIntervalToSleep) {
             minTimeIntervalToSleep = task.getTimeInterval();

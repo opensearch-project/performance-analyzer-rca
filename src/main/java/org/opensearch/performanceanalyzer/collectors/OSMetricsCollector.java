@@ -45,7 +45,8 @@ public class OSMetricsCollector extends PerformanceAnalyzerMetricsCollector
         SchedMetricsGenerator schedMetricsGenerator = osMetricsGenerator.getSchedMetricsGenerator();
         schedMetricsGenerator.addSample();
 
-        Map<Long, ThreadList.ThreadState> threadStates = ThreadList.getNativeTidMap();
+        Map<Long, ThreadList.ThreadState> threadStates =
+                ThreadList.getNativeTidMap(getThreadContentionMonitoringEnabled());
 
         DiskIOMetricsGenerator diskIOMetricsGenerator =
                 osMetricsGenerator.getDiskIOMetricsGenerator();

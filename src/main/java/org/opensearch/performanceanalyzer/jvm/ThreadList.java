@@ -52,12 +52,6 @@ public class ThreadList {
 
     private static Lock vmAttachLock = new ReentrantLock();
 
-    static {
-        if (threadBean.isThreadContentionMonitoringSupported()) {
-            threadBean.setThreadContentionMonitoringEnabled(true);
-        }
-    }
-
     public static class ThreadState {
         public long javaTid;
         public long nativeTid;
@@ -123,8 +117,13 @@ public class ThreadList {
      * acquire this lock and move on if we could not get it.
      *
      * @return A hashmap of threadId to threadState.
+     * @param threadContentionMonitoringEnabled
      */
-    public static Map<Long, ThreadState> getNativeTidMap() {
+    public static Map<Long, ThreadState> getNativeTidMap(
+            boolean threadContentionMonitoringEnabled) {
+        if (threadBean.isThreadContentionMonitoringSupported()) {
+            threadBean.setThreadContentionMonitoringEnabled(threadContentionMonitoringEnabled);
+        }
         if (vmAttachLock.tryLock()) {
             try {
                 // Thread dumps are expensive and therefore we make sure that at least

@@ -36,7 +36,7 @@ public class ThreadListTests {
         String params[] = new String[0];
         while (true) {
             ThreadList.runThreadDump(OSGlobals.getPid(), params);
-            ThreadList.LOGGER.info(ThreadList.getNativeTidMap().values());
+            ThreadList.LOGGER.info(ThreadList.getNativeTidMap(false).values());
 
             /*GCMetrics.runOnce();
             HeapMetrics.runOnce();

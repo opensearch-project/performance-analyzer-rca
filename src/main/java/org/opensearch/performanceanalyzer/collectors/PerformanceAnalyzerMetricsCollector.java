@@ -33,6 +33,7 @@ public abstract class PerformanceAnalyzerMetricsCollector implements Runnable {
     private String collectorName;
     protected StringBuilder value;
     protected State state;
+    private boolean threadContentionMonitoringEnabled;
 
     protected PerformanceAnalyzerMetricsCollector(int timeInterval, String collectorName) {
         this.timeInterval = timeInterval;
@@ -91,5 +92,13 @@ public abstract class PerformanceAnalyzerMetricsCollector implements Runnable {
 
     public void setState(State state) {
         this.state = state;
+    }
+
+    public void setThreadContentionMonitoringEnabled(boolean enabled) {
+        this.threadContentionMonitoringEnabled = enabled;
+    }
+
+    public boolean getThreadContentionMonitoringEnabled() {
+        return threadContentionMonitoringEnabled;
     }
 }
