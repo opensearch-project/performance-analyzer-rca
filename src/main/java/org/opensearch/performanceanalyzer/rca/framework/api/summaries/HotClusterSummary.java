@@ -188,6 +188,9 @@ public class HotClusterSummary extends GenericSummary {
      */
     @Nullable
     public static HotClusterSummary buildSummary(Record record) {
+        if (record == null) {
+            return null;
+        }
         HotClusterSummary summary = null;
         try {
             Integer numOfNodes =

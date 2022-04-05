@@ -316,6 +316,9 @@ public class HotResourceSummary extends GenericSummary {
      */
     @Nullable
     public static HotResourceSummary buildSummary(Record record) {
+        if (record == null) {
+            return null;
+        }
         HotResourceSummary summary = null;
         try {
             int resourceTypeEnumVal =

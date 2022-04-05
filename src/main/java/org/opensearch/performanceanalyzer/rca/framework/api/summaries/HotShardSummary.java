@@ -281,6 +281,9 @@ public class HotShardSummary extends GenericSummary {
      */
     @Nullable
     public static HotShardSummary buildSummary(final Record record) {
+        if (record == null) {
+            return null;
+        }
         HotShardSummary summary = null;
         try {
             String indexName =

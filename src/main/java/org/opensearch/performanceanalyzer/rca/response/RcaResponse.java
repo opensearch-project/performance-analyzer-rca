@@ -53,6 +53,9 @@ public class RcaResponse extends GenericSummary {
     }
 
     public static RcaResponse buildResponse(Record record) {
+        if (record == null) {
+            return null;
+        }
         RcaResponse response = null;
         try {
             String rcaName =
