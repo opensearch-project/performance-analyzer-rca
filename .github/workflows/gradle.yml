@@ -14,9 +14,8 @@ jobs:
     strategy:
       matrix:
         java:
-          - 8
           - 11
-          - 14
+          - 17
     runs-on: [ubuntu-latest]
     name: Building RCA package
     steps:

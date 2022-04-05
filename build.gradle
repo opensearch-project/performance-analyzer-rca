@@ -14,7 +14,7 @@ plugins {
     id 'java'
     id 'application'
     id 'maven-publish'
-    id 'com.google.protobuf' version '0.8.8'
+    id 'com.google.protobuf' version '0.8.18'
     id 'jacoco'
     id 'idea'
     id 'com.github.spotbugs' version '4.6.0'
@@ -121,7 +121,7 @@ check {
 }
 
 jacoco {
-    toolVersion = "0.8.5"
+    toolVersion = "0.8.7"
 }
 
 jacocoTestReport {
@@ -230,6 +230,15 @@ test {
     }
 }
 
+tasks.withType(Test) {
+    jvmArgs('--add-opens=java.base/java.io=ALL-UNNAMED')
+    jvmArgs('--add-opens=java.base/java.util.concurrent=ALL-UNNAMED')
+    jvmArgs('--add-opens=java.base/java.time=ALL-UNNAMED')
+    jvmArgs('--add-opens=java.base/java.util.stream=ALL-UNNAMED')
+    jvmArgs('--add-opens=java.base/sun.nio.fs=ALL-UNNAMED')
+    jvmArgs('--add-opens=java.base/java.nio.file=ALL-UNNAMED')
+}
+
 task rcaTest(type: Test) {
     useJUnit {
         includeCategories 'org.opensearch.performanceanalyzer.rca.GradleTaskForRca'
@@ -245,8 +254,8 @@ task rcaIt(type: Test) {
     //testLogging.showStandardStreams = true
 }
 
-sourceCompatibility = 1.8
-targetCompatibility = 1.8
+sourceCompatibility = JavaVersion.VERSION_11
+targetCompatibility = JavaVersion.VERSION_11
 
 compileJava {
     dependsOn spotlessApply
@@ -291,45 +300,45 @@ tasks.withType(JavaCompile) {
 
 dependencies {
     if (JavaVersion.current() <= JavaVersion.VERSION_1_8) {
-        compile files("${System.properties['java.home']}/../lib/tools.jar")
+        implementation files("${System.properties['java.home']}/../lib/tools.jar")
     }
 
     def jacksonVersion = "2.12.6"
 
-    compile 'org.jooq:jooq:3.10.8'
-    compile 'org.bouncycastle:bcprov-jdk15on:1.70'
-    compile 'org.bouncycastle:bcpkix-jdk15on:1.70'
-    compile 'org.xerial:sqlite-jdbc:3.32.3.2'
-    compile 'com.google.guava:guava:30.1-jre'
-    compile 'com.google.code.gson:gson:2.8.9'
-    compile 'org.checkerframework:checker-qual:3.5.0'
-    compile "com.fasterxml.jackson.core:jackson-annotations:${jacksonVersion}"
-    compile "com.fasterxml.jackson.core:jackson-databind:${jacksonVersion}"
-    compile group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.17.1'
-    compile group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.17.1'
-    compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.9'
-    compile group: 'commons-io', name: 'commons-io', version: '2.7'
-    compile group: 'com.google.errorprone', name: 'error_prone_annotations', version: '2.9.0'
-    compile group: 'com.google.protobuf', name: 'protobuf-java', version: '3.19.2'
+    implementation 'org.jooq:jooq:3.10.8'
+    implementation 'org.bouncycastle:bcprov-jdk15on:1.70'
+    implementation 'org.bouncycastle:bcpkix-jdk15on:1.70'
+    implementation 'org.xerial:sqlite-jdbc:3.32.3.2'
+    implementation 'com.google.guava:guava:30.1-jre'
+    implementation 'com.google.code.gson:gson:2.8.9'
+    implementation 'org.checkerframework:checker-qual:3.5.0'
+    implementation "com.fasterxml.jackson.core:jackson-annotations:${jacksonVersion}"
+    implementation "com.fasterxml.jackson.core:jackson-databind:${jacksonVersion}"
+    implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.17.1'
+    implementation group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.17.1'
+    implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.9'
+    implementation group: 'commons-io', name: 'commons-io', version: '2.7'
+    implementation group: 'com.google.errorprone', name: 'error_prone_annotations', version: '2.9.0'
+    implementation group: 'com.google.protobuf', name: 'protobuf-java', version: '3.19.2'
     implementation 'io.grpc:grpc-netty:1.44.0'
     implementation 'io.grpc:grpc-protobuf:1.44.0'
     implementation 'io.grpc:grpc-stub:1.44.0'
     implementation 'javax.annotation:javax.annotation-api:1.3.2'
 
     // JDK9+ has to run powermock 2+. https://github.com/powermock/powermock/issues/888
-    testCompile group: 'org.powermock', name: 'powermock-api-mockito2', version: '2.0.0'
-    testCompile group: 'org.powermock', name: 'powermock-module-junit4', version: '2.0.0'
-    testCompile group: 'org.mockito', name: 'mockito-core', version: '2.23.0'
-    testCompile group: 'org.powermock', name: 'powermock-core', version: '2.0.0'
-    testCompile group: 'org.powermock', name: 'powermock-api-support', version: '2.0.0'
-    testCompile group: 'org.powermock', name: 'powermock-module-junit4-common', version: '2.0.0'
-    testCompile group: 'org.javassist', name: 'javassist', version: '3.24.0-GA'
-    testCompile group: 'org.powermock', name: 'powermock-reflect', version: '2.0.0'
-    testCompile group: 'net.bytebuddy', name: 'byte-buddy', version: '1.9.3'
-    testCompile group: 'org.objenesis', name: 'objenesis', version: '3.0.1'
-    testCompile group: 'org.hamcrest', name: 'hamcrest-library', version: '2.1'
-    testCompile group: 'org.hamcrest', name: 'hamcrest', version: '2.1'
-    testCompile group: 'junit', name: 'junit', version: '4.12'
+    testImplementation group: 'org.powermock', name: 'powermock-api-mockito2', version: '2.0.0'
+    testImplementation group: 'org.powermock', name: 'powermock-module-junit4', version: '2.0.0'
+    testImplementation group: 'org.mockito', name: 'mockito-core', version: '2.23.0'
+    testImplementation group: 'org.powermock', name: 'powermock-core', version: '2.0.0'
+    testImplementation group: 'org.powermock', name: 'powermock-api-support', version: '2.0.0'
+    testImplementation group: 'org.powermock', name: 'powermock-module-junit4-common', version: '2.0.0'
+    testImplementation group: 'org.javassist', name: 'javassist', version: '3.24.0-GA'
+    testImplementation group: 'org.powermock', name: 'powermock-reflect', version: '2.0.0'
+    testImplementation group: 'net.bytebuddy', name: 'byte-buddy', version: '1.9.3'
+    testImplementation group: 'org.objenesis', name: 'objenesis', version: '3.0.1'
+    testImplementation group: 'org.hamcrest', name: 'hamcrest-library', version: '2.1'
+    testImplementation group: 'org.hamcrest', name: 'hamcrest', version: '2.1'
+    testImplementation group: 'junit', name: 'junit', version: '4.12'
 }
 
 protobuf {
