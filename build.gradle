@@ -262,6 +262,7 @@ compileJava {
     JavaVersion targetVersion = JavaVersion.toVersion(targetCompatibility);
     if (targetVersion.isJava9Compatible()) {
         options.compilerArgs += ["--add-exports", "jdk.attach/sun.tools.attach=ALL-UNNAMED"]
+        options.compilerArgs += ["--add-exports", "jdk.compiler/com.sun.tools.javac.parser=ALL-UNNAMED"]
     }
 }
 
@@ -269,6 +270,7 @@ javadoc {
     JavaVersion targetVersion = JavaVersion.toVersion(targetCompatibility);
     if (targetVersion.isJava9Compatible()) {
         options.addStringOption("-add-exports", "jdk.attach/sun.tools.attach=ALL-UNNAMED")
+        options.addStringOption("--add-exports", "jdk.compiler/com.sun.tools.javac.parser=ALL-UNNAMED")
     }
 }
 
