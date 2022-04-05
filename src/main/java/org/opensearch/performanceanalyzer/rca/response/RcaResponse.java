@@ -68,16 +68,13 @@ public class RcaResponse extends GenericSummary {
                     record.get(
                             ResourceFlowUnit.ResourceFlowUnitFieldValue.TIMESTAMP_FIELD.getField(),
                             Long.class);
-            response = new RcaResponse(rcaName, state, timeStamp);
+            if (timeStamp != null) {
+                response = new RcaResponse(rcaName, state, timeStamp);
+            }
         } catch (IllegalArgumentException ie) {
             LOG.error("Some field is not found in record, cause : {}", ie.getMessage());
         } catch (DataTypeException de) {
             LOG.error("Fails to convert data type");
-        }
-        // we are very unlikely to catch this exception unless some fields are not persisted
-        // properly.
-        catch (NullPointerException ne) {
-            LOG.error("read null object from SQL, trace : {} ", ne.getStackTrace());
         }
         return response;
     }

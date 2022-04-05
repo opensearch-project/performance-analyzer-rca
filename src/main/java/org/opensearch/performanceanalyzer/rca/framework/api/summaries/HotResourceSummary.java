@@ -336,6 +336,15 @@ public class HotResourceSummary extends GenericSummary {
                     record.get(ResourceSummaryField.TIME_PERIOD_FIELD.getField(), Integer.class);
             String metaData =
                     record.get(ResourceSummaryField.METADATA_FIELD.getField(), String.class);
+            // If below condition not checked, will result in NPE.
+            if (threshold == null || value == null || timePeriod == null) {
+                LOG.warn(
+                        "read null object from SQL, threshold: {}, value: {}, timePeriod: {}",
+                        threshold,
+                        value,
+                        timePeriod);
+                return null;
+            }
             summary =
                     new HotResourceSummary(
                             ResourceUtil.buildResource(resourceTypeEnumVal, resourceMetricEnumVal),
@@ -351,11 +360,6 @@ public class HotResourceSummary extends GenericSummary {
             LOG.error("Some fields might not be found in record, cause : {}", ie.getMessage());
         } catch (DataTypeException de) {
             LOG.error("Fails to convert data type");
-        }
-        // we are very unlikely to catch this exception unless some fields are not persisted
-        // properly.
-        catch (NullPointerException ne) {
-            LOG.error("read null object from SQL, trace : {} ", ne.getStackTrace());
         }
         return summary;
     }

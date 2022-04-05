@@ -308,6 +308,24 @@ public class HotShardSummary extends GenericSummary {
                             Double.class);
             Integer timePeriod =
                     record.get(HotShardSummaryField.TIME_PERIOD_FIELD.getField(), Integer.class);
+            if (timePeriod == null
+                    || cpu_utilization == null
+                    || cpu_utilization_threshold == null
+                    || io_throughput == null
+                    || io_throughput_threshold == null
+                    || io_sys_callrate == null
+                    || io_sys_callrate_threshold == null) {
+                LOG.warn(
+                        "read null object from SQL, timePeriod: {},  cpu_utilization: {}, cpu_utilization_threshold: {},"
+                                + " io_throughput: {},  io_throughput_threshold: {}, io_sys_callrate: {}",
+                        timePeriod,
+                        cpu_utilization,
+                        cpu_utilization_threshold,
+                        io_throughput,
+                        io_throughput_threshold,
+                        io_sys_callrate);
+                return null;
+            }
             summary = new HotShardSummary(indexName, shardId, nodeId, timePeriod);
             summary.setcpuUtilization(cpu_utilization);
             summary.setCpuUtilizationThreshold(cpu_utilization_threshold);
@@ -319,11 +337,6 @@ public class HotShardSummary extends GenericSummary {
             LOG.error("Some fields might not be found in record, cause : {}", ie.getMessage());
         } catch (DataTypeException de) {
             LOG.error("Fails to convert data type");
-        }
-        // we are very unlikely to catch this exception unless some fields are not persisted
-        // properly.
-        catch (NullPointerException ne) {
-            LOG.error("read null object from SQL, trace : {} ", ne.getStackTrace());
         }
         return summary;
     }

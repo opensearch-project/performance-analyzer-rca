@@ -124,6 +124,7 @@ public class JvmGenTuningPolicy implements DecisionPolicy {
         }
         NodeConfigCache cache = appContext.getNodeConfigCache();
         NodeKey key = new NodeKey(appContext.getDataNodeInstances().get(0));
+
         try {
             Double oldGenMaxSizeInBytes = cache.get(key, ResourceUtil.OLD_GEN_MAX_SIZE);
             LOG.debug("old gen max size is {}", oldGenMaxSizeInBytes);
@@ -131,7 +132,7 @@ public class JvmGenTuningPolicy implements DecisionPolicy {
             LOG.debug("young gen max size is {}", youngGenMaxSizeInBytes);
             LOG.debug("current ratio is {}", (oldGenMaxSizeInBytes / youngGenMaxSizeInBytes));
             return (oldGenMaxSizeInBytes / youngGenMaxSizeInBytes);
-        } catch (IllegalArgumentException | NullPointerException e) {
+        } catch (IllegalArgumentException e) {
             LOG.error("Exception while computing old:young generation sizing ratio", e);
             return -1;
         }

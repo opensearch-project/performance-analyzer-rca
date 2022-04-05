@@ -196,16 +196,18 @@ public class HotClusterSummary extends GenericSummary {
                     record.get(
                             ClusterSummaryField.NUM_OF_UNHEALTHY_NODES_FIELD.getField(),
                             Integer.class);
+            if (numOfNodes == null || numOfUnhealthyNodes == null) {
+                LOG.warn(
+                        "read null object from SQL, numOfNodes: {}, numOfUnhealthyNodes: {}",
+                        numOfNodes,
+                        numOfUnhealthyNodes);
+                return null;
+            }
             summary = new HotClusterSummary(numOfNodes, numOfUnhealthyNodes);
         } catch (IllegalArgumentException ie) {
             LOG.error("Some fields might not be found in record, cause : {}", ie.getMessage());
         } catch (DataTypeException de) {
             LOG.error("Fails to convert data type");
-        }
-        // we are very unlikely to catch this exception unless some fields are not persisted
-        // properly.
-        catch (NullPointerException ne) {
-            LOG.error("read null object from SQL, trace : {} ", ne.getStackTrace());
         }
         return summary;
     }

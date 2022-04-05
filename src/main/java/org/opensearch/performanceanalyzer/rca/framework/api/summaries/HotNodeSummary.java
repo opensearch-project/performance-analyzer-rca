@@ -262,6 +262,10 @@ public class HotNodeSummary extends GenericSummary {
             String nodeId = record.get(NodeSummaryField.NODE_ID_FIELD.getField(), String.class);
             String ipAddress =
                     record.get(NodeSummaryField.HOST_IP_ADDRESS_FIELD.getField(), String.class);
+            if (nodeId == null || ipAddress == null) {
+                LOG.warn("read null object from SQL, nodeId: {}, ipAddress: {}", nodeId, ipAddress);
+                return null;
+            }
             summary =
                     new HotNodeSummary(
                             new InstanceDetails.Id(nodeId), new InstanceDetails.Ip(ipAddress));
@@ -269,11 +273,6 @@ public class HotNodeSummary extends GenericSummary {
             LOG.error("Some fields might not be found in record, cause : {}", ie.getMessage());
         } catch (DataTypeException de) {
             LOG.error("Fails to convert data type");
-        }
-        // we are very unlikely to catch this exception unless some fields are not persisted
-        // properly.
-        catch (NullPointerException ne) {
-            LOG.error("read null object from SQL, trace : {} ", ne.getStackTrace());
         }
         return summary;
     }

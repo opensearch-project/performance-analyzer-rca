@@ -154,11 +154,6 @@ public class TopConsumerSummary extends GenericSummary {
         } catch (DataTypeException de) {
             LOG.error("Fails to convert data type");
         }
-        // we are very unlikely to catch this exception unless some fields are not persisted
-        // properly.
-        catch (NullPointerException ne) {
-            LOG.error("read null object from SQL, trace : {} ", ne.getStackTrace());
-        }
         return summary;
     }
 }
