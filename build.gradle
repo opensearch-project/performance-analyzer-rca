@@ -62,7 +62,7 @@ ext {
 spotless {
     java {
         licenseHeaderFile(file('license-header'))
-        googleJavaFormat().aosp()
+        googleJavaFormat('1.12.0').aosp()
         importOrder()
         removeUnusedImports()
         trimTrailingWhitespace()
