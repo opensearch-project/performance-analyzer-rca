@@ -164,6 +164,9 @@ public class ThreadList {
 
     // Attach to pid and perform a thread dump
     private static void runAttachDump(String pid, String[] args) {
+        // Setting this property as runtime which is needed in JDK 17. This is called by plugin. Other option was
+        // to set as jvm args in the main app(opensearch) which doesn't feasible.
+        System.setProperty("--add-opens", "jdk.attach/sun.tools.attach=ALL-UNNAMED");
         VirtualMachine vm = null;
         try {
             vm = VirtualMachine.attach(pid);
