@@ -54,7 +54,7 @@ jobs:
       uses: actions/checkout@v2
       with:
         repository: sgup432/performance-analyzer
-        ref: jdk_gradle_7_OS2
+        ref: jdk_gradle_7_OS2.0
         path: ./tmp/performance-analyzer
     - name: Build PA gradle using the new RCA jar
       working-directory: ./tmp/performance-analyzer
