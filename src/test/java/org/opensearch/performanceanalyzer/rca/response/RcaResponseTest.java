@@ -77,9 +77,7 @@ public class RcaResponseTest {
         Mockito.when(record.get(isA(Field.class), any(Class.class)))
                 .thenThrow(new DataTypeException("uh-oh"));
         Assert.assertNull(RcaResponse.buildResponse(record));
-        Mockito.when(record.get(isA(Field.class), any(Class.class)))
-                .thenThrow(new NullPointerException());
-        Assert.assertNull(RcaResponse.buildResponse(record));
+        Assert.assertNull(RcaResponse.buildResponse(null));
     }
 
     @Test
