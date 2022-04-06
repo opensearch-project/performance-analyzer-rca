@@ -65,8 +65,8 @@ ext {
     if (isSnapshot) {
         opensearch_build += "-SNAPSHOT"
     }
-    gitPaBranch = 'jdk_gradle_7_OS2.0'
-    gitPaRepo = "https://github.com/sgup432/performance-analyzer.git"
+    gitPaBranch = 'main'
+    gitPaRepo = "https://github.com/opensearch-project/performance-analyzer.git"
     runGauntletTests = "true" == System.getProperty("run.gauntlet.tests", "false")
 }
 

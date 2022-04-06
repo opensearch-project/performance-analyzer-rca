@@ -16,6 +16,7 @@ jobs:
         java:
           - 11
           - 17
+      fail-fast: false
     runs-on: [ubuntu-latest]
     name: Building RCA package
     steps:
@@ -53,8 +54,8 @@ jobs:
     - name: Checkout Performance Analyzer
       uses: actions/checkout@v2
       with:
-        repository: sgup432/performance-analyzer
-        ref: jdk_gradle_7_OS2.0
+        repository: opensearch-project/performance-analyzer
+        ref: main
         path: ./tmp/performance-analyzer
     - name: Build PA gradle using the new RCA jar
       working-directory: ./tmp/performance-analyzer
