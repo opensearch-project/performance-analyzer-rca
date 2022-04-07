@@ -329,34 +329,6 @@ public class MetricsModel {
                 new MetricAttributes(
                         MetricUnits.COUNT.toString(), ShardStatsDerivedDimension.values()));
         allMetricsInitializer.put(
-                ShardStatsValue.SEGMENTS_MEMORY.toString(),
-                new MetricAttributes(
-                        MetricUnits.BYTE.toString(), ShardStatsDerivedDimension.values()));
-        allMetricsInitializer.put(
-                ShardStatsValue.TERMS_MEMORY.toString(),
-                new MetricAttributes(
-                        MetricUnits.BYTE.toString(), ShardStatsDerivedDimension.values()));
-        allMetricsInitializer.put(
-                ShardStatsValue.STORED_FIELDS_MEMORY.toString(),
-                new MetricAttributes(
-                        MetricUnits.BYTE.toString(), ShardStatsDerivedDimension.values()));
-        allMetricsInitializer.put(
-                ShardStatsValue.TERM_VECTOR_MEMORY.toString(),
-                new MetricAttributes(
-                        MetricUnits.BYTE.toString(), ShardStatsDerivedDimension.values()));
-        allMetricsInitializer.put(
-                ShardStatsValue.NORMS_MEMORY.toString(),
-                new MetricAttributes(
-                        MetricUnits.BYTE.toString(), ShardStatsDerivedDimension.values()));
-        allMetricsInitializer.put(
-                ShardStatsValue.POINTS_MEMORY.toString(),
-                new MetricAttributes(
-                        MetricUnits.BYTE.toString(), ShardStatsDerivedDimension.values()));
-        allMetricsInitializer.put(
-                ShardStatsValue.DOC_VALUES_MEMORY.toString(),
-                new MetricAttributes(
-                        MetricUnits.BYTE.toString(), ShardStatsDerivedDimension.values()));
-        allMetricsInitializer.put(
                 ShardStatsValue.INDEX_WRITER_MEMORY.toString(),
                 new MetricAttributes(
                         MetricUnits.BYTE.toString(), ShardStatsDerivedDimension.values()));

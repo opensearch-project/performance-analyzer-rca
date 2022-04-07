@@ -709,13 +709,6 @@ public class AllMetrics {
         MERGE_CURRENT_EVENT(Constants.MERGE_CURRENT_VALUE),
         INDEXING_BUFFER(Constants.INDEX_BUFFER_BYTES_VALUE),
         SEGMENTS_TOTAL(Constants.SEGMENTS_COUNT_VALUE),
-        SEGMENTS_MEMORY(Constants.SEGMENTS_MEMORY_VALUE),
-        TERMS_MEMORY(Constants.TERMS_MEMORY_VALUE),
-        STORED_FIELDS_MEMORY(Constants.STORED_FIELDS_MEMORY_VALUE),
-        TERM_VECTOR_MEMORY(Constants.TERM_VECTOR_MEMORY_VALUE),
-        NORMS_MEMORY(Constants.NORMS_MEMORY_VALUE),
-        POINTS_MEMORY(Constants.POINTS_MEMORY_VALUE),
-        DOC_VALUES_MEMORY(Constants.DOC_VALUES_MEMORY_VALUE),
         INDEX_WRITER_MEMORY(Constants.INDEX_WRITER_MEMORY_VALUE),
         VERSION_MAP_MEMORY(Constants.VERSION_MAP_MEMORY_VALUE),
         BITSET_MEMORY(Constants.BITSET_MEMORY_VALUE),
@@ -770,20 +763,6 @@ public class AllMetrics {
             public static final String INDEX_BUFFER_BYTES_VALUE = "Indexing_Buffer";
 
             public static final String SEGMENTS_COUNT_VALUE = "Segments_Total";
-
-            public static final String SEGMENTS_MEMORY_VALUE = "Segments_Memory";
-
-            public static final String TERMS_MEMORY_VALUE = "Terms_Memory";
-
-            public static final String STORED_FIELDS_MEMORY_VALUE = "StoredFields_Memory";
-
-            public static final String TERM_VECTOR_MEMORY_VALUE = "TermVectors_Memory";
-
-            public static final String NORMS_MEMORY_VALUE = "Norms_Memory";
-
-            public static final String POINTS_MEMORY_VALUE = "Points_Memory";
-
-            public static final String DOC_VALUES_MEMORY_VALUE = "DocValues_Memory";
 
             public static final String INDEX_WRITER_MEMORY_VALUE = "IndexWriter_Memory";
 
