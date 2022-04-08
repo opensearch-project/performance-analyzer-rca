@@ -117,8 +117,13 @@ public class ThreadList {
      * acquire this lock and move on if we could not get it.
      *
      * @return A hashmap of threadId to threadState.
+     * @param threadContentionMonitoringEnabled
      */
-    public static Map<Long, ThreadState> getNativeTidMap() {
+    public static Map<Long, ThreadState> getNativeTidMap(
+            boolean threadContentionMonitoringEnabled) {
+        if (threadBean.isThreadContentionMonitoringSupported()) {
+            threadBean.setThreadContentionMonitoringEnabled(threadContentionMonitoringEnabled);
+        }
         if (vmAttachLock.tryLock()) {
             try {
                 // Thread dumps are expensive and therefore we make sure that at least
@@ -264,6 +269,9 @@ public class ThreadList {
                         1.0e-3
                                 * (t.blockedTime - oldt.blockedTime)
                                 / (t.blockedCount - oldt.blockedCount);
+            } else if (t.blockedCount == oldt.blockedCount && t.blockedTime > oldt.blockedTime) {
+                t.avgBlockedTime =
+                        1.0e-3 * (t.blockedTime - oldt.blockedTime + oldt.avgBlockedTime);
             } else {
                 CircularLongArray arr = ThreadHistory.blockedTidHistoryMap.get(t.nativeTid);
                 // NOTE: this is an upper bound
@@ -276,6 +284,8 @@ public class ThreadList {
                         1.0e-3
                                 * (t.waitedTime - oldt.waitedTime)
                                 / (t.waitedCount - oldt.waitedCount);
+            } else if (t.waitedCount == oldt.waitedCount && t.waitedTime > oldt.waitedTime) {
+                t.avgWaitedTime = 1.0e-3 * (t.waitedTime - oldt.waitedTime + oldt.avgWaitedTime);
             } else {
                 CircularLongArray arr = ThreadHistory.waitedTidHistoryMap.get(t.nativeTid);
                 // NOTE: this is an upper bound
