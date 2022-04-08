@@ -73,7 +73,7 @@ This package uses the [Gradle](https://docs.gradle.org/current/userguide/usergui
     
 4. Because we are supplying our own version of the RCA framework, the SHA might have changed. So, delete the old SHA file if it exists. The SHA will get updated during build time.
  
-    `rm -f licenses/performanceanalyzer-rca-1.3.0.0.jar.sha1`
+    `rm -f licenses/performanceanalyzer-rca-2.0.0.0-alpha1.jar.sha1`
 
 5. Trigger a gradle build. This builds the plugin, runs unit tests and creates the plugin jar.
  
@@ -114,7 +114,7 @@ You can use the packaged Dockerfile and docker-compose.yml files [here](./docker
  
  2. Build and tag the Docker image with our RCA framework.
     
-    `docker build -t opensearch/pa-rca:1.3 .`
+    `docker build -t opensearch/pa-rca:2.0 .`
  
  3. Spin up a two node cluster as follows:
  
