@@ -1,15 +1,15 @@
 grant codebase "file:${java.home}/../lib/tools.jar" {
   permission java.security.AllPermission;
-  permission java.lang.management.ManagementPermission
+  permission java.lang.management.ManagementPermission "control";
 };
 
 grant codeBase "jrt:/jdk.attach" {
     permission java.security.AllPermission;
-    permission java.lang.management.ManagementPermission
+    permission java.lang.management.ManagementPermission "control";
 };
 
 grant codeBase "jrt:/jdk.internal.jvmstat" {
     permission java.security.AllPermission;
-    permission java.lang.management.ManagementPermission
+    permission java.lang.management.ManagementPermission "control";
 };
 
