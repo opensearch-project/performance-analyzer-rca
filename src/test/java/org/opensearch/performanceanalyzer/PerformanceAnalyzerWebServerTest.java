@@ -25,7 +25,6 @@ import javax.net.ssl.SSLSocketFactory;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.opensearch.performanceanalyzer.config.PluginSettings;
 
@@ -322,33 +321,6 @@ public class PerformanceAnalyzerWebServerTest {
                 "tls/client/localhost.crt",
                 "tls/client/localhost.key",
                 "tls/rootca/RootCA.pem");
-    }
-
-    /** Verifies that the HTTPS server doesn't respond to an unauthenticated client's requests. */
-    @Test
-    @Ignore
-    public void testUnauthenticatedClientGetsRejected() throws Exception {
-        ClassLoader classLoader = getClass().getClassLoader();
-        PluginSettings.instance()
-                .overrideProperty(
-                        CertificateUtils.TRUSTED_CAS_FILE_PATH,
-                        Objects.requireNonNull(classLoader.getResource("tls/rootca/RootCA.pem"))
-                                .getFile());
-        initializeServer(true);
-        // Build the request
-        try {
-            verifyHttpsRequest(
-                    String.format("https://%s:%s/test", BIND_HOST, PORT),
-                    "tls/attacker/attack_cert.pem",
-                    "tls/attacker/attack_key.pem",
-                    "tls/rootca/RootCA.pem");
-            throw new AssertionError("An unauthenticated client was able to talk to the server");
-        } catch (SSLException e) { // Unauthenticated client is rejected!
-            assert true;
-        } catch (Exception e) { // Treat unexpected errors as a failure
-            throw new AssertionError(
-                    "Received unexpected error when making unauthed REST call to server", e);
-        }
     }
 
     /** Verifies that a client properly authenticates a trusted server */
