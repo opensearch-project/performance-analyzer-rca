@@ -26,7 +26,7 @@ public abstract class PerformanceAnalyzerMetricsCollector implements Runnable {
         MUTED
     }
 
-    private static final Logger LOG =
+    protected static final Logger LOG =
             LogManager.getLogger(PerformanceAnalyzerMetricsCollector.class);
     private int timeInterval;
     private long startTime;

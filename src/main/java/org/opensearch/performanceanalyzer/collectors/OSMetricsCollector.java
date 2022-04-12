@@ -38,114 +38,118 @@ public class OSMetricsCollector extends PerformanceAnalyzerMetricsCollector
 
     @Override
     public void collectMetrics(long startTime) {
-        CPUPagingActivityGenerator threadCPUPagingActivityGenerator =
-                osMetricsGenerator.getPagingActivityGenerator();
-        threadCPUPagingActivityGenerator.addSample();
+        try {
+            CPUPagingActivityGenerator threadCPUPagingActivityGenerator =
+                    osMetricsGenerator.getPagingActivityGenerator();
+            threadCPUPagingActivityGenerator.addSample();
 
-        SchedMetricsGenerator schedMetricsGenerator = osMetricsGenerator.getSchedMetricsGenerator();
-        schedMetricsGenerator.addSample();
+            SchedMetricsGenerator schedMetricsGenerator = osMetricsGenerator.getSchedMetricsGenerator();
+            schedMetricsGenerator.addSample();
 
-        Map<Long, ThreadList.ThreadState> threadStates =
-                ThreadList.getNativeTidMap(getThreadContentionMonitoringEnabled());
+            Map<Long, ThreadList.ThreadState> threadStates =
+                    ThreadList.getNativeTidMap(getThreadContentionMonitoringEnabled());
 
-        DiskIOMetricsGenerator diskIOMetricsGenerator =
-                osMetricsGenerator.getDiskIOMetricsGenerator();
-        diskIOMetricsGenerator.addSample();
+            DiskIOMetricsGenerator diskIOMetricsGenerator =
+                    osMetricsGenerator.getDiskIOMetricsGenerator();
+            diskIOMetricsGenerator.addSample();
 
-        for (String threadId : osMetricsGenerator.getAllThreadIds()) {
-            value.setLength(0);
-            value.append(PerformanceAnalyzerMetrics.getCurrentTimeMetric())
-                    .append(PerformanceAnalyzerMetrics.sMetricNewLineDelimitor)
-                    .append(OSMetrics.CPU_UTILIZATION)
-                    .append(PerformanceAnalyzerMetrics.sKeyValueDelimitor)
-                    .append(threadCPUPagingActivityGenerator.getCPUUtilization(threadId));
-
-            if (threadCPUPagingActivityGenerator.hasPagingActivity(threadId)) {
-                value.append(PerformanceAnalyzerMetrics.sMetricNewLineDelimitor)
-                        .append(OSMetrics.PAGING_MAJ_FLT_RATE)
+            for (String threadId : osMetricsGenerator.getAllThreadIds()) {
+                value.setLength(0);
+                value.append(PerformanceAnalyzerMetrics.getCurrentTimeMetric())
+                        .append(PerformanceAnalyzerMetrics.sMetricNewLineDelimitor)
+                        .append(OSMetrics.CPU_UTILIZATION)
                         .append(PerformanceAnalyzerMetrics.sKeyValueDelimitor)
-                        .append(threadCPUPagingActivityGenerator.getMajorFault(threadId));
-                value.append(PerformanceAnalyzerMetrics.sMetricNewLineDelimitor)
-                        .append(OSMetrics.PAGING_MIN_FLT_RATE)
-                        .append(PerformanceAnalyzerMetrics.sKeyValueDelimitor)
-                        .append(threadCPUPagingActivityGenerator.getMinorFault(threadId));
-                value.append(PerformanceAnalyzerMetrics.sMetricNewLineDelimitor)
-                        .append(OSMetrics.PAGING_RSS)
-                        .append(PerformanceAnalyzerMetrics.sKeyValueDelimitor)
-                        .append(threadCPUPagingActivityGenerator.getResidentSetSize(threadId));
+                        .append(threadCPUPagingActivityGenerator.getCPUUtilization(threadId));
+
+                if (threadCPUPagingActivityGenerator.hasPagingActivity(threadId)) {
+                    value.append(PerformanceAnalyzerMetrics.sMetricNewLineDelimitor)
+                            .append(OSMetrics.PAGING_MAJ_FLT_RATE)
+                            .append(PerformanceAnalyzerMetrics.sKeyValueDelimitor)
+                            .append(threadCPUPagingActivityGenerator.getMajorFault(threadId));
+                    value.append(PerformanceAnalyzerMetrics.sMetricNewLineDelimitor)
+                            .append(OSMetrics.PAGING_MIN_FLT_RATE)
+                            .append(PerformanceAnalyzerMetrics.sKeyValueDelimitor)
+                            .append(threadCPUPagingActivityGenerator.getMinorFault(threadId));
+                    value.append(PerformanceAnalyzerMetrics.sMetricNewLineDelimitor)
+                            .append(OSMetrics.PAGING_RSS)
+                            .append(PerformanceAnalyzerMetrics.sKeyValueDelimitor)
+                            .append(threadCPUPagingActivityGenerator.getResidentSetSize(threadId));
+                }
+
+                if (schedMetricsGenerator.hasSchedMetrics(threadId)) {
+                    value.append(PerformanceAnalyzerMetrics.sMetricNewLineDelimitor)
+                            .append(OSMetrics.SCHED_RUNTIME)
+                            .append(PerformanceAnalyzerMetrics.sKeyValueDelimitor)
+                            .append(schedMetricsGenerator.getAvgRuntime(threadId));
+                    value.append(PerformanceAnalyzerMetrics.sMetricNewLineDelimitor)
+                            .append(OSMetrics.SCHED_WAITTIME)
+                            .append(PerformanceAnalyzerMetrics.sKeyValueDelimitor)
+                            .append(schedMetricsGenerator.getAvgWaittime(threadId));
+                    value.append(PerformanceAnalyzerMetrics.sMetricNewLineDelimitor)
+                            .append(OSMetrics.SCHED_CTX_RATE)
+                            .append(PerformanceAnalyzerMetrics.sKeyValueDelimitor)
+                            .append(schedMetricsGenerator.getContextSwitchRate(threadId));
+                }
+
+                ThreadList.ThreadState threadState = threadStates.get(Long.valueOf(threadId));
+                if (threadState != null) {
+                    value.append(PerformanceAnalyzerMetrics.sMetricNewLineDelimitor)
+                            .append(OSMetrics.HEAP_ALLOC_RATE)
+                            .append(PerformanceAnalyzerMetrics.sKeyValueDelimitor)
+                            .append(threadState.heapAllocRate);
+                    value.append(PerformanceAnalyzerMetrics.sMetricNewLineDelimitor)
+                            .append(MetaDataFields.threadName.toString())
+                            .append(PerformanceAnalyzerMetrics.sKeyValueDelimitor)
+                            .append(threadState.threadName);
+                    value.append(PerformanceAnalyzerMetrics.sMetricNewLineDelimitor)
+                            .append(OSMetrics.THREAD_BLOCKED_TIME)
+                            .append(PerformanceAnalyzerMetrics.sKeyValueDelimitor)
+                            .append(threadState.avgBlockedTime);
+                    value.append(PerformanceAnalyzerMetrics.sMetricNewLineDelimitor)
+                            .append(OSMetrics.THREAD_BLOCKED_EVENT)
+                            .append(PerformanceAnalyzerMetrics.sKeyValueDelimitor)
+                            .append(threadState.blockedCount);
+                    value.append(PerformanceAnalyzerMetrics.sMetricNewLineDelimitor)
+                            .append(OSMetrics.THREAD_WAITED_TIME)
+                            .append(PerformanceAnalyzerMetrics.sKeyValueDelimitor)
+                            .append(threadState.avgWaitedTime);
+                    value.append(PerformanceAnalyzerMetrics.sMetricNewLineDelimitor)
+                            .append(OSMetrics.THREAD_WAITED_EVENT)
+                            .append(PerformanceAnalyzerMetrics.sKeyValueDelimitor)
+                            .append(threadState.waitedCount);
+                }
+
+                if (diskIOMetricsGenerator.hasDiskIOMetrics(threadId)) {
+                    value.append(PerformanceAnalyzerMetrics.sMetricNewLineDelimitor)
+                            .append(OSMetrics.IO_READ_THROUGHPUT)
+                            .append(PerformanceAnalyzerMetrics.sKeyValueDelimitor)
+                            .append(diskIOMetricsGenerator.getAvgReadThroughputBps(threadId));
+                    value.append(PerformanceAnalyzerMetrics.sMetricNewLineDelimitor)
+                            .append(OSMetrics.IO_WRITE_THROUGHPUT)
+                            .append(PerformanceAnalyzerMetrics.sKeyValueDelimitor)
+                            .append(diskIOMetricsGenerator.getAvgWriteThroughputBps(threadId));
+                    value.append(PerformanceAnalyzerMetrics.sMetricNewLineDelimitor)
+                            .append(OSMetrics.IO_TOT_THROUGHPUT)
+                            .append(PerformanceAnalyzerMetrics.sKeyValueDelimitor)
+                            .append(diskIOMetricsGenerator.getAvgTotalThroughputBps(threadId));
+                    value.append(PerformanceAnalyzerMetrics.sMetricNewLineDelimitor)
+                            .append(OSMetrics.IO_READ_SYSCALL_RATE)
+                            .append(PerformanceAnalyzerMetrics.sKeyValueDelimitor)
+                            .append(diskIOMetricsGenerator.getAvgReadSyscallRate(threadId));
+                    value.append(PerformanceAnalyzerMetrics.sMetricNewLineDelimitor)
+                            .append(OSMetrics.IO_WRITE_SYSCALL_RATE)
+                            .append(PerformanceAnalyzerMetrics.sKeyValueDelimitor)
+                            .append(diskIOMetricsGenerator.getAvgWriteSyscallRate(threadId));
+                    value.append(PerformanceAnalyzerMetrics.sMetricNewLineDelimitor)
+                            .append(OSMetrics.IO_TOTAL_SYSCALL_RATE)
+                            .append(PerformanceAnalyzerMetrics.sKeyValueDelimitor)
+                            .append(diskIOMetricsGenerator.getAvgTotalSyscallRate(threadId));
+                }
+
+                saveMetricValues(value.toString(), startTime, threadId);
             }
-
-            if (schedMetricsGenerator.hasSchedMetrics(threadId)) {
-                value.append(PerformanceAnalyzerMetrics.sMetricNewLineDelimitor)
-                        .append(OSMetrics.SCHED_RUNTIME)
-                        .append(PerformanceAnalyzerMetrics.sKeyValueDelimitor)
-                        .append(schedMetricsGenerator.getAvgRuntime(threadId));
-                value.append(PerformanceAnalyzerMetrics.sMetricNewLineDelimitor)
-                        .append(OSMetrics.SCHED_WAITTIME)
-                        .append(PerformanceAnalyzerMetrics.sKeyValueDelimitor)
-                        .append(schedMetricsGenerator.getAvgWaittime(threadId));
-                value.append(PerformanceAnalyzerMetrics.sMetricNewLineDelimitor)
-                        .append(OSMetrics.SCHED_CTX_RATE)
-                        .append(PerformanceAnalyzerMetrics.sKeyValueDelimitor)
-                        .append(schedMetricsGenerator.getContextSwitchRate(threadId));
-            }
-
-            ThreadList.ThreadState threadState = threadStates.get(Long.valueOf(threadId));
-            if (threadState != null) {
-                value.append(PerformanceAnalyzerMetrics.sMetricNewLineDelimitor)
-                        .append(OSMetrics.HEAP_ALLOC_RATE)
-                        .append(PerformanceAnalyzerMetrics.sKeyValueDelimitor)
-                        .append(threadState.heapAllocRate);
-                value.append(PerformanceAnalyzerMetrics.sMetricNewLineDelimitor)
-                        .append(MetaDataFields.threadName.toString())
-                        .append(PerformanceAnalyzerMetrics.sKeyValueDelimitor)
-                        .append(threadState.threadName);
-                value.append(PerformanceAnalyzerMetrics.sMetricNewLineDelimitor)
-                        .append(OSMetrics.THREAD_BLOCKED_TIME)
-                        .append(PerformanceAnalyzerMetrics.sKeyValueDelimitor)
-                        .append(threadState.avgBlockedTime);
-                value.append(PerformanceAnalyzerMetrics.sMetricNewLineDelimitor)
-                        .append(OSMetrics.THREAD_BLOCKED_EVENT)
-                        .append(PerformanceAnalyzerMetrics.sKeyValueDelimitor)
-                        .append(threadState.blockedCount);
-                value.append(PerformanceAnalyzerMetrics.sMetricNewLineDelimitor)
-                        .append(OSMetrics.THREAD_WAITED_TIME)
-                        .append(PerformanceAnalyzerMetrics.sKeyValueDelimitor)
-                        .append(threadState.avgWaitedTime);
-                value.append(PerformanceAnalyzerMetrics.sMetricNewLineDelimitor)
-                        .append(OSMetrics.THREAD_WAITED_EVENT)
-                        .append(PerformanceAnalyzerMetrics.sKeyValueDelimitor)
-                        .append(threadState.waitedCount);
-            }
-
-            if (diskIOMetricsGenerator.hasDiskIOMetrics(threadId)) {
-                value.append(PerformanceAnalyzerMetrics.sMetricNewLineDelimitor)
-                        .append(OSMetrics.IO_READ_THROUGHPUT)
-                        .append(PerformanceAnalyzerMetrics.sKeyValueDelimitor)
-                        .append(diskIOMetricsGenerator.getAvgReadThroughputBps(threadId));
-                value.append(PerformanceAnalyzerMetrics.sMetricNewLineDelimitor)
-                        .append(OSMetrics.IO_WRITE_THROUGHPUT)
-                        .append(PerformanceAnalyzerMetrics.sKeyValueDelimitor)
-                        .append(diskIOMetricsGenerator.getAvgWriteThroughputBps(threadId));
-                value.append(PerformanceAnalyzerMetrics.sMetricNewLineDelimitor)
-                        .append(OSMetrics.IO_TOT_THROUGHPUT)
-                        .append(PerformanceAnalyzerMetrics.sKeyValueDelimitor)
-                        .append(diskIOMetricsGenerator.getAvgTotalThroughputBps(threadId));
-                value.append(PerformanceAnalyzerMetrics.sMetricNewLineDelimitor)
-                        .append(OSMetrics.IO_READ_SYSCALL_RATE)
-                        .append(PerformanceAnalyzerMetrics.sKeyValueDelimitor)
-                        .append(diskIOMetricsGenerator.getAvgReadSyscallRate(threadId));
-                value.append(PerformanceAnalyzerMetrics.sMetricNewLineDelimitor)
-                        .append(OSMetrics.IO_WRITE_SYSCALL_RATE)
-                        .append(PerformanceAnalyzerMetrics.sKeyValueDelimitor)
-                        .append(diskIOMetricsGenerator.getAvgWriteSyscallRate(threadId));
-                value.append(PerformanceAnalyzerMetrics.sMetricNewLineDelimitor)
-                        .append(OSMetrics.IO_TOTAL_SYSCALL_RATE)
-                        .append(PerformanceAnalyzerMetrics.sKeyValueDelimitor)
-                        .append(diskIOMetricsGenerator.getAvgTotalSyscallRate(threadId));
-            }
-
-            saveMetricValues(value.toString(), startTime, threadId);
+        } catch (Exception e) {
+            LOG.error("OS metrics collection failed", e);
         }
     }
 
