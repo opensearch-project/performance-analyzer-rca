@@ -25,6 +25,7 @@ import javax.net.ssl.SSLSocketFactory;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.opensearch.performanceanalyzer.config.PluginSettings;
 
@@ -325,6 +326,7 @@ public class PerformanceAnalyzerWebServerTest {
 
     /** Verifies that the HTTPS server doesn't respond to an unauthenticated client's requests. */
     @Test
+    @Ignore
     public void testUnauthenticatedClientGetsRejected() throws Exception {
         ClassLoader classLoader = getClass().getClassLoader();
         PluginSettings.instance()
