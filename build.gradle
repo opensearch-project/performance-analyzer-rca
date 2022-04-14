@@ -35,10 +35,10 @@ application {
                                  '-XX:MaxRAM=400m']
 }
 
-// Include pa_config folder in the distribution.
+// Include PA related folder in the distribution.
 applicationDistribution.from(".") {
-    include 'pa_config/*'
-    include 'pa_bin/*'
+    include 'config/*'
+    include 'bin/*'
 }
 
 distributions {

@@ -54,7 +54,7 @@ RUN chown -R opensearch:0 . && \
 RUN unzip config/performance-analyzer-rca-2.0.0.0-alpha1-SNAPSHOT.zip
 
 RUN cp -r performance-analyzer-rca/* plugins/opensearch-performance-analyzer/
-RUN chmod 755 /usr/share/opensearch/plugins/opensearch-performance-analyzer/pa_bin/performance-analyzer-agent
+RUN chmod 755 /usr/share/opensearch/plugins/opensearch-performance-analyzer/bin/performance-analyzer-agent
 RUN chmod -R 755 /dev/shm
 ################################################################################
 # Build stage 1 (the actual OpenSearch image):
@@ -118,7 +118,7 @@ RUN chgrp 0 /usr/local/bin/docker-entrypoint.sh && \
     chmod 0775 /usr/local/bin/docker-entrypoint.sh
 
 # Bind to all interfaces so that the docker container is accessible from the host machine
-RUN sed -i "s|#webservice-bind-host =|webservice-bind-host = 0.0.0.0|g" /usr/share/opensearch/plugins/opensearch-performance-analyzer/pa_config/performance-analyzer.properties
+RUN sed -i "s|#webservice-bind-host =|webservice-bind-host = 0.0.0.0|g" /usr/share/opensearch/plugins/opensearch-performance-analyzer/config/performance-analyzer.properties
 
 EXPOSE 9200 9300 9600 9650
 
