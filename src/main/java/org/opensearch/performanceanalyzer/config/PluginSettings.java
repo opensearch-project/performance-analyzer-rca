@@ -21,9 +21,9 @@ public class PluginSettings {
     private static final Logger LOG = LogManager.getLogger(PluginSettings.class);
 
     private static PluginSettings instance;
-    public static final String CONFIG_FILES_PATH = "pa_config/";
+    public static final String CONFIG_FILES_PATH = "config/";
     private static final String DEFAULT_CONFIG_FILE_PATH =
-            Util.PLUGIN_LOCATION + "pa_config/performance-analyzer.properties";
+            Util.PLUGIN_LOCATION + "config/performance-analyzer.properties";
     private static final String METRICS_LOCATION_KEY = "metrics-location";
     private static final String METRICS_LOCATION_DEFAULT = "/dev/shm/performanceanalyzer/";
     private static final String DELETION_INTERVAL_KEY = "metrics-deletion-interval";

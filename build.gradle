@@ -35,10 +35,10 @@ application {
                                  '-XX:MaxRAM=400m']
 }
 
-// Include pa_config folder in the distribution.
+// Include PA related folder in the distribution.
 applicationDistribution.from(".") {
-    include 'pa_config/*'
-    include 'pa_bin/*'
+    include 'config/*'
+    include 'bin/*'
 }
 
 distributions {
@@ -206,6 +206,8 @@ test {
             excludeTestsMatching 'org.opensearch.performanceanalyzer.rca.integTests.*'
             // TODO: Fix this test as it causes OutOfMemoryError: Java heap space error and runs forever
             excludeTestsMatching 'org.opensearch.performanceanalyzer.reader.OSMetricsSnapshotTests'
+            // TODO: Fix flaky test: https://github.com/opensearch-project/performance-analyzer-rca/issues/167
+            excludeTestsMatching 'org.opensearch.performanceanalyzer.PerformanceAnalyzerWebServerTest'
         }
     }
     else {
