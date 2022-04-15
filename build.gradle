@@ -52,11 +52,11 @@ distributions {
 }
 
 ext {
-    opensearch_version = System.getProperty("opensearch.version", "2.0.0-alpha1-SNAPSHOT")
+    opensearch_version = System.getProperty("opensearch.version", "2.0.0-rc1-SNAPSHOT")
     isSnapshot = "true" == System.getProperty("build.snapshot", "true")
-    buildVersionQualifier = System.getProperty("build.version_qualifier", "alpha1")
+    buildVersionQualifier = System.getProperty("build.version_qualifier", "rc1")
 
-    // 2.0.0-alpha1-SNAPSHOT -> 2.0.0.0-alpha1-SNAPSHOT
+    // 2.0.0-rc1-SNAPSHOT -> 2.0.0.0-rc1-SNAPSHOT
     version_tokens = opensearch_version.tokenize('-')
     opensearch_build = version_tokens[0] + '.0'
     if (buildVersionQualifier) {
@@ -214,6 +214,8 @@ test {
             excludeTestsMatching 'org.opensearch.performanceanalyzer.rca.integTests.*'
             // TODO: Fix this test as it causes OutOfMemoryError: Java heap space error and runs forever
             excludeTestsMatching 'org.opensearch.performanceanalyzer.reader.OSMetricsSnapshotTests'
+            // TODO: Fix flaky test: https://github.com/opensearch-project/performance-analyzer-rca/issues/167
+            excludeTestsMatching 'org.opensearch.performanceanalyzer.PerformanceAnalyzerWebServerTest'
         }
     }
     else {
