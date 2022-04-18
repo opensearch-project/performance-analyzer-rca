@@ -49,7 +49,7 @@ __Metrics__: Metrics are typically served as continuous datastreams to downstrea
 
 ### Components
 
-__Framework__: The RCA runtime operates on an `AnalysisGraph`. You can extend this class and override the `construct` method to build your own RCAs. You should specify the path to the class in the `analysis-graph-implementor` section of `config/rca.conf`.  The `addLeaf` and `addAllUpstreams` helper methods are useful when you define the dependencies between nodes of the graph.
+__Framework__: The RCA runtime operates on an `AnalysisGraph`. You can extend this class and override the `construct` method to build your own RCAs. You should specify the path to the class in the `analysis-graph-implementor` section of `config/opensearch-performance-analyzer/rca.conf`.  The `addLeaf` and `addAllUpstreams` helper methods are useful when you define the dependencies between nodes of the graph.
 
 __Scheduler__: The scheduler invokes the `operate` method on each graph node in topological order as defined in the `AnalysisGraph`. Nodes with no dependencies can be executed in parallel. Use flow-units to share data between RCA nodes instead of shared objects to avoid data races and performance bottlenecks.
 
