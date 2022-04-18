@@ -5,6 +5,7 @@
 
 package org.opensearch.performanceanalyzer.config;
 
+import static org.opensearch.performanceanalyzer.core.Util.OPENSEARCH_HOME;
 
 import com.google.common.annotations.VisibleForTesting;
 import java.io.File;
@@ -23,7 +24,13 @@ public class PluginSettings {
     private static PluginSettings instance;
     public static final String CONFIG_FILES_PATH = "config/";
     private static final String DEFAULT_CONFIG_FILE_PATH =
-            Util.PLUGIN_LOCATION + "config/performance-analyzer.properties";
+            OPENSEARCH_HOME
+                    + File.separator
+                    + "config"
+                    + File.separator
+                    + "opensearch-performance-analyzer"
+                    + File.separator
+                    + "performance-analyzer.properties";
     private static final String METRICS_LOCATION_KEY = "metrics-location";
     private static final String METRICS_LOCATION_DEFAULT = "/dev/shm/performanceanalyzer/";
     private static final String DELETION_INTERVAL_KEY = "metrics-deletion-interval";
