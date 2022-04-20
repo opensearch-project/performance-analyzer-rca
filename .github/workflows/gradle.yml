@@ -55,7 +55,7 @@ jobs:
       uses: actions/checkout@v2
       with:
         repository: opensearch-project/performance-analyzer
-        ref: 2.0
+        ref: '2.0'
         path: ./tmp/performance-analyzer
     - name: Build PA gradle using the new RCA jar
       working-directory: ./tmp/performance-analyzer
