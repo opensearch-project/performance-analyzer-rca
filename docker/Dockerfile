@@ -88,6 +88,7 @@ RUN yum update -y && \
 COPY CENTOS_LICENSING.txt /root
 COPY --from=prep_open_search_files --chown=1000:0 /opt/jdk-11.0.1 /opt/jdk-11.0.1
 ENV OPENSEARCH_JAVA_HOME /opt/jdk-11.0.1
+ENV OPENSEARCH_PATH_CONF /usr/share/opensearch/config
 
 # Replace OpenJDK's built-in CA certificate keystore with the one from the OS
 # vendor. The latter is superior in several ways.
