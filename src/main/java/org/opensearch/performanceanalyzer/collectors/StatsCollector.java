@@ -22,7 +22,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.opensearch.performanceanalyzer.PerformanceAnalyzerApp;
 import org.opensearch.performanceanalyzer.config.PluginSettings;
-import org.opensearch.performanceanalyzer.core.Util;
 import org.opensearch.performanceanalyzer.metrics.MetricsConfiguration;
 import org.opensearch.performanceanalyzer.rca.Version;
 import org.opensearch.performanceanalyzer.rca.formatter.StatsCollectorFormatter;
@@ -146,13 +145,15 @@ public class StatsCollector extends PerformanceAnalyzerMetricsCollector {
 
             try (InputStream input =
                     new FileInputStream(
-                            Util.PLUGIN_LOCATION
-                                    + PluginSettings.CONFIG_FILES_PATH
-                                    + fileLocation); ) {
+                            PluginSettings.instance().getConfigFolderPath() + fileLocation); ) {
                 // load properties file
                 props.load(input);
             } catch (Exception ex) {
-                GENERAL_LOG.error("Error in loading metadata for fileLocation: {}", fileLocation);
+                GENERAL_LOG.error(
+                        "Error in loading metadata for folderLocation: {}, fileLocation: {}",
+                        PluginSettings.instance().getConfigFolderPath(),
+                        fileLocation,
+                        ex);
             }
 
             props.forEach((key, value) -> retVal.put((String) key, (String) value));
