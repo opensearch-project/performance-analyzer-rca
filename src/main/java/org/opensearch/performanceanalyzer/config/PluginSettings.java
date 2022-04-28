@@ -5,7 +5,6 @@
 
 package org.opensearch.performanceanalyzer.config;
 
-import static org.opensearch.performanceanalyzer.core.Util.OPENSEARCH_HOME;
 
 import com.google.common.annotations.VisibleForTesting;
 import java.io.File;
@@ -23,15 +22,6 @@ public class PluginSettings {
 
     private static PluginSettings instance;
     public static final String CONFIG_FILES_PATH = "config/";
-    public static final String DEFAULT_CONFIG_FOLDER_PATH =
-            OPENSEARCH_HOME
-                    + File.separator
-                    + "config"
-                    + File.separator
-                    + "opensearch-performance-analyzer"
-                    + File.separator;
-    private static final String DEFAULT_CONFIG_FILE_PATH =
-            DEFAULT_CONFIG_FOLDER_PATH + "performance-analyzer.properties";
     private static final String METRICS_LOCATION_KEY = "metrics-location";
     private static final String METRICS_LOCATION_DEFAULT = "/dev/shm/performanceanalyzer/";
     private static final String DELETION_INTERVAL_KEY = "metrics-deletion-interval";
@@ -65,8 +55,8 @@ public class PluginSettings {
 
     private boolean httpsEnabled;
     private Properties settings;
-    private final String configFolderPath;
-    private final String configFilePath;
+    private String configFolderPath;
+    private String configFilePath;
 
     /**
      * Determines how many minutes worth of metricsdb files will be retained if batch metrics is
@@ -176,8 +166,8 @@ public class PluginSettings {
         rpcPort = RPC_DEFAULT_PORT;
         webServicePort = WEBSERVICE_DEFAULT_PORT;
         if (cfPath == null || cfPath.isEmpty()) {
-            this.configFolderPath = DEFAULT_CONFIG_FOLDER_PATH;
-            this.configFilePath = DEFAULT_CONFIG_FILE_PATH;
+            LOG.error("Config file path is not set. Disabling plugin.");
+            ConfigStatus.INSTANCE.setConfigurationInvalid();
         } else {
             this.configFolderPath =
                     cfPath + File.separator + "opensearch-performance-analyzer" + File.separator;
