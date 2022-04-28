@@ -23,14 +23,15 @@ public class PluginSettings {
 
     private static PluginSettings instance;
     public static final String CONFIG_FILES_PATH = "config/";
-    private static final String DEFAULT_CONFIG_FILE_PATH =
+    public static final String DEFAULT_CONFIG_FOLDER_PATH =
             OPENSEARCH_HOME
                     + File.separator
                     + "config"
                     + File.separator
                     + "opensearch-performance-analyzer"
-                    + File.separator
-                    + "performance-analyzer.properties";
+                    + File.separator;
+    private static final String DEFAULT_CONFIG_FILE_PATH =
+            DEFAULT_CONFIG_FOLDER_PATH + "performance-analyzer.properties";
     private static final String METRICS_LOCATION_KEY = "metrics-location";
     private static final String METRICS_LOCATION_DEFAULT = "/dev/shm/performanceanalyzer/";
     private static final String DELETION_INTERVAL_KEY = "metrics-deletion-interval";
@@ -64,6 +65,7 @@ public class PluginSettings {
 
     private boolean httpsEnabled;
     private Properties settings;
+    private final String configFolderPath;
     private final String configFilePath;
 
     /**
@@ -77,6 +79,10 @@ public class PluginSettings {
 
     static {
         Util.invokePrivilegedAndLogError(PluginSettings::createInstance);
+    }
+
+    public String getConfigFolderPath() {
+        return configFolderPath;
     }
 
     public String getMetricsLocation() {
@@ -170,9 +176,12 @@ public class PluginSettings {
         rpcPort = RPC_DEFAULT_PORT;
         webServicePort = WEBSERVICE_DEFAULT_PORT;
         if (cfPath == null || cfPath.isEmpty()) {
+            this.configFolderPath = DEFAULT_CONFIG_FOLDER_PATH;
             this.configFilePath = DEFAULT_CONFIG_FILE_PATH;
         } else {
-            this.configFilePath = cfPath;
+            this.configFolderPath =
+                    cfPath + File.separator + "opensearch-performance-analyzer" + File.separator;
+            this.configFilePath = configFolderPath + "performance-analyzer.properties";
         }
 
         settings = new Properties();
@@ -216,7 +225,7 @@ public class PluginSettings {
     }
 
     private static void createInstance() {
-        String cfPath = System.getProperty("configFilePath");
+        String cfPath = System.getProperty("opensearch.path.conf");
         instance = new PluginSettings(cfPath);
     }
 
