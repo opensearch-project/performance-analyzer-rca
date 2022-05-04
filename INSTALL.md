@@ -67,7 +67,7 @@ This package uses the [Gradle](https://docs.gradle.org/current/userguide/usergui
 
 2. Clone the Performance Analyzer plugin repository as follows:
  
-    `git clone -b master --single-branch https://github.com/opensearch-project/performance-analyzer.git`
+    `git clone -b main --single-branch https://github.com/opensearch-project/performance-analyzer.git`
    
 3. `cd performance-analyzer`
     
@@ -105,8 +105,8 @@ You can use the packaged Dockerfile and docker-compose.yml files [here](./docker
 
 4. Copy the RCA framework artifact and the Performance Analyzer plugin JAR into this folder
  
-    `cp <RCA framework root>/build/distributions/performance-analyzer-rca.zip ./`  
-    `cp <Performance Analyzer plugin root>/build/distributions/opensearch-performance-analyzer-1.3.0.0-SNAPSHOT.zip ./` 
+    `cp <RCA framework root>/build/distributions/performance-analyzer-rca-2.0.0.0-rc1-SNAPSHOT.zip ./`
+    `cp <Performance Analyzer plugin root>/build/distributions/opensearch-performance-analyzer-2.0.0.0-rc1-SNAPSHOT.zip ./`
  
  ### Installation
  
