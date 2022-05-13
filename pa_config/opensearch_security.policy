@@ -1,3 +1,7 @@
+grant {
+    permission java.net.SocketPermission "localhost:9600","connect,resolve";
+};
+
 grant codebase "file:${java.home}/../lib/tools.jar" {
   permission java.security.AllPermission;
 };
