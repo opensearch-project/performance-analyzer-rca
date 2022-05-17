@@ -91,8 +91,8 @@ fi
 if [[ -d "/usr/share/opensearch/plugins/opensearch-performance-analyzer" ]]; then
     CLK_TCK=`/usr/bin/getconf CLK_TCK`
     DEBUG_OPTS="-agentlib:jdwp=transport=dt_socket,address=8000,server=y,suspend=n"
-    OPENSEARCH_JAVA_OPTS="-Djava.security.policy=file:///usr/share/opensearch/performance-analyzer-rca/pa_config/opensearch_security.policy -Dclk.tck=$CLK_TCK -Djdk.attach.allowAttachSelf=true $OPENSEARCH_JAVA_OPTS"
-    /usr/bin/supervisord -c /usr/share/opensearch/performance-analyzer-rca/pa_config/supervisord.conf
+    OPENSEARCH_JAVA_OPTS="-Djava.security.policy=file:///usr/share/opensearch/performance-analyzer-rca/config/opensearch_security.policy -Dclk.tck=$CLK_TCK -Djdk.attach.allowAttachSelf=true $OPENSEARCH_JAVA_OPTS"
+    /usr/bin/supervisord -c /usr/share/opensearch/performance-analyzer-rca/config/supervisord.conf
 fi
 
 run_as_other_user_if_needed /usr/share/opensearch/bin/opensearch "${open_search_opts[@]}"
