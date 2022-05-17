@@ -13,4 +13,3 @@ grant codeBase "jrt:/jdk.attach" {
 grant codeBase "jrt:/jdk.internal.jvmstat" {
     permission java.security.AllPermission;
 };
-

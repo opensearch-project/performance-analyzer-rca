@@ -39,7 +39,7 @@ This document walks you through the process of building and deploying the RCA fr
  This will not currently enforce client  authentication. This feature, including full support for TLS is
  planned for an upcoming release.
  
-    a. Open pa_config/performance-analyzer.properties
+    a. Open $OPENSEARCH-HOME/config/opensearch-performance-analyzer/performance-analyzer.properties
     
     b. Modify the certificate-file-path, private-key-file-path, and https-enabled entries
     

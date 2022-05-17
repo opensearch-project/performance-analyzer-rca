@@ -6,7 +6,6 @@
 /.settings/
 /build
 /.project
-/bin/
 /coverage-error.log
 gradle.properties
 /src/test/resources/tmp/file_gc/
