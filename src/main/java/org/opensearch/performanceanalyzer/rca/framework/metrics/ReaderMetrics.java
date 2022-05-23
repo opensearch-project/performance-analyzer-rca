@@ -135,6 +135,21 @@ public enum ReaderMetrics implements MeasurementSet {
                     Statistics.COUNT,
                     Statistics.SUM)),
 
+    /** Number of transport threads in BLOCKED state. */
+    BLOCKED_TRANSPORT_THREAD_COUNT("BlockedTransportThreadCount", "count", Statistics.MAX),
+
+    /** Number of transport threads in WAITING or TIMED-WAITING state. */
+    WAITED_TRANSPORT_THREAD_COUNT("WaitedTransportThreadCount", "count", Statistics.MAX),
+
+    /** Max amount of time a transport thread has been BLOCKED in the past 60 seconds. */
+    MAX_TRANSPORT_THREAD_BLOCKED_TIME("MaxTransportThreadBlockedTime", "seconds", Statistics.MAX),
+
+    /**
+     * Max amount of time a transport thread has been in WAITING or TIMED-WAITING state in the past
+     * 60 seconds.
+     */
+    MAX_TRANSPORT_THREAD_WAITED_TIME("MaxTransportThreadWaitedTime", "seconds", Statistics.MAX),
+
     /**
      * A blanket exception code for {@link
      * org.opensearch.performanceanalyzer.reader.ReaderMetricsProcessor} failures.
