@@ -5,20 +5,13 @@
 
 package org.opensearch.performanceanalyzer.rca.store.rca.hot_node;
 
+import static org.opensearch.performanceanalyzer.rca.framework.metrics.ReaderMetrics.*;
+
 import com.google.common.annotations.VisibleForTesting;
 import java.time.Clock;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Deque;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -30,19 +23,15 @@ import org.opensearch.performanceanalyzer.metrics.AllMetrics;
 import org.opensearch.performanceanalyzer.metricsdb.MetricsDB;
 import org.opensearch.performanceanalyzer.rca.framework.api.Metric;
 import org.opensearch.performanceanalyzer.rca.framework.api.Rca;
+import org.opensearch.performanceanalyzer.rca.framework.api.Resources;
+import org.opensearch.performanceanalyzer.rca.framework.api.contexts.ResourceContext;
 import org.opensearch.performanceanalyzer.rca.framework.api.flow_units.MetricFlowUnit;
 import org.opensearch.performanceanalyzer.rca.framework.api.flow_units.ResourceFlowUnit;
 import org.opensearch.performanceanalyzer.rca.framework.api.metrics.Thread_Blocked_Time;
 import org.opensearch.performanceanalyzer.rca.framework.api.metrics.Thread_Waited_Time;
 import org.opensearch.performanceanalyzer.rca.framework.api.summaries.HotNodeSummary;
-import org.opensearch.performanceanalyzer.rca.framework.core.RcaConf;
-import org.opensearch.performanceanalyzer.rca.framework.metrics.ReaderMetrics;
+import org.opensearch.performanceanalyzer.rca.framework.util.InstanceDetails;
 import org.opensearch.performanceanalyzer.rca.scheduler.FlowUnitOperationArgWrapper;
-
-import static org.opensearch.performanceanalyzer.rca.framework.metrics.ReaderMetrics.BLOCKED_TRANSPORT_THREAD_COUNT;
-import static org.opensearch.performanceanalyzer.rca.framework.metrics.ReaderMetrics.WAITED_TRANSPORT_THREAD_COUNT;
-import static org.opensearch.performanceanalyzer.rca.framework.metrics.ReaderMetrics.MAX_TRANSPORT_THREAD_BLOCKED_TIME;
-import static org.opensearch.performanceanalyzer.rca.framework.metrics.ReaderMetrics.MAX_TRANSPORT_THREAD_WAITED_TIME;
 
 /**
  * Analyzes thread_blocked_time and thread_waited_time metrics for all threads and in specific
@@ -98,21 +87,30 @@ public class ThreadMetricsRca extends Rca<ResourceFlowUnit<HotNodeSummary>> {
         setFlowUnits(flowUnitList);
     }
 
-    @Override
-    public void readRcaConf(RcaConf conf) {}
-
+    /**
+     * This RCA will be consumed by hot node rca as threads which are blocked beyond a threshold
+     * indicate a hot node. Until we calibrate a reasonable value for threshold of blocked time in
+     * threads we will set the RCA as healthy to ensure we don't hinder the decisioning of hot node
+     * rca.
+     */
     @Override
     public ResourceFlowUnit<HotNodeSummary> operate() {
         try {
+            InstanceDetails instanceDetails = getInstanceDetails();
             long currentTimeMillis = this.clock.millis();
             LOG.debug("ThreadMetricsRca run at {}", currentTimeMillis);
             collateThreadMetricData(currentTimeMillis);
             publishStats();
-
+            return new ResourceFlowUnit<>(
+                    clock.millis(),
+                    new ResourceContext(Resources.State.HEALTHY),
+                    new HotNodeSummary(
+                            instanceDetails.getInstanceId(), instanceDetails.getInstanceIp()),
+                    false);
         } catch (Exception e) {
             LOG.error("ThreadMetricsRca.operate() Failed", e);
+            return new ResourceFlowUnit<>(clock.millis());
         }
-        return new ResourceFlowUnit<>(clock.millis());
     }
 
     private void publishStats() {
@@ -181,8 +179,10 @@ public class ThreadMetricsRca extends Rca<ResourceFlowUnit<HotNodeSummary>> {
                         threadList.add(tm);
                     }
                 } catch (Exception e) {
-                    LOG.error("ThreadMetricsRca.operate() Failed to parse data for record "
-                            + record.formatJSON(), e);
+                    LOG.error(
+                            "ThreadMetricsRca.operate() Failed to parse data for record "
+                                    + record.formatJSON(),
+                            e);
                     break;
                 }
             }
@@ -194,175 +194,8 @@ public class ThreadMetricsRca extends Rca<ResourceFlowUnit<HotNodeSummary>> {
                     slidingWindow.next(
                             currentTimeMillis,
                             threadList.stream()
-                                    .filter(tm -> analysis.getTypeFilter().test(tm.operation))
+                                    .filter(tm -> analysis.getTypeFilter().test(tm.getOperation()))
                                     .collect(Collectors.toList()));
                 });
-    }
-
-    public static class ThreadMetricsSlidingWindow {
-
-        private final Map<String, Deque<ThreadMetric>> metricsByThreadName;
-        private final Map<String, Double> metricSumMap;
-        private static final long SLIDING_WINDOW_SIZE_IN_SECONDS = 60;
-
-        public ThreadMetricsSlidingWindow() {
-            metricsByThreadName = new HashMap<>();
-            metricSumMap = new HashMap<>();
-        }
-
-        /** insert data into the sliding window */
-        public void next(long timestamp, List<ThreadMetric> threadMetricList) {
-            Set<String> newThreadNames = new HashSet<>();
-            for (ThreadMetric tm : threadMetricList) {
-                Deque<ThreadMetric> windowDeque;
-                if (metricsByThreadName.containsKey(tm.getName())) {
-                    windowDeque = metricsByThreadName.get(tm.getName());
-                    pruneExpiredEntries(tm.getTimeStamp(), windowDeque);
-                } else {
-                    windowDeque = new LinkedList<>();
-                    metricsByThreadName.put(tm.name, windowDeque);
-                }
-                windowDeque.addFirst(tm);
-                addValue(tm);
-                newThreadNames.add(tm.name);
-            }
-
-            for (Map.Entry<String, Deque<ThreadMetric>> entry : metricsByThreadName.entrySet()) {
-                if (newThreadNames.contains(entry.getKey())) {
-                    continue;
-                }
-                pruneExpiredEntries(timestamp, entry.getValue());
-            }
-            metricsByThreadName.entrySet().removeIf(e -> e.getValue().size() == 0);
-        }
-
-        private void pruneExpiredEntries(long endTimeStamp, Deque<ThreadMetric> windowDeque) {
-            while (!windowDeque.isEmpty()
-                    && TimeUnit.MILLISECONDS.toSeconds(
-                                    endTimeStamp - windowDeque.peekLast().getTimeStamp())
-                            > SLIDING_WINDOW_SIZE_IN_SECONDS) {
-                // remove from window
-                ThreadMetric prunedData = windowDeque.pollLast();
-                // update blocked time sum for thread in new window
-                if (prunedData != null) {
-                    removeValue(prunedData);
-                }
-            }
-        }
-
-        private void removeValue(ThreadMetric prunedData) {
-            updateValue(prunedData, false);
-        }
-
-        private void addValue(ThreadMetric prunedData) {
-            updateValue(prunedData, true);
-        }
-
-        private void updateValue(ThreadMetric tm, boolean add) {
-            String threadName = tm.name;
-            if (metricSumMap.containsKey(threadName)) {
-                double sign = add ? 1d : -1d;
-                double newVal = metricSumMap.get(threadName) + sign * tm.getValue();
-                if (newVal == 0) {
-                    metricSumMap.remove(threadName);
-                } else {
-                    metricSumMap.put(threadName, newVal);
-                }
-            } else if (add) {
-                metricSumMap.put(threadName, tm.getValue());
-            }
-        }
-
-        public int getCountExceedingThreshold(double threshold) {
-            return (int) metricSumMap.values().stream().filter(val -> val > threshold).count();
-        }
-
-        public double getMaxSum() {
-            return metricSumMap.size() > 0 ? Collections.max(metricSumMap.values()) : 0d;
-        }
-    }
-
-    public static class ThreadMetric {
-        private final String name;
-        private final double value;
-        private final long timeStamp;
-
-        private final String operation;
-
-        public ThreadMetric(String threadName, double val, long timeStamp, String operation) {
-            this.name = threadName;
-            this.value = val;
-            this.timeStamp = timeStamp;
-            this.operation = operation;
-        }
-
-        public String getOperation() {
-            return operation;
-        }
-
-        public long getTimeStamp() {
-            return timeStamp;
-        }
-
-        public String getName() {
-            return name;
-        }
-
-        public double getValue() {
-            return value;
-        }
-    }
-
-    public static class ThreadAnalysis {
-        public ThreadMetricsSlidingWindow getBlockedTimeWindow() {
-            return blockedTimeWindow;
-        }
-
-        public ThreadMetricsSlidingWindow getWaitedTimeWindow() {
-            return waitedTimeWindow;
-        }
-
-        public Predicate<String> getTypeFilter() {
-            return typeFilter;
-        }
-
-        public ReaderMetrics getBlockedThreadCountMetric() {
-            return blockedThreadCountMetric;
-        }
-
-        public ReaderMetrics getWaitedThreadCountMetric() {
-            return waitedThreadCountMetric;
-        }
-
-        public ReaderMetrics getMaxBlockedTimeMetric() {
-            return maxBlockedTimeMetric;
-        }
-
-        public ReaderMetrics getMaxWaitedTimeMetric() {
-            return maxWaitedTimeMetric;
-        }
-
-        private final ThreadMetricsSlidingWindow blockedTimeWindow;
-        private final ThreadMetricsSlidingWindow waitedTimeWindow;
-        private final Predicate<String> typeFilter;
-        private final ReaderMetrics blockedThreadCountMetric,
-                waitedThreadCountMetric,
-                maxBlockedTimeMetric,
-                maxWaitedTimeMetric;
-
-        public ThreadAnalysis(
-                Predicate<String> typeFilter,
-                ReaderMetrics blockedThreadCountMetric,
-                ReaderMetrics waitedThreadCount,
-                ReaderMetrics maxBlockedTime,
-                ReaderMetrics maxWaitedTimeMetric) {
-            this.typeFilter = typeFilter;
-            this.blockedThreadCountMetric = blockedThreadCountMetric;
-            this.waitedThreadCountMetric = waitedThreadCount;
-            this.maxBlockedTimeMetric = maxBlockedTime;
-            this.maxWaitedTimeMetric = maxWaitedTimeMetric;
-            blockedTimeWindow = new ThreadMetricsSlidingWindow();
-            waitedTimeWindow = new ThreadMetricsSlidingWindow();
-        }
     }
 }

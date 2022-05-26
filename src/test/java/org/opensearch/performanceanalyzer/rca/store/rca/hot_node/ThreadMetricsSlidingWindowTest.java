@@ -12,8 +12,6 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.opensearch.performanceanalyzer.rca.GradleTaskForRca;
-import org.opensearch.performanceanalyzer.rca.store.rca.hot_node.ThreadMetricsRca.ThreadMetric;
-import org.opensearch.performanceanalyzer.rca.store.rca.hot_node.ThreadMetricsRca.ThreadMetricsSlidingWindow;
 
 @Category(GradleTaskForRca.class)
 public class ThreadMetricsSlidingWindowTest {

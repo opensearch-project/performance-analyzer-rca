@@ -72,7 +72,7 @@ public class ThreadMetricsRcaTest {
                 mockThreadBlockedTime, threadBlockedTimeTableColumns, "10", "transport");
         setupMockThreadMetric(mockThreadWaitedTime, threadWaitedTimeTableColumns, "0", "transport");
         ResourceFlowUnit<HotNodeSummary> rfu = rca.operate();
-        assertTrue(rfu.isEmpty());
+        assertTrue(rfu.getResourceContext().isHealthy());
         assertEquals(rca.threadAnalyses.size(), 1);
         assertEquals(
                 rca.threadAnalyses.get(0).getBlockedTimeWindow().getCountExceedingThreshold(5), 1);
@@ -83,7 +83,7 @@ public class ThreadMetricsRcaTest {
         setupMockThreadMetric(mockThreadBlockedTime, threadBlockedTimeTableColumns, "10", "search");
         setupMockThreadMetric(mockThreadWaitedTime, threadWaitedTimeTableColumns, "0", "search");
         ResourceFlowUnit<HotNodeSummary> rfu = rca.operate();
-        assertTrue(rfu.isEmpty());
+        assertTrue(rfu.getResourceContext().isHealthy());
         assertEquals(rca.threadAnalyses.size(), 1);
         assertEquals(
                 rca.threadAnalyses.get(0).getBlockedTimeWindow().getCountExceedingThreshold(5), 0);
