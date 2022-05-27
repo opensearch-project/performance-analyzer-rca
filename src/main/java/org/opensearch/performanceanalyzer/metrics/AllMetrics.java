@@ -1185,6 +1185,7 @@ public class AllMetrics {
         SHARD_ROLE(Constants.SHARD_ROLE_VALUE),
         SHARD_ID(Constants.SHARDID_VALUE),
         EXCEPTION(Constants.EXCEPTION_VALUE),
+        THREAD_NAME(Constants.THREAD_NAME),
         FAILED(Constants.FAILED_VALUE);
 
         private final String value;
@@ -1205,6 +1206,7 @@ public class AllMetrics {
             public static final String SHARD_ROLE_VALUE = "ShardRole";
             public static final String EXCEPTION_VALUE = "Exception";
             public static final String FAILED_VALUE = "Failed";
+            public static final String THREAD_NAME = "ThreadName";
         }
     }
 
@@ -1250,7 +1252,8 @@ public class AllMetrics {
         INDEX_NAME(CommonDimension.INDEX_NAME.toString()),
         OPERATION(CommonDimension.OPERATION.toString()),
         SHARD_ROLE(CommonDimension.SHARD_ROLE.toString()),
-        SHARD_ID(CommonDimension.SHARD_ID.toString());
+        SHARD_ID(CommonDimension.SHARD_ID.toString()),
+        THREAD_NAME(CommonDimension.THREAD_NAME.toString());
 
         private final String value;
 

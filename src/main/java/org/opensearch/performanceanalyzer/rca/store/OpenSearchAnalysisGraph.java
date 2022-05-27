@@ -45,6 +45,8 @@ import org.opensearch.performanceanalyzer.rca.framework.api.metrics.IO_TotalSysc
 import org.opensearch.performanceanalyzer.rca.framework.api.metrics.IndexWriter_Memory;
 import org.opensearch.performanceanalyzer.rca.framework.api.metrics.ThreadPool_QueueCapacity;
 import org.opensearch.performanceanalyzer.rca.framework.api.metrics.ThreadPool_RejectedReqs;
+import org.opensearch.performanceanalyzer.rca.framework.api.metrics.Thread_Blocked_Time;
+import org.opensearch.performanceanalyzer.rca.framework.api.metrics.Thread_Waited_Time;
 import org.opensearch.performanceanalyzer.rca.framework.api.metrics.VersionMap_Memory;
 import org.opensearch.performanceanalyzer.rca.framework.api.summaries.HotNodeSummary;
 import org.opensearch.performanceanalyzer.rca.framework.api.summaries.HotResourceSummary;
@@ -76,6 +78,7 @@ import org.opensearch.performanceanalyzer.rca.store.rca.cluster.FieldDataCacheCl
 import org.opensearch.performanceanalyzer.rca.store.rca.cluster.QueueRejectionClusterRca;
 import org.opensearch.performanceanalyzer.rca.store.rca.cluster.ShardRequestCacheClusterRca;
 import org.opensearch.performanceanalyzer.rca.store.rca.hot_node.HighCpuRca;
+import org.opensearch.performanceanalyzer.rca.store.rca.hot_node.ThreadMetricsRca;
 import org.opensearch.performanceanalyzer.rca.store.rca.hotheap.HighHeapUsageOldGenRca;
 import org.opensearch.performanceanalyzer.rca.store.rca.hotheap.HighHeapUsageYoungGenRca;
 import org.opensearch.performanceanalyzer.rca.store.rca.hotshard.HotShardClusterRca;
@@ -102,6 +105,9 @@ public class OpenSearchAnalysisGraph extends AnalysisGraph {
     public void construct() {
         Metric heapUsed = new Heap_Used(EVALUATION_INTERVAL_SECONDS);
         Metric gcEvent = new GC_Collection_Event(EVALUATION_INTERVAL_SECONDS);
+        Thread_Blocked_Time threadBlockedTime =
+                new Thread_Blocked_Time(EVALUATION_INTERVAL_SECONDS);
+        Thread_Waited_Time threadWaitedTime = new Thread_Waited_Time(EVALUATION_INTERVAL_SECONDS);
         Heap_Max heapMax = new Heap_Max(EVALUATION_INTERVAL_SECONDS);
         Metric gc_Collection_Time = new GC_Collection_Time(EVALUATION_INTERVAL_SECONDS);
         GC_Type gcType = new GC_Type(EVALUATION_INTERVAL_SECONDS);
@@ -131,6 +137,12 @@ public class OpenSearchAnalysisGraph extends AnalysisGraph {
         cpuUtilizationGroupByOperation.addTag(
                 RcaConsts.RcaTagConstants.TAG_LOCUS,
                 RcaConsts.RcaTagConstants.LOCUS_DATA_MASTER_NODE);
+        threadBlockedTime.addTag(
+                RcaConsts.RcaTagConstants.TAG_LOCUS,
+                RcaConsts.RcaTagConstants.LOCUS_DATA_MASTER_NODE);
+        threadWaitedTime.addTag(
+                RcaConsts.RcaTagConstants.TAG_LOCUS,
+                RcaConsts.RcaTagConstants.LOCUS_DATA_MASTER_NODE);
 
         addLeaf(heapUsed);
         addLeaf(gcEvent);
@@ -138,6 +150,8 @@ public class OpenSearchAnalysisGraph extends AnalysisGraph {
         addLeaf(heapMax);
         addLeaf(gc_Collection_Time);
         addLeaf(cpuUtilizationGroupByOperation);
+        addLeaf(threadBlockedTime);
+        addLeaf(threadWaitedTime);
 
         // add node stats metrics
         List<Metric> nodeStatsMetrics = constructNodeStatsMetrics();
@@ -168,6 +182,13 @@ public class OpenSearchAnalysisGraph extends AnalysisGraph {
                 RcaConsts.RcaTagConstants.LOCUS_DATA_MASTER_NODE);
         highCpuRca.addAllUpstreams(Collections.singletonList(cpuUtilizationGroupByOperation));
 
+        Rca<ResourceFlowUnit<HotNodeSummary>> threadMetricsRca =
+                new ThreadMetricsRca(threadBlockedTime, threadWaitedTime, RCA_PERIOD);
+        threadMetricsRca.addTag(
+                RcaConsts.RcaTagConstants.TAG_LOCUS,
+                RcaConsts.RcaTagConstants.LOCUS_DATA_MASTER_NODE);
+        threadMetricsRca.addAllUpstreams(List.of(threadBlockedTime, threadWaitedTime));
+
         Rca<ResourceFlowUnit<HotNodeSummary>> hotJVMNodeRca =
                 new HotNodeRca(
                         RCA_PERIOD, highHeapUsageOldGenRca, highHeapUsageYoungGenRca, highCpuRca);
@@ -175,7 +196,11 @@ public class OpenSearchAnalysisGraph extends AnalysisGraph {
                 RcaConsts.RcaTagConstants.TAG_LOCUS,
                 RcaConsts.RcaTagConstants.LOCUS_DATA_MASTER_NODE);
         hotJVMNodeRca.addAllUpstreams(
-                Arrays.asList(highHeapUsageOldGenRca, highHeapUsageYoungGenRca, highCpuRca));
+                Arrays.asList(
+                        highHeapUsageOldGenRca,
+                        highHeapUsageYoungGenRca,
+                        highCpuRca,
+                        threadMetricsRca));
 
         HighHeapUsageClusterRca highHeapUsageClusterRca =
                 new HighHeapUsageClusterRca(RCA_PERIOD, hotJVMNodeRca);
