@@ -16,7 +16,6 @@ import java.util.regex.Pattern;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jooq.BatchBindStep;
-import org.jooq.Condition;
 import org.jooq.DSLContext;
 import org.jooq.Field;
 import org.jooq.Record;
@@ -129,6 +128,10 @@ public class MetricsEmitter {
                                                 ShardRequestMetricsSnapshot.Fields.SHARD_ROLE
                                                         .toString()),
                                         String.class));
+                        this.add(
+                                DSL.field(
+                                        DSL.name(OSMetricsSnapshot.Fields.tName.toString()),
+                                        String.class));
                     }
                 };
 
@@ -196,6 +199,10 @@ public class MetricsEmitter {
                                                 ShardRequestMetricsSnapshot.Fields.SHARD_ROLE
                                                         .toString()),
                                         String.class));
+                        this.add(
+                                DSL.field(
+                                        DSL.name(OSMetricsSnapshot.Fields.tName.toString()),
+                                        String.class));
                     }
                 };
 
@@ -248,12 +255,14 @@ public class MetricsEmitter {
                             this.add(AllMetrics.CommonDimension.INDEX_NAME.toString());
                             this.add(AllMetrics.CommonDimension.OPERATION.toString());
                             this.add(AllMetrics.CommonDimension.SHARD_ROLE.toString());
+                            this.add(AllMetrics.CommonDimension.THREAD_NAME.toString());
                         }
                     };
             db.createMetric(new Metric<Double>(metricColumn, 0d), dims);
             BatchBindStep handle = db.startBatchPut(new Metric<Double>(metricColumn, 0d), dims);
             for (Record r : res) {
-                if (r.get(MetricsDB.SUM + "_" + metricColumn) == null) {
+                if (r.get(MetricsDB.SUM + "_" + metricColumn) == null
+                        || r.get(OSMetricsSnapshot.Fields.tName.toString()) == null) {
                     continue;
                 }
 
@@ -270,6 +279,7 @@ public class MetricsEmitter {
                         r.get(ShardRequestMetricsSnapshot.Fields.INDEX_NAME.toString()).toString(),
                         r.get(ShardRequestMetricsSnapshot.Fields.OPERATION.toString()).toString(),
                         r.get(ShardRequestMetricsSnapshot.Fields.SHARD_ROLE.toString()).toString(),
+                        r.get(OSMetricsSnapshot.Fields.tName.toString()).toString(),
                         sumMetric,
                         avgMetric,
                         minMetric,
@@ -301,14 +311,12 @@ public class MetricsEmitter {
             return;
         }
 
-        Condition condition = DSL.trueCondition();
         Field tidField = DSL.field(DSL.name(OSMetricsSnapshot.Fields.tid.toString()), String.class);
-        Field tNameField =
-                DSL.field(DSL.name(OSMetricsSnapshot.Fields.tName.toString()), String.class);
 
-        Set<String> rqSet = DBUtils.getRecordSetByField(rqTable, tidField, condition, create);
-        condition = tNameField.contains("[bulk]").or(tNameField.contains("[search]"));
-        Set<String> osSet = DBUtils.getRecordSetByField(osTable, tidField, condition, create);
+        Set<String> rqSet =
+                DBUtils.getRecordSetByField(rqTable, tidField, DSL.trueCondition(), create);
+        Set<String> osSet =
+                DBUtils.getRecordSetByField(osTable, tidField, DSL.trueCondition(), create);
 
         if (!osSet.containsAll(rqSet)) {
             String msg =
@@ -317,7 +325,7 @@ public class MetricsEmitter {
                             rqSet.toString(), osSet.toString());
             LOG.error(msg);
             LOG.error(create.select().from(rqTable).fetch().toString());
-            LOG.error(create.select().from(osTable).where(condition).fetch().toString());
+            LOG.error(create.select().from(osTable).where(DSL.trueCondition()).fetch().toString());
             throw new RuntimeException(msg);
         }
     }
@@ -472,7 +480,8 @@ public class MetricsEmitter {
             if (operation == null) {
                 continue;
             }
-
+            dimensions.put(
+                    AllMetrics.CommonDimension.THREAD_NAME.toString(), threadName.toString());
             dimensions.put(ShardRequestMetricsSnapshot.Fields.OPERATION.toString(), operation);
             for (String metricColumn : metricColumns) {
                 if (r.get(metricColumn) == null) {
