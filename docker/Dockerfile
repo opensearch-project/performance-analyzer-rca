@@ -51,7 +51,7 @@ USER 0
 RUN chown -R opensearch:0 . && \
     chmod -R g=u /usr/share/opensearch
 
-RUN unzip config/performance-analyzer-rca-2.0.0.0-SNAPSHOT.zip
+RUN unzip config/performance-analyzer-rca-2.1.0.0-SNAPSHOT.zip
 
 RUN chmod -R 755 /dev/shm
 ################################################################################

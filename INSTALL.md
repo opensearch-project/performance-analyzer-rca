@@ -72,12 +72,8 @@ This package uses the [Gradle](https://docs.gradle.org/current/userguide/usergui
 3. `cd performance-analyzer`
     
 4. Because we are supplying our own version of the RCA framework, the SHA might have changed. So, delete the old SHA file if it exists. The SHA will get updated during build time.
- 
-<<<<<<< HEAD
-    `rm -f licenses/performanceanalyzer-rca-2.0.0.0.jar.sha1`
-=======
+
     `rm -f licenses/performanceanalyzer-rca-2.1.0.0.jar.sha1`
->>>>>>> b265c99f (Update version to 2.1)
 
 5. Trigger a gradle build. This builds the plugin, runs unit tests and creates the plugin jar.
  
