@@ -768,10 +768,10 @@ task versionIncrement {
             fileset(dir: projectDir) {
                 // Include the required files that needs to be updated with new Version
                 include(name: "INSTALL.md")
-                include(name: "build.gradle")
                 include(name: "docker/Dockerfile")
                 include(name: "src/main/resources/plugin-descriptor.properties")
             }
         }
+        ant.replaceregexp(file:'build.gradle', match: '"opensearch.version", "\\d.*"', replace: '"opensearch.version", "' + newVersion.tokenize('-')[0] + '-SNAPSHOT"', flags:'g', byline:true)
     }
 }
