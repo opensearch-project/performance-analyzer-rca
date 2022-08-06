@@ -18,7 +18,7 @@ public class Util {
     private static final Logger LOG = LogManager.getLogger(Util.class);
 
     public static final String PA_BASE_URL = "/_plugins/_performanceanalyzer";
-    public static final String LEGACY_OPENDISTRO_PA_BASE_URL = "/_opendistro/_performanceanalyzer";
+    public static final String LEGACY_OPENDISTRO_PA_BASE_URL = PA_BASE_URL;
 
     public static final String METRICS_QUERY_URL = PA_BASE_URL + "/metrics";
     public static final String LEGACY_OPENDISTRO_METRICS_QUERY_URL =
