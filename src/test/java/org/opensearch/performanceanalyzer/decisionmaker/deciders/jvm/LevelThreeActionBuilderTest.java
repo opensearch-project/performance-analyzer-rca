@@ -59,14 +59,17 @@ public class LevelThreeActionBuilderTest {
         ClusterDetailsEventProcessor.NodeDetails node2 =
                 new ClusterDetailsEventProcessor.NodeDetails(
                         AllMetrics.NodeRole.DATA, "node2", "127.0.0.1", false);
-        ClusterDetailsEventProcessor.NodeDetails master =
+        ClusterDetailsEventProcessor.NodeDetails clusterManager =
                 new ClusterDetailsEventProcessor.NodeDetails(
-                        AllMetrics.NodeRole.ELECTED_MASTER, "master", "127.0.0.3", true);
+                        AllMetrics.NodeRole.ELECTED_CLUSTER_MANAGER,
+                        "cluster_manager",
+                        "127.0.0.3",
+                        true);
 
         List<ClusterDetailsEventProcessor.NodeDetails> nodes = new ArrayList<>();
         nodes.add(node1);
         nodes.add(node2);
-        nodes.add(master);
+        nodes.add(clusterManager);
         clusterDetailsEventProcessor.setNodesDetails(nodes);
         testAppContext.setClusterDetailsEventProcessor(clusterDetailsEventProcessor);
     }

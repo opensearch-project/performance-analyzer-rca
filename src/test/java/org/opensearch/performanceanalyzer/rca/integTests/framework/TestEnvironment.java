@@ -79,16 +79,17 @@ public class TestEnvironment {
     }
 
     private void updateRcaConf(ARcaConf aRcaConf, Env env) {
-        String masterRcaConf = aRcaConf.electedMaster();
-        env.rcaConfMap.put(ARcaConf.Type.ELECTED_MASTER, masterRcaConf);
+        String clusterManagerRcaConf = aRcaConf.electedClusterManager();
+        env.rcaConfMap.put(ARcaConf.Type.ELECTED_CLUSTER_MANAGER, clusterManagerRcaConf);
 
-        String standByMasterRcaConf = aRcaConf.standBy();
-        env.rcaConfMap.put(ARcaConf.Type.STANDBY_MASTER, standByMasterRcaConf);
+        String standByClusterManagerRcaConf = aRcaConf.standBy();
+        env.rcaConfMap.put(ARcaConf.Type.STANDBY_CLUSTER_MANAGER, standByClusterManagerRcaConf);
 
         String dataNodesRcaConf = aRcaConf.dataNode();
         env.rcaConfMap.put(ARcaConf.Type.DATA_NODES, dataNodesRcaConf);
 
-        RcaControllerHelper.set(dataNodesRcaConf, standByMasterRcaConf, masterRcaConf);
+        RcaControllerHelper.set(
+                dataNodesRcaConf, standByClusterManagerRcaConf, clusterManagerRcaConf);
     }
 
     private void updateRcaGraph(ARcaGraph aRcaGraph, Env env)
@@ -105,17 +106,19 @@ public class TestEnvironment {
     }
 
     private void updateWithDefaultRcaConfAnnotation(Env env) throws NoSuchMethodException {
-        String masterRcaConf = (String) ARcaConf.class.getMethod("electedMaster").getDefaultValue();
-        env.rcaConfMap.put(ARcaConf.Type.ELECTED_MASTER, masterRcaConf);
+        String clusterManagerRcaConf =
+                (String) ARcaConf.class.getMethod("electedClusterManager").getDefaultValue();
+        env.rcaConfMap.put(ARcaConf.Type.ELECTED_CLUSTER_MANAGER, clusterManagerRcaConf);
 
-        String standByMasterRcaConf =
+        String standByClusterManagerRcaConf =
                 (String) ARcaConf.class.getMethod("standBy").getDefaultValue();
-        env.rcaConfMap.put(ARcaConf.Type.STANDBY_MASTER, standByMasterRcaConf);
+        env.rcaConfMap.put(ARcaConf.Type.STANDBY_CLUSTER_MANAGER, standByClusterManagerRcaConf);
 
         String dataNodesRcaConf = (String) ARcaConf.class.getMethod("dataNode").getDefaultValue();
         env.rcaConfMap.put(ARcaConf.Type.DATA_NODES, dataNodesRcaConf);
 
-        RcaControllerHelper.set(dataNodesRcaConf, standByMasterRcaConf, masterRcaConf);
+        RcaControllerHelper.set(
+                dataNodesRcaConf, standByClusterManagerRcaConf, clusterManagerRcaConf);
     }
 
     public void clearUpMethodLevelEnvOverride() {

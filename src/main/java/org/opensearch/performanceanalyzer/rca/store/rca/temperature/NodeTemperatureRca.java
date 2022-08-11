@@ -61,8 +61,8 @@ public class NodeTemperatureRca extends Rca<CompactNodeTemperatureFlowUnit> {
      * The goal of the NodeHeatRca is to build a node level temperature profile.
      *
      * <p>This is done by accumulating the {@code DimensionalFlowUnit} s it receives from the
-     * individual ResourceHeatRcas. The temperature profile build here is sent to the elected master
-     * node where this is used to calculate the cluster temperature profile.
+     * individual ResourceHeatRcas. The temperature profile build here is sent to the elected
+     * cluster_manager node where this is used to calculate the cluster temperature profile.
      *
      * @return
      */
