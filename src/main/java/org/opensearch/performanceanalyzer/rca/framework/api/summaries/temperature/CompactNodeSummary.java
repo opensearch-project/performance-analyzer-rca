@@ -31,8 +31,8 @@ import org.opensearch.performanceanalyzer.rca.framework.core.temperature.Tempera
 /**
  * This is created at two places - on each node and again on the cluster. On the node we have the
  * full resolution with dimensions and zones in each dimensions and then shards in zones. But on the
- * elected master we only have the temperature of a node and not zone or shard level information.
- * So, this summary is kept generic so that both can use it.
+ * elected cluster_manager we only have the temperature of a node and not zone or shard level
+ * information. So, this summary is kept generic so that both can use it.
  */
 public class CompactNodeSummary extends GenericSummary {
 

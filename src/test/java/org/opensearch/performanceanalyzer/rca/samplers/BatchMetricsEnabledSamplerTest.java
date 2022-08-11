@@ -66,7 +66,7 @@ public class BatchMetricsEnabledSamplerTest {
     }
 
     @Test
-    public void testIsBatchMetricsEnabled_notMaster() {
+    public void testIsBatchMetricsEnabled_notClusterManager() {
         appContext.setClusterDetailsEventProcessor(null);
         assertFalse(uut.isBatchMetricsEnabled());
     }

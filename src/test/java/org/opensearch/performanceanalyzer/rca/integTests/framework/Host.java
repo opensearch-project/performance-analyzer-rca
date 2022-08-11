@@ -223,7 +223,7 @@ public class Host {
                 host.role,
                 host.getMyTag().toString(),
                 host.hostIp,
-                host.isElectedMaster(),
+                host.isElectedClusterManager(),
                 host.grpcServerPort);
     }
 
@@ -231,8 +231,8 @@ public class Host {
         return myTag;
     }
 
-    public boolean isElectedMaster() {
-        return AllMetrics.NodeRole.ELECTED_MASTER == this.role;
+    public boolean isElectedClusterManager() {
+        return AllMetrics.NodeRole.ELECTED_CLUSTER_MANAGER == this.role;
     }
 
     public void deleteHost() throws IOException {
@@ -371,7 +371,8 @@ public class Host {
                 }
             }
             if (!foundDataForHost) {
-                // This is not an error though. For example, a dedicated master node cannot emit
+                // This is not an error though. For example, a dedicated cluster_manager node cannot
+                // emit
                 // a shard related metric.
                 System.out.println(
                         "No data found for host " + hostId + " for metric " + metric.name());

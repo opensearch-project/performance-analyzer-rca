@@ -31,26 +31,29 @@ import org.opensearch.performanceanalyzer.rca.framework.util.RcaConsts;
 public class RcaControllerHelper {
 
     private static final Logger LOG = LogManager.getLogger(RcaControllerHelper.class);
-    public static final String CAT_MASTER_URL = "http://localhost:9200/_cat/master?h=ip";
-    private static String ELECTED_MASTER_RCA_CONF_PATH = RcaConsts.RCA_CONF_MASTER_PATH;
-    private static String MASTER_RCA_CONF_PATH = RcaConsts.RCA_CONF_IDLE_MASTER_PATH;
+    public static final String CAT_CLUSTER_MANAGER_URL =
+            "http://localhost:9200/_cat/cluster_manager?h=ip";
+    private static String ELECTED_CLUSTER_MANAGER_RCA_CONF_PATH =
+            RcaConsts.RCA_CONF_CLUSTER_MANAGER_PATH;
+    private static String CLUSTER_MANAGER_RCA_CONF_PATH =
+            RcaConsts.RCA_CONF_IDLE_CLUSTER_MANAGER_PATH;
     private static String RCA_CONF_PATH = RcaConsts.RCA_CONF_PATH;
 
     /**
      * Picks a configuration for RCA based on the node's role.
      *
-     * @param nodeRole The role of the node(data/eligible master/elected master)
+     * @param nodeRole The role of the node(data/eligible cluster_manager/elected cluster_manager)
      * @return The configuration based on the role.
      */
     public static RcaConf pickRcaConfForRole(final AllMetrics.NodeRole nodeRole) {
-        if (AllMetrics.NodeRole.ELECTED_MASTER == nodeRole) {
-            LOG.debug("picking elected master conf");
-            return new RcaConf(ELECTED_MASTER_RCA_CONF_PATH);
+        if (AllMetrics.NodeRole.ELECTED_CLUSTER_MANAGER == nodeRole) {
+            LOG.debug("picking elected cluster_manager conf");
+            return new RcaConf(ELECTED_CLUSTER_MANAGER_RCA_CONF_PATH);
         }
 
-        if (AllMetrics.NodeRole.MASTER == nodeRole) {
-            LOG.debug("picking idle master conf");
-            return new RcaConf(MASTER_RCA_CONF_PATH);
+        if (AllMetrics.NodeRole.CLUSTER_MANAGER == nodeRole) {
+            LOG.debug("picking idle cluster_manager conf");
+            return new RcaConf(CLUSTER_MANAGER_RCA_CONF_PATH);
         }
 
         if (AllMetrics.NodeRole.DATA == nodeRole) {
@@ -63,17 +66,17 @@ public class RcaControllerHelper {
     }
 
     /**
-     * Gets the elected master's information by performing a _cat/master call.
+     * Gets the elected cluster_manager's information by performing a _cat/cluster_manager call.
      *
-     * @return The host address of the elected master.
+     * @return The host address of the elected cluster_manager.
      */
-    public static String getElectedMasterHostAddress() {
+    public static String getElectedClusterManagerHostAddress() {
         try {
-            LOG.info("Making _cat/master call");
+            LOG.info("Making _cat/cluster_manager call");
             PerformanceAnalyzerApp.RCA_RUNTIME_METRICS_AGGREGATOR.updateStat(
-                    RcaRuntimeMetrics.OPEN_SEARCH_APIS_CALLED, "catMaster", 1);
+                    RcaRuntimeMetrics.OPEN_SEARCH_APIS_CALLED, "catClusterManager", 1);
 
-            final URL url = new URL(CAT_MASTER_URL);
+            final URL url = new URL(CAT_CLUSTER_MANAGER_URL);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("GET");
             BufferedReader in =
@@ -83,7 +86,7 @@ public class RcaControllerHelper {
 
             return inputLine;
         } catch (IOException e) {
-            LOG.error("Could not get the elected master node", e);
+            LOG.error("Could not get the elected cluster_manager node", e);
         }
 
         return "";
@@ -115,13 +118,16 @@ public class RcaControllerHelper {
     public static void set(
             final String rcaConfPath,
             final String rcaMaterConfPath,
-            final String rcaElectedMasterConfPath) {
+            final String rcaElectedClusterManagerConfPath) {
         RCA_CONF_PATH = rcaConfPath;
-        MASTER_RCA_CONF_PATH = rcaMaterConfPath;
-        ELECTED_MASTER_RCA_CONF_PATH = rcaElectedMasterConfPath;
+        CLUSTER_MANAGER_RCA_CONF_PATH = rcaMaterConfPath;
+        ELECTED_CLUSTER_MANAGER_RCA_CONF_PATH = rcaElectedClusterManagerConfPath;
     }
 
     public static List<String> getAllConfFilePaths() {
-        return ImmutableList.of(ELECTED_MASTER_RCA_CONF_PATH, MASTER_RCA_CONF_PATH, RCA_CONF_PATH);
+        return ImmutableList.of(
+                ELECTED_CLUSTER_MANAGER_RCA_CONF_PATH,
+                CLUSTER_MANAGER_RCA_CONF_PATH,
+                RCA_CONF_PATH);
     }
 }
