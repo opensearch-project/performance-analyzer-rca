@@ -789,8 +789,7 @@ public class AllMetrics {
         }
 
         public static class Constants {
-            public static final String PENDING_TASKS_COUNT_VALUE =
-                    "ClusterManager_PendingQueueSize";
+            public static final String PENDING_TASKS_COUNT_VALUE = "ClusterManager_PendingQueueSize";
         }
     }
 
