@@ -21,8 +21,10 @@ public class QueueRejectionRcaConfigTest {
     @Before
     public void init() {
         String rcaConfPath =
-                Paths.get(RcaConsts.TEST_CONFIG_PATH, "rca_elected_master.conf").toString();
-        String rcaOldConfPath = Paths.get(RcaConsts.TEST_CONFIG_PATH, "rca_master.conf").toString();
+                Paths.get(RcaConsts.TEST_CONFIG_PATH, "rca_elected_cluster_manager.conf")
+                        .toString();
+        String rcaOldConfPath =
+                Paths.get(RcaConsts.TEST_CONFIG_PATH, "rca_cluster_manager.conf").toString();
         rcaConf = new RcaConf(rcaConfPath);
         rcaOldConf = new RcaConf(rcaOldConfPath);
     }

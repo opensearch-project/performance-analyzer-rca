@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-package org.opensearch.performanceanalyzer.rca.integTests.tests.cache_tuning.dedicated_master;
+package org.opensearch.performanceanalyzer.rca.integTests.tests.cache_tuning.dedicated_cluster_manager;
 
 import static org.opensearch.performanceanalyzer.rca.integTests.tests.cache_tuning.Constants.CACHE_TUNING_RESOURCES_DIR;
 import static org.opensearch.performanceanalyzer.rca.integTests.tests.cache_tuning.Constants.INDEX_NAME;
@@ -13,9 +13,10 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.opensearch.performanceanalyzer.metrics.AllMetrics;
-import org.opensearch.performanceanalyzer.rca.framework.api.metrics.Cache_FieldData_Eviction;
-import org.opensearch.performanceanalyzer.rca.framework.api.metrics.Cache_FieldData_Size;
 import org.opensearch.performanceanalyzer.rca.framework.api.metrics.Cache_Max_Size;
+import org.opensearch.performanceanalyzer.rca.framework.api.metrics.Cache_Request_Eviction;
+import org.opensearch.performanceanalyzer.rca.framework.api.metrics.Cache_Request_Hit;
+import org.opensearch.performanceanalyzer.rca.framework.api.metrics.Cache_Request_Size;
 import org.opensearch.performanceanalyzer.rca.framework.api.metrics.Heap_Max;
 import org.opensearch.performanceanalyzer.rca.integTests.framework.RcaItMarker;
 import org.opensearch.performanceanalyzer.rca.integTests.framework.annotations.AClusterType;
@@ -29,18 +30,18 @@ import org.opensearch.performanceanalyzer.rca.integTests.framework.annotations.A
 import org.opensearch.performanceanalyzer.rca.integTests.framework.configs.ClusterType;
 import org.opensearch.performanceanalyzer.rca.integTests.framework.configs.HostTag;
 import org.opensearch.performanceanalyzer.rca.integTests.framework.runners.RcaItNotEncryptedRunner;
-import org.opensearch.performanceanalyzer.rca.integTests.tests.cache_tuning.validator.FieldDataCacheDeciderValidator;
+import org.opensearch.performanceanalyzer.rca.integTests.tests.cache_tuning.validator.ShardRequestCacheDeciderValidator;
 import org.opensearch.performanceanalyzer.rca.persistence.actions.PersistedAction;
 import org.opensearch.performanceanalyzer.rca.store.OpenSearchAnalysisGraph;
 
 @Category(RcaItMarker.class)
 @RunWith(RcaItNotEncryptedRunner.class)
-@AClusterType(ClusterType.MULTI_NODE_CO_LOCATED_MASTER)
+@AClusterType(ClusterType.MULTI_NODE_CO_LOCATED_CLUSTER_MANAGER)
 @ARcaGraph(OpenSearchAnalysisGraph.class)
 // specify a custom rca.conf to set the collector time periods to 5s to reduce runtime
 @ARcaConf(dataNode = CACHE_TUNING_RESOURCES_DIR + "rca.conf")
 @AMetric(
-        name = Cache_FieldData_Size.class,
+        name = Cache_Request_Size.class,
         dimensionNames = {
             AllMetrics.CommonDimension.Constants.INDEX_NAME_VALUE,
             AllMetrics.CommonDimension.Constants.SHARDID_VALUE
@@ -51,14 +52,32 @@ import org.opensearch.performanceanalyzer.rca.store.OpenSearchAnalysisGraph;
                     tuple = {
                         @ATuple(
                                 dimensionValues = {INDEX_NAME, SHARD_ID},
-                                sum = 8500.0,
-                                avg = 8500.0,
-                                min = 8500.0,
-                                max = 8500.0)
+                                sum = 100.0,
+                                avg = 100.0,
+                                min = 100.0,
+                                max = 100.0)
                     })
         })
 @AMetric(
-        name = Cache_FieldData_Eviction.class,
+        name = Cache_Request_Eviction.class,
+        dimensionNames = {
+            AllMetrics.CommonDimension.Constants.INDEX_NAME_VALUE,
+            AllMetrics.CommonDimension.Constants.SHARDID_VALUE
+        },
+        tables = {
+            @ATable(
+                    hostTag = HostTag.DATA_0,
+                    tuple = {
+                        @ATuple(
+                                dimensionValues = {INDEX_NAME, SHARD_ID},
+                                sum = 1.0,
+                                avg = 1.0,
+                                min = 1.0,
+                                max = 1.0)
+                    })
+        })
+@AMetric(
+        name = Cache_Request_Hit.class,
         dimensionNames = {
             AllMetrics.CommonDimension.Constants.INDEX_NAME_VALUE,
             AllMetrics.CommonDimension.Constants.SHARDID_VALUE
@@ -84,24 +103,24 @@ import org.opensearch.performanceanalyzer.rca.store.OpenSearchAnalysisGraph;
                     tuple = {
                         @ATuple(
                                 dimensionValues = {
-                                    AllMetrics.CacheType.Constants.FIELD_DATA_CACHE_NAME
+                                    AllMetrics.CacheType.Constants.SHARD_REQUEST_CACHE_NAME
                                 },
-                                sum = 10000.0,
-                                avg = 10000.0,
-                                min = 10000.0,
-                                max = 10000.0)
+                                sum = 100.0,
+                                avg = 100.0,
+                                min = 100.0,
+                                max = 100.0)
                     }),
             @ATable(
-                    hostTag = HostTag.ELECTED_MASTER,
+                    hostTag = HostTag.ELECTED_CLUSTER_MANAGER,
                     tuple = {
                         @ATuple(
                                 dimensionValues = {
-                                    AllMetrics.CacheType.Constants.FIELD_DATA_CACHE_NAME
+                                    AllMetrics.CacheType.Constants.SHARD_REQUEST_CACHE_NAME
                                 },
-                                sum = 10000.0,
-                                avg = 10000.0,
-                                min = 10000.0,
-                                max = 10000.0)
+                                sum = 100.0,
+                                avg = 100.0,
+                                min = 100.0,
+                                max = 100.0)
                     })
         })
 @AMetric(
@@ -119,7 +138,7 @@ import org.opensearch.performanceanalyzer.rca.store.OpenSearchAnalysisGraph;
                                 max = 1000000.0)
                     }),
             @ATable(
-                    hostTag = {HostTag.ELECTED_MASTER},
+                    hostTag = {HostTag.ELECTED_CLUSTER_MANAGER},
                     tuple = {
                         @ATuple(
                                 dimensionValues = {AllMetrics.GCType.Constants.HEAP_VALUE},
@@ -129,14 +148,15 @@ import org.opensearch.performanceanalyzer.rca.store.OpenSearchAnalysisGraph;
                                 max = 1000000.0)
                     })
         })
-public class FieldDataCacheDeciderDedicatedMasterITest {
-    // Test CacheDecider for ModifyCacheAction (field data cache).
-    // The cache decider should emit modify cache size action as field data rca is unhealthy.
+public class ShardRequestCacheDeciderDedicatedClusterManagerITest {
+    // Test CacheDecider for ModifyCacheAction (shard request cache).
+    // The cache decider should emit modify cache size action as shard request cache rca is
+    // unhealthy.
     @Test
     @AExpect(
             what = AExpect.Type.DB_QUERY,
-            on = HostTag.ELECTED_MASTER,
-            validator = FieldDataCacheDeciderValidator.class,
+            on = HostTag.ELECTED_CLUSTER_MANAGER,
+            validator = ShardRequestCacheDeciderValidator.class,
             forRca = PersistedAction.class,
             timeoutSeconds = 1000)
     @AErrorPatternIgnored(
@@ -163,12 +183,12 @@ public class FieldDataCacheDeciderDedicatedMasterITest {
             reason = "Node config cache is expected to be missing during shutdown")
     @AErrorPatternIgnored(
             pattern = "NodeConfigCollector:collectAndPublishMetric()",
-            reason = "Shard request cache metrics is expected to be missing")
+            reason = "Field data cache metrics is expected to be missing")
     @AErrorPatternIgnored(
             pattern = "CacheUtil:getCacheMaxSize()",
-            reason = "Shard request cache metrics is expected to be missing.")
+            reason = "Field data cache metrics is expected to be missing.")
     @AErrorPatternIgnored(
             pattern = "OldGenRca:getMaxOldGenSizeOrDefault()",
             reason = "Old gen metrics is expected to be missing in this integ test.")
-    public void testFieldDataCacheAction() {}
+    public void testShardRequestCacheAction() {}
 }
