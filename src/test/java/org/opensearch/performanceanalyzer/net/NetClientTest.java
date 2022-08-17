@@ -56,7 +56,8 @@ public class NetClientTest {
 
     @Test
     public void testPublishWithDifferentNode() {
-        InstanceDetails dummyRemoteHost = new InstanceDetails(AllMetrics.NodeRole.ELECTED_MASTER);
+        InstanceDetails dummyRemoteHost =
+                new InstanceDetails(AllMetrics.NodeRole.ELECTED_CLUSTER_MANAGER);
 
         DUMMY_GRAPH_NODES.forEach(
                 node -> {

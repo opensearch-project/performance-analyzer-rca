@@ -12,10 +12,10 @@ public class Consts {
     // current test run.
     public static final String RCA_IT_CLUSTER_DIR_FORMAT = "yyyy.MM.dd.HH.mm.ss";
     public static final String TEST_RESOURCES_DIR = "./src/test/resources/rca/";
-    public static final String RCAIT_DEFAULT_RCA_CONF_ELECTED_MASTER_NODE =
-            TEST_RESOURCES_DIR + "rca_elected_master.conf";
-    public static final String RCAIT_DEFAULT_RCA_CONF_STANDBY_MASTER_NODE =
-            TEST_RESOURCES_DIR + "rca_master.conf";
+    public static final String RCAIT_DEFAULT_RCA_CONF_ELECTED_CLUSTER_MANAGER_NODE =
+            TEST_RESOURCES_DIR + "rca_elected_cluster_manager.conf";
+    public static final String RCAIT_DEFAULT_RCA_CONF_STANDBY_CLUSTER_MANAGER_NODE =
+            TEST_RESOURCES_DIR + "rca_cluster_manager.conf";
     public static final String RCAIT_DEFAULT_RCA_CONF_DATA_NODE = TEST_RESOURCES_DIR + "rca.conf";
 
     public static final String INTEG_TESTS_SRC_DIR =
@@ -27,5 +27,5 @@ public class Consts {
 
     // Node count constants.
     public static final int numDataNodes = 2;
-    public static final int numStandbyMasterNodes = 2;
+    public static final int numStandbyClusterManagerNodes = 2;
 }
