@@ -7,13 +7,13 @@ $
 ^election_term
 {"current_time":1566413966544}
 {"Election_Term":18}$
-^master_throttling_metrics
+^cluster_manager_throttling_metrics
 {"current_time":1566413966544}
-{"Data_RetryingPendingTasksCount":0,"Master_ThrottledPendingTasksCount":33}
+{"Data_RetryingPendingTasksCount":0,"ClusterManager_ThrottledPendingTasksCount":33}
 ^cluster_applier_service
 {"current_time":1566413966544}
 {"ClusterApplierService_Latency":23,"ClusterApplierService_Failure":3}$
-^master_cluster_update
+^cluster_manager_cluster_update
 {"current_time":1566413966493}
 {"PublishClusterState_Latency":23,"PublishClusterState_Failure":3}$
 ^shard_state_metrics
@@ -155,7 +155,7 @@ fault:0$
 {"Indexing_ThrottleTime":0,"Cache_Query_Hit":0,"Cache_Query_Miss":0,"Cache_Query_Size":0,"Cache_FieldData_Eviction":0,"Cache_FieldData_Size":0,"Cache_Request_Hit":0,"Cache_Request_Miss":0,"Cache_Request_Eviction":0,"Cache_Request_Size":0,"Refresh_Event":0,"Refresh_Time":0,"Flush_Event":0,"Flush_Time":0,"Merge_Event":0,"Merge_Time":0,"Merge_CurrentEvent":0,"Indexing_Buffer":0,"Segments_Total":1,"Segments_Memory":1193,"Terms_Memory":811,"StoredFields_Memory":312,"TermVectors_Memory":811,"Norms_Memory":0,"Points_Memory":2,"DocValues_Memory":68,"IndexWriter_Memory":0,"VersionMap_Memory":0,"Bitset_Memory":0}$
 ^pending_tasks/current/metadata
 {"current_time":1566413966493}
-{"Master_PendingQueueSize":0}$
+{"ClusterManager_PendingQueueSize":0}$
 ^threads/15970/os_metrics
 current_time:1566413966554
 CPU_Utilization:0.0
@@ -1551,7 +1551,7 @@ Sched_Runtime:4.647043793103449E-4
 Sched_Waittime:1.1025810344827587E-5
 Sched_CtxRate:11.581469648562301
 Heap_AllocRate:750.7753876938469
-threadName:opensearch[4sqG_AP][masterService#updateTask][T#1]
+threadName:opensearch[4sqG_AP][clusterManagerService#updateTask][T#1]
 Thread_Blocked_Time:0.0
 Thread_Blocked_Event:18
 IO_ReadThroughput:0.0
@@ -1560,14 +1560,14 @@ IO_TotThroughput:0.0
 IO_ReadSyscallRate:0.0
 IO_WriteSyscallRate:0.0
 IO_TotalSyscallRate:0.0$
-^threads/7462/master_task/245/start
+^threads/7462/cluster_manager_task/245/start
 current_time:1566413947489
-MasterTaskPriority:URGENT
+ClusterManagerTaskPriority:URGENT
 StartTime:1566413946989
-MasterTaskType:delete-index
-MasterTaskMetadata: [[nyc_taxis/f1i57IF8RCeI9nsKiLRMOg]]
-MasterTaskQueueTime:11$
-^threads/7462/master_task/245/finish
+ClusterManagerTaskType:delete-index
+ClusterManagerTaskMetadata: [[nyc_taxis/f1i57IF8RCeI9nsKiLRMOg]]
+ClusterManagerTaskQueueTime:11$
+^threads/7462/cluster_manager_task/245/finish
 current_time:1566413959491
 FinishTime:1566413958991$
 ^threads/29072/os_metrics
