@@ -29,7 +29,7 @@ import org.opensearch.performanceanalyzer.metrics.MetricDimension;
 import org.opensearch.performanceanalyzer.metrics.PerformanceAnalyzerMetrics;
 
 // import
-// org.opensearch.performanceanalyzer.collectors.MasterServiceMetrics.MasterPendingStatus;
+// org.opensearch.performanceanalyzer.collectors.ClusterManagerServiceMetrics.ClusterManagerPendingStatus;
 // import
 // org.opensearch.performanceanalyzer.collectors.NodeDetailsCollector.NodeDetailsStatus;
 // import
@@ -37,7 +37,7 @@ import org.opensearch.performanceanalyzer.metrics.PerformanceAnalyzerMetrics;
 // import
 // org.opensearch.performanceanalyzer.reader.MetricPropertiesTests.FailureCondition;
 // import
-// org.opensearch.performanceanalyzer.collectors.MasterServiceMetrics.MasterPendingStatus;
+// org.opensearch.performanceanalyzer.collectors.ClusterManagerServiceMetrics.ClusterManagerPendingStatus;
 // import
 // org.opensearch.performanceanalyzer.collectors.NodeDetailsCollector.NodeDetailsStatus;
 // import
@@ -106,7 +106,7 @@ public class AbstractReaderTests extends AbstractTests {
     protected String createPendingTaskMetrics(int pendingTaskCount) {
         StringBuffer value = new StringBuffer();
 
-        value.append(new MasterPendingStatus(pendingTaskCount).serialize());
+        value.append(new ClusterManagerPendingStatus(pendingTaskCount).serialize());
 
         return value.toString();
     }
@@ -124,21 +124,26 @@ public class AbstractReaderTests extends AbstractTests {
     }
 
     protected static String createNodeDetailsMetrics(
-            String id, String ipAddress, boolean isMasterNode) {
-        return createNodeDetailsMetrics(id, ipAddress, AllMetrics.NodeRole.DATA, isMasterNode);
+            String id, String ipAddress, boolean isClusterManagerNode) {
+        return createNodeDetailsMetrics(
+                id, ipAddress, AllMetrics.NodeRole.DATA, isClusterManagerNode);
     }
 
     protected static String createNodeDetailsMetrics(
-            String id, String ipAddress, AllMetrics.NodeRole nodeRole, boolean isMasterNode) {
+            String id,
+            String ipAddress,
+            AllMetrics.NodeRole nodeRole,
+            boolean isClusterManagerNode) {
         StringBuffer value = new StringBuffer();
-        value.append(new NodeDetailsStatus(id, ipAddress, nodeRole, isMasterNode).serialize());
+        value.append(
+                new NodeDetailsStatus(id, ipAddress, nodeRole, isClusterManagerNode).serialize());
         return value.toString();
     }
 
     protected static ClusterDetailsEventProcessor.NodeDetails createNodeDetails(
-            String id, String ipAddress, boolean isMasterNode) {
+            String id, String ipAddress, boolean isClusterManagerNode) {
         return new ClusterDetailsEventProcessor.NodeDetails(
-                createNodeDetailsMetrics(id, ipAddress, isMasterNode));
+                createNodeDetailsMetrics(id, ipAddress, isClusterManagerNode));
     }
 
     static void setFinalStatic(Field field, Object newValue) throws Exception {
@@ -149,14 +154,14 @@ public class AbstractReaderTests extends AbstractTests {
         field.set(null, newValue);
     }
 
-    public static class MasterPendingStatus extends MetricStatus {
+    public static class ClusterManagerPendingStatus extends MetricStatus {
         private final int pendingTasksCount;
 
-        public MasterPendingStatus(int pendingTasksCount) {
+        public ClusterManagerPendingStatus(int pendingTasksCount) {
             this.pendingTasksCount = pendingTasksCount;
         }
 
-        @JsonProperty(AllMetrics.MasterPendingValue.Constants.PENDING_TASKS_COUNT_VALUE)
+        @JsonProperty(AllMetrics.ClusterManagerPendingValue.Constants.PENDING_TASKS_COUNT_VALUE)
         public int getPendingTasksCount() {
             return pendingTasksCount;
         }
@@ -166,15 +171,18 @@ public class AbstractReaderTests extends AbstractTests {
         private String id;
         private String hostAddress;
         private String nodeRole;
-        private boolean isMasterNode;
+        private boolean isClusterManagerNode;
 
         public NodeDetailsStatus(
-                String id, String hostAddress, AllMetrics.NodeRole nodeRole, boolean isMasterNode) {
+                String id,
+                String hostAddress,
+                AllMetrics.NodeRole nodeRole,
+                boolean isClusterManagerNode) {
             super();
             this.id = id;
             this.hostAddress = hostAddress;
             this.nodeRole = nodeRole.role();
-            this.isMasterNode = isMasterNode;
+            this.isClusterManagerNode = isClusterManagerNode;
         }
 
         @JsonProperty(AllMetrics.NodeDetailColumns.Constants.ID_VALUE)
@@ -192,9 +200,9 @@ public class AbstractReaderTests extends AbstractTests {
             return nodeRole;
         }
 
-        @JsonProperty(AllMetrics.NodeDetailColumns.Constants.IS_MASTER_NODE)
-        public boolean getIsMasterNode() {
-            return isMasterNode;
+        @JsonProperty(AllMetrics.NodeDetailColumns.Constants.IS_CLUSTER_MANAGER_NODE)
+        public boolean getIsClusterManagerNode() {
+            return isClusterManagerNode;
         }
     }
 }
