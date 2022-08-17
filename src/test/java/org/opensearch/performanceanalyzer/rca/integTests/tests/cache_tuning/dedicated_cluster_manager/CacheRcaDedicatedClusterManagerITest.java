@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-package org.opensearch.performanceanalyzer.rca.integTests.tests.cache_tuning.dedicated_master;
+package org.opensearch.performanceanalyzer.rca.integTests.tests.cache_tuning.dedicated_cluster_manager;
 
 import static org.opensearch.performanceanalyzer.rca.integTests.tests.cache_tuning.Constants.CACHE_TUNING_RESOURCES_DIR;
 import static org.opensearch.performanceanalyzer.rca.integTests.tests.cache_tuning.Constants.INDEX_NAME;
@@ -39,7 +39,7 @@ import org.opensearch.performanceanalyzer.rca.store.rca.cluster.ShardRequestCach
 
 @Category(RcaItMarker.class)
 @RunWith(RcaItNotEncryptedRunner.class)
-@AClusterType(ClusterType.MULTI_NODE_DEDICATED_MASTER)
+@AClusterType(ClusterType.MULTI_NODE_DEDICATED_CLUSTER_MANAGER)
 @ARcaGraph(OpenSearchAnalysisGraph.class)
 // specify a custom rca.conf to set the collector time periods to 5s to reduce runtime
 @ARcaConf(dataNode = CACHE_TUNING_RESOURCES_DIR + "rca.conf")
@@ -158,7 +158,7 @@ import org.opensearch.performanceanalyzer.rca.store.rca.cluster.ShardRequestCach
                                 max = 100.0)
                     }),
             @ATable(
-                    hostTag = HostTag.ELECTED_MASTER,
+                    hostTag = HostTag.ELECTED_CLUSTER_MANAGER,
                     tuple = {
                         @ATuple(
                                 dimensionValues = {
@@ -178,13 +178,13 @@ import org.opensearch.performanceanalyzer.rca.store.rca.cluster.ShardRequestCach
                                 max = 100.0)
                     })
         })
-public class CacheRcaDedicatedMasterITest {
+public class CacheRcaDedicatedClusterManagerITest {
     // Test FieldDataCacheClusterRca.
     // This rca should be un-healthy when cache size is higher than threshold with evictions.
     @Test
     @AExpect(
             what = AExpect.Type.REST_API,
-            on = HostTag.ELECTED_MASTER,
+            on = HostTag.ELECTED_CLUSTER_MANAGER,
             validator = FieldDataCacheValidator.class,
             forRca = FieldDataCacheClusterRca.class,
             timeoutSeconds = 700)
@@ -199,7 +199,7 @@ public class CacheRcaDedicatedMasterITest {
             reason = "Node Config Cache are expected to be missing in this integ test.")
     @AErrorPatternIgnored(
             pattern = "CacheUtil:getCacheMaxSize()",
-            reason = "Cache Metrics is expected to be missing in dedicated master.")
+            reason = "Cache Metrics is expected to be missing in dedicated cluster_manager.")
     @AErrorPatternIgnored(
             pattern = "ModifyCacheMaxSizeAction:build()",
             reason = "Heap metrics is expected to be missing in this integ test.")
@@ -215,7 +215,7 @@ public class CacheRcaDedicatedMasterITest {
     @Test
     @AExpect(
             what = AExpect.Type.REST_API,
-            on = HostTag.ELECTED_MASTER,
+            on = HostTag.ELECTED_CLUSTER_MANAGER,
             validator = ShardRequestCacheValidator.class,
             forRca = ShardRequestCacheClusterRca.class,
             timeoutSeconds = 700)
@@ -230,7 +230,7 @@ public class CacheRcaDedicatedMasterITest {
             reason = "Node config cache metrics are expected to be missing in this integ test.")
     @AErrorPatternIgnored(
             pattern = "CacheUtil:getCacheMaxSize()",
-            reason = "Cache Metrics is expected to be missing in dedicated master.")
+            reason = "Cache Metrics is expected to be missing in dedicated cluster_manager.")
     @AErrorPatternIgnored(
             pattern = "ModifyCacheMaxSizeAction:build()",
             reason = "Heap metrics is expected to be missing in this integ test.")
