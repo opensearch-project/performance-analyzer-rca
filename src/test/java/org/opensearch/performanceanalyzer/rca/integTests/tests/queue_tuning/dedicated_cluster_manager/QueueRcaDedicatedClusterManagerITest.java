@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-package org.opensearch.performanceanalyzer.rca.integTests.tests.queue_tuning.dedicated_master;
+package org.opensearch.performanceanalyzer.rca.integTests.tests.queue_tuning.dedicated_cluster_manager;
 
 import static org.opensearch.performanceanalyzer.rca.integTests.tests.queue_tuning.Constants.QUEUE_TUNING_RESOURCES_DIR;
 
@@ -31,7 +31,7 @@ import org.opensearch.performanceanalyzer.rca.store.rca.cluster.QueueRejectionCl
 
 @RunWith(RcaItNotEncryptedRunner.class)
 @Category(RcaItMarker.class)
-@AClusterType(ClusterType.MULTI_NODE_DEDICATED_MASTER)
+@AClusterType(ClusterType.MULTI_NODE_DEDICATED_CLUSTER_MANAGER)
 @ARcaGraph(OpenSearchAnalysisGraph.class)
 // specify a custom rca.conf to set the rejection-time-period-in-seconds to 5s to reduce runtime
 @ARcaConf(dataNode = QUEUE_TUNING_RESOURCES_DIR + "rca.conf")
@@ -77,14 +77,14 @@ import org.opensearch.performanceanalyzer.rca.store.rca.cluster.QueueRejectionCl
                                 max = 1500)
                     })
         })
-public class QueueRcaDedicatedMasterITest {
+public class QueueRcaDedicatedClusterManagerITest {
     // This integ test is built to test queue rejection RCA + queue rejection cluster RCA
     // This test injects queue rejection metrics on one of the data node and queries the
-    // rest API on master to check whether queue rejection cluster RCA becomes unhealthy
+    // rest API on cluster_manager to check whether queue rejection cluster RCA becomes unhealthy
     @Test
     @AExpect(
             what = AExpect.Type.REST_API,
-            on = HostTag.ELECTED_MASTER,
+            on = HostTag.ELECTED_CLUSTER_MANAGER,
             validator = QueueRejectionValidator.class,
             forRca = QueueRejectionClusterRca.class,
             timeoutSeconds = 500)

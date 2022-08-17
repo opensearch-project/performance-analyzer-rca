@@ -34,11 +34,11 @@ import org.opensearch.performanceanalyzer.rca.store.OpenSearchAnalysisGraph;
 
 @Category(RcaItMarker.class)
 @RunWith(RcaItNotEncryptedRunner.class)
-@AClusterType(ClusterType.MULTI_NODE_CO_LOCATED_MASTER)
+@AClusterType(ClusterType.MULTI_NODE_CO_LOCATED_CLUSTER_MANAGER)
 @ARcaGraph(OpenSearchAnalysisGraph.class)
 @ARcaConf(
         dataNode = CollatorITConstants.RCA_CONF_PATH + "rca.conf",
-        electedMaster = CollatorITConstants.RCA_CONF_PATH + "rca_master.conf")
+        electedClusterManager = CollatorITConstants.RCA_CONF_PATH + "rca_cluster_manager.conf")
 @AMetric(
         name = Heap_Max.class,
         dimensionNames = {AllMetrics.HeapDimension.Constants.TYPE_VALUE},
@@ -54,7 +54,7 @@ import org.opensearch.performanceanalyzer.rca.store.OpenSearchAnalysisGraph;
                                 max = 1000000000.0)
                     }),
             @ATable(
-                    hostTag = HostTag.ELECTED_MASTER,
+                    hostTag = HostTag.ELECTED_CLUSTER_MANAGER,
                     tuple = {
                         @ATuple(
                                 dimensionValues = {AllMetrics.GCType.Constants.OLD_GEN_VALUE},
@@ -79,7 +79,7 @@ import org.opensearch.performanceanalyzer.rca.store.OpenSearchAnalysisGraph;
                                 max = 950000000.0)
                     }),
             @ATable(
-                    hostTag = HostTag.ELECTED_MASTER,
+                    hostTag = HostTag.ELECTED_CLUSTER_MANAGER,
                     tuple = {
                         @ATuple(
                                 dimensionValues = {AllMetrics.GCType.Constants.OLD_GEN_VALUE},
@@ -104,7 +104,7 @@ import org.opensearch.performanceanalyzer.rca.store.OpenSearchAnalysisGraph;
                                 min = 10.0)
                     }),
             @ATable(
-                    hostTag = HostTag.ELECTED_MASTER,
+                    hostTag = HostTag.ELECTED_CLUSTER_MANAGER,
                     tuple = {
                         @ATuple(
                                 dimensionValues = {AllMetrics.GCType.Constants.TOT_FULL_GC_VALUE},
@@ -135,7 +135,7 @@ import org.opensearch.performanceanalyzer.rca.store.OpenSearchAnalysisGraph;
                                 min = 10.0)
                     }),
             @ATable(
-                    hostTag = HostTag.ELECTED_MASTER,
+                    hostTag = HostTag.ELECTED_CLUSTER_MANAGER,
                     tuple = {
                         @ATuple(
                                 dimensionValues = {
@@ -195,7 +195,7 @@ public class CollatorIT {
     @Test
     @AExpect(
             what = AExpect.Type.REST_API,
-            on = HostTag.ELECTED_MASTER,
+            on = HostTag.ELECTED_CLUSTER_MANAGER,
             validator = CollatorValidator.class,
             forRca = PersistedAction.class,
             timeoutSeconds = 190)

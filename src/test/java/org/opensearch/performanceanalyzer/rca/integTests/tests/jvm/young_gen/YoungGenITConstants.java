@@ -10,11 +10,11 @@ import org.opensearch.performanceanalyzer.rca.integTests.framework.configs.Const
 
 public final class YoungGenITConstants {
     public static final String RCA_CONF_PATH = Consts.TEST_RESOURCES_DIR + "young_gen/rca.conf";
-    public static final String RCA_MASTER_CONF_PATH =
-            Consts.TEST_RESOURCES_DIR + "young_gen/rca_master.conf";
+    public static final String RCA_CLUSTER_MANAGER_CONF_PATH =
+            Consts.TEST_RESOURCES_DIR + "young_gen/rca_cluster_manager.conf";
 
     public static final String RCA_HIGH_THRESHOLD_CONF_PATH =
             Consts.TEST_RESOURCES_DIR + "young_gen/rca_high_threshold.conf";
-    public static final String RCA_MASTER_HIGH_THRESHOLD_CONF_PATH =
-            Consts.TEST_RESOURCES_DIR + "young_gen/rca_master_high_threshold.conf";
+    public static final String RCA_CLUSTER_MANAGER_HIGH_THRESHOLD_CONF_PATH =
+            Consts.TEST_RESOURCES_DIR + "young_gen/rca_cluster_manager_high_threshold.conf";
 }

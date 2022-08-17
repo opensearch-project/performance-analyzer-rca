@@ -3,11 +3,11 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-package org.opensearch.performanceanalyzer.rca.integTests.tests.jvm.old_gen_policy.dedicated_master;
+package org.opensearch.performanceanalyzer.rca.integTests.tests.jvm.old_gen_policy.dedicated_cluster_manager;
 
-import static org.opensearch.performanceanalyzer.rca.integTests.tests.jvm.old_gen_policy.dedicated_master.LevelThreeDedicatedMasterITest.FIELDDATA_CACHE_SIZE_IN_PERCENT;
-import static org.opensearch.performanceanalyzer.rca.integTests.tests.jvm.old_gen_policy.dedicated_master.LevelThreeDedicatedMasterITest.HEAP_MAX_SIZE_IN_BYTE;
-import static org.opensearch.performanceanalyzer.rca.integTests.tests.jvm.old_gen_policy.dedicated_master.LevelThreeDedicatedMasterITest.SHARD_REQUEST_CACHE_SIZE_IN_PERCENT;
+import static org.opensearch.performanceanalyzer.rca.integTests.tests.jvm.old_gen_policy.dedicated_cluster_manager.LevelTwoDedicatedClusterManagerITest.FIELDDATA_CACHE_SIZE_IN_PERCENT;
+import static org.opensearch.performanceanalyzer.rca.integTests.tests.jvm.old_gen_policy.dedicated_cluster_manager.LevelTwoDedicatedClusterManagerITest.HEAP_MAX_SIZE_IN_BYTE;
+import static org.opensearch.performanceanalyzer.rca.integTests.tests.jvm.old_gen_policy.dedicated_cluster_manager.LevelTwoDedicatedClusterManagerITest.SHARD_REQUEST_CACHE_SIZE_IN_PERCENT;
 
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -30,14 +30,14 @@ import org.opensearch.performanceanalyzer.rca.integTests.framework.annotations.A
 import org.opensearch.performanceanalyzer.rca.integTests.framework.configs.ClusterType;
 import org.opensearch.performanceanalyzer.rca.integTests.framework.configs.HostTag;
 import org.opensearch.performanceanalyzer.rca.integTests.framework.runners.RcaItNotEncryptedRunner;
-import org.opensearch.performanceanalyzer.rca.integTests.tests.jvm.old_gen_policy.validator.LevelThreeValidator;
+import org.opensearch.performanceanalyzer.rca.integTests.tests.jvm.old_gen_policy.validator.LevelTwoValidator;
 import org.opensearch.performanceanalyzer.rca.persistence.actions.PersistedAction;
 import org.opensearch.performanceanalyzer.rca.store.OpenSearchAnalysisGraph;
 import org.opensearch.performanceanalyzer.rca.store.rca.cache.CacheUtil;
 
 @RunWith(RcaItNotEncryptedRunner.class)
 @Category(RcaItMarker.class)
-@AClusterType(ClusterType.MULTI_NODE_DEDICATED_MASTER)
+@AClusterType(ClusterType.MULTI_NODE_DEDICATED_CLUSTER_MANAGER)
 @ARcaGraph(OpenSearchAnalysisGraph.class)
 @AMetric(
         name = Heap_Used.class,
@@ -48,10 +48,10 @@ import org.opensearch.performanceanalyzer.rca.store.rca.cache.CacheUtil;
                     tuple = {
                         @ATuple(
                                 dimensionValues = AllMetrics.GCType.Constants.OLD_GEN_VALUE,
-                                sum = HEAP_MAX_SIZE_IN_BYTE * 0.96,
-                                avg = HEAP_MAX_SIZE_IN_BYTE * 0.96,
-                                min = HEAP_MAX_SIZE_IN_BYTE * 0.96,
-                                max = HEAP_MAX_SIZE_IN_BYTE * 0.96),
+                                sum = HEAP_MAX_SIZE_IN_BYTE * 0.86,
+                                avg = HEAP_MAX_SIZE_IN_BYTE * 0.86,
+                                min = HEAP_MAX_SIZE_IN_BYTE * 0.86,
+                                max = HEAP_MAX_SIZE_IN_BYTE * 0.86),
                     })
         })
 @AMetric(
@@ -118,19 +118,19 @@ import org.opensearch.performanceanalyzer.rca.store.rca.cache.CacheUtil;
                     tuple = {
                         @ATuple(
                                 dimensionValues = {AllMetrics.ThreadPoolType.Constants.WRITE_NAME},
-                                sum = QueueActionConfig.DEFAULT_WRITE_QUEUE_UPPER_BOUND - 200,
-                                avg = QueueActionConfig.DEFAULT_WRITE_QUEUE_UPPER_BOUND - 200,
-                                min = QueueActionConfig.DEFAULT_WRITE_QUEUE_UPPER_BOUND - 200,
-                                max = QueueActionConfig.DEFAULT_WRITE_QUEUE_UPPER_BOUND - 200),
+                                sum = QueueActionConfig.DEFAULT_WRITE_QUEUE_UPPER_BOUND - 10,
+                                avg = QueueActionConfig.DEFAULT_WRITE_QUEUE_UPPER_BOUND - 10,
+                                min = QueueActionConfig.DEFAULT_WRITE_QUEUE_UPPER_BOUND - 10,
+                                max = QueueActionConfig.DEFAULT_WRITE_QUEUE_UPPER_BOUND - 10),
                         @ATuple(
                                 dimensionValues = {AllMetrics.ThreadPoolType.Constants.SEARCH_NAME},
-                                sum = QueueActionConfig.DEFAULT_SEARCH_QUEUE_UPPER_BOUND - 200,
-                                avg = QueueActionConfig.DEFAULT_SEARCH_QUEUE_UPPER_BOUND - 200,
-                                min = QueueActionConfig.DEFAULT_SEARCH_QUEUE_UPPER_BOUND - 200,
-                                max = QueueActionConfig.DEFAULT_SEARCH_QUEUE_UPPER_BOUND - 200)
+                                sum = QueueActionConfig.DEFAULT_SEARCH_QUEUE_UPPER_BOUND - 10,
+                                avg = QueueActionConfig.DEFAULT_SEARCH_QUEUE_UPPER_BOUND - 10,
+                                min = QueueActionConfig.DEFAULT_SEARCH_QUEUE_UPPER_BOUND - 10,
+                                max = QueueActionConfig.DEFAULT_SEARCH_QUEUE_UPPER_BOUND - 10)
                     })
         })
-public class LevelThreeDedicatedMasterITest {
+public class LevelTwoDedicatedClusterManagerITest {
     public static final long HEAP_MAX_SIZE_IN_BYTE = 10 * CacheUtil.GB_TO_BYTES;
     public static final double FIELDDATA_CACHE_SIZE_IN_PERCENT = 0.3;
     public static final double SHARD_REQUEST_CACHE_SIZE_IN_PERCENT = 0.04;
@@ -138,8 +138,8 @@ public class LevelThreeDedicatedMasterITest {
     @Test
     @AExpect(
             what = AExpect.Type.REST_API,
-            on = HostTag.ELECTED_MASTER,
-            validator = LevelThreeValidator.class,
+            on = HostTag.ELECTED_CLUSTER_MANAGER,
+            validator = LevelTwoValidator.class,
             forRca = PersistedAction.class,
             timeoutSeconds = 1000)
     @AErrorPatternIgnored(
