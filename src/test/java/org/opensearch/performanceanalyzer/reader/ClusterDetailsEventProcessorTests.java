@@ -55,16 +55,18 @@ public class ClusterDetailsEventProcessorTests {
     @Test
     public void testProcessEvent() throws Exception {
 
-        boolean isMasterNode1 = true;
+        boolean isClusterManagerNode1 = true;
 
-        boolean isMasterNode2 = false;
+        boolean isClusterManagerNode2 = false;
 
         ClusterDetailsEventProcessor clusterDetailsEventProcessor;
         try {
             ClusterDetailsEventProcessorTestHelper clusterDetailsEventProcessorTestHelper =
                     new ClusterDetailsEventProcessorTestHelper();
-            clusterDetailsEventProcessorTestHelper.addNodeDetails(nodeId1, address1, isMasterNode1);
-            clusterDetailsEventProcessorTestHelper.addNodeDetails(nodeId2, address2, isMasterNode2);
+            clusterDetailsEventProcessorTestHelper.addNodeDetails(
+                    nodeId1, address1, isClusterManagerNode1);
+            clusterDetailsEventProcessorTestHelper.addNodeDetails(
+                    nodeId2, address2, isClusterManagerNode2);
             clusterDetailsEventProcessor =
                     clusterDetailsEventProcessorTestHelper.generateClusterDetailsEvent();
         } catch (Exception e) {
@@ -77,11 +79,11 @@ public class ClusterDetailsEventProcessorTests {
 
         assertEquals(nodeId1, nodes.get(0).getId());
         assertEquals(address1, nodes.get(0).getHostAddress());
-        assertEquals(isMasterNode1, nodes.get(0).getIsMasterNode());
+        assertEquals(isClusterManagerNode1, nodes.get(0).getIsClusterManagerNode());
 
         assertEquals(nodeId2, nodes.get(1).getId());
         assertEquals(address2, nodes.get(1).getHostAddress());
-        assertEquals(isMasterNode2, nodes.get(1).getIsMasterNode());
+        assertEquals(isClusterManagerNode2, nodes.get(1).getIsClusterManagerNode());
     }
 
     @Test
