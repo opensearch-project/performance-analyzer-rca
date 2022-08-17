@@ -14,7 +14,7 @@ import org.junit.Assert;
 import org.opensearch.performanceanalyzer.decisionmaker.actions.HeapSizeIncreaseAction;
 import org.opensearch.performanceanalyzer.rca.persistence.actions.PersistedAction;
 
-public class HeapSizeIncreaseValidatorCollocatedMaster extends HeapSizeIncreaseValidator {
+public class HeapSizeIncreaseValidatorCollocatedClusterManager extends HeapSizeIncreaseValidator {
 
     @Override
     public boolean checkPersistedAction(final PersistedAction persistedAction) {

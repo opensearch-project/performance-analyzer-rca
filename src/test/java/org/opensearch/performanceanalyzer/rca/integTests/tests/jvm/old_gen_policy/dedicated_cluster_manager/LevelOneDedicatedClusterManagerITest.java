@@ -3,11 +3,11 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-package org.opensearch.performanceanalyzer.rca.integTests.tests.jvm.old_gen_policy.dedicated_master;
+package org.opensearch.performanceanalyzer.rca.integTests.tests.jvm.old_gen_policy.dedicated_cluster_manager;
 
-import static org.opensearch.performanceanalyzer.rca.integTests.tests.jvm.old_gen_policy.dedicated_master.LevelOneDedicatedMasterITest.FIELDDATA_CACHE_SIZE_IN_PERCENT;
-import static org.opensearch.performanceanalyzer.rca.integTests.tests.jvm.old_gen_policy.dedicated_master.LevelOneDedicatedMasterITest.HEAP_MAX_SIZE_IN_BYTE;
-import static org.opensearch.performanceanalyzer.rca.integTests.tests.jvm.old_gen_policy.dedicated_master.LevelOneDedicatedMasterITest.SHARD_REQUEST_CACHE_SIZE_IN_PERCENT;
+import static org.opensearch.performanceanalyzer.rca.integTests.tests.jvm.old_gen_policy.dedicated_cluster_manager.LevelOneDedicatedClusterManagerITest.FIELDDATA_CACHE_SIZE_IN_PERCENT;
+import static org.opensearch.performanceanalyzer.rca.integTests.tests.jvm.old_gen_policy.dedicated_cluster_manager.LevelOneDedicatedClusterManagerITest.HEAP_MAX_SIZE_IN_BYTE;
+import static org.opensearch.performanceanalyzer.rca.integTests.tests.jvm.old_gen_policy.dedicated_cluster_manager.LevelOneDedicatedClusterManagerITest.SHARD_REQUEST_CACHE_SIZE_IN_PERCENT;
 
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -37,7 +37,7 @@ import org.opensearch.performanceanalyzer.rca.store.rca.cache.CacheUtil;
 
 @RunWith(RcaItNotEncryptedRunner.class)
 @Category(RcaItMarker.class)
-@AClusterType(ClusterType.MULTI_NODE_DEDICATED_MASTER)
+@AClusterType(ClusterType.MULTI_NODE_DEDICATED_CLUSTER_MANAGER)
 @ARcaGraph(OpenSearchAnalysisGraph.class)
 @AMetric(
         name = Heap_Used.class,
@@ -130,7 +130,7 @@ import org.opensearch.performanceanalyzer.rca.store.rca.cache.CacheUtil;
                                 max = QueueActionConfig.DEFAULT_SEARCH_QUEUE_UPPER_BOUND - 200)
                     })
         })
-public class LevelOneDedicatedMasterITest {
+public class LevelOneDedicatedClusterManagerITest {
     public static final long HEAP_MAX_SIZE_IN_BYTE = 10 * CacheUtil.GB_TO_BYTES;
     public static final double FIELDDATA_CACHE_SIZE_IN_PERCENT = 0.3;
     public static final double SHARD_REQUEST_CACHE_SIZE_IN_PERCENT = 0.04;
@@ -138,7 +138,7 @@ public class LevelOneDedicatedMasterITest {
     @Test
     @AExpect(
             what = AExpect.Type.REST_API,
-            on = HostTag.ELECTED_MASTER,
+            on = HostTag.ELECTED_CLUSTER_MANAGER,
             validator = LevelOneValidator.class,
             forRca = PersistedAction.class,
             timeoutSeconds = 1000)
