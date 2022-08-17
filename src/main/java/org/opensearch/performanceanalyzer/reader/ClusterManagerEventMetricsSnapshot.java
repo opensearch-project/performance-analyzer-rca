@@ -25,8 +25,9 @@ import org.opensearch.performanceanalyzer.metrics.AllMetrics;
 import org.opensearch.performanceanalyzer.metrics.MetricsConfiguration;
 import org.opensearch.performanceanalyzer.metricsdb.MetricsDB;
 
-public class MasterEventMetricsSnapshot implements Removable {
-    private static final Logger LOG = LogManager.getLogger(MasterEventMetricsSnapshot.class);
+public class ClusterManagerEventMetricsSnapshot implements Removable {
+    private static final Logger LOG =
+            LogManager.getLogger(ClusterManagerEventMetricsSnapshot.class);
 
     private final DSLContext create;
     private final Long windowStartTime;
@@ -54,10 +55,10 @@ public class MasterEventMetricsSnapshot implements Removable {
         }
     }
 
-    public MasterEventMetricsSnapshot(Connection conn, Long windowStartTime) {
+    public ClusterManagerEventMetricsSnapshot(Connection conn, Long windowStartTime) {
         this.create = DSL.using(conn, SQLDialect.SQLITE);
         this.windowStartTime = windowStartTime;
-        this.tableName = "master_event_" + windowStartTime;
+        this.tableName = "cluster_manager_event_" + windowStartTime;
 
         this.columns =
                 new ArrayList<Field<?>>() {
@@ -66,35 +67,36 @@ public class MasterEventMetricsSnapshot implements Removable {
                         this.add(
                                 DSL.field(
                                         DSL.name(
-                                                AllMetrics.MasterMetricDimensions
-                                                        .MASTER_TASK_INSERT_ORDER
+                                                AllMetrics.ClusterManagerMetricDimensions
+                                                        .CLUSTER_MANAGER_TASK_INSERT_ORDER
                                                         .toString()),
                                         String.class));
                         this.add(
                                 DSL.field(
                                         DSL.name(
-                                                AllMetrics.MasterMetricDimensions
-                                                        .MASTER_TASK_PRIORITY
+                                                AllMetrics.ClusterManagerMetricDimensions
+                                                        .CLUSTER_MANAGER_TASK_PRIORITY
                                                         .toString()),
                                         String.class));
                         this.add(
                                 DSL.field(
                                         DSL.name(
-                                                AllMetrics.MasterMetricDimensions.MASTER_TASK_TYPE
+                                                AllMetrics.ClusterManagerMetricDimensions
+                                                        .CLUSTER_MANAGER_TASK_TYPE
                                                         .toString()),
                                         String.class));
                         this.add(
                                 DSL.field(
                                         DSL.name(
-                                                AllMetrics.MasterMetricDimensions
-                                                        .MASTER_TASK_METADATA
+                                                AllMetrics.ClusterManagerMetricDimensions
+                                                        .CLUSTER_MANAGER_TASK_METADATA
                                                         .toString()),
                                         String.class));
                         this.add(
                                 DSL.field(
                                         DSL.name(
-                                                AllMetrics.MasterMetricDimensions
-                                                        .MASTER_TASK_QUEUE_TIME
+                                                AllMetrics.ClusterManagerMetricDimensions
+                                                        .CLUSTER_MANAGER_TASK_QUEUE_TIME
                                                         .toString()),
                                         String.class));
                         this.add(DSL.field(DSL.name(Fields.ST.toString()), Long.class));
@@ -111,7 +113,7 @@ public class MasterEventMetricsSnapshot implements Removable {
         create.dropTable(DSL.table(this.tableName)).execute();
     }
 
-    public void rolloverInflightRequests(MasterEventMetricsSnapshot prevSnap) {
+    public void rolloverInflightRequests(ClusterManagerEventMetricsSnapshot prevSnap) {
         // Fetch all entries that have not ended and write to current table.
         create.insertInto(DSL.table(this.tableName))
                 .select(prevSnap.fetchInflightRequests())
@@ -130,35 +132,36 @@ public class MasterEventMetricsSnapshot implements Removable {
                         this.add(
                                 DSL.field(
                                         DSL.name(
-                                                AllMetrics.MasterMetricDimensions
-                                                        .MASTER_TASK_INSERT_ORDER
+                                                AllMetrics.ClusterManagerMetricDimensions
+                                                        .CLUSTER_MANAGER_TASK_INSERT_ORDER
                                                         .toString()),
                                         String.class));
                         this.add(
                                 DSL.field(
                                         DSL.name(
-                                                AllMetrics.MasterMetricDimensions
-                                                        .MASTER_TASK_PRIORITY
+                                                AllMetrics.ClusterManagerMetricDimensions
+                                                        .CLUSTER_MANAGER_TASK_PRIORITY
                                                         .toString()),
                                         String.class));
                         this.add(
                                 DSL.field(
                                         DSL.name(
-                                                AllMetrics.MasterMetricDimensions.MASTER_TASK_TYPE
+                                                AllMetrics.ClusterManagerMetricDimensions
+                                                        .CLUSTER_MANAGER_TASK_TYPE
                                                         .toString()),
                                         String.class));
                         this.add(
                                 DSL.field(
                                         DSL.name(
-                                                AllMetrics.MasterMetricDimensions
-                                                        .MASTER_TASK_METADATA
+                                                AllMetrics.ClusterManagerMetricDimensions
+                                                        .CLUSTER_MANAGER_TASK_METADATA
                                                         .toString()),
                                         String.class));
                         this.add(
                                 DSL.field(
                                         DSL.name(
-                                                AllMetrics.MasterMetricDimensions
-                                                        .MASTER_TASK_QUEUE_TIME
+                                                AllMetrics.ClusterManagerMetricDimensions
+                                                        .CLUSTER_MANAGER_TASK_QUEUE_TIME
                                                         .toString()),
                                         String.class));
                         this.add(DSL.field(DSL.name(Fields.ST.toString()), Long.class));
@@ -178,7 +181,7 @@ public class MasterEventMetricsSnapshot implements Removable {
     }
 
     /**
-     * Return all master task event in the current window.
+     * Return all cluster_manager task event in the current window.
      *
      * <p>Actual Table |tid |insertOrder|taskType |priority|queueTime|metadata| st| et|
      * +-----+-----------+------------+--------+---------+--------+-------------+-------------+ |111
@@ -186,7 +189,7 @@ public class MasterEventMetricsSnapshot implements Removable {
      * |{string}|1535065340825| {null}| |111 |1 | {null}| {null}| {null}| {null}|
      * {null}|1535065340725|
      *
-     * @return aggregated master task
+     * @return aggregated cluster_manager task
      */
     public Result<Record> fetchAll() {
 
@@ -203,11 +206,11 @@ public class MasterEventMetricsSnapshot implements Removable {
     }
 
     /**
-     * Return one row per master task event. Group by the InsertOrder. It has 12 columns
+     * Return one row per cluster_manager task event. Group by the InsertOrder. It has 12 columns
      * |InsertOrder|Priority|Type|Metadata|SUM_QueueTime|AVG_QueueTime|MIN_QueueTime|MAX_QueueTime|
      * SUM_RUNTIME|AVG_RUNTIME|MIN_RUNTIME|MAX_RUNTIME|
      *
-     * @return aggregated master task
+     * @return aggregated cluster_manager task
      */
     public Result<Record> fetchQueueAndRunTime() {
 
@@ -217,28 +220,29 @@ public class MasterEventMetricsSnapshot implements Removable {
                         this.add(
                                 DSL.field(
                                         DSL.name(
-                                                AllMetrics.MasterMetricDimensions
-                                                        .MASTER_TASK_INSERT_ORDER
+                                                AllMetrics.ClusterManagerMetricDimensions
+                                                        .CLUSTER_MANAGER_TASK_INSERT_ORDER
                                                         .toString()),
                                         String.class));
                         this.add(
                                 DSL.field(
                                         DSL.name(
-                                                AllMetrics.MasterMetricDimensions
-                                                        .MASTER_TASK_PRIORITY
+                                                AllMetrics.ClusterManagerMetricDimensions
+                                                        .CLUSTER_MANAGER_TASK_PRIORITY
                                                         .toString()),
                                         String.class));
                         this.add(
                                 DSL.field(
                                         DSL.name(
-                                                AllMetrics.MasterMetricDimensions.MASTER_TASK_TYPE
+                                                AllMetrics.ClusterManagerMetricDimensions
+                                                        .CLUSTER_MANAGER_TASK_TYPE
                                                         .toString()),
                                         String.class));
                         this.add(
                                 DSL.field(
                                         DSL.name(
-                                                AllMetrics.MasterMetricDimensions
-                                                        .MASTER_TASK_METADATA
+                                                AllMetrics.ClusterManagerMetricDimensions
+                                                        .CLUSTER_MANAGER_TASK_METADATA
                                                         .toString()),
                                         String.class));
 
@@ -246,56 +250,60 @@ public class MasterEventMetricsSnapshot implements Removable {
                                 DSL.sum(
                                                 DSL.field(
                                                         DSL.name(
-                                                                AllMetrics.MasterMetricDimensions
-                                                                        .MASTER_TASK_QUEUE_TIME
+                                                                AllMetrics
+                                                                        .ClusterManagerMetricDimensions
+                                                                        .CLUSTER_MANAGER_TASK_QUEUE_TIME
                                                                         .toString()),
                                                         Double.class))
                                         .as(
                                                 DBUtils.getAggFieldName(
-                                                        AllMetrics.MasterMetricDimensions
-                                                                .MASTER_TASK_QUEUE_TIME
+                                                        AllMetrics.ClusterManagerMetricDimensions
+                                                                .CLUSTER_MANAGER_TASK_QUEUE_TIME
                                                                 .toString(),
                                                         MetricsDB.SUM)));
                         this.add(
                                 DSL.avg(
                                                 DSL.field(
                                                         DSL.name(
-                                                                AllMetrics.MasterMetricDimensions
-                                                                        .MASTER_TASK_QUEUE_TIME
+                                                                AllMetrics
+                                                                        .ClusterManagerMetricDimensions
+                                                                        .CLUSTER_MANAGER_TASK_QUEUE_TIME
                                                                         .toString()),
                                                         Double.class))
                                         .as(
                                                 DBUtils.getAggFieldName(
-                                                        AllMetrics.MasterMetricDimensions
-                                                                .MASTER_TASK_QUEUE_TIME
+                                                        AllMetrics.ClusterManagerMetricDimensions
+                                                                .CLUSTER_MANAGER_TASK_QUEUE_TIME
                                                                 .toString(),
                                                         MetricsDB.AVG)));
                         this.add(
                                 DSL.min(
                                                 DSL.field(
                                                         DSL.name(
-                                                                AllMetrics.MasterMetricDimensions
-                                                                        .MASTER_TASK_QUEUE_TIME
+                                                                AllMetrics
+                                                                        .ClusterManagerMetricDimensions
+                                                                        .CLUSTER_MANAGER_TASK_QUEUE_TIME
                                                                         .toString()),
                                                         Double.class))
                                         .as(
                                                 DBUtils.getAggFieldName(
-                                                        AllMetrics.MasterMetricDimensions
-                                                                .MASTER_TASK_QUEUE_TIME
+                                                        AllMetrics.ClusterManagerMetricDimensions
+                                                                .CLUSTER_MANAGER_TASK_QUEUE_TIME
                                                                 .toString(),
                                                         MetricsDB.MIN)));
                         this.add(
                                 DSL.max(
                                                 DSL.field(
                                                         DSL.name(
-                                                                AllMetrics.MasterMetricDimensions
-                                                                        .MASTER_TASK_QUEUE_TIME
+                                                                AllMetrics
+                                                                        .ClusterManagerMetricDimensions
+                                                                        .CLUSTER_MANAGER_TASK_QUEUE_TIME
                                                                         .toString()),
                                                         Double.class))
                                         .as(
                                                 DBUtils.getAggFieldName(
-                                                        AllMetrics.MasterMetricDimensions
-                                                                .MASTER_TASK_QUEUE_TIME
+                                                        AllMetrics.ClusterManagerMetricDimensions
+                                                                .CLUSTER_MANAGER_TASK_QUEUE_TIME
                                                                 .toString(),
                                                         MetricsDB.MAX)));
 
@@ -303,56 +311,60 @@ public class MasterEventMetricsSnapshot implements Removable {
                                 DSL.sum(
                                                 DSL.field(
                                                         DSL.name(
-                                                                AllMetrics.MasterMetricDimensions
-                                                                        .MASTER_TASK_RUN_TIME
+                                                                AllMetrics
+                                                                        .ClusterManagerMetricDimensions
+                                                                        .CLUSTER_MANAGER_TASK_RUN_TIME
                                                                         .toString()),
                                                         Double.class))
                                         .as(
                                                 DBUtils.getAggFieldName(
-                                                        AllMetrics.MasterMetricDimensions
-                                                                .MASTER_TASK_RUN_TIME
+                                                        AllMetrics.ClusterManagerMetricDimensions
+                                                                .CLUSTER_MANAGER_TASK_RUN_TIME
                                                                 .toString(),
                                                         MetricsDB.SUM)));
                         this.add(
                                 DSL.avg(
                                                 DSL.field(
                                                         DSL.name(
-                                                                AllMetrics.MasterMetricDimensions
-                                                                        .MASTER_TASK_RUN_TIME
+                                                                AllMetrics
+                                                                        .ClusterManagerMetricDimensions
+                                                                        .CLUSTER_MANAGER_TASK_RUN_TIME
                                                                         .toString()),
                                                         Double.class))
                                         .as(
                                                 DBUtils.getAggFieldName(
-                                                        AllMetrics.MasterMetricDimensions
-                                                                .MASTER_TASK_RUN_TIME
+                                                        AllMetrics.ClusterManagerMetricDimensions
+                                                                .CLUSTER_MANAGER_TASK_RUN_TIME
                                                                 .toString(),
                                                         MetricsDB.AVG)));
                         this.add(
                                 DSL.min(
                                                 DSL.field(
                                                         DSL.name(
-                                                                AllMetrics.MasterMetricDimensions
-                                                                        .MASTER_TASK_RUN_TIME
+                                                                AllMetrics
+                                                                        .ClusterManagerMetricDimensions
+                                                                        .CLUSTER_MANAGER_TASK_RUN_TIME
                                                                         .toString()),
                                                         Double.class))
                                         .as(
                                                 DBUtils.getAggFieldName(
-                                                        AllMetrics.MasterMetricDimensions
-                                                                .MASTER_TASK_RUN_TIME
+                                                        AllMetrics.ClusterManagerMetricDimensions
+                                                                .CLUSTER_MANAGER_TASK_RUN_TIME
                                                                 .toString(),
                                                         MetricsDB.MIN)));
                         this.add(
                                 DSL.max(
                                                 DSL.field(
                                                         DSL.name(
-                                                                AllMetrics.MasterMetricDimensions
-                                                                        .MASTER_TASK_RUN_TIME
+                                                                AllMetrics
+                                                                        .ClusterManagerMetricDimensions
+                                                                        .CLUSTER_MANAGER_TASK_RUN_TIME
                                                                         .toString()),
                                                         Double.class))
                                         .as(
                                                 DBUtils.getAggFieldName(
-                                                        AllMetrics.MasterMetricDimensions
-                                                                .MASTER_TASK_RUN_TIME
+                                                        AllMetrics.ClusterManagerMetricDimensions
+                                                                .CLUSTER_MANAGER_TASK_RUN_TIME
                                                                 .toString(),
                                                         MetricsDB.MAX)));
                     }
@@ -364,8 +376,8 @@ public class MasterEventMetricsSnapshot implements Removable {
                         this.add(
                                 DSL.field(
                                         DSL.name(
-                                                AllMetrics.MasterMetricDimensions
-                                                        .MASTER_TASK_INSERT_ORDER
+                                                AllMetrics.ClusterManagerMetricDimensions
+                                                        .CLUSTER_MANAGER_TASK_INSERT_ORDER
                                                         .toString()),
                                         String.class));
                     }
@@ -382,35 +394,36 @@ public class MasterEventMetricsSnapshot implements Removable {
                         this.add(
                                 DSL.field(
                                         DSL.name(
-                                                AllMetrics.MasterMetricDimensions
-                                                        .MASTER_TASK_INSERT_ORDER
+                                                AllMetrics.ClusterManagerMetricDimensions
+                                                        .CLUSTER_MANAGER_TASK_INSERT_ORDER
                                                         .toString()),
                                         String.class));
                         this.add(
                                 DSL.field(
                                         DSL.name(
-                                                AllMetrics.MasterMetricDimensions
-                                                        .MASTER_TASK_PRIORITY
+                                                AllMetrics.ClusterManagerMetricDimensions
+                                                        .CLUSTER_MANAGER_TASK_PRIORITY
                                                         .toString()),
                                         String.class));
                         this.add(
                                 DSL.field(
                                         DSL.name(
-                                                AllMetrics.MasterMetricDimensions.MASTER_TASK_TYPE
+                                                AllMetrics.ClusterManagerMetricDimensions
+                                                        .CLUSTER_MANAGER_TASK_TYPE
                                                         .toString()),
                                         String.class));
                         this.add(
                                 DSL.field(
                                         DSL.name(
-                                                AllMetrics.MasterMetricDimensions
-                                                        .MASTER_TASK_METADATA
+                                                AllMetrics.ClusterManagerMetricDimensions
+                                                        .CLUSTER_MANAGER_TASK_METADATA
                                                         .toString()),
                                         String.class));
                         this.add(
                                 DSL.field(
                                         DSL.name(
-                                                AllMetrics.MasterMetricDimensions
-                                                        .MASTER_TASK_QUEUE_TIME
+                                                AllMetrics.ClusterManagerMetricDimensions
+                                                        .CLUSTER_MANAGER_TASK_QUEUE_TIME
                                                         .toString()),
                                         String.class));
                         this.add(
@@ -418,8 +431,8 @@ public class MasterEventMetricsSnapshot implements Removable {
                                         .minus(DSL.field(Fields.ST.toString()))
                                         .as(
                                                 DSL.name(
-                                                        AllMetrics.MasterMetricDimensions
-                                                                .MASTER_TASK_RUN_TIME
+                                                        AllMetrics.ClusterManagerMetricDimensions
+                                                                .CLUSTER_MANAGER_TASK_RUN_TIME
                                                                 .toString())));
                     }
                 };
@@ -433,8 +446,8 @@ public class MasterEventMetricsSnapshot implements Removable {
     }
 
     /**
-     * Return one row per master task event. Group by the InsertOrder. For a master task without a
-     * finish event, we will use the current window end time
+     * Return one row per cluster_manager task event. Group by the InsertOrder. For a
+     * cluster_manager task without a finish event, we will use the current window end time
      *
      * <p>CurrentWindowEndTime: 1535065341025 Actual Table |tid |insertOrder|taskType
      * |priority|queueTime|metadata| st| et|
@@ -450,7 +463,7 @@ public class MasterEventMetricsSnapshot implements Removable {
      * |1 |create-index|urgent |3 |{string}|1535065340625|1535065340725| |111 |2
      * |create-index|urgent |12 |{string}|1535065340825|1535065341025|
      *
-     * @return aggregated master task
+     * @return aggregated cluster_manager task
      */
     private SelectHavingStep<Record> groupByInsertOrderAndAutoFillEndTime() {
 
@@ -470,8 +483,8 @@ public class MasterEventMetricsSnapshot implements Removable {
                         this.add(
                                 DSL.field(
                                         DSL.name(
-                                                AllMetrics.MasterMetricDimensions
-                                                        .MASTER_TASK_INSERT_ORDER
+                                                AllMetrics.ClusterManagerMetricDimensions
+                                                        .CLUSTER_MANAGER_TASK_INSERT_ORDER
                                                         .toString()),
                                         String.class));
                     }
@@ -481,8 +494,8 @@ public class MasterEventMetricsSnapshot implements Removable {
     }
 
     /**
-     * Return one row per master task event. Group by the InsertOrder, with possible et remains as
-     * null
+     * Return one row per cluster_manager task event. Group by the InsertOrder, with possible et
+     * remains as null
      *
      * <p>Actual Table |tid |insertOrder|taskType |priority|queueTime|metadata| st| et|
      * +-----+-----------+------------+--------+---------+--------+-------------+-------------+ |111
@@ -514,8 +527,8 @@ public class MasterEventMetricsSnapshot implements Removable {
                         this.add(
                                 DSL.field(
                                         DSL.name(
-                                                AllMetrics.MasterMetricDimensions
-                                                        .MASTER_TASK_INSERT_ORDER
+                                                AllMetrics.ClusterManagerMetricDimensions
+                                                        .CLUSTER_MANAGER_TASK_INSERT_ORDER
                                                         .toString()),
                                         String.class));
                     }
@@ -532,57 +545,57 @@ public class MasterEventMetricsSnapshot implements Removable {
                         this.add(
                                 DSL.field(
                                         DSL.name(
-                                                AllMetrics.MasterMetricDimensions
-                                                        .MASTER_TASK_INSERT_ORDER
+                                                AllMetrics.ClusterManagerMetricDimensions
+                                                        .CLUSTER_MANAGER_TASK_INSERT_ORDER
                                                         .toString()),
                                         String.class));
 
                         this.add(
                                 DSL.max(
                                                 DSL.field(
-                                                        AllMetrics.MasterMetricDimensions
-                                                                .MASTER_TASK_TYPE
+                                                        AllMetrics.ClusterManagerMetricDimensions
+                                                                .CLUSTER_MANAGER_TASK_TYPE
                                                                 .toString()))
                                         .as(
                                                 DSL.name(
-                                                        AllMetrics.MasterMetricDimensions
-                                                                .MASTER_TASK_TYPE
+                                                        AllMetrics.ClusterManagerMetricDimensions
+                                                                .CLUSTER_MANAGER_TASK_TYPE
                                                                 .toString())));
 
                         this.add(
                                 DSL.max(
                                                 DSL.field(
-                                                        AllMetrics.MasterMetricDimensions
-                                                                .MASTER_TASK_METADATA
+                                                        AllMetrics.ClusterManagerMetricDimensions
+                                                                .CLUSTER_MANAGER_TASK_METADATA
                                                                 .toString()))
                                         .as(
                                                 DSL.name(
-                                                        AllMetrics.MasterMetricDimensions
-                                                                .MASTER_TASK_METADATA
+                                                        AllMetrics.ClusterManagerMetricDimensions
+                                                                .CLUSTER_MANAGER_TASK_METADATA
                                                                 .toString())));
 
                         this.add(
                                 DSL.max(
                                                 DSL.field(
-                                                        AllMetrics.MasterMetricDimensions
-                                                                .MASTER_TASK_QUEUE_TIME
+                                                        AllMetrics.ClusterManagerMetricDimensions
+                                                                .CLUSTER_MANAGER_TASK_QUEUE_TIME
                                                                 .toString()))
                                         .as(
                                                 DSL.name(
-                                                        AllMetrics.MasterMetricDimensions
-                                                                .MASTER_TASK_QUEUE_TIME
+                                                        AllMetrics.ClusterManagerMetricDimensions
+                                                                .CLUSTER_MANAGER_TASK_QUEUE_TIME
                                                                 .toString())));
 
                         this.add(
                                 DSL.max(
                                                 DSL.field(
-                                                        AllMetrics.MasterMetricDimensions
-                                                                .MASTER_TASK_PRIORITY
+                                                        AllMetrics.ClusterManagerMetricDimensions
+                                                                .CLUSTER_MANAGER_TASK_PRIORITY
                                                                 .toString()))
                                         .as(
                                                 DSL.name(
-                                                        AllMetrics.MasterMetricDimensions
-                                                                .MASTER_TASK_PRIORITY
+                                                        AllMetrics.ClusterManagerMetricDimensions
+                                                                .CLUSTER_MANAGER_TASK_PRIORITY
                                                                 .toString())));
 
                         this.add(

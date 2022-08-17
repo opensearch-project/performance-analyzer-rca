@@ -44,8 +44,8 @@ import org.opensearch.performanceanalyzer.rca.persistence.Persistable;
  * <p>For temperature profiles, one can get the local node temperature using a request url as: curl
  * "localhost:9600/_plugins/_performanceanalyzer/rca?name=NodeTemperatureRca&local=true"
  *
- * <p>The cluster level RCA can only be queried from the elected master using this rest API: curl
- * "localhost:9600/_plugins/_performanceanalyzer/rca?name=ClusterTemperatureRca"
+ * <p>The cluster level RCA can only be queried from the elected cluster_manager using this rest
+ * API: curl "localhost:9600/_plugins/_performanceanalyzer/rca?name=ClusterTemperatureRca"
  *
  * <p>curl "localhost:9600/_plugins/_performanceanalyzer/rca?name=NodeTemperatureRca&local=true"|jq
  * { "NodeTemperatureRca": [ { "rca_name": "NodeTemperatureRca", "timestamp": 1589592178829,
@@ -132,10 +132,10 @@ public class QueryRcaRequestHandler extends MetricsHandler implements HttpHandle
 
     private void handleClusterRcaRequest(Map<String, String> params, HttpExchange exchange)
             throws IOException {
-        // check if we are querying from elected master
+        // check if we are querying from elected cluster_manager
         if (!validNodeRole()) {
             JsonObject errResponse = new JsonObject();
-            errResponse.addProperty("error", "Node being queried is not elected master.");
+            errResponse.addProperty("error", "Node being queried is not elected cluster_manager.");
             sendResponse(exchange, errResponse.toString(), HttpURLConnection.HTTP_BAD_REQUEST);
             return;
         }
@@ -209,9 +209,9 @@ public class QueryRcaRequestHandler extends MetricsHandler implements HttpHandle
         return rcaList.stream().allMatch(SQLiteQueryUtils::isClusterLevelRca);
     }
 
-    // check if we are querying from elected master
+    // check if we are querying from elected cluster_manager
     private boolean validNodeRole() {
-        return appContext.getMyInstanceDetails().getIsMaster();
+        return appContext.getMyInstanceDetails().getIsClusterManager();
     }
 
     private JsonElement getRcaData(Persistable persistable, List<String> rcaList) {
