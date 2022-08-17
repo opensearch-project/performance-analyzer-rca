@@ -59,7 +59,7 @@ public class AdmissionControlByMediumHeap implements AdmissionControlByHeap {
                         currentTimeMillis,
                         new ResourceContext(HEALTHY),
                         nodeSummary,
-                        !instanceDetails.getIsMaster());
+                        !instanceDetails.getIsClusterManager());
             }
 
             LOG.debug(
@@ -82,14 +82,14 @@ public class AdmissionControlByMediumHeap implements AdmissionControlByHeap {
                     currentTimeMillis,
                     new ResourceContext(UNHEALTHY),
                     nodeSummary,
-                    !instanceDetails.getIsMaster());
+                    !instanceDetails.getIsClusterManager());
         }
 
         return new ResourceFlowUnit<>(
                 currentTimeMillis,
                 new ResourceContext(HEALTHY),
                 nodeSummary,
-                !instanceDetails.getIsMaster());
+                !instanceDetails.getIsClusterManager());
     }
 
     private double getThreshold(RangeConfiguration heapRange, double heapPercent) {

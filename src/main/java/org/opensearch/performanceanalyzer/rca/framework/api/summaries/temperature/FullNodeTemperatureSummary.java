@@ -25,8 +25,8 @@ import org.opensearch.performanceanalyzer.rca.framework.core.temperature.Tempera
 /**
  * Full Node Temperature Summary contains the Node Details (ID and Address) and the list of
  * dimensional summaries for a node. This summary is used to construct the compact node level
- * summary which is passed over the wire to the master which is then used to construct the cluster
- * temperature profile.
+ * summary which is passed over the wire to the cluster_manager which is then used to construct the
+ * cluster temperature profile.
  */
 public class FullNodeTemperatureSummary extends GenericSummary {
     private static final Logger LOG = LogManager.getLogger(FullNodeTemperatureSummary.class);
