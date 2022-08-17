@@ -79,14 +79,14 @@ public class HotShardClusterRcaTest {
         }
     }
 
-    // 1. No Flow Units received/generated on master
+    // 1. No Flow Units received/generated on cluster_manager
     @Test
     public void testOperateForMissingFlowUnits() {
         ResourceFlowUnit flowUnit = hotShardClusterRca.operate();
         Assert.assertFalse(flowUnit.getResourceContext().isUnhealthy());
     }
 
-    // 2. Empty Flow Units received/generated on master
+    // 2. Empty Flow Units received/generated on cluster_manager
     @Test
     public void testOperateForEmptyFlowUnits() {
         hotShardRca.mockFlowUnits(Collections.emptyList());
