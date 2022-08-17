@@ -121,7 +121,7 @@ public class AdmissionControlRca extends Rca<ResourceFlowUnit<HotNodeSummary>> {
                     currentTimeMillis,
                     new ResourceContext(HEALTHY),
                     nodeSummary,
-                    !instanceDetails.getIsMaster());
+                    !instanceDetails.getIsClusterManager());
         }
 
         AdmissionControlByHeap admissionControlByHeap =
