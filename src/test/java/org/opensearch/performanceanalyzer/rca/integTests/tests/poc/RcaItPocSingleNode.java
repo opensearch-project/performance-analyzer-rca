@@ -94,19 +94,19 @@ public class RcaItPocSingleNode {
             CPU_Utilization cpuUtilization = new CPU_Utilization(1);
             cpuUtilization.addTag(
                     RcaConsts.RcaTagConstants.TAG_LOCUS,
-                    RcaConsts.RcaTagConstants.LOCUS_DATA_MASTER_NODE);
+                    RcaConsts.RcaTagConstants.LOCUS_DATA_CLUSTER_MANAGER_NODE);
             addLeaf(cpuUtilization);
 
             SimpleAnalysisGraph.NodeRca nodeRca = new SimpleAnalysisGraph.NodeRca(cpuUtilization);
             nodeRca.addTag(
                     RcaConsts.RcaTagConstants.TAG_LOCUS,
-                    RcaConsts.RcaTagConstants.LOCUS_DATA_MASTER_NODE);
+                    RcaConsts.RcaTagConstants.LOCUS_DATA_CLUSTER_MANAGER_NODE);
             nodeRca.addAllUpstreams(Arrays.asList(cpuUtilization));
 
             SimpleAnalysisGraph.ClusterRca clusterRca = new SimpleAnalysisGraph.ClusterRca(nodeRca);
             clusterRca.addTag(
                     RcaConsts.RcaTagConstants.TAG_LOCUS,
-                    RcaConsts.RcaTagConstants.LOCUS_MASTER_NODE);
+                    RcaConsts.RcaTagConstants.LOCUS_CLUSTER_MANAGER_NODE);
             clusterRca.addAllUpstreams(Collections.singletonList(nodeRca));
             clusterRca.addTag(
                     RcaConsts.RcaTagConstants.TAG_AGGREGATE_UPSTREAM,

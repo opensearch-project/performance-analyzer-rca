@@ -36,11 +36,11 @@ import org.opensearch.performanceanalyzer.rca.store.OpenSearchAnalysisGraph;
 /** Negative test: Tests that the action is NOT emitted if the required metrics are missing. */
 @Category(RcaItMarker.class)
 @RunWith(RcaItNotEncryptedRunner.class)
-@AClusterType(ClusterType.MULTI_NODE_CO_LOCATED_MASTER)
+@AClusterType(ClusterType.MULTI_NODE_CO_LOCATED_CLUSTER_MANAGER)
 @ARcaGraph(OpenSearchAnalysisGraph.class)
 @ARcaConf(
         dataNode = YoungGenITConstants.RCA_CONF_PATH,
-        electedMaster = YoungGenITConstants.RCA_MASTER_CONF_PATH)
+        electedClusterManager = YoungGenITConstants.RCA_CLUSTER_MANAGER_CONF_PATH)
 @AMetric(
         name = Heap_Used.class,
         dimensionNames = {AllMetrics.HeapDimension.Constants.TYPE_VALUE},
@@ -56,7 +56,7 @@ import org.opensearch.performanceanalyzer.rca.store.OpenSearchAnalysisGraph;
                                 max = 950000000.0)
                     }),
             @ATable(
-                    hostTag = HostTag.ELECTED_MASTER,
+                    hostTag = HostTag.ELECTED_CLUSTER_MANAGER,
                     tuple = {
                         @ATuple(
                                 dimensionValues = {AllMetrics.GCType.Constants.OLD_GEN_VALUE},
@@ -81,7 +81,7 @@ import org.opensearch.performanceanalyzer.rca.store.OpenSearchAnalysisGraph;
                                 min = 10.0)
                     }),
             @ATable(
-                    hostTag = HostTag.ELECTED_MASTER,
+                    hostTag = HostTag.ELECTED_CLUSTER_MANAGER,
                     tuple = {
                         @ATuple(
                                 dimensionValues = {AllMetrics.GCType.Constants.TOT_FULL_GC_VALUE},
@@ -112,7 +112,7 @@ import org.opensearch.performanceanalyzer.rca.store.OpenSearchAnalysisGraph;
                                 min = 10.0)
                     }),
             @ATable(
-                    hostTag = HostTag.ELECTED_MASTER,
+                    hostTag = HostTag.ELECTED_CLUSTER_MANAGER,
                     tuple = {
                         @ATuple(
                                 dimensionValues = {
@@ -134,7 +134,7 @@ public class YoungGenMissingMetricsTest {
     @Test
     @AExpect(
             what = AExpect.Type.REST_API,
-            on = HostTag.ELECTED_MASTER,
+            on = HostTag.ELECTED_CLUSTER_MANAGER,
             validator = YoungGenNonBreachingValidator.class,
             forRca = PersistedAction.class,
             timeoutSeconds = 240)
@@ -197,7 +197,7 @@ public class YoungGenMissingMetricsTest {
     @Test
     @AExpect(
             what = AExpect.Type.REST_API,
-            on = HostTag.ELECTED_MASTER,
+            on = HostTag.ELECTED_CLUSTER_MANAGER,
             validator = YoungGenNonBreachingValidator.class,
             forRca = PersistedAction.class,
             timeoutSeconds = 240)
@@ -288,7 +288,7 @@ public class YoungGenMissingMetricsTest {
                                     max = 500)
                         }),
                 @ATable(
-                        hostTag = HostTag.ELECTED_MASTER,
+                        hostTag = HostTag.ELECTED_CLUSTER_MANAGER,
                         tuple = {
                             @ATuple(
                                     dimensionValues = {
@@ -325,7 +325,7 @@ public class YoungGenMissingMetricsTest {
                                     min = 10.0)
                         }),
                 @ATable(
-                        hostTag = HostTag.ELECTED_MASTER,
+                        hostTag = HostTag.ELECTED_CLUSTER_MANAGER,
                         tuple = {
                             @ATuple(
                                     dimensionValues = {
@@ -358,7 +358,7 @@ public class YoungGenMissingMetricsTest {
                                     min = 10.0)
                         }),
                 @ATable(
-                        hostTag = HostTag.ELECTED_MASTER,
+                        hostTag = HostTag.ELECTED_CLUSTER_MANAGER,
                         tuple = {
                             @ATuple(
                                     dimensionValues = {

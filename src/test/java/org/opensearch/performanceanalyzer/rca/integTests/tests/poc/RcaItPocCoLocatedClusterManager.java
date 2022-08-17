@@ -26,7 +26,7 @@ import org.opensearch.performanceanalyzer.rca.integTests.tests.poc.validator.Poc
 
 @RunWith(RcaItNotEncryptedRunner.class)
 @Category(RcaItMarker.class)
-@AClusterType(ClusterType.MULTI_NODE_CO_LOCATED_MASTER)
+@AClusterType(ClusterType.MULTI_NODE_CO_LOCATED_CLUSTER_MANAGER)
 @ARcaGraph(RcaItPocSingleNode.SimpleAnalysisGraphForCoLocated.class)
 @AMetric(
         name = CPU_Utilization.class,
@@ -60,7 +60,7 @@ import org.opensearch.performanceanalyzer.rca.integTests.tests.poc.validator.Poc
                                 max = 10.0)
                     }),
             @ATable(
-                    hostTag = {HostTag.ELECTED_MASTER},
+                    hostTag = {HostTag.ELECTED_CLUSTER_MANAGER},
                     tuple = {
                         @ATuple(
                                 dimensionValues = {"0", "logs", "bulk", "r"},
@@ -82,13 +82,13 @@ import org.opensearch.performanceanalyzer.rca.integTests.tests.poc.validator.Poc
                                 max = 11.0)
                     })
         })
-public class RcaItPocCoLocatedMaster {
+public class RcaItPocCoLocatedClusterManager {
     private TestApi api;
 
     @Test
     @AExpect(
             what = AExpect.Type.REST_API,
-            on = HostTag.ELECTED_MASTER,
+            on = HostTag.ELECTED_CLUSTER_MANAGER,
             validator = PocValidator.class,
             forRca = RcaItPocSingleNode.SimpleAnalysisGraphForCoLocated.ClusterRca.class)
     public void simple() {}

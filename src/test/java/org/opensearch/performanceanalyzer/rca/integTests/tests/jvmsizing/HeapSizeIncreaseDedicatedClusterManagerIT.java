@@ -25,17 +25,17 @@ import org.opensearch.performanceanalyzer.rca.integTests.framework.annotations.A
 import org.opensearch.performanceanalyzer.rca.integTests.framework.configs.ClusterType;
 import org.opensearch.performanceanalyzer.rca.integTests.framework.configs.HostTag;
 import org.opensearch.performanceanalyzer.rca.integTests.framework.runners.RcaItNotEncryptedRunner;
-import org.opensearch.performanceanalyzer.rca.integTests.tests.jvmsizing.validator.HeapSizeIncreaseValidatorDedicatedMaster;
+import org.opensearch.performanceanalyzer.rca.integTests.tests.jvmsizing.validator.HeapSizeIncreaseValidatorDedicatedClusterManager;
 import org.opensearch.performanceanalyzer.rca.persistence.actions.PersistedAction;
 import org.opensearch.performanceanalyzer.rca.store.OpenSearchAnalysisGraph;
 
 @Category(RcaItMarker.class)
 @RunWith(RcaItNotEncryptedRunner.class)
-@AClusterType(ClusterType.MULTI_NODE_DEDICATED_MASTER)
+@AClusterType(ClusterType.MULTI_NODE_DEDICATED_CLUSTER_MANAGER)
 @ARcaGraph(OpenSearchAnalysisGraph.class)
 @ARcaConf(
         dataNode = JvmSizingITConstants.RCA_CONF_PATH + "rca.conf",
-        electedMaster = JvmSizingITConstants.RCA_CONF_PATH + "rca_master.conf")
+        electedClusterManager = JvmSizingITConstants.RCA_CONF_PATH + "rca_cluster_manager.conf")
 @AMetric(
         name = Heap_Max.class,
         dimensionNames = {AllMetrics.HeapDimension.Constants.TYPE_VALUE},
@@ -111,13 +111,13 @@ import org.opensearch.performanceanalyzer.rca.store.OpenSearchAnalysisGraph;
                                 min = 10.0)
                     })
         })
-public class HeapSizeIncreaseDedicatedMasterIT {
+public class HeapSizeIncreaseDedicatedClusterManagerIT {
 
     @Test
     @AExpect(
             what = AExpect.Type.DB_QUERY,
-            on = HostTag.ELECTED_MASTER,
-            validator = HeapSizeIncreaseValidatorDedicatedMaster.class,
+            on = HostTag.ELECTED_CLUSTER_MANAGER,
+            validator = HeapSizeIncreaseValidatorDedicatedClusterManager.class,
             forRca = PersistedAction.class,
             timeoutSeconds = 190)
     @AErrorPatternIgnored(
@@ -164,5 +164,5 @@ public class HeapSizeIncreaseDedicatedMasterIT {
             reason =
                     "Since the persistence path can be null for integration test, calls to next() is "
                             + "expected to fail")
-    public void testHeapSizeIncreaseDedicatedMaster() {}
+    public void testHeapSizeIncreaseDedicatedClusterManager() {}
 }
