@@ -62,8 +62,8 @@ __Context__: The context contains a brief summary of the RCA. For example, a Hig
 __Thresholds__: Thresholds are static values that must be exceeded to trigger symptoms and RCAs. Thresholds can be dynamically updated and do not require a process restart. Thresholds are user defined and often depend on hardware configuration and OpenSearch versions. The threshold store supports tags to help associate metadata with a threshold.
 
 __Tags__: Tags are key-value pairs that are specified in the configuration file(rca.conf). Tags can be associated with both hosts and RCA nodes.
-* RCA nodes are only executed on hosts with the exact same tags as the RCA node. A common use-case of tags is to restrict certain RCA nodes to only execute on the master node. 
-* Tags are also used by hosts to find and subscribe to remote datastreams. For example, a cluster-wide RCA running on the master can subscribe to datastreams from all data hosts in the cluster.
+* RCA nodes are only executed on hosts with the exact same tags as the RCA node. A common use-case of tags is to restrict certain RCA nodes to only execute on the cluster_manager node. 
+* Tags are also used by hosts to find and subscribe to remote datastreams. For example, a cluster-wide RCA running on the cluster_manager can subscribe to datastreams from all data hosts in the cluster.
 
 ## Design RFC
 [RFC](https://github.com/opensearch-project/performance-analyzer-rca/blob/main/docs/rfc-rca.pdf)
@@ -131,7 +131,7 @@ The sample RCA response from above api
 ### Temperature profiles
 There are ways to get the temperature profile of a cluster and of individual nodes.
 
-The cluster level RCA can only be queried from the elected master using the following rest API.
+The cluster level RCA can only be queried from the elected cluster_manager using the following rest API.
 
 `curl "localhost:9600/_plugins/_performanceanalyzer/rca?name=ClusterTemperatureRca"`
 
