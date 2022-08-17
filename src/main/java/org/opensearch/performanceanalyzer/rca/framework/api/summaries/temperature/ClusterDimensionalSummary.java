@@ -35,7 +35,7 @@ import org.opensearch.performanceanalyzer.rca.store.rca.temperature.dimension.Cp
 /**
  * This is the temperature summary at a cluster level. This categorizes all the nodes in the cluster
  * in 4 regions: hot, warm, luke-warm and cold for all the tracked dimensions. This object is
- * created on the elected master. One such object is created per tracked dimension.
+ * created on the elected cluster_manager. One such object is created per tracked dimension.
  */
 public class ClusterDimensionalSummary extends GenericSummary {
 

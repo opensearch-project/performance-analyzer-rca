@@ -101,7 +101,7 @@ public class QueueRejectionRca extends Rca<ResourceFlowUnit<HotNodeSummary>> {
             } else {
                 context = new ResourceContext(Resources.State.UNHEALTHY);
             }
-            boolean isDataNode = !instanceDetails.getIsMaster();
+            boolean isDataNode = !instanceDetails.getIsClusterManager();
             return new ResourceFlowUnit<>(currTimestamp, context, nodeSummary, isDataNode);
         } else {
             return new ResourceFlowUnit<>(currTimestamp);
@@ -174,7 +174,7 @@ public class QueueRejectionRca extends Rca<ResourceFlowUnit<HotNodeSummary>> {
                         // If the RCA receives 3 empty flow units, re-set the 'hasMetric' value
                         hasRejection = false;
                         clearCounter = 0;
-                        // This is expected on master nodes.
+                        // This is expected on cluster_manager nodes.
                         LOG.debug(
                                 "{} encountered {} empty flow units, re-setting the hasRejection value.",
                                 this.getClass().getSimpleName(),
