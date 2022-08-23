@@ -29,7 +29,7 @@ WORKDIR /usr/share/opensearch
 ENV BUST_CACHE 1576286189
 
 # Download and extract defined OpenSearch version.
-RUN curl -fsSL https://artifacts.opensearch.org/snapshots/core/opensearch/2.2.0-SNAPSHOT/opensearch-min-2.2
+RUN curl -fsSL https://artifacts.opensearch.org/snapshots/core/opensearch/2.2.1-SNAPSHOT/opensearch-min-2.2
 .0-SNAPSHOT-linux-x64-latest.tar.gz | \
     tar zx --strip-components=1
 
@@ -39,12 +39,12 @@ RUN set -ex && for opensearchdirs in config data logs; do \
 
 COPY --chown=1000:0 opensearch.yml log4j2.properties config/
 
-COPY --chown=1000:0 performance-analyzer-rca-2.2.0.0-SNAPSHOT.zip config/
+COPY --chown=1000:0 performance-analyzer-rca-2.2.1.0-SNAPSHOT.zip config/
 
-COPY --chown=1000:0 opensearch-performance-analyzer-2.2.0.0-SNAPSHOT.zip /tmp/
+COPY --chown=1000:0 opensearch-performance-analyzer-2.2.1.0-SNAPSHOT.zip /tmp/
 
-RUN opensearch-plugin install --batch file:///tmp/opensearch-performance-analyzer-2.2.0.0-SNAPSHOT.zip; \
-        rm /tmp/opensearch-performance-analyzer-2.2.0.0-SNAPSHOT.zip
+RUN opensearch-plugin install --batch file:///tmp/opensearch-performance-analyzer-2.2.1.0-SNAPSHOT.zip; \
+        rm /tmp/opensearch-performance-analyzer-2.2.1.0-SNAPSHOT.zip
 
 USER 0
 
@@ -52,7 +52,7 @@ USER 0
 RUN chown -R opensearch:0 . && \
     chmod -R g=u /usr/share/opensearch
 
-RUN unzip config/performance-analyzer-rca-2.2.0.0-SNAPSHOT.zip
+RUN unzip config/performance-analyzer-rca-2.2.1.0-SNAPSHOT.zip
 
 RUN chmod -R 755 /dev/shm
 ################################################################################
@@ -124,7 +124,7 @@ EXPOSE 9200 9300 9600 9650
 
 LABEL org.label-schema.schema-version="1.0" \
   org.label-schema.name="opensearch" \
-  org.label-schema.version="2.2.0" \
+  org.label-schema.version="2.2.1" \
   org.label-schema.url="https://opensearch.org/" \
   org.label-schema.vcs-url="https://github.com/opensearch-project/opensearch-build" \
   org.label-schema.license="Apache-2.0" \
