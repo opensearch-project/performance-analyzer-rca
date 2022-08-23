@@ -39,7 +39,7 @@ public class Cluster {
                 {
                     put(0, HostTag.ELECTED_CLUSTER_MANAGER);
                     put(1, HostTag.STANDBY_CLUSTER_MANAGER_0);
-                    put(2, HostTag.STANDBY_CLUSTER_1);
+                    put(2, HostTag.STANDBY_CLUSTER_MANAGER_1);
                     put(3, HostTag.DATA_0);
                     put(4, HostTag.DATA_1);
                 }

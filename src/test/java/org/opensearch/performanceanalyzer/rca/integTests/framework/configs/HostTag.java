@@ -10,7 +10,7 @@ public enum HostTag {
 
     // The STANDBY_CLUSTER_MANAGER_X tags are only used in dedicated cluster_manager node clusters.
     STANDBY_CLUSTER_MANAGER_0,
-    STANDBY_CLUSTER_1,
+    STANDBY_CLUSTER_MANAGER_1,
     DATA_0,
     DATA_1,
 }
