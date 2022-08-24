@@ -315,7 +315,8 @@ dependencies {
         implementation files("${System.properties['java.home']}/../lib/tools.jar")
     }
 
-    def jacksonVersion = "2.12.6"
+    def jacksonVersion = "2.13.2"
+    def jacksonDataBindVersion = "2.13.2.2"
 
     implementation 'org.jooq:jooq:3.10.8'
     implementation 'org.bouncycastle:bcprov-jdk15on:1.70'
@@ -325,7 +326,7 @@ dependencies {
     implementation 'com.google.code.gson:gson:2.8.9'
     implementation 'org.checkerframework:checker-qual:3.5.0'
     implementation "com.fasterxml.jackson.core:jackson-annotations:${jacksonVersion}"
-    implementation "com.fasterxml.jackson.core:jackson-databind:${jacksonVersion}"
+    implementation "com.fasterxml.jackson.core:jackson-databind:${jacksonDataBindVersion}"
     implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.17.1'
     implementation group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.17.1'
     implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.9'
