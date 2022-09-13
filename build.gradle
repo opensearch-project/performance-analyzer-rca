@@ -306,6 +306,10 @@ configurations {
     includeJars
 }
 
+configurations.all {
+    resolutionStrategy.force 'io.netty:netty-transport-native-unix-common:4.1.79.Final'
+}
+
 tasks.withType(JavaCompile) {
     options.warnings = false
 }
