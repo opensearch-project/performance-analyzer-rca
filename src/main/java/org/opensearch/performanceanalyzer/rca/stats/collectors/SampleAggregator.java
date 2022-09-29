@@ -203,7 +203,7 @@ public class SampleAggregator {
         if (statistics == null) {
             return false;
         }
-        for (IStatistic statistic : statMap.get(toFind)) {
+        for (IStatistic statistic : statistics) {
             if (statistic != null && !statistic.isEmpty()) {
                 return true;
             }

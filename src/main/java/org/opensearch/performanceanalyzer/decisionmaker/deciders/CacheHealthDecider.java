@@ -7,10 +7,7 @@ package org.opensearch.performanceanalyzer.decisionmaker.deciders;
 
 
 import com.google.common.collect.ImmutableMap;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.opensearch.performanceanalyzer.PerformanceAnalyzerApp;
@@ -77,8 +74,10 @@ public class CacheHealthDecider extends HeapBasedDecider {
         counter = 0;
 
         for (final ResourceEnum cacheType : modifyCacheActionPriorityList) {
-            getActionsFromRca(cacheTypeBaseClusterRcaMap.get(cacheType), impactedNodes)
-                    .forEach(decision::addAction);
+            BaseClusterRca baseClusterRcaMap = cacheTypeBaseClusterRcaMap.get(cacheType);
+            if (baseClusterRcaMap == null)
+                continue;
+            getActionsFromRca(baseClusterRcaMap, impactedNodes).forEach(decision::addAction);
         }
         return decision;
     }
