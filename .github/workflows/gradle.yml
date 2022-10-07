@@ -17,6 +17,7 @@ jobs:
           - 8
           - 11
           - 14
+      fail-fast: false
     runs-on: [ubuntu-latest]
     name: Building RCA package
     steps:

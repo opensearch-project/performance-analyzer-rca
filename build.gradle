@@ -296,8 +296,8 @@ dependencies {
         compile files("${System.properties['java.home']}/../lib/tools.jar")
     }
 
-    def jacksonVersion = "2.13.2"
-    def jacksonDataBindVersion = "2.13.2.2"
+    def jacksonVersion = "2.13.4"
+    def jacksonDataBindVersion = "2.13.4"
 
     compile 'org.jooq:jooq:3.10.8'
     compile 'org.bouncycastle:bcprov-jdk15on:1.70'
