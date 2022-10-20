@@ -332,7 +332,7 @@ dependencies {
     implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.9'
     implementation group: 'commons-io', name: 'commons-io', version: '2.7'
     implementation group: 'com.google.errorprone', name: 'error_prone_annotations', version: '2.9.0'
-    implementation group: 'com.google.protobuf', name: 'protobuf-java', version: '4.0.0-rc-1'
+    implementation group: 'com.google.protobuf', name: 'protobuf-java', version: '3.21.8'
     implementation 'io.grpc:grpc-netty:1.49.0'
     implementation 'io.grpc:grpc-protobuf:1.49.0'
     implementation('io.netty:netty-transport-native-unix-common:4.1.79.Final') {
@@ -359,7 +359,7 @@ dependencies {
 
 protobuf {
     protoc {
-        artifact = "com.google.protobuf:protoc:4.0.0-rc-1"
+        artifact = "com.google.protobuf:protoc:3.21.8"
     }
 
     plugins {
