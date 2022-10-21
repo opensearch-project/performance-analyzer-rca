@@ -316,7 +316,7 @@ dependencies {
     }
 
     def jacksonVersion = "2.13.4"
-    def jacksonDataBindVersion = "2.13.4"
+    def jacksonDataBindVersion = "2.13.4.2"
 
     implementation 'org.jooq:jooq:3.10.8'
     implementation 'org.bouncycastle:bcprov-jdk15on:1.70'
@@ -332,7 +332,7 @@ dependencies {
     implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.9'
     implementation group: 'commons-io', name: 'commons-io', version: '2.7'
     implementation group: 'com.google.errorprone', name: 'error_prone_annotations', version: '2.9.0'
-    implementation group: 'com.google.protobuf', name: 'protobuf-java', version: '3.19.2'
+    implementation group: 'com.google.protobuf', name: 'protobuf-java', version: '3.21.8'
     implementation 'io.grpc:grpc-netty:1.49.0'
     implementation 'io.grpc:grpc-protobuf:1.49.0'
     implementation 'io.grpc:grpc-stub:1.49.0'
@@ -359,7 +359,7 @@ dependencies {
 
 protobuf {
     protoc {
-        artifact = "com.google.protobuf:protoc:3.19.2"
+        artifact = "com.google.protobuf:protoc:3.21.8"
     }
 
     plugins {
