@@ -77,8 +77,10 @@ public class CacheHealthDecider extends HeapBasedDecider {
         counter = 0;
 
         for (final ResourceEnum cacheType : modifyCacheActionPriorityList) {
-            getActionsFromRca(cacheTypeBaseClusterRcaMap.get(cacheType), impactedNodes)
-                    .forEach(decision::addAction);
+            BaseClusterRca baseClusterRcaMap = cacheTypeBaseClusterRcaMap.get(cacheType);
+            if (baseClusterRcaMap == null)
+                continue;
+            getActionsFromRca(baseClusterRcaMap, impactedNodes).forEach(decision::addAction);
         }
         return decision;
     }
