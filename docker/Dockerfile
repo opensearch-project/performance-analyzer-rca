@@ -38,9 +38,9 @@ RUN set -ex && for opensearchdirs in config data logs; do \
 
 COPY --chown=1000:0 opensearch.yml log4j2.properties config/
 
-COPY --chown=1000:0 performance-analyzer-rca-3.0.0.0-SNAPSHOT.zip config/
+COPY --chown=1000:0 performance-analyzer-rca-2.4.0.0-SNAPSHOT.zip config/
 
-COPY --chown=1000:0 opensearch-performance-analyzer-3.0.0.0-SNAPSHOT.zip /tmp/
+COPY --chown=1000:0 opensearch-performance-analyzer-2.4.0.0-SNAPSHOT.zip /tmp/
 
 RUN opensearch-plugin install --batch file:///tmp/opensearch-performance-analyzer-2.4.0.0-SNAPSHOT.zip; \
         rm /tmp/opensearch-performance-analyzer-2.4.0.0-SNAPSHOT.zip
@@ -123,7 +123,7 @@ EXPOSE 9200 9300 9600 9650
 
 LABEL org.label-schema.schema-version="1.0" \
   org.label-schema.name="opensearch" \
-  org.label-schema.version="3.0.0" \
+  org.label-schema.version="2.4.0" \
   org.label-schema.url="https://opensearch.org/" \
   org.label-schema.vcs-url="https://github.com/opensearch-project/opensearch-build" \
   org.label-schema.license="Apache-2.0" \
