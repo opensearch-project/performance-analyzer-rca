@@ -33,7 +33,7 @@ services:
   opensearch2:
     container_name: opensearch2
     environment:
-      - node.clusterManager=false
+      - node.master=false
     image: opensearch/pa-rca:3.0
     mem_limit: 4g
     networks:
