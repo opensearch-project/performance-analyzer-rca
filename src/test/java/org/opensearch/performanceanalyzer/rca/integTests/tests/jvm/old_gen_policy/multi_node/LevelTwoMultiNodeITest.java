@@ -37,7 +37,7 @@ import org.opensearch.performanceanalyzer.rca.store.rca.cache.CacheUtil;
 
 @RunWith(RcaItNotEncryptedRunner.class)
 @Category(RcaItMarker.class)
-@AClusterType(ClusterType.MULTI_NODE_CO_LOCATED_MASTER)
+@AClusterType(ClusterType.MULTI_NODE_CO_LOCATED_CLUSTER_MANAGER)
 @ARcaGraph(OpenSearchAnalysisGraph.class)
 @AMetric(
         name = Heap_Used.class,
@@ -138,7 +138,7 @@ public class LevelTwoMultiNodeITest {
     @Test
     @AExpect(
             what = AExpect.Type.REST_API,
-            on = HostTag.ELECTED_MASTER,
+            on = HostTag.ELECTED_CLUSTER_MANAGER,
             validator = LevelTwoValidator.class,
             forRca = PersistedAction.class,
             timeoutSeconds = 1000)

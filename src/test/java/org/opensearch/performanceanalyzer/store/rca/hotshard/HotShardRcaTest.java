@@ -89,7 +89,7 @@ public class HotShardRcaTest {
         Assert.assertFalse(flowUnit.getResourceContext().isUnhealthy());
     }
 
-    // 1. No Flow Units received/generated on master
+    // 1. No Flow Units received/generated on cluster_manager
     @Test
     public void testOperate() {
         Clock constantClock = Clock.fixed(ofEpochMilli(0), ZoneId.systemDefault());

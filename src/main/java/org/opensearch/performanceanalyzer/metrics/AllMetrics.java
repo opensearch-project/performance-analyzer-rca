@@ -30,13 +30,13 @@ public class AllMetrics {
         IP_METRICS,
         THREAD_POOL,
         SHARD_STATS,
-        MASTER_PENDING,
+        CLUSTER_MANAGER_PENDING,
         MOUNTED_PARTITION_METRICS,
         CLUSTER_APPLIER_SERVICE,
         ELECTION_TERM,
         ADMISSION_CONTROL_METRICS,
         SHARD_INDEXING_PRESSURE,
-        MASTER_CLUSTER_UPDATE_STATS,
+        CLUSTER_MANAGER_CLUSTER_UPDATE_STATS,
     }
 
     // we don't store node details as a metric on reader side database.  We
@@ -45,7 +45,7 @@ public class AllMetrics {
         ID(Constants.ID_VALUE),
         HOST_ADDRESS(Constants.HOST_ADDRESS_VALUE),
         ROLE(Constants.ROLE_VALUE),
-        IS_MASTER_NODE(Constants.IS_MASTER_NODE);
+        IS_CLUSTER_MANAGER_NODE(Constants.IS_CLUSTER_MANAGER_NODE);
 
         private final String value;
 
@@ -62,14 +62,14 @@ public class AllMetrics {
             public static final String ID_VALUE = "ID";
             public static final String HOST_ADDRESS_VALUE = "HOST_ADDRESS";
             public static final String ROLE_VALUE = "ROLE";
-            public static final String IS_MASTER_NODE = "IS_MASTER_NODE";
+            public static final String IS_CLUSTER_MANAGER_NODE = "IS_CLUSTER_MANAGER_NODE";
         }
     }
 
     /** Enumeration of the roles. */
     public enum NodeRole {
-        MASTER(RoleConstants.MASTER),
-        ELECTED_MASTER(RoleConstants.ELECTED_MASTER),
+        CLUSTER_MANAGER(RoleConstants.CLUSTER_MANAGER),
+        ELECTED_CLUSTER_MANAGER(RoleConstants.ELECTED_CLUSTER_MANAGER),
         DATA(RoleConstants.DATA),
         UNKNOWN(RoleConstants.UNKNOWN);
 
@@ -84,8 +84,8 @@ public class AllMetrics {
         }
 
         public static class RoleConstants {
-            public static final String MASTER = "MASTER";
-            public static final String ELECTED_MASTER = "ELECTED_MASTER";
+            public static final String CLUSTER_MANAGER = "CLUSTER_MANAGER";
+            public static final String ELECTED_CLUSTER_MANAGER = "ELECTED_CLUSTER_MANAGER";
             public static final String DATA = "DATA";
             public static final String UNKNOWN = "UNKNOWN";
         }
@@ -774,12 +774,12 @@ public class AllMetrics {
         }
     }
 
-    public enum MasterPendingValue implements MetricValue {
-        MASTER_PENDING_QUEUE_SIZE(Constants.PENDING_TASKS_COUNT_VALUE);
+    public enum ClusterManagerPendingValue implements MetricValue {
+        CLUSTER_MANAGER_PENDING_QUEUE_SIZE(Constants.PENDING_TASKS_COUNT_VALUE);
 
         private final String value;
 
-        MasterPendingValue(String value) {
+        ClusterManagerPendingValue(String value) {
             this.value = value;
         }
 
@@ -789,16 +789,16 @@ public class AllMetrics {
         }
 
         public static class Constants {
-            public static final String PENDING_TASKS_COUNT_VALUE = "Master_PendingQueueSize";
+            public static final String PENDING_TASKS_COUNT_VALUE = "ClusterManager_PendingQueueSize";
         }
     }
 
-    public enum MasterPendingTaskDimension implements MetricDimension {
-        MASTER_PENDING_TASK_TYPE(Constants.PENDING_TASK_TYPE);
+    public enum ClusterManagerPendingTaskDimension implements MetricDimension {
+        CLUSTER_MANAGER_PENDING_TASK_TYPE(Constants.PENDING_TASK_TYPE);
 
         private final String value;
 
-        MasterPendingTaskDimension(String value) {
+        ClusterManagerPendingTaskDimension(String value) {
             this.value = value;
         }
 
@@ -808,7 +808,7 @@ public class AllMetrics {
         }
 
         public static class Constants {
-            public static final String PENDING_TASK_TYPE = "Master_PendingTaskType";
+            public static final String PENDING_TASK_TYPE = "ClusterManager_PendingTaskType";
         }
     }
 
@@ -837,13 +837,13 @@ public class AllMetrics {
         }
     }
 
-    public enum MasterClusterUpdateStatsValue implements MetricValue {
+    public enum ClusterManagerClusterUpdateStatsValue implements MetricValue {
         PUBLISH_CLUSTER_STATE_LATENCY(Constants.PUBLISH_CLUSTER_STATE_LATENCY),
         PUBLISH_CLUSTER_STATE_FAILURE(Constants.PUBLISH_CLUSTER_STATE_FAILURE);
 
         private final String value;
 
-        MasterClusterUpdateStatsValue(String value) {
+        ClusterManagerClusterUpdateStatsValue(String value) {
             this.value = value;
         }
 
@@ -879,16 +879,16 @@ public class AllMetrics {
         }
     }
 
-    public enum MasterThrottlingValue implements MetricValue {
-        /** Sum of total pending tasks throttled by master node. */
-        MASTER_THROTTLED_PENDING_TASK_COUNT(
-                MasterThrottlingValue.Constants.THROTTLED_PENDING_TASK_COUNT),
+    public enum ClusterManagerThrottlingValue implements MetricValue {
+        /** Sum of total pending tasks throttled by cluster_manager node. */
+        CLUSTER_MANAGER_THROTTLED_PENDING_TASK_COUNT(
+                ClusterManagerThrottlingValue.Constants.THROTTLED_PENDING_TASK_COUNT),
         /** Number of pending tasks on which data nodes are actively performing retries. */
-        DATA_RETRYING_TASK_COUNT(MasterThrottlingValue.Constants.RETRYING_TASK_COUNT);
+        DATA_RETRYING_TASK_COUNT(ClusterManagerThrottlingValue.Constants.RETRYING_TASK_COUNT);
 
         private final String value;
 
-        MasterThrottlingValue(String value) {
+        ClusterManagerThrottlingValue(String value) {
             this.value = value;
         }
 
@@ -899,7 +899,7 @@ public class AllMetrics {
 
         public static class Constants {
             public static final String THROTTLED_PENDING_TASK_COUNT =
-                    "Master_ThrottledPendingTasksCount";
+                    "ClusterManager_ThrottledPendingTasksCount";
             public static final String RETRYING_TASK_COUNT = "Data_RetryingPendingTasksCount";
         }
     }
@@ -957,17 +957,17 @@ public class AllMetrics {
         }
     }
 
-    public enum MasterMetricDimensions implements MetricDimension {
-        MASTER_TASK_PRIORITY("MasterTaskPriority"),
-        MASTER_TASK_TYPE("MasterTaskType"),
-        MASTER_TASK_METADATA("MasterTaskMetadata"),
-        MASTER_TASK_QUEUE_TIME("MasterTaskQueueTime"),
-        MASTER_TASK_RUN_TIME("MasterTaskRunTime"),
-        MASTER_TASK_INSERT_ORDER("MasterTaskInsertOrder");
+    public enum ClusterManagerMetricDimensions implements MetricDimension {
+        CLUSTER_MANAGER_TASK_PRIORITY("ClusterManagerTaskPriority"),
+        CLUSTER_MANAGER_TASK_TYPE("ClusterManagerTaskType"),
+        CLUSTER_MANAGER_TASK_METADATA("ClusterManagerTaskMetadata"),
+        CLUSTER_MANAGER_TASK_QUEUE_TIME("ClusterManagerTaskQueueTime"),
+        CLUSTER_MANAGER_TASK_RUN_TIME("ClusterManagerTaskRunTime"),
+        CLUSTER_MANAGER_TASK_INSERT_ORDER("ClusterManagerTaskInsertOrder");
 
         private final String value;
 
-        MasterMetricDimensions(String value) {
+        ClusterManagerMetricDimensions(String value) {
             this.value = value;
         }
 
@@ -977,16 +977,16 @@ public class AllMetrics {
         }
     }
 
-    public enum MasterMetricValues implements MetricValue {
+    public enum ClusterManagerMetricValues implements MetricValue {
         // -todo : Migrate to CommonMetric.Constants
-        MASTER_TASK_QUEUE_TIME("Master_Task_Queue_Time"),
-        MASTER_TASK_RUN_TIME("Master_Task_Run_Time"),
+        CLUSTER_MANAGER_TASK_QUEUE_TIME("ClusterManager_Task_Queue_Time"),
+        CLUSTER_MANAGER_TASK_RUN_TIME("ClusterManager_Task_Run_Time"),
         START_TIME("StartTime"),
         FINISH_TIME("FinishTime");
 
         private final String value;
 
-        MasterMetricValues(String value) {
+        ClusterManagerMetricValues(String value) {
             this.value = value;
         }
 
