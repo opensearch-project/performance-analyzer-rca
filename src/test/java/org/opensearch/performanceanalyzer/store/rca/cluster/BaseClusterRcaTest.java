@@ -56,18 +56,15 @@ public class BaseClusterRcaTest {
         ClusterDetailsEventProcessor.NodeDetails node3 =
                 new ClusterDetailsEventProcessor.NodeDetails(
                         AllMetrics.NodeRole.DATA, "node3", "127.0.0.2", false);
-        ClusterDetailsEventProcessor.NodeDetails cluster_manager =
+        ClusterDetailsEventProcessor.NodeDetails master =
                 new ClusterDetailsEventProcessor.NodeDetails(
-                        AllMetrics.NodeRole.ELECTED_CLUSTER_MANAGER,
-                        "cluster_manager",
-                        "127.0.0.9",
-                        true);
+                        AllMetrics.NodeRole.ELECTED_MASTER, "master", "127.0.0.9", true);
 
         List<ClusterDetailsEventProcessor.NodeDetails> nodes = new ArrayList<>();
         nodes.add(node1);
         nodes.add(node2);
         nodes.add(node3);
-        nodes.add(cluster_manager);
+        nodes.add(master);
         clusterDetailsEventProcessor.setNodesDetails(nodes);
 
         appContext = new AppContext();
@@ -239,31 +236,29 @@ public class BaseClusterRcaTest {
     }
 
     @Test
-    public void testCollectFromClusterManagerNode() {
+    public void testCollectFromMasterNode() {
         ResourceFlowUnit<HotClusterSummary> flowUnit;
         nodeRca.mockFlowUnit(
                 RcaTestHelper.generateFlowUnit(
-                        type1, "cluster_manager", "127.0.0.9", Resources.State.UNHEALTHY));
+                        type1, "master", "127.0.0.9", Resources.State.UNHEALTHY));
         flowUnit = clusterRca.operate();
         Assert.assertTrue(flowUnit.getResourceContext().isHealthy());
 
-        clusterRca.setCollectFromClusterManagerNode(true);
+        clusterRca.setCollectFromMasterNode(true);
         nodeRca.mockFlowUnit();
         flowUnit = clusterRca.operate();
         Assert.assertTrue(flowUnit.getResourceContext().isHealthy());
 
         nodeRca.mockFlowUnit(
                 RcaTestHelper.generateFlowUnit(
-                        type1, "cluster_manager", "127.0.0.9", Resources.State.UNHEALTHY));
+                        type1, "master", "127.0.0.9", Resources.State.UNHEALTHY));
         flowUnit = clusterRca.operate();
         Assert.assertTrue(flowUnit.getResourceContext().isUnhealthy());
         Assert.assertEquals(1, flowUnit.getSummary().getNumOfUnhealthyNodes());
         Assert.assertEquals(4, flowUnit.getSummary().getNumOfNodes());
         Assert.assertTrue(
                 compareNodeSummary(
-                        "cluster_manager",
-                        type1,
-                        flowUnit.getSummary().getHotNodeSummaryList().get(0)));
+                        "master", type1, flowUnit.getSummary().getHotNodeSummaryList().get(0)));
     }
 
     @Test
@@ -344,7 +339,7 @@ public class BaseClusterRcaTest {
         clusterDetailsEventProcessorTestHelper.addNodeDetails("node2", "127.0.0.1", false);
         clusterDetailsEventProcessorTestHelper.addNodeDetails("node3", "127.0.0.2", false);
         clusterDetailsEventProcessorTestHelper.addNodeDetails(
-                "cluster_manager", "127.0.0.9", AllMetrics.NodeRole.ELECTED_CLUSTER_MANAGER, true);
+                "master", "127.0.0.9", AllMetrics.NodeRole.ELECTED_MASTER, true);
         return clusterDetailsEventProcessorTestHelper.generateClusterDetailsEvent();
     }
 
@@ -357,7 +352,7 @@ public class BaseClusterRcaTest {
         clusterDetailsEventProcessorTestHelper.addNodeDetails("node3", "127.0.0.2", false);
         clusterDetailsEventProcessorTestHelper.addNodeDetails("node4", "127.0.0.3", false);
         clusterDetailsEventProcessorTestHelper.addNodeDetails(
-                "cluster_manager", "127.0.0.9", AllMetrics.NodeRole.ELECTED_CLUSTER_MANAGER, true);
+                "master", "127.0.0.9", AllMetrics.NodeRole.ELECTED_MASTER, true);
         return clusterDetailsEventProcessorTestHelper.generateClusterDetailsEvent();
     }
 

@@ -60,12 +60,11 @@ public class ReaderMetricsProcessor implements Runnable {
     private NavigableMap<Long, OSMetricsSnapshot> osMetricsMap;
     private NavigableMap<Long, ShardRequestMetricsSnapshot> shardRqMetricsMap;
     private NavigableMap<Long, HttpRequestMetricsSnapshot> httpRqMetricsMap;
-    private NavigableMap<Long, ClusterManagerEventMetricsSnapshot> clusterManagerEventMetricsMap;
+    private NavigableMap<Long, MasterEventMetricsSnapshot> masterEventMetricsMap;
     private NavigableMap<Long, GarbageCollectorInfoSnapshot> gcInfoMap;
     private Map<AllMetrics.MetricName, NavigableMap<Long, MemoryDBSnapshot>> nodeMetricsMap;
     private NavigableMap<Long, FaultDetectionMetricsSnapshot> faultDetectionMetricsMap;
-    private NavigableMap<Long, ClusterManagerThrottlingMetricsSnapshot>
-            clusterManagerThrottlingMetricsMap;
+    private NavigableMap<Long, MasterThrottlingMetricsSnapshot> masterThrottlingMetricsMap;
     private NavigableMap<Long, ShardStateMetricsSnapshot> shardStateMetricsMap;
     private NavigableMap<Long, AdmissionControlSnapshot> admissionControlMetricsMap;
 
@@ -74,10 +73,10 @@ public class ReaderMetricsProcessor implements Runnable {
     private static final int SHARD_STATE_SNAPSHOTS = 2;
     private static final int RQ_SNAPSHOTS = 4;
     private static final int HTTP_RQ_SNAPSHOTS = 4;
-    private static final int CLUSTER_MANAGER_EVENT_SNAPSHOTS = 4;
+    private static final int MASTER_EVENT_SNAPSHOTS = 4;
     private static final int FAULT_DETECTION_SNAPSHOTS = 2;
     private static final int GC_INFO_SNAPSHOTS = 4;
-    private static final int CLUSTER_MANAGER_THROTTLING_SNAPSHOTS = 2;
+    private static final int MASTER_THROTTLING_SNAPSHOTS = 2;
     private static final int AC_SNAPSHOTS = 2;
     private final String rootLocation;
 
@@ -117,11 +116,11 @@ public class ReaderMetricsProcessor implements Runnable {
         osMetricsMap = new TreeMap<>();
         shardRqMetricsMap = new TreeMap<>();
         httpRqMetricsMap = new TreeMap<>();
-        clusterManagerEventMetricsMap = new TreeMap<>();
+        masterEventMetricsMap = new TreeMap<>();
         faultDetectionMetricsMap = new TreeMap<>();
         shardStateMetricsMap = new TreeMap<>();
         gcInfoMap = new TreeMap<>();
-        clusterManagerThrottlingMetricsMap = new TreeMap<>();
+        masterThrottlingMetricsMap = new TreeMap<>();
         admissionControlMetricsMap = new TreeMap<>();
         this.rootLocation = rootLocation;
         this.configOverridesApplier = new ConfigOverridesApplier();
@@ -261,11 +260,11 @@ public class ReaderMetricsProcessor implements Runnable {
         trimMap(osMetricsMap, OS_SNAPSHOTS);
         trimMap(shardRqMetricsMap, RQ_SNAPSHOTS);
         trimMap(httpRqMetricsMap, HTTP_RQ_SNAPSHOTS);
-        trimMap(clusterManagerEventMetricsMap, CLUSTER_MANAGER_EVENT_SNAPSHOTS);
+        trimMap(masterEventMetricsMap, MASTER_EVENT_SNAPSHOTS);
         trimMap(faultDetectionMetricsMap, FAULT_DETECTION_SNAPSHOTS);
         trimMap(shardStateMetricsMap, SHARD_STATE_SNAPSHOTS);
         trimMap(gcInfoMap, GC_INFO_SNAPSHOTS);
-        trimMap(clusterManagerThrottlingMetricsMap, CLUSTER_MANAGER_THROTTLING_SNAPSHOTS);
+        trimMap(masterThrottlingMetricsMap, MASTER_THROTTLING_SNAPSHOTS);
         trimMap(admissionControlMetricsMap, AC_SNAPSHOTS);
 
         for (NavigableMap<Long, MemoryDBSnapshot> snap : nodeMetricsMap.values()) {
@@ -386,12 +385,12 @@ public class ReaderMetricsProcessor implements Runnable {
 
         emitGarbageCollectionInfo(prevWindowStartTime, metricsDB);
         emitAdmissionControlMetrics(prevWindowStartTime, metricsDB);
-        emitClusterManagerMetrics(prevWindowStartTime, metricsDB);
+        emitMasterMetrics(prevWindowStartTime, metricsDB);
         emitShardRequestMetrics(prevWindowStartTime, alignedOSSnapHolder, osAlignedSnap, metricsDB);
         emitHttpRequestMetrics(prevWindowStartTime, metricsDB);
         emitNodeMetrics(currWindowStartTime, metricsDB);
         emitFaultDetectionMetrics(prevWindowStartTime, metricsDB);
-        emitClusterManagerThrottlingMetrics(prevWindowStartTime, metricsDB);
+        emitMasterThrottlingMetrics(prevWindowStartTime, metricsDB);
         emitShardStateMetrics(prevWindowStartTime, metricsDB);
 
         metricsDB.commit();
@@ -456,16 +455,14 @@ public class ReaderMetricsProcessor implements Runnable {
         }
     }
 
-    private void emitClusterManagerThrottlingMetrics(
-            long prevWindowStartTime, MetricsDB metricsDB) {
-        if (clusterManagerThrottlingMetricsMap.containsKey(prevWindowStartTime)) {
-            ClusterManagerThrottlingMetricsSnapshot prevShardsStateMetricsSnapshot =
-                    clusterManagerThrottlingMetricsMap.get(prevWindowStartTime);
-            MetricsEmitter.emitClusterManagerThrottledTaskMetric(
-                    metricsDB, prevShardsStateMetricsSnapshot);
+    private void emitMasterThrottlingMetrics(long prevWindowStartTime, MetricsDB metricsDB) {
+        if (masterThrottlingMetricsMap.containsKey(prevWindowStartTime)) {
+            MasterThrottlingMetricsSnapshot prevShardsStateMetricsSnapshot =
+                    masterThrottlingMetricsMap.get(prevWindowStartTime);
+            MetricsEmitter.emitMasterThrottledTaskMetric(metricsDB, prevShardsStateMetricsSnapshot);
         } else {
             LOG.debug(
-                    "ClusterManager Throttling snapshot for the previous window does not exist. Not emitting metrics.");
+                    "Master Throttling snapshot for the previous window does not exist. Not emitting metrics.");
         }
     }
 
@@ -519,27 +516,26 @@ public class ReaderMetricsProcessor implements Runnable {
         }
     }
 
-    private void emitClusterManagerMetrics(long prevWindowStartTime, MetricsDB metricsDB) {
+    private void emitMasterMetrics(long prevWindowStartTime, MetricsDB metricsDB) {
 
-        if (clusterManagerEventMetricsMap.containsKey(prevWindowStartTime)) {
+        if (masterEventMetricsMap.containsKey(prevWindowStartTime)) {
 
-            ClusterManagerEventMetricsSnapshot preClusterManagerEventSnapshot =
-                    clusterManagerEventMetricsMap.get(prevWindowStartTime);
-            MetricsEmitter.emitClusterManagerEventMetrics(
-                    metricsDB, preClusterManagerEventSnapshot);
+            MasterEventMetricsSnapshot preMasterEventSnapshot =
+                    masterEventMetricsMap.get(prevWindowStartTime);
+            MetricsEmitter.emitMasterEventMetrics(metricsDB, preMasterEventSnapshot);
         } else {
             LOG.debug(
-                    "ClusterManager snapshot for the previous window does not exist. Not emitting metrics.");
+                    "Master snapshot for the previous window does not exist. Not emitting metrics.");
         }
     }
 
     /**
-     * OS, Request, Http and cluster_manager first aligns the currentTimeStamp with a 5 second
-     * interval but while looking for the actual file on the disk, they do a further aligning with
-     * the 30 second bucket. The node metrics doesn't do the initial 5 second aligning but does a
-     * direct 30 second aligning of the given time, before reading files on the disk. OS metrics can
-     * do (in some cases) and the Node metrics definitely reads a file from the previous 30 second
-     * aligned timestamp.
+     * OS, Request, Http and master first aligns the currentTimeStamp with a 5 second interval but
+     * while looking for the actual file on the disk, they do a further aligning with the 30 second
+     * bucket. The node metrics doesn't do the initial 5 second aligning but does a direct 30 second
+     * aligning of the given time, before reading files on the disk. OS metrics can do (in some
+     * cases) and the Node metrics definitely reads a file from the previous 30 second aligned
+     * timestamp.
      *
      * <p>Note that previously, the collectors would sample metrics every 5 seconds but write it to
      * a 30 second aligned bucket. So, the files in the current bucket gets overwritten on every
@@ -612,9 +608,9 @@ public class ReaderMetricsProcessor implements Runnable {
         EventProcessor faultDetectionProcessor =
                 FaultDetectionMetricsProcessor.buildFaultDetectionMetricsProcessor(
                         currWindowStartTime, conn, faultDetectionMetricsMap);
-        EventProcessor clusterManagerEventsProcessor =
-                ClusterManagerMetricsEventProcessor.buildClusterManagerMetricEventsProcessor(
-                        currWindowStartTime, conn, clusterManagerEventMetricsMap);
+        EventProcessor masterEventsProcessor =
+                MasterMetricsEventProcessor.buildMasterMetricEventsProcessor(
+                        currWindowStartTime, conn, masterEventMetricsMap);
         EventProcessor nodeEventsProcessor =
                 NodeMetricsEventProcessor.buildNodeMetricEventsProcessor(
                         currWindowStartTime, conn, nodeMetricsMap);
@@ -624,10 +620,9 @@ public class ReaderMetricsProcessor implements Runnable {
         EventProcessor garbageCollectorInfoProcessor =
                 GarbageCollectorInfoProcessor.buildGarbageCollectorInfoProcessor(
                         currWindowStartTime, conn, gcInfoMap);
-        EventProcessor clusterManagerThrottlingEventsProcessor =
-                ClusterManagerThrottlingMetricsEventProcessor
-                        .buildClusterManagerThrottlingMetricEventsProcessor(
-                                currWindowStartTime, conn, clusterManagerThrottlingMetricsMap);
+        EventProcessor masterThrottlingEventsProcessor =
+                MasterThrottlingMetricsEventProcessor.buildMasterThrottlingMetricEventsProcessor(
+                        currWindowStartTime, conn, masterThrottlingMetricsMap);
         ClusterDetailsEventProcessor clusterDetailsEventsProcessor =
                 new ClusterDetailsEventProcessor(configOverridesApplier);
         EventProcessor admissionControlProcessor =
@@ -649,8 +644,8 @@ public class ReaderMetricsProcessor implements Runnable {
         eventDispatcher.registerEventProcessor(requestProcessor);
         eventDispatcher.registerEventProcessor(httpProcessor);
         eventDispatcher.registerEventProcessor(nodeEventsProcessor);
-        eventDispatcher.registerEventProcessor(clusterManagerEventsProcessor);
-        eventDispatcher.registerEventProcessor(clusterManagerThrottlingEventsProcessor);
+        eventDispatcher.registerEventProcessor(masterEventsProcessor);
+        eventDispatcher.registerEventProcessor(masterThrottlingEventsProcessor);
         eventDispatcher.registerEventProcessor(shardStateMetricsProcessor);
         eventDispatcher.registerEventProcessor(clusterDetailsEventsProcessor);
         eventDispatcher.registerEventProcessor(faultDetectionProcessor);
@@ -1052,14 +1047,13 @@ public class ReaderMetricsProcessor implements Runnable {
     }
 
     @VisibleForTesting
-    NavigableMap<Long, ClusterManagerEventMetricsSnapshot> getClusterManagerEventMetricsMap() {
-        return clusterManagerEventMetricsMap;
+    NavigableMap<Long, MasterEventMetricsSnapshot> getMasterEventMetricsMap() {
+        return masterEventMetricsMap;
     }
 
     @VisibleForTesting
-    NavigableMap<Long, ClusterManagerThrottlingMetricsSnapshot>
-            getClusterManagerThrottlingMetricsMap() {
-        return clusterManagerThrottlingMetricsMap;
+    NavigableMap<Long, MasterThrottlingMetricsSnapshot> getMasterThrottlingMetricsMap() {
+        return masterThrottlingMetricsMap;
     }
 
     @VisibleForTesting

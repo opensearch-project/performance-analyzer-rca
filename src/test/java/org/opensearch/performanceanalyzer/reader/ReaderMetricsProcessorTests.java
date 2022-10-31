@@ -34,8 +34,8 @@ import org.mockito.Mockito;
 import org.opensearch.performanceanalyzer.AppContext;
 import org.opensearch.performanceanalyzer.config.PluginSettings;
 import org.opensearch.performanceanalyzer.core.Util;
-import org.opensearch.performanceanalyzer.metrics.AllMetrics.ClusterManagerPendingTaskDimension;
-import org.opensearch.performanceanalyzer.metrics.AllMetrics.ClusterManagerPendingValue;
+import org.opensearch.performanceanalyzer.metrics.AllMetrics.MasterPendingTaskDimension;
+import org.opensearch.performanceanalyzer.metrics.AllMetrics.MasterPendingValue;
 import org.opensearch.performanceanalyzer.metrics.AllMetrics.MetricName;
 import org.opensearch.performanceanalyzer.metrics.MetricsConfiguration;
 import org.opensearch.performanceanalyzer.metrics.PerformanceAnalyzerMetrics;
@@ -131,30 +131,30 @@ public class ReaderMetricsProcessorTests extends AbstractReaderTests {
         // reader reads at 11001l
         // writer writes to the right window at 12000l
         // reader reads at 16001l
-        MemoryDBSnapshot clusterManagerPendingSnap1 =
-                new MemoryDBSnapshot(conn, MetricName.CLUSTER_MANAGER_PENDING, 6001L);
+        MemoryDBSnapshot masterPendingSnap1 =
+                new MemoryDBSnapshot(conn, MetricName.MASTER_PENDING, 6001L);
         long lastUpdateTime1 = 2000L;
-        clusterManagerPendingSnap1.setLastUpdatedTime(lastUpdateTime1);
+        masterPendingSnap1.setLastUpdatedTime(lastUpdateTime1);
         Object[][] values1 = {{"delete-index", 0}};
-        clusterManagerPendingSnap1.insertMultiRows(values1);
+        masterPendingSnap1.insertMultiRows(values1);
 
-        MemoryDBSnapshot clusterManagerPendingSnap2 =
-                new MemoryDBSnapshot(conn, MetricName.CLUSTER_MANAGER_PENDING, 11001L);
+        MemoryDBSnapshot masterPendingSnap2 =
+                new MemoryDBSnapshot(conn, MetricName.MASTER_PENDING, 11001L);
         long lastUpdateTime2 = 7000L;
-        clusterManagerPendingSnap2.setLastUpdatedTime(lastUpdateTime2);
+        masterPendingSnap2.setLastUpdatedTime(lastUpdateTime2);
         Object[][] values2 = {{"create-index", 1}};
-        clusterManagerPendingSnap2.insertMultiRows(values2);
+        masterPendingSnap2.insertMultiRows(values2);
 
-        MemoryDBSnapshot clusterManagerPendingSnap3 =
-                new MemoryDBSnapshot(conn, MetricName.CLUSTER_MANAGER_PENDING, 16001L);
-        clusterManagerPendingSnap2.setLastUpdatedTime(lastUpdateTime3);
+        MemoryDBSnapshot masterPendingSnap3 =
+                new MemoryDBSnapshot(conn, MetricName.MASTER_PENDING, 16001L);
+        masterPendingSnap2.setLastUpdatedTime(lastUpdateTime3);
         Object[][] values3 = {{"updateSnapshot", 3}};
-        clusterManagerPendingSnap3.insertMultiRows(values3);
+        masterPendingSnap3.insertMultiRows(values3);
 
         NavigableMap<Long, MemoryDBSnapshot> metricMap = new TreeMap<>();
-        metricMap.put(lastUpdateTime1, clusterManagerPendingSnap1);
-        metricMap.put(lastUpdateTime2, clusterManagerPendingSnap2);
-        metricMap.put(lastUpdateTime3, clusterManagerPendingSnap3);
+        metricMap.put(lastUpdateTime1, masterPendingSnap1);
+        metricMap.put(lastUpdateTime2, masterPendingSnap2);
+        metricMap.put(lastUpdateTime3, masterPendingSnap3);
 
         return metricMap;
     }
@@ -193,34 +193,31 @@ public class ReaderMetricsProcessorTests extends AbstractReaderTests {
         // 11000l]. But we use PerformanceAnalyzerMetrics.getTimeInterval to
         // compute the aligned reader window time: 10000.
         // So our aligned window time is [5000,10000].
-        MemoryDBSnapshot clusterManagerPendingFinal =
+        MemoryDBSnapshot masterPendingFinal =
                 new MemoryDBSnapshot(
                         conn,
-                        MetricName.CLUSTER_MANAGER_PENDING,
+                        MetricName.MASTER_PENDING,
                         PerformanceAnalyzerMetrics.getTimeInterval(
                                 readerTime2, MetricsConfiguration.SAMPLING_INTERVAL),
                         true);
 
         MemoryDBSnapshot alignedWindow =
                 mp.alignNodeMetrics(
-                        MetricName.CLUSTER_MANAGER_PENDING,
+                        MetricName.MASTER_PENDING,
                         metricMap,
                         PerformanceAnalyzerMetrics.getTimeInterval(
                                 readerTime1, MetricsConfiguration.SAMPLING_INTERVAL),
                         PerformanceAnalyzerMetrics.getTimeInterval(
                                 readerTime2, MetricsConfiguration.SAMPLING_INTERVAL),
-                        clusterManagerPendingFinal);
+                        masterPendingFinal);
 
         Result<Record> res = alignedWindow.fetchAll();
         assertTrue(2 == res.size());
         Field<Double> valueField =
-                DSL.field(
-                        ClusterManagerPendingValue.CLUSTER_MANAGER_PENDING_QUEUE_SIZE.toString(),
-                        Double.class);
+                DSL.field(MasterPendingValue.MASTER_PENDING_QUEUE_SIZE.toString(), Double.class);
         Field<String> dimensionField =
                 DSL.field(
-                        ClusterManagerPendingTaskDimension.CLUSTER_MANAGER_PENDING_TASK_TYPE
-                                .toString(),
+                        MasterPendingTaskDimension.MASTER_PENDING_TASK_TYPE.toString(),
                         String.class);
         Double pending = Double.parseDouble(res.get(0).get(valueField).toString());
         assertEquals(1.0d, pending, 0.001);
@@ -244,7 +241,7 @@ public class ReaderMetricsProcessorTests extends AbstractReaderTests {
         long readerTime2 = 11001L;
         NavigableMap<Long, MemoryDBSnapshot> metricMap = setUpAligningWindow();
 
-        spyMp.putNodeMetricsMap(MetricName.CLUSTER_MANAGER_PENDING, metricMap);
+        spyMp.putNodeMetricsMap(MetricName.MASTER_PENDING, metricMap);
 
         MetricsDB db = new MetricsDB(1553713512);
         spyMp.emitNodeMetrics(
@@ -253,8 +250,7 @@ public class ReaderMetricsProcessorTests extends AbstractReaderTests {
                 db);
 
         Result<Record> res =
-                db.queryMetric(
-                        ClusterManagerPendingValue.CLUSTER_MANAGER_PENDING_QUEUE_SIZE.toString());
+                db.queryMetric(MasterPendingValue.MASTER_PENDING_QUEUE_SIZE.toString());
 
         assertTrue(2 == res.size());
 
@@ -296,7 +292,7 @@ public class ReaderMetricsProcessorTests extends AbstractReaderTests {
         long readerTime2 = 16001L;
         NavigableMap<Long, MemoryDBSnapshot> metricMap = setUpAligningWindow();
 
-        spyMp.putNodeMetricsMap(MetricName.CLUSTER_MANAGER_PENDING, metricMap);
+        spyMp.putNodeMetricsMap(MetricName.MASTER_PENDING, metricMap);
 
         MetricsDB db = new MetricsDB(1553713518);
         spyMp.emitNodeMetrics(
@@ -305,8 +301,7 @@ public class ReaderMetricsProcessorTests extends AbstractReaderTests {
                 db);
 
         Result<Record> res =
-                db.queryMetric(
-                        ClusterManagerPendingValue.CLUSTER_MANAGER_PENDING_QUEUE_SIZE.toString());
+                db.queryMetric(MasterPendingValue.MASTER_PENDING_QUEUE_SIZE.toString());
 
         assertTrue(1 == res.size());
 
@@ -345,7 +340,7 @@ public class ReaderMetricsProcessorTests extends AbstractReaderTests {
         long readerTime2 = 11001L;
         NavigableMap<Long, MemoryDBSnapshot> metricMap = setUpAligningWindow(9999L);
 
-        spyMp.putNodeMetricsMap(MetricName.CLUSTER_MANAGER_PENDING, metricMap);
+        spyMp.putNodeMetricsMap(MetricName.MASTER_PENDING, metricMap);
 
         MetricsDB db = new MetricsDB(1553713524);
         spyMp.emitNodeMetrics(
@@ -353,9 +348,7 @@ public class ReaderMetricsProcessorTests extends AbstractReaderTests {
                         readerTime2, MetricsConfiguration.SAMPLING_INTERVAL),
                 db);
 
-        assertTrue(
-                !db.metricExists(
-                        ClusterManagerPendingValue.CLUSTER_MANAGER_PENDING_QUEUE_SIZE.toString()));
+        assertTrue(!db.metricExists(MasterPendingValue.MASTER_PENDING_QUEUE_SIZE.toString()));
         db.remove();
     }
 

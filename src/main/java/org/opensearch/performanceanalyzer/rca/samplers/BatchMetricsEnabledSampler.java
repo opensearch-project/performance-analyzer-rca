@@ -30,7 +30,7 @@ public class BatchMetricsEnabledSampler implements ISampler {
 
     boolean isBatchMetricsEnabled() {
         InstanceDetails currentNode = appContext.getMyInstanceDetails();
-        if (currentNode != null && currentNode.getIsClusterManager()) {
+        if (currentNode != null && currentNode.getIsMaster()) {
             return ReaderMetricsProcessor.getInstance().getBatchMetricsEnabled();
         }
         return false;

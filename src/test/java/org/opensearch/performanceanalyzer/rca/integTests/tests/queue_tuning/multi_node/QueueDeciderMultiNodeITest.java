@@ -31,7 +31,7 @@ import org.opensearch.performanceanalyzer.rca.store.OpenSearchAnalysisGraph;
 
 @RunWith(RcaItNotEncryptedRunner.class)
 @Category(RcaItMarker.class)
-@AClusterType(ClusterType.MULTI_NODE_DEDICATED_CLUSTER_MANAGER)
+@AClusterType(ClusterType.MULTI_NODE_DEDICATED_MASTER)
 @ARcaGraph(OpenSearchAnalysisGraph.class)
 // specify a custom rca.conf to set the rejection-time-period-in-seconds to 5s to reduce runtime
 @ARcaConf(dataNode = QUEUE_TUNING_RESOURCES_DIR + "rca.conf")
@@ -80,12 +80,11 @@ import org.opensearch.performanceanalyzer.rca.store.OpenSearchAnalysisGraph;
 public class QueueDeciderMultiNodeITest {
     // This integ test is built to test Decision Maker framework and queue remediation actions
     // This test injects queue rejection metrics on one of the data node and queries the
-    // sqlite table on cluster_manager to check whether queue remediation actions has been
-    // published.
+    // sqlite table on master to check whether queue remediation actions has been published.
     @Test
     @AExpect(
             what = AExpect.Type.DB_QUERY,
-            on = HostTag.ELECTED_CLUSTER_MANAGER,
+            on = HostTag.ELECTED_MASTER,
             validator = QueueDeciderValidator.class,
             forRca = PersistedAction.class,
             timeoutSeconds = 1000)

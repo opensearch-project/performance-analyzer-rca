@@ -62,7 +62,7 @@ public class RcaControllerTest {
     private Path rcaEnabledFile;
     private HttpServer dummyOpenSearchServer;
     private RcaController rcaController;
-    private String clusterManagerIP;
+    private String masterIP;
     private Thread controllerThread;
     private ThreadProvider threadProvider;
 
@@ -92,8 +92,8 @@ public class RcaControllerTest {
         clientServers = PerformanceAnalyzerApp.createClientServers(connectionManager, appContext);
         clientServers.getHttpServer().start();
 
-        URI uri = URI.create(RcaController.getCatClusterManagerUrl());
-        clusterManagerIP = "127.0.0.4";
+        URI uri = URI.create(RcaController.getCatMasterUrl());
+        masterIP = "127.0.0.4";
 
         dummyOpenSearchServer =
                 HttpServer.create(
@@ -111,7 +111,7 @@ public class RcaControllerTest {
         dummyOpenSearchServer.createContext(
                 uri.getPath(),
                 exchange -> {
-                    String response = clusterManagerIP;
+                    String response = masterIP;
                     exchange.sendResponseHeaders(200, response.getBytes().length);
                     OutputStream os = exchange.getResponseBody();
                     os.write(response.getBytes());
@@ -122,9 +122,8 @@ public class RcaControllerTest {
 
         RcaControllerHelper.set(
                 Paths.get(rcaEnabledFileLoc.toString(), "rca.conf").toString(),
-                Paths.get(rcaEnabledFileLoc.toString(), "rca_cluster_manager.conf").toString(),
-                Paths.get(rcaEnabledFileLoc.toString(), "rca_elected_cluster_manager.conf")
-                        .toString());
+                Paths.get(rcaEnabledFileLoc.toString(), "rca_master.conf").toString(),
+                Paths.get(rcaEnabledFileLoc.toString(), "rca_elected_master.conf").toString());
         rcaController =
                 new RcaController(
                         threadProvider,
@@ -138,7 +137,7 @@ public class RcaControllerTest {
                         new MetricsDBProviderTestHelper());
         rcaController.setDbProvider(new MetricsDBProviderTestHelper());
 
-        setMyIp(clusterManagerIP, AllMetrics.NodeRole.UNKNOWN);
+        setMyIp(masterIP, AllMetrics.NodeRole.UNKNOWN);
 
         // since we are using 2 rca.conf files here for testing, 'rca_muted.conf' for testing Muted
         // RCAs
@@ -241,19 +240,18 @@ public class RcaControllerTest {
 
         // RCA enabled, mutedRcas1 is muted nodes
         changeRcaRunState(RcaState.RUN);
-        setMyIp(clusterManagerIP, AllMetrics.NodeRole.CLUSTER_MANAGER);
+        setMyIp(masterIP, AllMetrics.NodeRole.MASTER);
         RcaControllerHelper.set(
                 Paths.get(rcaEnabledFileLoc.toString(), "rca.conf").toString(),
                 mutedRcaConfPath,
-                Paths.get(rcaEnabledFileLoc.toString(), "rca_elected_cluster_manager.conf")
-                        .toString());
+                Paths.get(rcaEnabledFileLoc.toString(), "rca_elected_master.conf").toString());
         WaitFor.waitFor(
-                () -> rcaController.getCurrentRole() == AllMetrics.NodeRole.CLUSTER_MANAGER,
+                () -> rcaController.getCurrentRole() == AllMetrics.NodeRole.MASTER,
                 10,
                 TimeUnit.SECONDS);
         WaitFor.waitFor(
                 () ->
-                        RcaControllerHelper.pickRcaConfForRole(AllMetrics.NodeRole.CLUSTER_MANAGER)
+                        RcaControllerHelper.pickRcaConfForRole(AllMetrics.NodeRole.MASTER)
                                         .getConfigFileLoc()
                                 == mutedRcaConfPath,
                 10,
@@ -286,20 +284,19 @@ public class RcaControllerTest {
         List<String> mutedRcas3 = Arrays.asList("Paging_MajfltRate_Check");
         List<String> mutedRcas4 = Arrays.asList("Paging_MajfltRate", "Paging_MajfltRate_Check");
         changeRcaRunState(RcaState.RUN);
-        setMyIp(clusterManagerIP, AllMetrics.NodeRole.CLUSTER_MANAGER);
+        setMyIp(masterIP, AllMetrics.NodeRole.MASTER);
         RcaControllerHelper.set(
                 Paths.get(rcaEnabledFileLoc.toString(), "rca.conf").toString(),
                 mutedRcaConfPath,
-                Paths.get(rcaEnabledFileLoc.toString(), "rca_elected_cluster_manager.conf")
-                        .toString());
+                Paths.get(rcaEnabledFileLoc.toString(), "rca_elected_master.conf").toString());
 
         WaitFor.waitFor(
-                () -> rcaController.getCurrentRole() == AllMetrics.NodeRole.CLUSTER_MANAGER,
+                () -> rcaController.getCurrentRole() == AllMetrics.NodeRole.MASTER,
                 10,
                 TimeUnit.SECONDS);
         WaitFor.waitFor(
                 () ->
-                        RcaControllerHelper.pickRcaConfForRole(AllMetrics.NodeRole.CLUSTER_MANAGER)
+                        RcaControllerHelper.pickRcaConfForRole(AllMetrics.NodeRole.MASTER)
                                         .getConfigFileLoc()
                                 == mutedRcaConfPath,
                 10,
@@ -364,18 +361,15 @@ public class RcaControllerTest {
     @Test
     public void nodeRoleChange() throws IOException {
         changeRcaRunState(RcaState.RUN);
-        clusterManagerIP = "10.10.192.168";
-        setMyIp(clusterManagerIP, AllMetrics.NodeRole.ELECTED_CLUSTER_MANAGER);
+        masterIP = "10.10.192.168";
+        setMyIp(masterIP, AllMetrics.NodeRole.ELECTED_MASTER);
         Assert.assertTrue(
-                check(
-                        new NodeRoleEval(rcaController),
-                        AllMetrics.NodeRole.ELECTED_CLUSTER_MANAGER));
-        Assert.assertEquals(
-                rcaController.getCurrentRole(), AllMetrics.NodeRole.ELECTED_CLUSTER_MANAGER);
+                check(new NodeRoleEval(rcaController), AllMetrics.NodeRole.ELECTED_MASTER));
+        Assert.assertEquals(rcaController.getCurrentRole(), AllMetrics.NodeRole.ELECTED_MASTER);
         Assert.assertEquals(
                 rcaController.getCurrentRole(), rcaController.getRcaScheduler().getRole());
 
-        AllMetrics.NodeRole nodeRole = AllMetrics.NodeRole.CLUSTER_MANAGER;
+        AllMetrics.NodeRole nodeRole = AllMetrics.NodeRole.MASTER;
         setMyIp("10.10.192.200", nodeRole);
         Assert.assertTrue(check(new NodeRoleEval(rcaController), nodeRole));
         Assert.assertEquals(rcaController.getCurrentRole(), nodeRole);
@@ -391,7 +385,7 @@ public class RcaControllerTest {
     @Test
     public void testRcaNanny() throws IOException {
         changeRcaRunState(RcaState.RUN);
-        AllMetrics.NodeRole nodeRole = AllMetrics.NodeRole.CLUSTER_MANAGER;
+        AllMetrics.NodeRole nodeRole = AllMetrics.NodeRole.MASTER;
         setMyIp("192.168.0.1", nodeRole);
         Assert.assertTrue(
                 check(new RcaSchedulerRunningEval(rcaController), RcaSchedulerState.STATE_STARTED));
@@ -399,7 +393,7 @@ public class RcaControllerTest {
         Assert.assertEquals(
                 RcaSchedulerState.STATE_STARTED, rcaController.getRcaScheduler().getState());
 
-        nodeRole = AllMetrics.NodeRole.ELECTED_CLUSTER_MANAGER;
+        nodeRole = AllMetrics.NodeRole.ELECTED_MASTER;
         setMyIp("192.168.0.1", nodeRole);
         Assert.assertTrue(
                 check(new RcaSchedulerRunningEval(rcaController), RcaSchedulerState.STATE_STARTED));
@@ -428,7 +422,7 @@ public class RcaControllerTest {
         Assert.assertNull(clientServers.getNetServer().getSendDataHandler());
 
         changeRcaRunState(RcaState.RUN);
-        AllMetrics.NodeRole nodeRole = AllMetrics.NodeRole.CLUSTER_MANAGER;
+        AllMetrics.NodeRole nodeRole = AllMetrics.NodeRole.MASTER;
         setMyIp("192.168.0.1", nodeRole);
         Assert.assertTrue(
                 check(new RcaSchedulerRunningEval(rcaController), RcaSchedulerState.STATE_STARTED));
@@ -462,8 +456,8 @@ public class RcaControllerTest {
         jNode.put(AllMetrics.NodeDetailColumns.HOST_ADDRESS.toString(), ip);
         jNode.put(AllMetrics.NodeDetailColumns.ROLE.toString(), nodeRole);
         jNode.put(
-                AllMetrics.NodeDetailColumns.IS_CLUSTER_MANAGER_NODE,
-                nodeRole == AllMetrics.NodeRole.ELECTED_CLUSTER_MANAGER);
+                AllMetrics.NodeDetailColumns.IS_MASTER_NODE,
+                nodeRole == AllMetrics.NodeRole.ELECTED_MASTER);
 
         ClusterDetailsEventProcessor eventProcessor = new ClusterDetailsEventProcessor();
         StringBuilder nodeDetails = new StringBuilder();

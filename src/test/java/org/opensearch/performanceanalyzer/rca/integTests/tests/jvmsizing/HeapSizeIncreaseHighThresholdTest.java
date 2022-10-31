@@ -33,15 +33,15 @@ import org.opensearch.performanceanalyzer.rca.store.OpenSearchAnalysisGraph;
 
 /**
  * Negative test: Tests that the action is NOT emitted if the threshold is not breached. The
- * threshold is controlled by the rca.conf and rca_cluster_manager.conf files.
+ * threshold is controlled by the rca.conf and rca_master.conf files.
  */
 @Category(RcaItMarker.class)
 @RunWith(RcaItNotEncryptedRunner.class)
-@AClusterType(ClusterType.MULTI_NODE_CO_LOCATED_CLUSTER_MANAGER)
+@AClusterType(ClusterType.MULTI_NODE_CO_LOCATED_MASTER)
 @ARcaGraph(OpenSearchAnalysisGraph.class)
 @ARcaConf(
         dataNode = JvmSizingITConstants.RCA_CONF_PATH + "rca_high_threshold.conf",
-        electedClusterManager = JvmSizingITConstants.RCA_CONF_PATH + "rca_cluster_manager.conf")
+        electedMaster = JvmSizingITConstants.RCA_CONF_PATH + "rca_master.conf")
 @AMetric(
         name = Heap_Max.class,
         dimensionNames = {AllMetrics.HeapDimension.Constants.TYPE_VALUE},
@@ -57,7 +57,7 @@ import org.opensearch.performanceanalyzer.rca.store.OpenSearchAnalysisGraph;
                                 max = 1000000000.0)
                     }),
             @ATable(
-                    hostTag = HostTag.ELECTED_CLUSTER_MANAGER,
+                    hostTag = HostTag.ELECTED_MASTER,
                     tuple = {
                         @ATuple(
                                 dimensionValues = {AllMetrics.GCType.Constants.OLD_GEN_VALUE},
@@ -82,7 +82,7 @@ import org.opensearch.performanceanalyzer.rca.store.OpenSearchAnalysisGraph;
                                 max = 950000000.0)
                     }),
             @ATable(
-                    hostTag = HostTag.ELECTED_CLUSTER_MANAGER,
+                    hostTag = HostTag.ELECTED_MASTER,
                     tuple = {
                         @ATuple(
                                 dimensionValues = {AllMetrics.GCType.Constants.OLD_GEN_VALUE},
@@ -107,7 +107,7 @@ import org.opensearch.performanceanalyzer.rca.store.OpenSearchAnalysisGraph;
                                 min = 10.0)
                     }),
             @ATable(
-                    hostTag = HostTag.ELECTED_CLUSTER_MANAGER,
+                    hostTag = HostTag.ELECTED_MASTER,
                     tuple = {
                         @ATuple(
                                 dimensionValues = {AllMetrics.GCType.Constants.TOT_FULL_GC_VALUE},
@@ -138,7 +138,7 @@ import org.opensearch.performanceanalyzer.rca.store.OpenSearchAnalysisGraph;
                                 min = 10.0)
                     }),
             @ATable(
-                    hostTag = HostTag.ELECTED_CLUSTER_MANAGER,
+                    hostTag = HostTag.ELECTED_MASTER,
                     tuple = {
                         @ATuple(
                                 dimensionValues = {
@@ -158,7 +158,7 @@ public class HeapSizeIncreaseHighThresholdTest {
     @Test
     @AExpect(
             what = AExpect.Type.DB_QUERY,
-            on = HostTag.ELECTED_CLUSTER_MANAGER,
+            on = HostTag.ELECTED_MASTER,
             validator = HeapSizeIncreaseNonBreachingValidator.class,
             forRca = PersistedAction.class,
             timeoutSeconds = 240)
@@ -221,11 +221,10 @@ public class HeapSizeIncreaseHighThresholdTest {
     @Test
     @ARcaConf(
             dataNode = JvmSizingITConstants.RCA_CONF_PATH + "rca.conf",
-            electedClusterManager =
-                    JvmSizingITConstants.RCA_CONF_PATH + "rca_cluster_manager_high_threshold.conf")
+            electedMaster = JvmSizingITConstants.RCA_CONF_PATH + "rca_master_high_threshold.conf")
     @AExpect(
             what = AExpect.Type.DB_QUERY,
-            on = HostTag.ELECTED_CLUSTER_MANAGER,
+            on = HostTag.ELECTED_MASTER,
             validator = HeapSizeIncreaseNonBreachingValidator.class,
             forRca = PersistedAction.class,
             timeoutSeconds = 240)
@@ -271,7 +270,7 @@ public class HeapSizeIncreaseHighThresholdTest {
             reason =
                     "Since the persistence path can be null for integration test, calls to next() is "
                             + "expected to fail")
-    public void testClusterManagerNodeThresholdNotBreached() {
+    public void testMasterNodeThresholdNotBreached() {
         // Same reasoning as the test case above.
         try {
             Thread.sleep(TimeUnit.SECONDS.toMillis(SLEEP_DURATION_IN_S));

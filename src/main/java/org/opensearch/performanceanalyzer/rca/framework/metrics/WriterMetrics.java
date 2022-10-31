@@ -54,11 +54,11 @@ public enum WriterMetrics implements MeasurementSet {
             "namedCount",
             Collections.singletonList(Statistics.NAMED_COUNTERS)),
 
-    /** This metric indicates failure in collecting ClusterManagerServiceEventMetrics */
-    CLUSTER_MANAGER_METRICS_ERROR("ClusterManagerMetricsError"),
+    /** This metric indicates failure in collecting MasterServiceEventMetrics */
+    MASTER_METRICS_ERROR("MasterMetricsError"),
 
-    /** This metric indicates cluster_manager is not up */
-    CLUSTER_MANAGER_NODE_NOT_UP("ClusterManagerNodeNotUp"),
+    /** This metric indicates master is not up */
+    MASTER_NODE_NOT_UP("MasterNodeNotUp"),
 
     /** This metric indicates faiure in intercepting opensearch requests at transport channel */
     OPENSEARCH_REQUEST_INTERCEPTOR_ERROR("OpenSearchRequestInterceptorError"),
@@ -74,8 +74,8 @@ public enum WriterMetrics implements MeasurementSet {
                     Statistics.COUNT,
                     Statistics.SUM)),
 
-    CLUSTER_MANAGER_THROTTLING_COLLECTOR_EXECUTION_TIME(
-            "ClusterManagerThrottlingCollectorExecutionTime",
+    MASTER_THROTTLING_COLLECTOR_EXECUTION_TIME(
+            "MasterThrottlingCollectorExecutionTime",
             "millis",
             Arrays.asList(
                     Statistics.MAX,
@@ -84,8 +84,8 @@ public enum WriterMetrics implements MeasurementSet {
                     Statistics.COUNT,
                     Statistics.SUM)),
 
-    CLUSTER_MANAGER_THROTTLING_COLLECTOR_NOT_AVAILABLE(
-            "ClusterManagerThrottlingCollectorNotAvailable",
+    MASTER_THROTTLING_COLLECTOR_NOT_AVAILABLE(
+            "MasterThrottlingCollectorNotAvailable",
             "count",
             Arrays.asList(
                     Statistics.MAX,
@@ -134,8 +134,8 @@ public enum WriterMetrics implements MeasurementSet {
                     Statistics.COUNT,
                     Statistics.SUM)),
 
-    CLUSTER_MANAGER_CLUSTER_UPDATE_STATS_COLLECTOR_DISABLED(
-            "ClusterManagerClusterUpdateStatsCollectorDisabled",
+    MASTER_CLUSTER_UPDATE_STATS_COLLECTOR_DISABLED(
+            "MasterClusterUpdateStatsCollectorDisabled",
             "count",
             Arrays.asList(
                     Statistics.MAX,
@@ -144,8 +144,8 @@ public enum WriterMetrics implements MeasurementSet {
                     Statistics.COUNT,
                     Statistics.SUM)),
 
-    CLUSTER_MANAGER_CLUSTER_UPDATE_STATS_COLLECTOR_EXECUTION_TIME(
-            "ClusterManagerClusterUpdateStatsCollectorExecutionTime",
+    MASTER_CLUSTER_UPDATE_STATS_COLLECTOR_EXECUTION_TIME(
+            "MasterClusterUpdateStatsCollectorExecutionTime",
             "millis",
             Arrays.asList(
                     Statistics.MAX,

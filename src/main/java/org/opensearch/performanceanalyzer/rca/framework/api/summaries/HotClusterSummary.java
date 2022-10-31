@@ -26,8 +26,8 @@ import org.opensearch.performanceanalyzer.rca.framework.core.GenericSummary;
 
 /**
  * HotClusterSummary is a cluster level summary. It collects and aggregates node summaries from each
- * data nodes and additional info will be added by cluster_manager. This type of summary is created
- * by cluster level RCAs which only run on elected cluster_manager.
+ * data nodes and additional info will be added by master. This type of summary is created by
+ * cluster level RCAs whcih only run on elected master.
  *
  * <p>This object is persisted in SQLite table Table name : HotClusterSummary
  *
@@ -50,9 +50,9 @@ public class HotClusterSummary extends GenericSummary {
     }
 
     /**
-     * HotClusterSummary is supposed to be created on elected cluster_manager node only. and we do
-     * not expect it to be sent via gRPC. Return null in all the methods below. and we should not
-     * define the gRPC message wrapper for this summary class in protocol buf.
+     * HotClusterSummary is supposed to be created on elected master node only. and we do not expect
+     * it to be sent via gRPC. Return null in all the methods below. and we should not define the
+     * gRPC message wrapper for this summary class in protocol buf.
      */
     @Override
     public GeneratedMessageV3 buildSummaryMessage() {

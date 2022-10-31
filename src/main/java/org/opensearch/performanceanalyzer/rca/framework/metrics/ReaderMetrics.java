@@ -114,9 +114,9 @@ public enum ReaderMetrics implements MeasurementSet {
                     Statistics.COUNT,
                     Statistics.SUM)),
 
-    /** Amount of time taken to emit ClusterManager throttling metrics. */
-    CLUSTER_MANAGER_THROTTLING_EMITTER_EXECUTION_TIME(
-            "ClusterManagerThrottlingEmitterExecutionTime",
+    /** Amount of time taken to emit Master throttling metrics. */
+    MASTER_THROTTLING_EMITTER_EXECUTION_TIME(
+            "MasterThrottlingEmitterExecutionTime",
             "millis",
             Arrays.asList(
                     Statistics.MAX,

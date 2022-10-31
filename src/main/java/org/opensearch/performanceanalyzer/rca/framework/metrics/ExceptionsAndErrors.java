@@ -48,14 +48,13 @@ public enum ExceptionsAndErrors implements MeasurementSet {
 
     ADMISSION_CONTROL_COLLECTOR_ERROR("AdmissionControlCollectorError"),
 
-    CLUSTER_MANAGER_THROTTLING_COLLECTOR_ERROR("ClusterManagerThrottlingMetricsCollectorError"),
+    MASTER_THROTTLING_COLLECTOR_ERROR("MasterThrottlingMetricsCollectorError"),
 
     FAULT_DETECTION_COLLECTOR_ERROR("FaultDetectionMetricsCollectorError"),
 
     CLUSTER_APPLIER_SERVICE_STATS_COLLECTOR_ERROR("ClusterApplierServiceStatsCollectorError"),
 
-    CLUSTER_MANAGER_CLUSTER_UPDATE_STATS_COLLECTOR_ERROR(
-            "ClusterManagerClusterStateUpdateStatsCollectorError"),
+    MASTER_CLUSTER_UPDATE_STATS_COLLECTOR_ERROR("MasterClusterStateUpdateStatsCollectorError"),
 
     ELECTION_TERM_COLLECTOR_ERROR("ElectionTermCollectorError"),
 

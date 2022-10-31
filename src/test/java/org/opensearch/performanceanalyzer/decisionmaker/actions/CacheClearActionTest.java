@@ -41,17 +41,14 @@ public class CacheClearActionTest {
         ClusterDetailsEventProcessor.NodeDetails node2 =
                 new ClusterDetailsEventProcessor.NodeDetails(
                         AllMetrics.NodeRole.DATA, "node2", "127.0.0.1", false);
-        ClusterDetailsEventProcessor.NodeDetails cluster_manager =
+        ClusterDetailsEventProcessor.NodeDetails master =
                 new ClusterDetailsEventProcessor.NodeDetails(
-                        AllMetrics.NodeRole.ELECTED_CLUSTER_MANAGER,
-                        "cluster_manager",
-                        "127.0.0.3",
-                        true);
+                        AllMetrics.NodeRole.ELECTED_MASTER, "master", "127.0.0.3", true);
 
         List<ClusterDetailsEventProcessor.NodeDetails> nodes = new ArrayList<>();
         nodes.add(node1);
         nodes.add(node2);
-        nodes.add(cluster_manager);
+        nodes.add(master);
         clusterDetailsEventProcessor.setNodesDetails(nodes);
         testAppContext.setClusterDetailsEventProcessor(clusterDetailsEventProcessor);
 

@@ -135,7 +135,7 @@ public class NodeConfigCollector extends OpenSearchConfigNode {
     /**
      * collect config settings from the upstream metric flowunits and set them into the protobuf
      * message PerformanceControllerConfiguration. This will allow us to serialize / de-serialize
-     * the config settings across grpc and send them to Decision Maker on elected cluster_manager.
+     * the config settings across grpc and send them to Decision Maker on elected master.
      *
      * @return ResourceFlowUnit with HotNodeSummary. And HotNodeSummary carries
      *     PerformanceControllerConfiguration

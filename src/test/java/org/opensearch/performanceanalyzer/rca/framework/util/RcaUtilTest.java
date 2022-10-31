@@ -48,7 +48,7 @@ public class RcaUtilTest {
     @Test
     public void existingTagWithDifferentValueNoMatch() {
         Node<MetricFlowUnit> node = new CPU_Utilization(5);
-        node.addTag("locus", "cluster_manager-node");
+        node.addTag("locus", "master-node");
         RcaConf rcaConf = new RcaConf(Paths.get(RcaConsts.TEST_CONFIG_PATH, "rca.conf").toString());
         assertFalse(RcaUtil.doTagsMatch(node, rcaConf));
     }

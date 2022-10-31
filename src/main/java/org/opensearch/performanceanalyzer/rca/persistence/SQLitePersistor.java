@@ -1042,12 +1042,11 @@ class SQLitePersistor extends PersistorBase {
             Record mostRecentRecord = recordList.get(0);
             response = RcaResponse.buildResponse(mostRecentRecord);
 
-            // ClusterTemperatureRca can only be retrieved from the elected cluster_manager. If the
-            // request
+            // ClusterTemperatureRca can only be retrieved from the elected master. If the request
             // is
             // made from a data node, it returns a 400 saying it can only be queried from the
             // elected
-            // cluster_manager.
+            // master.
             if (rca.equals(ClusterTemperatureRca.TABLE_NAME)) {
                 SelectJoinStep<Record> query =
                         SQLiteQueryUtils.buildSummaryQuery(

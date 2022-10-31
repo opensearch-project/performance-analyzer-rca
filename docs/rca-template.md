@@ -108,8 +108,8 @@ TBD
 
 Should include the graph nodes and on which OpenSearch nodes will they run.
 
-1. Please use a three data node, three cluster_manager node cluster.
-2. Please 3 opensearch nodes with colocated cluster_manager and data
+1. Please use a three data node, three master node cluster.
+2. Please 3 opensearch nodes with colocated master and data
 
 ## Descriptive summary
 

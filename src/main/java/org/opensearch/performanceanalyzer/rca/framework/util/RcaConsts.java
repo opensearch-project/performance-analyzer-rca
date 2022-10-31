@@ -12,24 +12,23 @@ import org.opensearch.performanceanalyzer.core.Util;
 
 public class RcaConsts {
 
-    public static final String RCA_CONF_CLUSTER_MANAGER_FILENAME = "rca_cluster_manager.conf";
+    public static final String RCA_CONF_MASTER_FILENAME = "rca_master.conf";
     public static final String RCA_NETWORK_THREAD_NAME_FORMAT = "rca-net-%d";
     public static final int NETWORK_CORE_THREAD_COUNT = 1;
     public static final int NETWORK_MAX_THREAD_COUNT = 1;
     public static final int DEFAULT_PER_NODE_FLOWUNIT_Q_SIZE = 200;
     public static final long RCA_STATE_CHECK_INTERVAL_IN_MS = 5000;
     private static final String RCA_CONF_FILENAME = "rca.conf";
-    private static final String RCA_CONF_IDLE_CLUSTER_MANAGER_FILENAME =
-            "rca_idle_cluster_manager.conf";
+    private static final String RCA_CONF_IDLE_MASTER_FILENAME = "rca_idle_master.conf";
     private static final String THRESHOLDS_DIR_NAME = "thresholds";
     public static final String CONFIG_DIR_PATH =
             Paths.get(Util.READER_LOCATION, "config").toString();
     public static final String RCA_CONF_PATH =
             Paths.get(CONFIG_DIR_PATH, RCA_CONF_FILENAME).toString();
-    public static final String RCA_CONF_CLUSTER_MANAGER_PATH =
-            Paths.get(CONFIG_DIR_PATH, RCA_CONF_CLUSTER_MANAGER_FILENAME).toString();
-    public static final String RCA_CONF_IDLE_CLUSTER_MANAGER_PATH =
-            Paths.get(CONFIG_DIR_PATH, RCA_CONF_IDLE_CLUSTER_MANAGER_FILENAME).toString();
+    public static final String RCA_CONF_MASTER_PATH =
+            Paths.get(CONFIG_DIR_PATH, RCA_CONF_MASTER_FILENAME).toString();
+    public static final String RCA_CONF_IDLE_MASTER_PATH =
+            Paths.get(CONFIG_DIR_PATH, RCA_CONF_IDLE_MASTER_FILENAME).toString();
     public static final String THRESHOLDS_PATH =
             Paths.get(CONFIG_DIR_PATH, THRESHOLDS_DIR_NAME).toString();
 
@@ -66,11 +65,11 @@ public class RcaConsts {
         public static final String TAG_AGGREGATE_UPSTREAM = "aggregate-upstream";
 
         public static final String LOCUS_DATA_NODE = "data-node";
-        public static final String LOCUS_CLUSTER_MANAGER_NODE = "cluster_manager-node";
-        public static final String LOCUS_DATA_CLUSTER_MANAGER_NODE =
+        public static final String LOCUS_MASTER_NODE = "master-node";
+        public static final String LOCUS_DATA_MASTER_NODE =
                 String.join(
                         RcaTagConstants.SEPARATOR,
                         RcaTagConstants.LOCUS_DATA_NODE,
-                        RcaTagConstants.LOCUS_CLUSTER_MANAGER_NODE);
+                        RcaTagConstants.LOCUS_MASTER_NODE);
     }
 }

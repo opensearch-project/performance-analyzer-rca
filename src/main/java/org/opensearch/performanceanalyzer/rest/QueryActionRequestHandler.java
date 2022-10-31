@@ -113,10 +113,10 @@ public class QueryActionRequestHandler extends MetricsHandler implements HttpHan
     }
 
     private void handleActionRequest(HttpExchange exchange) throws IOException {
-        // check if we are querying from elected cluster_manager
+        // check if we are querying from elected master
         if (!validNodeRole()) {
             JsonObject errResponse = new JsonObject();
-            errResponse.addProperty("error", "Node being queried is not elected cluster_manager.");
+            errResponse.addProperty("error", "Node being queried is not elected master.");
             sendResponse(exchange, errResponse.toString(), HttpURLConnection.HTTP_BAD_REQUEST);
             return;
         }
@@ -168,8 +168,8 @@ public class QueryActionRequestHandler extends MetricsHandler implements HttpHan
         this.persistable = persistable;
     }
 
-    // check if we are querying from elected cluster_manager
+    // check if we are querying from elected master
     private boolean validNodeRole() {
-        return appContext.getMyInstanceDetails().getIsClusterManager();
+        return appContext.getMyInstanceDetails().getIsMaster();
     }
 }

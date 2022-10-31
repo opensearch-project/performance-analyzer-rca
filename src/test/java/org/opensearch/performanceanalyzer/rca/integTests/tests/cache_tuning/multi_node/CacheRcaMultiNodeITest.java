@@ -39,7 +39,7 @@ import org.opensearch.performanceanalyzer.rca.store.rca.cluster.ShardRequestCach
 
 @Category(RcaItMarker.class)
 @RunWith(RcaItNotEncryptedRunner.class)
-@AClusterType(ClusterType.MULTI_NODE_CO_LOCATED_CLUSTER_MANAGER)
+@AClusterType(ClusterType.MULTI_NODE_CO_LOCATED_MASTER)
 @ARcaGraph(OpenSearchAnalysisGraph.class)
 // specify a custom rca.conf to set the collector time periods to 5s to reduce runtime
 @ARcaConf(dataNode = CACHE_TUNING_RESOURCES_DIR + "rca.conf")
@@ -158,7 +158,7 @@ import org.opensearch.performanceanalyzer.rca.store.rca.cluster.ShardRequestCach
                                 max = 100.0)
                     }),
             @ATable(
-                    hostTag = HostTag.ELECTED_CLUSTER_MANAGER,
+                    hostTag = HostTag.ELECTED_MASTER,
                     tuple = {
                         @ATuple(
                                 dimensionValues = {
@@ -184,7 +184,7 @@ public class CacheRcaMultiNodeITest {
     @Test
     @AExpect(
             what = AExpect.Type.REST_API,
-            on = HostTag.ELECTED_CLUSTER_MANAGER,
+            on = HostTag.ELECTED_MASTER,
             validator = FieldDataCacheValidator.class,
             forRca = FieldDataCacheClusterRca.class,
             timeoutSeconds = 700)
@@ -215,7 +215,7 @@ public class CacheRcaMultiNodeITest {
     @Test
     @AExpect(
             what = AExpect.Type.REST_API,
-            on = HostTag.ELECTED_CLUSTER_MANAGER,
+            on = HostTag.ELECTED_MASTER,
             validator = ShardRequestCacheValidator.class,
             forRca = ShardRequestCacheClusterRca.class,
             timeoutSeconds = 700)

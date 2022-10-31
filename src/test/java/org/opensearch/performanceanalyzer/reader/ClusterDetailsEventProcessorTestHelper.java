@@ -25,21 +25,18 @@ public class ClusterDetailsEventProcessorTestHelper extends AbstractReaderTests 
         nodeDetails = new ArrayList<>();
     }
 
-    public void addNodeDetails(String nodeId, String address, boolean isClusterManagerNode) {
-        nodeDetails.add(createNodeDetailsMetrics(nodeId, address, isClusterManagerNode));
+    public void addNodeDetails(String nodeId, String address, boolean isMasterNode) {
+        nodeDetails.add(createNodeDetailsMetrics(nodeId, address, isMasterNode));
     }
 
     public void addNodeDetails(
-            String nodeId,
-            String address,
-            AllMetrics.NodeRole nodeRole,
-            boolean isClusterManagerNode) {
-        nodeDetails.add(createNodeDetailsMetrics(nodeId, address, nodeRole, isClusterManagerNode));
+            String nodeId, String address, AllMetrics.NodeRole nodeRole, boolean isMasterNode) {
+        nodeDetails.add(createNodeDetailsMetrics(nodeId, address, nodeRole, isMasterNode));
     }
 
     public static ClusterDetailsEventProcessor.NodeDetails newNodeDetails(
-            final String nodeId, final String address, final boolean isClusterManagerNode) {
-        return createNodeDetails(nodeId, address, isClusterManagerNode);
+            final String nodeId, final String address, final boolean isMasterNode) {
+        return createNodeDetails(nodeId, address, isMasterNode);
     }
 
     public ClusterDetailsEventProcessor generateClusterDetailsEvent() {

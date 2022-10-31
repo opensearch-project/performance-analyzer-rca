@@ -26,17 +26,17 @@ import org.opensearch.performanceanalyzer.rca.integTests.framework.annotations.A
 import org.opensearch.performanceanalyzer.rca.integTests.framework.configs.ClusterType;
 import org.opensearch.performanceanalyzer.rca.integTests.framework.configs.HostTag;
 import org.opensearch.performanceanalyzer.rca.integTests.framework.runners.RcaItNotEncryptedRunner;
-import org.opensearch.performanceanalyzer.rca.integTests.tests.jvmsizing.validator.HeapSizeIncreaseValidatorCollocatedClusterManager;
+import org.opensearch.performanceanalyzer.rca.integTests.tests.jvmsizing.validator.HeapSizeIncreaseValidatorCollocatedMaster;
 import org.opensearch.performanceanalyzer.rca.persistence.actions.PersistedAction;
 import org.opensearch.performanceanalyzer.rca.store.OpenSearchAnalysisGraph;
 
 @Category(RcaItMarker.class)
 @RunWith(RcaItNotEncryptedRunner.class)
-@AClusterType(ClusterType.MULTI_NODE_CO_LOCATED_CLUSTER_MANAGER)
+@AClusterType(ClusterType.MULTI_NODE_CO_LOCATED_MASTER)
 @ARcaGraph(OpenSearchAnalysisGraph.class)
 @ARcaConf(
         dataNode = JvmSizingITConstants.RCA_CONF_PATH + "rca.conf",
-        electedClusterManager = JvmSizingITConstants.RCA_CONF_PATH + "rca_cluster_manager.conf")
+        electedMaster = JvmSizingITConstants.RCA_CONF_PATH + "rca_master.conf")
 @AMetric(
         name = Heap_Max.class,
         dimensionNames = {AllMetrics.HeapDimension.Constants.TYPE_VALUE},
@@ -52,7 +52,7 @@ import org.opensearch.performanceanalyzer.rca.store.OpenSearchAnalysisGraph;
                                 max = 1000000000.0)
                     }),
             @ATable(
-                    hostTag = HostTag.ELECTED_CLUSTER_MANAGER,
+                    hostTag = HostTag.ELECTED_MASTER,
                     tuple = {
                         @ATuple(
                                 dimensionValues = {AllMetrics.GCType.Constants.OLD_GEN_VALUE},
@@ -77,7 +77,7 @@ import org.opensearch.performanceanalyzer.rca.store.OpenSearchAnalysisGraph;
                                 max = 950000000.0)
                     }),
             @ATable(
-                    hostTag = HostTag.ELECTED_CLUSTER_MANAGER,
+                    hostTag = HostTag.ELECTED_MASTER,
                     tuple = {
                         @ATuple(
                                 dimensionValues = {AllMetrics.GCType.Constants.OLD_GEN_VALUE},
@@ -102,7 +102,7 @@ import org.opensearch.performanceanalyzer.rca.store.OpenSearchAnalysisGraph;
                                 min = 10.0)
                     }),
             @ATable(
-                    hostTag = HostTag.ELECTED_CLUSTER_MANAGER,
+                    hostTag = HostTag.ELECTED_MASTER,
                     tuple = {
                         @ATuple(
                                 dimensionValues = {AllMetrics.GCType.Constants.TOT_FULL_GC_VALUE},
@@ -133,7 +133,7 @@ import org.opensearch.performanceanalyzer.rca.store.OpenSearchAnalysisGraph;
                                 min = 10.0)
                     }),
             @ATable(
-                    hostTag = HostTag.ELECTED_CLUSTER_MANAGER,
+                    hostTag = HostTag.ELECTED_MASTER,
                     tuple = {
                         @ATuple(
                                 dimensionValues = {
@@ -151,8 +151,8 @@ public class HeapSizeIncreaseIT {
     @Test
     @AExpect(
             what = AExpect.Type.DB_QUERY,
-            on = HostTag.ELECTED_CLUSTER_MANAGER,
-            validator = HeapSizeIncreaseValidatorCollocatedClusterManager.class,
+            on = HostTag.ELECTED_MASTER,
+            validator = HeapSizeIncreaseValidatorCollocatedMaster.class,
             forRca = PersistedAction.class,
             timeoutSeconds = 190)
     @AErrorPatternIgnored(

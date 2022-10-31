@@ -16,10 +16,10 @@ import org.opensearch.performanceanalyzer.rca.framework.core.temperature.Tempera
 import org.opensearch.performanceanalyzer.rca.framework.core.temperature.TemperatureVector;
 
 /**
- * This object is instantiated on the elected cluster_manager. This is the cluster_manager's view of
- * the {@code CompactNodeSummary}. The difference is that, the CompactNodeSummary is based on the
- * node level resource utilization by the shards and the {@code CompactClusterLevelNodeSummary} is
- * based on the utilization across multiple nodes in the cluster.
+ * This object is instantiated on the elected master. This is the master's view of the {@code
+ * CompactNodeSummary}. The difference is that, the CompactNodeSummary is based on on the node level
+ * resource utilization by the shards and the {@code CompactClusterLevelNodeSummary} is based on the
+ * utilization across multiple nodes in the cluster.
  */
 public class CompactClusterLevelNodeSummary extends CompactNodeSummary {
     private static final Logger LOG = LogManager.getLogger(CompactClusterLevelNodeSummary.class);

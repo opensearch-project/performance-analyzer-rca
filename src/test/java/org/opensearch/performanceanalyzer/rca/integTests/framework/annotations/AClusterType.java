@@ -14,8 +14,8 @@ import org.opensearch.performanceanalyzer.rca.integTests.framework.configs.Clust
 
 /**
  * This is a class level annotation that must be present for each of the RCAIt test classes. This
- * specifies the cluster type - single node vs multi-node with dedicated cluster_manager vs
- * multi-node with co-located cluster_manager.
+ * specifies the cluster type - single node vs multi-node with dedicated master vs multi-node with
+ * co-located master.
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)

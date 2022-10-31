@@ -89,29 +89,24 @@ public class InstanceDetails {
     private final AllMetrics.NodeRole role;
     private final Id instanceId;
     private final Ip instanceIp;
-    private final boolean isClusterManager;
+    private final boolean isMaster;
     private final int grpcPort;
 
     public InstanceDetails(
-            AllMetrics.NodeRole role, Id instanceId, Ip instanceIp, boolean isClusterManager) {
-        this(
-                role,
-                instanceId,
-                instanceIp,
-                isClusterManager,
-                PluginSettings.instance().getRpcPort());
+            AllMetrics.NodeRole role, Id instanceId, Ip instanceIp, boolean isMaster) {
+        this(role, instanceId, instanceIp, isMaster, PluginSettings.instance().getRpcPort());
     }
 
     public InstanceDetails(
             AllMetrics.NodeRole role,
             Id instanceId,
             Ip instanceIp,
-            boolean isClusterManager,
+            boolean isMaster,
             int grpcPort) {
         this.role = role;
         this.instanceId = instanceId;
         this.instanceIp = instanceIp;
-        this.isClusterManager = isClusterManager;
+        this.isMaster = isMaster;
         this.grpcPort = grpcPort;
     }
 
@@ -120,7 +115,7 @@ public class InstanceDetails {
                 AllMetrics.NodeRole.valueOf(nodeDetails.getRole()),
                 new Id(nodeDetails.getId()),
                 new Ip(nodeDetails.getHostAddress()),
-                nodeDetails.getIsClusterManagerNode(),
+                nodeDetails.getIsMasterNode(),
                 nodeDetails.getGrpcPort());
     }
 
@@ -134,7 +129,7 @@ public class InstanceDetails {
     }
 
     public AllMetrics.NodeRole getRole() {
-        return isClusterManager ? AllMetrics.NodeRole.ELECTED_CLUSTER_MANAGER : role;
+        return isMaster ? AllMetrics.NodeRole.ELECTED_MASTER : role;
     }
 
     public Id getInstanceId() {
@@ -145,8 +140,8 @@ public class InstanceDetails {
         return instanceIp;
     }
 
-    public boolean getIsClusterManager() {
-        return isClusterManager;
+    public boolean getIsMaster() {
+        return isMaster;
     }
 
     public int getGrpcPort() {
@@ -162,7 +157,7 @@ public class InstanceDetails {
             return false;
         }
         InstanceDetails that = (InstanceDetails) o;
-        return isClusterManager == that.isClusterManager
+        return isMaster == that.isMaster
                 && getGrpcPort() == that.getGrpcPort()
                 && getRole() == that.getRole()
                 && Objects.equal(getInstanceId(), that.getInstanceId())
@@ -172,7 +167,7 @@ public class InstanceDetails {
     @Override
     public int hashCode() {
         return Objects.hashCode(
-                getRole(), getInstanceId(), getInstanceIp(), isClusterManager, getGrpcPort());
+                getRole(), getInstanceId(), getInstanceIp(), isMaster, getGrpcPort());
     }
 
     @Override

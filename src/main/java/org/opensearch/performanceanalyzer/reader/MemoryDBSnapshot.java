@@ -257,7 +257,7 @@ public class MemoryDBSnapshot implements Removable {
 
     protected Result<Record1<String>> fetchTableSchema() {
         return create.select(DSL.field("sql", String.class))
-                .from(DSL.table("sqlite_cluster_manager"))
+                .from(DSL.table("sqlite_master"))
                 .where(DSL.field("name", String.class).eq(this.tableName))
                 .fetch();
     }

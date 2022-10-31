@@ -39,9 +39,9 @@ import org.opensearch.performanceanalyzer.rca.scheduler.FlowUnitOperationArgWrap
  * will mark the cluster as unhealthy if the flowunits from any data nodes are unhealthy.
  *
  * <p>A few protected variables that can be overridden by derived class: numOfFlowUnitsInMap :
- * number of consecutive flowunits stored in hashtable. Default is 1 collectFromClusterManagerNode :
- * whether this RCA collect flowunit from cluster_manager nodes. expirationTimeWindow : time window
- * to determine whether flowunit in hashmap becomes stale method that can be overriden :
+ * number of consecutive flowunits stored in hashtable. Default is 1 collectFromMasterNode : whether
+ * this RCA collect flowunit from master nodes. expirationTimeWindow : time window to determine
+ * whether flowunit in hashmap becomes stale method that can be overriden :
  * generateNodeSummary(NodeKey) : how do we want to parse the table and generate summary for one
  * node.
  */
@@ -57,7 +57,7 @@ public class BaseClusterRca extends Rca<ResourceFlowUnit<HotClusterSummary>> {
     private int counter;
     protected Clock clock;
     protected int numOfFlowUnitsInMap;
-    protected boolean collectFromClusterManagerNode;
+    protected boolean collectFromMasterNode;
     protected long expirationTimeWindow;
 
     @SafeVarargs
@@ -69,7 +69,7 @@ public class BaseClusterRca extends Rca<ResourceFlowUnit<HotClusterSummary>> {
         this.clock = Clock.systemUTC();
         this.numOfFlowUnitsInMap = DEFAULT_NUM_OF_FLOWUNITS;
         this.nodeTable = HashBasedTable.create();
-        this.collectFromClusterManagerNode = false;
+        this.collectFromMasterNode = false;
         this.expirationTimeWindow = TIMESTAMP_EXPIRATION_IN_MILLIS;
         this.nodeRcas = Arrays.asList(nodeRca);
     }
@@ -80,8 +80,8 @@ public class BaseClusterRca extends Rca<ResourceFlowUnit<HotClusterSummary>> {
     }
 
     @VisibleForTesting
-    public void setCollectFromClusterManagerNode(boolean collectFromClusterManagerNode) {
-        this.collectFromClusterManagerNode = collectFromClusterManagerNode;
+    public void setCollectFromMasterNode(boolean collectFromMasterNode) {
+        this.collectFromMasterNode = collectFromMasterNode;
     }
 
     // add upstream flowunits collected from different nodes into Table
@@ -107,7 +107,7 @@ public class BaseClusterRca extends Rca<ResourceFlowUnit<HotClusterSummary>> {
     }
 
     private List<InstanceDetails> getClusterNodesDetails() {
-        if (collectFromClusterManagerNode) {
+        if (collectFromMasterNode) {
             return getAllClusterInstances();
         } else {
             return getDataNodeInstances();

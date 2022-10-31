@@ -32,12 +32,12 @@ import org.opensearch.performanceanalyzer.rca.framework.util.InstanceDetails;
 import org.opensearch.performanceanalyzer.rca.scheduler.FlowUnitOperationArgWrapper;
 
 /**
- * This RCA runs on the elected cluster_manager only and it subscribes all high heap RCA from data
- * nodes within the entire cluster. This can help to reduce the network bandwidth/workload on
- * cluster_manager node and push computation related workload on data node itself. The RCA uses a
- * cache to keep track of the last three metrics from each node and will mark the node as unhealthy
- * if the last three consecutive flowunits are unhealthy. And if any node is unthleath, the entire
- * cluster will be considered as unhealthy and send out corresponding flowunits to downstream nodes.
+ * This RCA runs on the elected master only and it subscribes all high heap RCA from data nodes
+ * within the entire cluster. This can help to reduce the network bandwidth/workload on master node
+ * and push computation related workload on data node itself. The RCA uses a cache to keep track of
+ * the last three metrics from each node and will mark the node as unhealthy if the last three
+ * consecutive flowunits are unhealthy. And if any node is unthleath, the entire cluster will be
+ * considered as unhealthy and send out corresponding flowunits to downstream nodes.
  */
 public class HighHeapUsageClusterRca extends Rca<ResourceFlowUnit<HotClusterSummary>> {
 

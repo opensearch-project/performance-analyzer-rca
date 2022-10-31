@@ -14,20 +14,20 @@ import org.opensearch.performanceanalyzer.reader.ClusterDetailsEventProcessor;
 public class InstanceDetailsTest {
     @Test
     public void equality() {
-        AllMetrics.NodeRole nodeRole = AllMetrics.NodeRole.CLUSTER_MANAGER;
+        AllMetrics.NodeRole nodeRole = AllMetrics.NodeRole.MASTER;
         InstanceDetails.Id id = new InstanceDetails.Id("test-id");
         InstanceDetails.Id id2 = new InstanceDetails.Id("test-id");
 
         InstanceDetails.Ip ip = new InstanceDetails.Ip("127.0.0.1");
         InstanceDetails.Ip ip2 = new InstanceDetails.Ip("127.0.0.1");
-        boolean isClusterManager = true;
+        boolean isMaster = true;
         int grpcPort = 123;
 
         InstanceDetails instanceDetails1 =
-                new InstanceDetails(nodeRole, id, ip, isClusterManager, grpcPort);
+                new InstanceDetails(nodeRole, id, ip, isMaster, grpcPort);
         ClusterDetailsEventProcessor.NodeDetails nodeDetails =
                 new ClusterDetailsEventProcessor.NodeDetails(
-                        nodeRole, id2.toString(), ip2.toString(), isClusterManager, grpcPort);
+                        nodeRole, id2.toString(), ip2.toString(), isMaster, grpcPort);
         InstanceDetails instanceDetails2 = new InstanceDetails(nodeDetails);
 
         Assert.assertEquals(instanceDetails1, instanceDetails2);

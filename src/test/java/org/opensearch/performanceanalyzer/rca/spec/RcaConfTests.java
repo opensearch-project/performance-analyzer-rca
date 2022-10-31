@@ -24,9 +24,7 @@ public class RcaConfTests {
     @Test
     public void testRcaConfRead() throws Exception {
         RcaConf rcaConf =
-                new RcaConf(
-                        Paths.get(RcaConsts.TEST_CONFIG_PATH, "rca_cluster_manager.conf")
-                                .toString());
+                new RcaConf(Paths.get(RcaConsts.TEST_CONFIG_PATH, "rca_master.conf").toString());
 
         assertEquals("s3://sifi-store/rcas/", rcaConf.getRcaStoreLoc());
         assertEquals("s3://sifi-store/thresholds/", rcaConf.getThresholdStoreLoc());

@@ -8,13 +8,13 @@ $
 ^election_term
 {"current_time":1566413936555}
 {"Election_Term":18}$
-^cluster_manager_throttling_metrics
+^master_throttling_metrics
 {"current_time":1566413936555}
-{"Data_RetryingPendingTasksCount":0,"ClusterManager_ThrottledPendingTasksCount":33}
+{"Data_RetryingPendingTasksCount":0,"Master_ThrottledPendingTasksCount":33}
 ^cluster_applier_service
 {"current_time":1566413936555}
 {"ClusterApplierService_Latency":23,"ClusterApplierService_Failure":3}$
-^cluster_manager_cluster_update
+^master_cluster_update
 {"current_time":1566413936555}
 {"PublishClusterState_Latency":23,"PublishClusterState_Failure":3}$
 ^shard_state_metrics
@@ -156,7 +156,7 @@ fault:0$
 {"Indexing_ThrottleTime":0,"Cache_Query_Hit":0,"Cache_Query_Miss":0,"Cache_Query_Size":0,"Cache_FieldData_Eviction":0,"Cache_FieldData_Size":0,"Cache_Request_Hit":0,"Cache_Request_Miss":0,"Cache_Request_Eviction":0,"Cache_Request_Size":0,"Refresh_Event":0,"Refresh_Time":0,"Flush_Event":0,"Flush_Time":0,"Merge_Event":0,"Merge_Time":0,"Merge_CurrentEvent":0,"Indexing_Buffer":0,"Segments_Total":1,"Segments_Memory":1193,"Terms_Memory":811,"StoredFields_Memory":312,"TermVectors_Memory":811,"Norms_Memory":0,"Points_Memory":2,"DocValues_Memory":68,"IndexWriter_Memory":0,"VersionMap_Memory":0,"Bitset_Memory":0}$
 ^pending_tasks/current/metadata
 {"current_time":1566413936488}
-{"ClusterManager_PendingQueueSize":0}$
+{"Master_PendingQueueSize":0}$
 ^threads/15970/os_metrics
 current_time:1566413936561
 CPU_Utilization:0.0
@@ -5281,7 +5281,7 @@ Sched_Runtime:0.0
 Sched_Waittime:0.0
 Sched_CtxRate:0.0
 Heap_AllocRate:0.0
-threadName:opensearch[4sqG_AP][clusterManagerService#updateTask][T#1]
+threadName:opensearch[4sqG_AP][masterService#updateTask][T#1]
 Thread_Blocked_Time:0.0
 Thread_Blocked_Event:18
 IO_ReadThroughput:0.0

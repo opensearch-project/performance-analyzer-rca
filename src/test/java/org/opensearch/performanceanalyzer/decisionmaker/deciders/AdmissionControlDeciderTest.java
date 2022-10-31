@@ -51,19 +51,16 @@ public class AdmissionControlDeciderTest {
         ClusterDetailsEventProcessor.NodeDetails node4 =
                 new ClusterDetailsEventProcessor.NodeDetails(
                         AllMetrics.NodeRole.DATA, "node3", "127.0.0.4", false);
-        ClusterDetailsEventProcessor.NodeDetails clusterManager =
+        ClusterDetailsEventProcessor.NodeDetails master =
                 new ClusterDetailsEventProcessor.NodeDetails(
-                        AllMetrics.NodeRole.ELECTED_CLUSTER_MANAGER,
-                        "cluster_manager",
-                        "127.0.0.9",
-                        true);
+                        AllMetrics.NodeRole.ELECTED_MASTER, "master", "127.0.0.9", true);
 
         List<ClusterDetailsEventProcessor.NodeDetails> nodes = new ArrayList<>();
         nodes.add(node1);
         nodes.add(node2);
         nodes.add(node3);
         nodes.add(node4);
-        nodes.add(clusterManager);
+        nodes.add(master);
         clusterDetailsEventProcessor.setNodesDetails(nodes);
 
         appContext = new AppContext();

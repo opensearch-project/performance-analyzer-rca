@@ -17,8 +17,6 @@ import org.opensearch.performanceanalyzer.metrics.AllMetrics.CacheConfigDimensio
 import org.opensearch.performanceanalyzer.metrics.AllMetrics.CacheConfigValue;
 import org.opensearch.performanceanalyzer.metrics.AllMetrics.CircuitBreakerDimension;
 import org.opensearch.performanceanalyzer.metrics.AllMetrics.CircuitBreakerValue;
-import org.opensearch.performanceanalyzer.metrics.AllMetrics.ClusterManagerPendingTaskDimension;
-import org.opensearch.performanceanalyzer.metrics.AllMetrics.ClusterManagerPendingValue;
 import org.opensearch.performanceanalyzer.metrics.AllMetrics.CommonMetric;
 import org.opensearch.performanceanalyzer.metrics.AllMetrics.DiskDimension;
 import org.opensearch.performanceanalyzer.metrics.AllMetrics.DiskValue;
@@ -31,6 +29,8 @@ import org.opensearch.performanceanalyzer.metrics.AllMetrics.HttpOnlyDimension;
 import org.opensearch.performanceanalyzer.metrics.AllMetrics.IPDimension;
 import org.opensearch.performanceanalyzer.metrics.AllMetrics.IPValue;
 import org.opensearch.performanceanalyzer.metrics.AllMetrics.LatencyDimension;
+import org.opensearch.performanceanalyzer.metrics.AllMetrics.MasterPendingTaskDimension;
+import org.opensearch.performanceanalyzer.metrics.AllMetrics.MasterPendingValue;
 import org.opensearch.performanceanalyzer.metrics.AllMetrics.MetricUnits;
 import org.opensearch.performanceanalyzer.metrics.AllMetrics.OSMetrics;
 import org.opensearch.performanceanalyzer.metrics.AllMetrics.ShardBulkMetric;
@@ -345,23 +345,23 @@ public class MetricsModel {
                 new MetricAttributes(
                         MetricUnits.BYTE.toString(), ShardStatsDerivedDimension.values()));
 
-        // ClusterManager Metrics
+        // Master Metrics
         allMetricsInitializer.put(
-                ClusterManagerPendingValue.CLUSTER_MANAGER_PENDING_QUEUE_SIZE.toString(),
+                MasterPendingValue.MASTER_PENDING_QUEUE_SIZE.toString(),
                 new MetricAttributes(
-                        MetricUnits.COUNT.toString(), ClusterManagerPendingTaskDimension.values()));
+                        MetricUnits.COUNT.toString(), MasterPendingTaskDimension.values()));
 
         allMetricsInitializer.put(
-                AllMetrics.ClusterManagerMetricValues.CLUSTER_MANAGER_TASK_QUEUE_TIME.toString(),
+                AllMetrics.MasterMetricValues.MASTER_TASK_QUEUE_TIME.toString(),
                 new MetricAttributes(
                         MetricUnits.MILLISECOND.toString(),
-                        AllMetrics.ClusterManagerMetricDimensions.values()));
+                        AllMetrics.MasterMetricDimensions.values()));
 
         allMetricsInitializer.put(
-                AllMetrics.ClusterManagerMetricValues.CLUSTER_MANAGER_TASK_RUN_TIME.toString(),
+                AllMetrics.MasterMetricValues.MASTER_TASK_RUN_TIME.toString(),
                 new MetricAttributes(
                         MetricUnits.MILLISECOND.toString(),
-                        AllMetrics.ClusterManagerMetricDimensions.values()));
+                        AllMetrics.MasterMetricDimensions.values()));
 
         allMetricsInitializer.put(
                 AllMetrics.FaultDetectionMetric.FOLLOWER_CHECK_LATENCY.toString(),
@@ -386,13 +386,11 @@ public class MetricsModel {
                         MetricUnits.COUNT.toString(), AllMetrics.FaultDetectionDimension.values()));
 
         allMetricsInitializer.put(
-                AllMetrics.ClusterManagerThrottlingValue
-                        .CLUSTER_MANAGER_THROTTLED_PENDING_TASK_COUNT
-                        .toString(),
+                AllMetrics.MasterThrottlingValue.MASTER_THROTTLED_PENDING_TASK_COUNT.toString(),
                 new MetricAttributes(MetricUnits.COUNT.toString(), EmptyDimension.values()));
 
         allMetricsInitializer.put(
-                AllMetrics.ClusterManagerThrottlingValue.DATA_RETRYING_TASK_COUNT.toString(),
+                AllMetrics.MasterThrottlingValue.DATA_RETRYING_TASK_COUNT.toString(),
                 new MetricAttributes(MetricUnits.COUNT.toString(), EmptyDimension.values()));
 
         allMetricsInitializer.put(
@@ -415,13 +413,11 @@ public class MetricsModel {
                 new MetricAttributes(MetricUnits.COUNT.toString(), EmptyDimension.values()));
 
         allMetricsInitializer.put(
-                AllMetrics.ClusterManagerClusterUpdateStatsValue.PUBLISH_CLUSTER_STATE_LATENCY
-                        .toString(),
+                AllMetrics.MasterClusterUpdateStatsValue.PUBLISH_CLUSTER_STATE_LATENCY.toString(),
                 new MetricAttributes(MetricUnits.MILLISECOND.toString(), EmptyDimension.values()));
 
         allMetricsInitializer.put(
-                AllMetrics.ClusterManagerClusterUpdateStatsValue.PUBLISH_CLUSTER_STATE_FAILURE
-                        .toString(),
+                AllMetrics.MasterClusterUpdateStatsValue.PUBLISH_CLUSTER_STATE_FAILURE.toString(),
                 new MetricAttributes(MetricUnits.COUNT.toString(), EmptyDimension.values()));
 
         allMetricsInitializer.put(

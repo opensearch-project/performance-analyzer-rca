@@ -19,19 +19,18 @@ import org.opensearch.performanceanalyzer.rca.integTests.framework.configs.Const
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE, ElementType.METHOD})
 public @interface ARcaConf {
-    // full path to the rca.conf file to be used by elected cluster_manager node.
-    String electedClusterManager() default
-            Consts.RCAIT_DEFAULT_RCA_CONF_ELECTED_CLUSTER_MANAGER_NODE;
+    // full path to the rca.conf file to be used by elected master node.
+    String electedMaster() default Consts.RCAIT_DEFAULT_RCA_CONF_ELECTED_MASTER_NODE;
 
-    // full path to the rca.conf file to be used by the standby cluster_manager.
-    String standBy() default Consts.RCAIT_DEFAULT_RCA_CONF_STANDBY_CLUSTER_MANAGER_NODE;
+    // full path to the rca.conf file to be used by the standby master.
+    String standBy() default Consts.RCAIT_DEFAULT_RCA_CONF_STANDBY_MASTER_NODE;
 
     // full path to the rca.conf file to be used by the data node.
     String dataNode() default Consts.RCAIT_DEFAULT_RCA_CONF_DATA_NODE;
 
     enum Type {
-        ELECTED_CLUSTER_MANAGER,
-        STANDBY_CLUSTER_MANAGER,
+        ELECTED_MASTER,
+        STANDBY_MASTER,
         DATA_NODES
     }
 }

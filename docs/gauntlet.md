@@ -36,11 +36,11 @@ __@Category(RcaItMarker.class)__
 
 All test classes must also be marked with this masker interface.
     
-__@AClusterType(ClusterType.MULTI_NODE_CO_LOCATED_CLUSTER_MANAGER)__
+__@AClusterType(ClusterType.MULTI_NODE_CO_LOCATED_MASTER)__
 
-This annotation tells the RCA-IT to use `a multi-node cluster with no dedicated cluster_manger nodes
-`. The kinds of clusters supported today are:   `SINGLE_NODE`, `MULTI_NODE_CO_LOCATED_CLUSTER_MANAGER
-` and `MULTI_NODE_DEDICATED_CLUSTER_MANAGER`. This is a required annotation and must be specified at
+This annotation tells the RCA-IT to use `a multi-node cluster with no dedicated master nodes
+`. The kinds of clusters supported today are:   `SINGLE_NODE`, `MULTI_NODE_CO_LOCATED_MASTER
+` and `MULTI_NODE_DEDICATED_MASTER`. This is a required annotation and must be specified at
  the class level.
 
 __@ARcaGraph(MyRcaGraph.class)__
@@ -113,7 +113,7 @@ way to validate the result of the test. The annotation has 4 sub-fields:
     
 The Expect annotation is a repeatable type. Therefore, you can expect multiple things from
 the test at steady-state. So you can have two expectations one for the RCA on data node and
-the other on the cluster_manager. If the expectations are not true for the ith iteration, then the
+the other on the master. If the expectations are not true for the ith iteration, then the
 framework, will re-run them for the i+1 the iteration till a timeout. The timeout is
 configurable to any number of seconds using the field `timeoutSeconds` but has the default
 of 60 seconds. 
@@ -137,25 +137,25 @@ you need to know the hostTags to pick a host that would publish certain metrics 
 hostTag by which you identify a host to make a REST request to. This section tells you what are
 the different hostTags available for different cluster types.
 
-__Dedicated ClusterManager Cluster__
+__Dedicated Master Cluster__
 
-This cluster type is composed of three cluster_manager nodes and 2 data nodes.
+This cluster type is composed of three master nodes and 2 data nodes.
 
 Host Ids | Host Tags
 ---------|----------
-0 | HostTag.ELECTED_CLUSTER_MANAGER
-1 | HostTag.STANDBY_CLUSTER_MANAGER_0
-2 | HostTag.STANDBY_CLUSTER_MANAGER_1
+0 | HostTag.ELECTED_MASTER
+1 | HostTag.STANDBY_MASTER_0
+2 | HostTag.STANDBY_MASTER_1
 3 | HostTag.DATA_0
 4 | HostTag.DATA_1
 
-__ Co-located ClusterManager Cluster __
-A co-located cluster_manager cluster is one where all the data-nodes are cluster_manager eligible. In the
+__ Co-located Master Cluster __
+A co-located master cluster is one where all the data-nodes are master eligible. In the
 test framework, this is composed of two nodes.
 
 Host IDs | Host Tags
 ---------|----------
-0 | HostTag.ELECTED_CLUSTER_MANAGER
+0 | HostTag.ELECTED_MASTER
 1 | HostTag.DATA_0
 
 

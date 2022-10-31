@@ -136,7 +136,7 @@ public class FieldDataCacheRca extends Rca<ResourceFlowUnit<HotNodeSummary>> {
 
             counter = 0;
             return new ResourceFlowUnit<>(
-                    currTimestamp, context, nodeSummary, !instanceDetails.getIsClusterManager());
+                    currTimestamp, context, nodeSummary, !instanceDetails.getIsMaster());
         } else {
             return new ResourceFlowUnit<>(currTimestamp);
         }

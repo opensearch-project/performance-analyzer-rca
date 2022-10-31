@@ -40,7 +40,7 @@ import org.opensearch.performanceanalyzer.rca.store.rca.cache.CacheUtil;
 
 @RunWith(RcaItNotEncryptedRunner.class)
 @Category(RcaItMarker.class)
-@AClusterType(ClusterType.MULTI_NODE_DEDICATED_CLUSTER_MANAGER)
+@AClusterType(ClusterType.MULTI_NODE_DEDICATED_MASTER)
 @ARcaGraph(OpenSearchAnalysisGraph.class)
 // initial metric table
 @AMetric(
@@ -152,7 +152,7 @@ public class JvmFlipFlopITest {
     @Test
     @AExpect(
             what = AExpect.Type.REST_API,
-            on = HostTag.ELECTED_CLUSTER_MANAGER,
+            on = HostTag.ELECTED_MASTER,
             validator = LevelOneValidator.class,
             forRca = PersistedAction.class,
             timeoutSeconds = 10000)
@@ -208,7 +208,7 @@ public class JvmFlipFlopITest {
     @Test
     @AExpect(
             what = AExpect.Type.REST_API,
-            on = HostTag.ELECTED_CLUSTER_MANAGER,
+            on = HostTag.ELECTED_MASTER,
             validator = LevelOneValidator.class,
             forRca = PersistedAction.class,
             timeoutSeconds = 10000)

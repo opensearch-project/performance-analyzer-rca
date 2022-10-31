@@ -121,28 +121,28 @@ public class OpenSearchAnalysisGraph extends AnalysisGraph {
 
         heapUsed.addTag(
                 RcaConsts.RcaTagConstants.TAG_LOCUS,
-                RcaConsts.RcaTagConstants.LOCUS_DATA_CLUSTER_MANAGER_NODE);
+                RcaConsts.RcaTagConstants.LOCUS_DATA_MASTER_NODE);
         gcEvent.addTag(
                 RcaConsts.RcaTagConstants.TAG_LOCUS,
-                RcaConsts.RcaTagConstants.LOCUS_DATA_CLUSTER_MANAGER_NODE);
+                RcaConsts.RcaTagConstants.LOCUS_DATA_MASTER_NODE);
         gcType.addTag(
                 RcaConsts.RcaTagConstants.TAG_LOCUS,
-                RcaConsts.RcaTagConstants.LOCUS_DATA_CLUSTER_MANAGER_NODE);
+                RcaConsts.RcaTagConstants.LOCUS_DATA_MASTER_NODE);
         heapMax.addTag(
                 RcaConsts.RcaTagConstants.TAG_LOCUS,
-                RcaConsts.RcaTagConstants.LOCUS_DATA_CLUSTER_MANAGER_NODE);
+                RcaConsts.RcaTagConstants.LOCUS_DATA_MASTER_NODE);
         gc_Collection_Time.addTag(
                 RcaConsts.RcaTagConstants.TAG_LOCUS,
-                RcaConsts.RcaTagConstants.LOCUS_DATA_CLUSTER_MANAGER_NODE);
+                RcaConsts.RcaTagConstants.LOCUS_DATA_MASTER_NODE);
         cpuUtilizationGroupByOperation.addTag(
                 RcaConsts.RcaTagConstants.TAG_LOCUS,
-                RcaConsts.RcaTagConstants.LOCUS_DATA_CLUSTER_MANAGER_NODE);
+                RcaConsts.RcaTagConstants.LOCUS_DATA_MASTER_NODE);
         threadBlockedTime.addTag(
                 RcaConsts.RcaTagConstants.TAG_LOCUS,
-                RcaConsts.RcaTagConstants.LOCUS_DATA_CLUSTER_MANAGER_NODE);
+                RcaConsts.RcaTagConstants.LOCUS_DATA_MASTER_NODE);
         threadWaitedTime.addTag(
                 RcaConsts.RcaTagConstants.TAG_LOCUS,
-                RcaConsts.RcaTagConstants.LOCUS_DATA_CLUSTER_MANAGER_NODE);
+                RcaConsts.RcaTagConstants.LOCUS_DATA_MASTER_NODE);
 
         addLeaf(heapUsed);
         addLeaf(gcEvent);
@@ -161,7 +161,7 @@ public class OpenSearchAnalysisGraph extends AnalysisGraph {
                         RCA_PERIOD, heapUsed, gcEvent, heapMax, nodeStatsMetrics);
         highHeapUsageOldGenRca.addTag(
                 RcaConsts.RcaTagConstants.TAG_LOCUS,
-                RcaConsts.RcaTagConstants.LOCUS_DATA_CLUSTER_MANAGER_NODE);
+                RcaConsts.RcaTagConstants.LOCUS_DATA_MASTER_NODE);
         List<Node<?>> upstream = new ArrayList<>(Arrays.asList(heapUsed, gcEvent, heapMax));
         upstream.addAll(nodeStatsMetrics);
         highHeapUsageOldGenRca.addAllUpstreams(upstream);
@@ -171,7 +171,7 @@ public class OpenSearchAnalysisGraph extends AnalysisGraph {
                         RCA_PERIOD, heapUsed, gc_Collection_Time, gcEvent, gcType);
         highHeapUsageYoungGenRca.addTag(
                 RcaConsts.RcaTagConstants.TAG_LOCUS,
-                RcaConsts.RcaTagConstants.LOCUS_DATA_CLUSTER_MANAGER_NODE);
+                RcaConsts.RcaTagConstants.LOCUS_DATA_MASTER_NODE);
         highHeapUsageYoungGenRca.addAllUpstreams(
                 Arrays.asList(heapUsed, gc_Collection_Time, gcEvent, gcType));
 
@@ -179,14 +179,14 @@ public class OpenSearchAnalysisGraph extends AnalysisGraph {
                 new HighCpuRca(RCA_PERIOD, cpuUtilizationGroupByOperation);
         highCpuRca.addTag(
                 RcaConsts.RcaTagConstants.TAG_LOCUS,
-                RcaConsts.RcaTagConstants.LOCUS_DATA_CLUSTER_MANAGER_NODE);
+                RcaConsts.RcaTagConstants.LOCUS_DATA_MASTER_NODE);
         highCpuRca.addAllUpstreams(Collections.singletonList(cpuUtilizationGroupByOperation));
 
         Rca<ResourceFlowUnit<HotNodeSummary>> threadMetricsRca =
                 new ThreadMetricsRca(threadBlockedTime, threadWaitedTime, RCA_PERIOD);
         threadMetricsRca.addTag(
                 RcaConsts.RcaTagConstants.TAG_LOCUS,
-                RcaConsts.RcaTagConstants.LOCUS_DATA_CLUSTER_MANAGER_NODE);
+                RcaConsts.RcaTagConstants.LOCUS_DATA_MASTER_NODE);
         threadMetricsRca.addAllUpstreams(List.of(threadBlockedTime, threadWaitedTime));
 
         Rca<ResourceFlowUnit<HotNodeSummary>> hotJVMNodeRca =
@@ -194,7 +194,7 @@ public class OpenSearchAnalysisGraph extends AnalysisGraph {
                         RCA_PERIOD, highHeapUsageOldGenRca, highHeapUsageYoungGenRca, highCpuRca);
         hotJVMNodeRca.addTag(
                 RcaConsts.RcaTagConstants.TAG_LOCUS,
-                RcaConsts.RcaTagConstants.LOCUS_DATA_CLUSTER_MANAGER_NODE);
+                RcaConsts.RcaTagConstants.LOCUS_DATA_MASTER_NODE);
         hotJVMNodeRca.addAllUpstreams(
                 Arrays.asList(
                         highHeapUsageOldGenRca,
@@ -205,8 +205,7 @@ public class OpenSearchAnalysisGraph extends AnalysisGraph {
         HighHeapUsageClusterRca highHeapUsageClusterRca =
                 new HighHeapUsageClusterRca(RCA_PERIOD, hotJVMNodeRca);
         highHeapUsageClusterRca.addTag(
-                RcaConsts.RcaTagConstants.TAG_LOCUS,
-                RcaConsts.RcaTagConstants.LOCUS_CLUSTER_MANAGER_NODE);
+                RcaConsts.RcaTagConstants.TAG_LOCUS, RcaConsts.RcaTagConstants.LOCUS_MASTER_NODE);
         highHeapUsageClusterRca.addAllUpstreams(Collections.singletonList(hotJVMNodeRca));
         highHeapUsageClusterRca.addTag(
                 RcaConsts.RcaTagConstants.TAG_AGGREGATE_UPSTREAM,
@@ -214,35 +213,33 @@ public class OpenSearchAnalysisGraph extends AnalysisGraph {
 
         HotNodeClusterRca hotNodeClusterRca = new HotNodeClusterRca(RCA_PERIOD, hotJVMNodeRca);
         hotNodeClusterRca.addTag(
-                RcaConsts.RcaTagConstants.TAG_LOCUS,
-                RcaConsts.RcaTagConstants.LOCUS_CLUSTER_MANAGER_NODE);
+                RcaConsts.RcaTagConstants.TAG_LOCUS, RcaConsts.RcaTagConstants.LOCUS_MASTER_NODE);
         hotNodeClusterRca.addAllUpstreams(Collections.singletonList(hotJVMNodeRca));
 
         final HighOldGenOccupancyRca oldGenOccupancyRca =
                 new HighOldGenOccupancyRca(heapMax, heapUsed, gcType);
         oldGenOccupancyRca.addTag(
                 RcaConsts.RcaTagConstants.TAG_LOCUS,
-                RcaConsts.RcaTagConstants.LOCUS_DATA_CLUSTER_MANAGER_NODE);
+                RcaConsts.RcaTagConstants.LOCUS_DATA_MASTER_NODE);
         oldGenOccupancyRca.addAllUpstreams(Arrays.asList(heapMax, heapUsed, gcType));
 
         final OldGenReclamationRca oldGenReclamationRca =
                 new OldGenReclamationRca(heapUsed, heapMax, gcEvent, gcType);
         oldGenReclamationRca.addTag(
                 RcaConsts.RcaTagConstants.TAG_LOCUS,
-                RcaConsts.RcaTagConstants.LOCUS_DATA_CLUSTER_MANAGER_NODE);
+                RcaConsts.RcaTagConstants.LOCUS_DATA_MASTER_NODE);
         oldGenReclamationRca.addAllUpstreams(Arrays.asList(heapUsed, heapMax, gcEvent, gcType));
 
         final OldGenContendedRca oldGenContendedRca =
                 new OldGenContendedRca(oldGenOccupancyRca, oldGenReclamationRca);
         oldGenContendedRca.addTag(
                 RcaConsts.RcaTagConstants.TAG_LOCUS,
-                RcaConsts.RcaTagConstants.LOCUS_DATA_CLUSTER_MANAGER_NODE);
+                RcaConsts.RcaTagConstants.LOCUS_DATA_MASTER_NODE);
         oldGenContendedRca.addAllUpstreams(Arrays.asList(oldGenOccupancyRca, oldGenReclamationRca));
 
         final LargeHeapClusterRca largeHeapClusterRca = new LargeHeapClusterRca(oldGenContendedRca);
         largeHeapClusterRca.addTag(
-                RcaConsts.RcaTagConstants.TAG_LOCUS,
-                RcaConsts.RcaTagConstants.LOCUS_CLUSTER_MANAGER_NODE);
+                RcaConsts.RcaTagConstants.TAG_LOCUS, RcaConsts.RcaTagConstants.LOCUS_MASTER_NODE);
         largeHeapClusterRca.addAllUpstreams(Collections.singletonList(oldGenContendedRca));
         largeHeapClusterRca.addTag(
                 RcaConsts.RcaTagConstants.TAG_AGGREGATE_UPSTREAM,
@@ -252,8 +249,7 @@ public class OpenSearchAnalysisGraph extends AnalysisGraph {
         HeapHealthDecider heapHealthDecider =
                 new HeapHealthDecider(RCA_PERIOD, highHeapUsageClusterRca, largeHeapClusterRca);
         heapHealthDecider.addTag(
-                RcaConsts.RcaTagConstants.TAG_LOCUS,
-                RcaConsts.RcaTagConstants.LOCUS_CLUSTER_MANAGER_NODE);
+                RcaConsts.RcaTagConstants.TAG_LOCUS, RcaConsts.RcaTagConstants.LOCUS_MASTER_NODE);
         heapHealthDecider.addAllUpstreams(
                 Arrays.asList(highHeapUsageClusterRca, largeHeapClusterRca));
 
@@ -263,7 +259,7 @@ public class OpenSearchAnalysisGraph extends AnalysisGraph {
         Metric threadpool_RejectedReqs = new ThreadPool_RejectedReqs(EVALUATION_INTERVAL_SECONDS);
         threadpool_RejectedReqs.addTag(
                 RcaConsts.RcaTagConstants.TAG_LOCUS,
-                RcaConsts.RcaTagConstants.LOCUS_DATA_CLUSTER_MANAGER_NODE);
+                RcaConsts.RcaTagConstants.LOCUS_DATA_MASTER_NODE);
         addLeaf(threadpool_RejectedReqs);
 
         // Node level queue rejection RCA
@@ -271,15 +267,14 @@ public class OpenSearchAnalysisGraph extends AnalysisGraph {
                 new QueueRejectionRca(RCA_PERIOD, threadpool_RejectedReqs);
         queueRejectionNodeRca.addTag(
                 RcaConsts.RcaTagConstants.TAG_LOCUS,
-                RcaConsts.RcaTagConstants.LOCUS_DATA_CLUSTER_MANAGER_NODE);
+                RcaConsts.RcaTagConstants.LOCUS_DATA_MASTER_NODE);
         queueRejectionNodeRca.addAllUpstreams(Collections.singletonList(threadpool_RejectedReqs));
 
         // Cluster level queue rejection RCA
         QueueRejectionClusterRca queueRejectionClusterRca =
                 new QueueRejectionClusterRca(RCA_PERIOD, queueRejectionNodeRca);
         queueRejectionClusterRca.addTag(
-                RcaConsts.RcaTagConstants.TAG_LOCUS,
-                RcaConsts.RcaTagConstants.LOCUS_CLUSTER_MANAGER_NODE);
+                RcaConsts.RcaTagConstants.TAG_LOCUS, RcaConsts.RcaTagConstants.LOCUS_MASTER_NODE);
         queueRejectionClusterRca.addAllUpstreams(Collections.singletonList(queueRejectionNodeRca));
         queueRejectionClusterRca.addTag(
                 RcaConsts.RcaTagConstants.TAG_AGGREGATE_UPSTREAM,
@@ -293,8 +288,7 @@ public class OpenSearchAnalysisGraph extends AnalysisGraph {
                         queueRejectionClusterRca,
                         highHeapUsageClusterRca);
         queueHealthDecider.addTag(
-                RcaConsts.RcaTagConstants.TAG_LOCUS,
-                RcaConsts.RcaTagConstants.LOCUS_CLUSTER_MANAGER_NODE);
+                RcaConsts.RcaTagConstants.TAG_LOCUS, RcaConsts.RcaTagConstants.LOCUS_MASTER_NODE);
         queueHealthDecider.addAllUpstreams(
                 Arrays.asList(queueRejectionClusterRca, highHeapUsageClusterRca));
 
@@ -302,26 +296,25 @@ public class OpenSearchAnalysisGraph extends AnalysisGraph {
         ThreadPool_QueueCapacity queueCapacity = new ThreadPool_QueueCapacity();
         queueCapacity.addTag(
                 RcaConsts.RcaTagConstants.TAG_LOCUS,
-                RcaConsts.RcaTagConstants.LOCUS_DATA_CLUSTER_MANAGER_NODE);
+                RcaConsts.RcaTagConstants.LOCUS_DATA_MASTER_NODE);
         addLeaf(queueCapacity);
 
         Cache_Max_Size cacheMaxSize = new Cache_Max_Size(EVALUATION_INTERVAL_SECONDS);
         cacheMaxSize.addTag(
                 RcaConsts.RcaTagConstants.TAG_LOCUS,
-                RcaConsts.RcaTagConstants.LOCUS_DATA_CLUSTER_MANAGER_NODE);
+                RcaConsts.RcaTagConstants.LOCUS_DATA_MASTER_NODE);
         addLeaf(cacheMaxSize);
 
         NodeConfigCollector nodeConfigCollector =
                 new NodeConfigCollector(RCA_PERIOD, queueCapacity, cacheMaxSize, heapMax);
         nodeConfigCollector.addTag(
                 RcaConsts.RcaTagConstants.TAG_LOCUS,
-                RcaConsts.RcaTagConstants.LOCUS_DATA_CLUSTER_MANAGER_NODE);
+                RcaConsts.RcaTagConstants.LOCUS_DATA_MASTER_NODE);
         nodeConfigCollector.addAllUpstreams(Arrays.asList(queueCapacity, cacheMaxSize, heapMax));
         NodeConfigClusterCollector nodeConfigClusterCollector =
                 new NodeConfigClusterCollector(nodeConfigCollector);
         nodeConfigClusterCollector.addTag(
-                RcaConsts.RcaTagConstants.TAG_LOCUS,
-                RcaConsts.RcaTagConstants.LOCUS_CLUSTER_MANAGER_NODE);
+                RcaConsts.RcaTagConstants.TAG_LOCUS, RcaConsts.RcaTagConstants.LOCUS_MASTER_NODE);
         nodeConfigClusterCollector.addAllUpstreams(Collections.singletonList(nodeConfigCollector));
         nodeConfigClusterCollector.addTag(
                 RcaConsts.RcaTagConstants.TAG_AGGREGATE_UPSTREAM,
@@ -331,7 +324,7 @@ public class OpenSearchAnalysisGraph extends AnalysisGraph {
         Metric fieldDataCacheEvictions = new Cache_FieldData_Eviction(EVALUATION_INTERVAL_SECONDS);
         fieldDataCacheEvictions.addTag(
                 RcaConsts.RcaTagConstants.TAG_LOCUS,
-                RcaConsts.RcaTagConstants.LOCUS_DATA_CLUSTER_MANAGER_NODE);
+                RcaConsts.RcaTagConstants.LOCUS_DATA_MASTER_NODE);
         addLeaf(fieldDataCacheEvictions);
 
         Metric fieldDataCacheSizeGroupByOperation =
@@ -343,7 +336,7 @@ public class OpenSearchAnalysisGraph extends AnalysisGraph {
                         AllMetrics.ShardStatsDerivedDimension.INDEX_NAME.toString());
         fieldDataCacheSizeGroupByOperation.addTag(
                 RcaConsts.RcaTagConstants.TAG_LOCUS,
-                RcaConsts.RcaTagConstants.LOCUS_DATA_CLUSTER_MANAGER_NODE);
+                RcaConsts.RcaTagConstants.LOCUS_DATA_MASTER_NODE);
         addLeaf(fieldDataCacheSizeGroupByOperation);
 
         FieldDataCacheRca fieldDataCacheNodeRca =
@@ -351,15 +344,14 @@ public class OpenSearchAnalysisGraph extends AnalysisGraph {
                         RCA_PERIOD, fieldDataCacheEvictions, fieldDataCacheSizeGroupByOperation);
         fieldDataCacheNodeRca.addTag(
                 RcaConsts.RcaTagConstants.TAG_LOCUS,
-                RcaConsts.RcaTagConstants.LOCUS_DATA_CLUSTER_MANAGER_NODE);
+                RcaConsts.RcaTagConstants.LOCUS_DATA_MASTER_NODE);
         fieldDataCacheNodeRca.addAllUpstreams(
                 Arrays.asList(fieldDataCacheEvictions, fieldDataCacheSizeGroupByOperation));
 
         FieldDataCacheClusterRca fieldDataCacheClusterRca =
                 new FieldDataCacheClusterRca(RCA_PERIOD, fieldDataCacheNodeRca);
         fieldDataCacheClusterRca.addTag(
-                RcaConsts.RcaTagConstants.TAG_LOCUS,
-                RcaConsts.RcaTagConstants.LOCUS_CLUSTER_MANAGER_NODE);
+                RcaConsts.RcaTagConstants.TAG_LOCUS, RcaConsts.RcaTagConstants.LOCUS_MASTER_NODE);
         fieldDataCacheClusterRca.addAllUpstreams(Collections.singletonList(fieldDataCacheNodeRca));
         fieldDataCacheClusterRca.addTag(
                 RcaConsts.RcaTagConstants.TAG_AGGREGATE_UPSTREAM,
@@ -369,12 +361,12 @@ public class OpenSearchAnalysisGraph extends AnalysisGraph {
         Metric shardRequestCacheEvictions = new Cache_Request_Eviction(EVALUATION_INTERVAL_SECONDS);
         shardRequestCacheEvictions.addTag(
                 RcaConsts.RcaTagConstants.TAG_LOCUS,
-                RcaConsts.RcaTagConstants.LOCUS_DATA_CLUSTER_MANAGER_NODE);
+                RcaConsts.RcaTagConstants.LOCUS_DATA_MASTER_NODE);
         addLeaf(shardRequestCacheEvictions);
         Metric shardRequestHits = new Cache_Request_Hit(EVALUATION_INTERVAL_SECONDS);
         shardRequestHits.addTag(
                 RcaConsts.RcaTagConstants.TAG_LOCUS,
-                RcaConsts.RcaTagConstants.LOCUS_DATA_CLUSTER_MANAGER_NODE);
+                RcaConsts.RcaTagConstants.LOCUS_DATA_MASTER_NODE);
         addLeaf(shardRequestHits);
 
         Metric shardRequestCacheSizeGroupByOperation =
@@ -386,7 +378,7 @@ public class OpenSearchAnalysisGraph extends AnalysisGraph {
                         AllMetrics.ShardStatsDerivedDimension.INDEX_NAME.toString());
         shardRequestCacheSizeGroupByOperation.addTag(
                 RcaConsts.RcaTagConstants.TAG_LOCUS,
-                RcaConsts.RcaTagConstants.LOCUS_DATA_CLUSTER_MANAGER_NODE);
+                RcaConsts.RcaTagConstants.LOCUS_DATA_MASTER_NODE);
         addLeaf(shardRequestCacheSizeGroupByOperation);
 
         ShardRequestCacheRca shardRequestCacheNodeRca =
@@ -397,7 +389,7 @@ public class OpenSearchAnalysisGraph extends AnalysisGraph {
                         shardRequestCacheSizeGroupByOperation);
         shardRequestCacheNodeRca.addTag(
                 RcaConsts.RcaTagConstants.TAG_LOCUS,
-                RcaConsts.RcaTagConstants.LOCUS_DATA_CLUSTER_MANAGER_NODE);
+                RcaConsts.RcaTagConstants.LOCUS_DATA_MASTER_NODE);
         shardRequestCacheNodeRca.addAllUpstreams(
                 Arrays.asList(
                         shardRequestCacheEvictions,
@@ -407,8 +399,7 @@ public class OpenSearchAnalysisGraph extends AnalysisGraph {
         ShardRequestCacheClusterRca shardRequestCacheClusterRca =
                 new ShardRequestCacheClusterRca(RCA_PERIOD, shardRequestCacheNodeRca);
         shardRequestCacheClusterRca.addTag(
-                RcaConsts.RcaTagConstants.TAG_LOCUS,
-                RcaConsts.RcaTagConstants.LOCUS_CLUSTER_MANAGER_NODE);
+                RcaConsts.RcaTagConstants.TAG_LOCUS, RcaConsts.RcaTagConstants.LOCUS_MASTER_NODE);
         shardRequestCacheClusterRca.addAllUpstreams(
                 Collections.singletonList(shardRequestCacheNodeRca));
         shardRequestCacheClusterRca.addTag(
@@ -424,8 +415,7 @@ public class OpenSearchAnalysisGraph extends AnalysisGraph {
                         shardRequestCacheClusterRca,
                         highHeapUsageClusterRca);
         cacheHealthDecider.addTag(
-                RcaConsts.RcaTagConstants.TAG_LOCUS,
-                RcaConsts.RcaTagConstants.LOCUS_CLUSTER_MANAGER_NODE);
+                RcaConsts.RcaTagConstants.TAG_LOCUS, RcaConsts.RcaTagConstants.LOCUS_MASTER_NODE);
         cacheHealthDecider.addAllUpstreams(
                 Arrays.asList(
                         fieldDataCacheClusterRca,
@@ -447,8 +437,7 @@ public class OpenSearchAnalysisGraph extends AnalysisGraph {
                         heapHealthDecider,
                         admissionControlDecider);
         collator.addTag(
-                RcaConsts.RcaTagConstants.TAG_LOCUS,
-                RcaConsts.RcaTagConstants.LOCUS_CLUSTER_MANAGER_NODE);
+                RcaConsts.RcaTagConstants.TAG_LOCUS, RcaConsts.RcaTagConstants.LOCUS_MASTER_NODE);
         collator.addAllUpstreams(
                 Arrays.asList(
                         queueHealthDecider,
@@ -459,8 +448,7 @@ public class OpenSearchAnalysisGraph extends AnalysisGraph {
         // Publisher - Executes decisions output from collator
         Publisher publisher = new Publisher(EVALUATION_INTERVAL_SECONDS, collator);
         publisher.addTag(
-                RcaConsts.RcaTagConstants.TAG_LOCUS,
-                RcaConsts.RcaTagConstants.LOCUS_CLUSTER_MANAGER_NODE);
+                RcaConsts.RcaTagConstants.TAG_LOCUS, RcaConsts.RcaTagConstants.LOCUS_MASTER_NODE);
         publisher.addAllUpstreams(Collections.singletonList(collator));
 
         // TODO: Refactor using DI to move out of construct method
@@ -479,8 +467,7 @@ public class OpenSearchAnalysisGraph extends AnalysisGraph {
         AdmissionControlClusterRca admissionControlClusterRca =
                 new AdmissionControlClusterRca(RCA_PERIOD, admissionControlRca);
         admissionControlClusterRca.addTag(
-                RcaConsts.RcaTagConstants.TAG_LOCUS,
-                RcaConsts.RcaTagConstants.LOCUS_CLUSTER_MANAGER_NODE);
+                RcaConsts.RcaTagConstants.TAG_LOCUS, RcaConsts.RcaTagConstants.LOCUS_MASTER_NODE);
         admissionControlClusterRca.addAllUpstreams(Collections.singletonList(admissionControlRca));
         admissionControlClusterRca.addTag(
                 RcaConsts.RcaTagConstants.TAG_AGGREGATE_UPSTREAM,
@@ -490,8 +477,7 @@ public class OpenSearchAnalysisGraph extends AnalysisGraph {
                 new AdmissionControlDecider(
                         EVALUATION_INTERVAL_SECONDS, RCA_PERIOD, admissionControlClusterRca);
         admissionControlDecider.addTag(
-                RcaConsts.RcaTagConstants.TAG_LOCUS,
-                RcaConsts.RcaTagConstants.LOCUS_CLUSTER_MANAGER_NODE);
+                RcaConsts.RcaTagConstants.TAG_LOCUS, RcaConsts.RcaTagConstants.LOCUS_MASTER_NODE);
         admissionControlDecider.addAllUpstreams(
                 Collections.singletonList(admissionControlClusterRca));
 
@@ -505,13 +491,13 @@ public class OpenSearchAnalysisGraph extends AnalysisGraph {
 
         cpuUtilization.addTag(
                 RcaConsts.RcaTagConstants.TAG_LOCUS,
-                RcaConsts.RcaTagConstants.LOCUS_DATA_CLUSTER_MANAGER_NODE);
+                RcaConsts.RcaTagConstants.LOCUS_DATA_MASTER_NODE);
         ioTotThroughput.addTag(
                 RcaConsts.RcaTagConstants.TAG_LOCUS,
-                RcaConsts.RcaTagConstants.LOCUS_DATA_CLUSTER_MANAGER_NODE);
+                RcaConsts.RcaTagConstants.LOCUS_DATA_MASTER_NODE);
         ioTotSyscallRate.addTag(
                 RcaConsts.RcaTagConstants.TAG_LOCUS,
-                RcaConsts.RcaTagConstants.LOCUS_DATA_CLUSTER_MANAGER_NODE);
+                RcaConsts.RcaTagConstants.LOCUS_DATA_MASTER_NODE);
         addLeaf(cpuUtilization);
         addLeaf(ioTotThroughput);
         addLeaf(ioTotSyscallRate);
@@ -526,15 +512,14 @@ public class OpenSearchAnalysisGraph extends AnalysisGraph {
                         ioTotSyscallRate);
         hotShardRca.addTag(
                 RcaConsts.RcaTagConstants.TAG_LOCUS,
-                RcaConsts.RcaTagConstants.LOCUS_DATA_CLUSTER_MANAGER_NODE);
+                RcaConsts.RcaTagConstants.LOCUS_DATA_MASTER_NODE);
         hotShardRca.addAllUpstreams(
                 Arrays.asList(cpuUtilization, ioTotThroughput, ioTotSyscallRate));
 
         // Hot Shard Cluster RCA which consumes the above
         HotShardClusterRca hotShardClusterRca = new HotShardClusterRca(RCA_PERIOD, hotShardRca);
         hotShardClusterRca.addTag(
-                RcaConsts.RcaTagConstants.TAG_LOCUS,
-                RcaConsts.RcaTagConstants.LOCUS_CLUSTER_MANAGER_NODE);
+                RcaConsts.RcaTagConstants.TAG_LOCUS, RcaConsts.RcaTagConstants.LOCUS_MASTER_NODE);
         hotShardClusterRca.addAllUpstreams(Collections.singletonList(hotShardRca));
         hotShardClusterRca.addTag(
                 RcaConsts.RcaTagConstants.TAG_AGGREGATE_UPSTREAM,
@@ -556,7 +541,7 @@ public class OpenSearchAnalysisGraph extends AnalysisGraph {
         for (Metric metric : nodeStatsMetrics) {
             metric.addTag(
                     RcaConsts.RcaTagConstants.TAG_LOCUS,
-                    RcaConsts.RcaTagConstants.LOCUS_DATA_CLUSTER_MANAGER_NODE);
+                    RcaConsts.RcaTagConstants.LOCUS_DATA_MASTER_NODE);
             addLeaf(metric);
         }
         return nodeStatsMetrics;
@@ -592,39 +577,39 @@ public class OpenSearchAnalysisGraph extends AnalysisGraph {
         // heat map is developed only for data nodes.
         cpuUtilByShard.addTag(
                 RcaConsts.RcaTagConstants.TAG_LOCUS,
-                RcaConsts.RcaTagConstants.LOCUS_DATA_CLUSTER_MANAGER_NODE);
+                RcaConsts.RcaTagConstants.LOCUS_DATA_MASTER_NODE);
         avgCpuUtilByShards.addTag(
                 RcaConsts.RcaTagConstants.TAG_LOCUS,
-                RcaConsts.RcaTagConstants.LOCUS_DATA_CLUSTER_MANAGER_NODE);
+                RcaConsts.RcaTagConstants.LOCUS_DATA_MASTER_NODE);
         shardIndependentCpuUtilMetric.addTag(
                 RcaConsts.RcaTagConstants.TAG_LOCUS,
-                RcaConsts.RcaTagConstants.LOCUS_DATA_CLUSTER_MANAGER_NODE);
+                RcaConsts.RcaTagConstants.LOCUS_DATA_MASTER_NODE);
         cpuUtilPeakUsage.addTag(
                 RcaConsts.RcaTagConstants.TAG_LOCUS,
-                RcaConsts.RcaTagConstants.LOCUS_DATA_CLUSTER_MANAGER_NODE);
+                RcaConsts.RcaTagConstants.LOCUS_DATA_MASTER_NODE);
 
         heapAllocByShard.addTag(
                 RcaConsts.RcaTagConstants.TAG_LOCUS,
-                RcaConsts.RcaTagConstants.LOCUS_DATA_CLUSTER_MANAGER_NODE);
+                RcaConsts.RcaTagConstants.LOCUS_DATA_MASTER_NODE);
         heapAllocRateByShardAvg.addTag(
                 RcaConsts.RcaTagConstants.TAG_LOCUS,
-                RcaConsts.RcaTagConstants.LOCUS_DATA_CLUSTER_MANAGER_NODE);
+                RcaConsts.RcaTagConstants.LOCUS_DATA_MASTER_NODE);
         shardIndependentHeapAllocRate.addTag(
                 RcaConsts.RcaTagConstants.TAG_LOCUS,
-                RcaConsts.RcaTagConstants.LOCUS_DATA_CLUSTER_MANAGER_NODE);
+                RcaConsts.RcaTagConstants.LOCUS_DATA_MASTER_NODE);
         heapAllocRateTotal.addTag(
                 RcaConsts.RcaTagConstants.TAG_LOCUS,
-                RcaConsts.RcaTagConstants.LOCUS_DATA_CLUSTER_MANAGER_NODE);
+                RcaConsts.RcaTagConstants.LOCUS_DATA_MASTER_NODE);
 
         shardSizeByShard.addTag(
                 RcaConsts.RcaTagConstants.TAG_LOCUS,
-                RcaConsts.RcaTagConstants.LOCUS_DATA_CLUSTER_MANAGER_NODE);
+                RcaConsts.RcaTagConstants.LOCUS_DATA_MASTER_NODE);
         shardSizeAvg.addTag(
                 RcaConsts.RcaTagConstants.TAG_LOCUS,
-                RcaConsts.RcaTagConstants.LOCUS_DATA_CLUSTER_MANAGER_NODE);
+                RcaConsts.RcaTagConstants.LOCUS_DATA_MASTER_NODE);
         shardTotalDiskUsage.addTag(
                 RcaConsts.RcaTagConstants.TAG_LOCUS,
-                RcaConsts.RcaTagConstants.LOCUS_DATA_CLUSTER_MANAGER_NODE);
+                RcaConsts.RcaTagConstants.LOCUS_DATA_MASTER_NODE);
 
         addLeaf(cpuUtilByShard);
         addLeaf(avgCpuUtilByShards);
@@ -650,7 +635,7 @@ public class OpenSearchAnalysisGraph extends AnalysisGraph {
                         cpuUtilPeakUsage);
         cpuUtilHeat.addTag(
                 RcaConsts.RcaTagConstants.TAG_LOCUS,
-                RcaConsts.RcaTagConstants.LOCUS_DATA_CLUSTER_MANAGER_NODE);
+                RcaConsts.RcaTagConstants.LOCUS_DATA_MASTER_NODE);
         cpuUtilHeat.addAllUpstreams(
                 Arrays.asList(
                         cpuUtilByShard,
@@ -669,7 +654,7 @@ public class OpenSearchAnalysisGraph extends AnalysisGraph {
 
         heapAllocRateHeat.addTag(
                 RcaConsts.RcaTagConstants.TAG_LOCUS,
-                RcaConsts.RcaTagConstants.LOCUS_DATA_CLUSTER_MANAGER_NODE);
+                RcaConsts.RcaTagConstants.LOCUS_DATA_MASTER_NODE);
         heapAllocRateHeat.addAllUpstreams(
                 Arrays.asList(
                         heapAllocByShard,
@@ -686,7 +671,7 @@ public class OpenSearchAnalysisGraph extends AnalysisGraph {
                         shardTotalDiskUsage);
         shardSizeHeat.addTag(
                 RcaConsts.RcaTagConstants.TAG_LOCUS,
-                RcaConsts.RcaTagConstants.LOCUS_DATA_CLUSTER_MANAGER_NODE);
+                RcaConsts.RcaTagConstants.LOCUS_DATA_MASTER_NODE);
         shardSizeHeat.addAllUpstreams(
                 Arrays.asList(shardSizeByShard, shardSizeAvg, shardTotalDiskUsage));
 
@@ -694,13 +679,13 @@ public class OpenSearchAnalysisGraph extends AnalysisGraph {
                 new NodeTemperatureRca(cpuUtilHeat, heapAllocRateHeat, shardSizeHeat);
         nodeTemperatureRca.addTag(
                 RcaConsts.RcaTagConstants.TAG_LOCUS,
-                RcaConsts.RcaTagConstants.LOCUS_DATA_CLUSTER_MANAGER_NODE);
+                RcaConsts.RcaTagConstants.LOCUS_DATA_MASTER_NODE);
         nodeTemperatureRca.addAllUpstreams(
                 Arrays.asList(cpuUtilHeat, heapAllocRateHeat, shardSizeHeat));
 
         //    ClusterTemperatureRca clusterTemperatureRca = new
         // ClusterTemperatureRca(nodeTemperatureRca);
-        //    clusterTemperatureRca.addTag(TAG_LOCUS, LOCUS_CLUSTER_MANAGER_NODE);
+        //    clusterTemperatureRca.addTag(TAG_LOCUS, LOCUS_MASTER_NODE);
         //    clusterTemperatureRca.addTag(TAG_AGGREGATE_UPSTREAM, LOCUS_DATA_NODE);
         //    clusterTemperatureRca.addAllUpstreams(Collections.singletonList(nodeTemperatureRca));
     }

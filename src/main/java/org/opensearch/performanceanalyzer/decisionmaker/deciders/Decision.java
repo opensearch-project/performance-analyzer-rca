@@ -57,8 +57,7 @@ public class Decision extends GenericFlowUnit {
 
     @Override
     public FlowUnitMessage buildFlowUnitMessage(String graphNode, InstanceDetails.Id node) {
-        // All deciders run on the cluster_manager node, (in initial versions), so we don't expect
-        // Decisions
+        // All deciders run on the master node, (in initial versions), so we dont expect Decisions
         // to be passed over wire.
         throw new IllegalStateException(
                 this.getClass().getSimpleName() + " not expected to be passed " + "over the wire.");

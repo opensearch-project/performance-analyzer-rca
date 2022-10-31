@@ -28,8 +28,7 @@ public class RcaConfTest {
     @Before
     public void init() {
         String rcaConfPath =
-                Paths.get(RcaConsts.TEST_CONFIG_PATH, "rca_elected_cluster_manager.conf")
-                        .toString();
+                Paths.get(RcaConsts.TEST_CONFIG_PATH, "rca_elected_master.conf").toString();
         rcaConf = new RcaConf(rcaConfPath);
     }
 

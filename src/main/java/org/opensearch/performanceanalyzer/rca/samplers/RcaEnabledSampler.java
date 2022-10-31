@@ -29,7 +29,7 @@ public class RcaEnabledSampler implements ISampler {
 
     boolean isRcaEnabled() {
         InstanceDetails currentNode = appContext.getMyInstanceDetails();
-        if (currentNode != null && currentNode.getIsClusterManager()) {
+        if (currentNode != null && currentNode.getIsMaster()) {
             return PerformanceAnalyzerApp.getRcaController().isRcaEnabled();
         }
         return false;

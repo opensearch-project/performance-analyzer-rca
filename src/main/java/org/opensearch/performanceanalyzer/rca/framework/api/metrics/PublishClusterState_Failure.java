@@ -12,8 +12,7 @@ import org.opensearch.performanceanalyzer.metricsdb.Metric;
 public class PublishClusterState_Failure extends Metric {
     public PublishClusterState_Failure(long evaluationIntervalSeconds) {
         super(
-                AllMetrics.ClusterManagerClusterUpdateStatsValue.PUBLISH_CLUSTER_STATE_FAILURE
-                        .name(),
+                AllMetrics.MasterClusterUpdateStatsValue.PUBLISH_CLUSTER_STATE_FAILURE.name(),
                 evaluationIntervalSeconds);
     }
 }

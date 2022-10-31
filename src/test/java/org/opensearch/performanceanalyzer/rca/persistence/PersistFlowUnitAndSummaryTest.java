@@ -101,33 +101,33 @@ public class PersistFlowUnitAndSummaryTest {
         }
     }
 
-    static class ClusterManagerNodeGraph extends AnalysisGraph {
+    static class MasterNodeGraph extends AnalysisGraph {
 
         @Override
         public void construct() {
             Metric heapUsed = new Heap_Used(5);
             heapUsed.addTag(
                     RcaConsts.RcaTagConstants.TAG_LOCUS,
-                    RcaConsts.RcaTagConstants.LOCUS_DATA_CLUSTER_MANAGER_NODE);
+                    RcaConsts.RcaTagConstants.LOCUS_DATA_MASTER_NODE);
             addLeaf(heapUsed);
             Rca<ResourceFlowUnit<HotResourceSummary>> dummyYoungGenRca =
                     new DummyYoungGenRca(heapUsed);
             dummyYoungGenRca.addAllUpstreams(Collections.singletonList(heapUsed));
             dummyYoungGenRca.addTag(
                     RcaConsts.RcaTagConstants.TAG_LOCUS,
-                    RcaConsts.RcaTagConstants.LOCUS_DATA_CLUSTER_MANAGER_NODE);
+                    RcaConsts.RcaTagConstants.LOCUS_DATA_MASTER_NODE);
 
             Rca<ResourceFlowUnit<HotNodeSummary>> nodeRca = new HotNodeRcaX(1, dummyYoungGenRca);
             nodeRca.addTag(
                     RcaConsts.RcaTagConstants.TAG_LOCUS,
-                    RcaConsts.RcaTagConstants.LOCUS_DATA_CLUSTER_MANAGER_NODE);
+                    RcaConsts.RcaTagConstants.LOCUS_DATA_MASTER_NODE);
             nodeRca.addAllUpstreams(Collections.singletonList(dummyYoungGenRca));
 
             Rca<ResourceFlowUnit<HotClusterSummary>> highHeapUsageClusterRca =
                     new HighHeapUsageClusterRcaX(1, nodeRca);
             highHeapUsageClusterRca.addTag(
                     RcaConsts.RcaTagConstants.TAG_LOCUS,
-                    RcaConsts.RcaTagConstants.LOCUS_CLUSTER_MANAGER_NODE);
+                    RcaConsts.RcaTagConstants.LOCUS_MASTER_NODE);
             highHeapUsageClusterRca.addAllUpstreams(Collections.singletonList(nodeRca));
         }
     }
@@ -163,14 +163,13 @@ public class PersistFlowUnitAndSummaryTest {
     }
 
     private AppContext createAppContextWithDataNodes(
-            String nodeName, AllMetrics.NodeRole role, boolean isClusterManager) {
+            String nodeName, AllMetrics.NodeRole role, boolean isMaster) {
         ClusterDetailsEventProcessor clusterDetailsEventProcessor =
                 new ClusterDetailsEventProcessor();
         List<ClusterDetailsEventProcessor.NodeDetails> nodes = new ArrayList<>();
 
         ClusterDetailsEventProcessor.NodeDetails node1 =
-                new ClusterDetailsEventProcessor.NodeDetails(
-                        role, nodeName, "127.0.0.0", isClusterManager);
+                new ClusterDetailsEventProcessor.NodeDetails(role, nodeName, "127.0.0.0", isMaster);
         nodes.add(node1);
 
         clusterDetailsEventProcessor.setNodesDetails(nodes);
@@ -181,23 +180,23 @@ public class PersistFlowUnitAndSummaryTest {
     }
 
     /**
-     * Add testPersistSummaryOnDataNode() and testPersistSummaryOnClusterManagerNode() into a single
-     * UT This will force both tests to run in sequential and can avoid access contention to the
-     * same db file.
+     * Add testPersistSummaryOnDataNode() and testPersistSummaryOnMasterNode() into a single UT This
+     * will force both tests to run in sequential and can avoid access contention to the same db
+     * file.
      *
      * @throws Exception SQL exception
      */
     @Test
     public void testPersisSummary() throws Exception {
         RcaConf rcaConf = new RcaConf(Paths.get(RcaConsts.TEST_CONFIG_PATH, "rca.conf").toString());
-        RcaConf clusterManagerRcaConf =
+        RcaConf masterRcaConf =
                 new RcaConf(
-                        Paths.get(RcaConsts.TEST_CONFIG_PATH, "rca_elected_cluster_manager.conf")
+                        Paths.get(RcaConsts.TEST_CONFIG_PATH, "rca_elected_master.conf")
                                 .toString());
         Persistable persistable = PersistenceFactory.create(rcaConf);
         testPersistSummaryOnDataNode(rcaConf, persistable);
         persistable = PersistenceFactory.create(rcaConf);
-        testPersistSummaryOnClusterManagerNode(clusterManagerRcaConf, persistable);
+        testPersistSummaryOnMasterNode(masterRcaConf, persistable);
     }
 
     private void testPersistSummaryOnDataNode(RcaConf rcaConf, Persistable persistable)
@@ -229,11 +228,11 @@ public class PersistFlowUnitAndSummaryTest {
         scheduler.shutdown();
     }
 
-    private void testPersistSummaryOnClusterManagerNode(RcaConf rcaConf, Persistable persistable)
+    private void testPersistSummaryOnMasterNode(RcaConf rcaConf, Persistable persistable)
             throws Exception {
         AppContext appContext =
                 createAppContextWithDataNodes("node1", AllMetrics.NodeRole.DATA, true);
-        AnalysisGraph graph = new ClusterManagerNodeGraph();
+        AnalysisGraph graph = new MasterNodeGraph();
         RCAScheduler scheduler =
                 startScheduler(rcaConf, graph, persistable, this.queryable, appContext);
         // Wait at most 1 minute for the persisted data to show up with the correct contents

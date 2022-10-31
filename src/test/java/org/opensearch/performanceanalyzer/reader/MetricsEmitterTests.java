@@ -518,21 +518,20 @@ public class MetricsEmitterTests extends AbstractReaderTests {
     }
 
     @Test
-    public void testClusterManagerThrottlingMetricsEmitter() throws Exception {
+    public void testMasterThrottlingMetricsEmitter() throws Exception {
         Connection conn = DriverManager.getConnection(DB_URL);
-        ClusterManagerThrottlingMetricsSnapshot clusterManagerThrottlingMetricsSnapshot =
-                new ClusterManagerThrottlingMetricsSnapshot(conn, 1L);
+        MasterThrottlingMetricsSnapshot masterThrottlingMetricsSnapshot =
+                new MasterThrottlingMetricsSnapshot(conn, 1L);
         Map<String, String> dimensions = new HashMap<>();
 
-        clusterManagerThrottlingMetricsSnapshot.putMetrics(1, dimensions);
+        masterThrottlingMetricsSnapshot.putMetrics(1, dimensions);
         MetricsDB db = new MetricsDB(1553713438);
-        MetricsEmitter.emitClusterManagerThrottledTaskMetric(
-                db, clusterManagerThrottlingMetricsSnapshot);
+        MetricsEmitter.emitMasterThrottledTaskMetric(db, masterThrottlingMetricsSnapshot);
 
         Result<Record> res =
                 db.queryMetric(
                         Arrays.asList(
-                                AllMetrics.ClusterManagerThrottlingValue.DATA_RETRYING_TASK_COUNT
+                                AllMetrics.MasterThrottlingValue.DATA_RETRYING_TASK_COUNT
                                         .toString()),
                         Arrays.asList("sum"),
                         new ArrayList<>());
@@ -541,8 +540,7 @@ public class MetricsEmitterTests extends AbstractReaderTests {
                 Double.parseDouble(
                         res.get(0)
                                 .get(
-                                        AllMetrics.ClusterManagerThrottlingValue
-                                                .DATA_RETRYING_TASK_COUNT
+                                        AllMetrics.MasterThrottlingValue.DATA_RETRYING_TASK_COUNT
                                                 .toString())
                                 .toString());
         db.remove();

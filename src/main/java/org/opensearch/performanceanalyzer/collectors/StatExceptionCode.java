@@ -24,7 +24,7 @@ public enum StatExceptionCode {
     // an omission of this should indicate that the thread taking the dump got stuck.
     JVM_THREAD_DUMP_SUCCESSFUL("JvmThreadDumpSuccessful"),
     COLLECTORS_MUTED("CollectorsMutedCount"),
-    CLUSTER_MANAGER_METRICS_ERROR("ClusterManagerMetricsError"),
+    MASTER_METRICS_ERROR("MasterMetricsError"),
     DISK_METRICS_ERROR("DiskMetricsError"),
     THREAD_IO_ERROR("ThreadIOError"),
     SCHEMA_PARSER_ERROR("SchemaParserError"),

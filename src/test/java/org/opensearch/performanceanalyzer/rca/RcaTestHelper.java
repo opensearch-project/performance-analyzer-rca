@@ -134,8 +134,8 @@ public class RcaTestHelper {
         jNode.put(AllMetrics.NodeDetailColumns.HOST_ADDRESS.toString(), ip);
         jNode.put(AllMetrics.NodeDetailColumns.ROLE.toString(), nodeRole);
         jNode.put(
-                AllMetrics.NodeDetailColumns.IS_CLUSTER_MANAGER_NODE,
-                nodeRole == AllMetrics.NodeRole.ELECTED_CLUSTER_MANAGER ? true : false);
+                AllMetrics.NodeDetailColumns.IS_MASTER_NODE,
+                nodeRole == AllMetrics.NodeRole.ELECTED_MASTER ? true : false);
 
         ClusterDetailsEventProcessor eventProcessor = new ClusterDetailsEventProcessor();
         StringBuilder nodeDetails = new StringBuilder();

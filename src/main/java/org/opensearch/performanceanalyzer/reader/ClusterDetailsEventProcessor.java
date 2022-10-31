@@ -155,7 +155,7 @@ public class ClusterDetailsEventProcessor implements EventProcessor {
         private String id;
         private String hostAddress;
         private String role;
-        private Boolean isClusterManager;
+        private Boolean isMasterNode;
         private int grpcPort = PluginSettings.instance().getRpcPort();
 
         NodeDetails(String stringifiedMetrics) {
@@ -163,24 +163,21 @@ public class ClusterDetailsEventProcessor implements EventProcessor {
             id = (String) map.get(AllMetrics.NodeDetailColumns.ID.toString());
             hostAddress = (String) map.get(AllMetrics.NodeDetailColumns.HOST_ADDRESS.toString());
             role = (String) map.get(AllMetrics.NodeDetailColumns.ROLE.toString());
-            Object isClusterManagerNodeObject =
-                    map.get(AllMetrics.NodeDetailColumns.IS_CLUSTER_MANAGER_NODE.toString());
-            isClusterManager =
-                    isClusterManagerNodeObject != null
-                            ? (Boolean) isClusterManagerNodeObject
-                            : null;
+            Object isMasterNodeObject =
+                    map.get(AllMetrics.NodeDetailColumns.IS_MASTER_NODE.toString());
+            isMasterNode = isMasterNodeObject != null ? (Boolean) isMasterNodeObject : null;
         }
 
         public NodeDetails(
-                AllMetrics.NodeRole role, String id, String hostAddress, boolean isClusterManager) {
-            this(role, id, hostAddress, isClusterManager, PluginSettings.instance().getRpcPort());
+                AllMetrics.NodeRole role, String id, String hostAddress, boolean isMaster) {
+            this(role, id, hostAddress, isMaster, PluginSettings.instance().getRpcPort());
         }
 
         public NodeDetails(final NodeDetails other) {
             if (other != null) {
                 this.id = other.id;
                 this.hostAddress = other.hostAddress;
-                this.isClusterManager = other.isClusterManager;
+                this.isMasterNode = other.isMasterNode;
                 this.role = other.role;
             }
         }
@@ -189,12 +186,12 @@ public class ClusterDetailsEventProcessor implements EventProcessor {
                 AllMetrics.NodeRole role,
                 String id,
                 String hostAddress,
-                boolean isClusterManager,
+                boolean isMaster,
                 int grpcPort) {
             this.role = role.toString();
             this.id = id;
             this.hostAddress = hostAddress;
-            this.isClusterManager = isClusterManager;
+            this.isMasterNode = isMaster;
             this.grpcPort = grpcPort;
         }
 
@@ -209,8 +206,8 @@ public class ClusterDetailsEventProcessor implements EventProcessor {
                     .append(hostAddress)
                     .append(" role:")
                     .append(role)
-                    .append(" isClusterManager:")
-                    .append(isClusterManager)
+                    .append(" isMasterNode:")
+                    .append(isMasterNode)
                     .append("}");
             return stringBuilder.toString();
         }
@@ -229,20 +226,18 @@ public class ClusterDetailsEventProcessor implements EventProcessor {
             return role;
         }
 
-        public boolean getIsClusterManagerNode() {
-            // TODO : this is added to support backward compatibility for _cat/cluster_manager fix.
+        public boolean getIsMasterNode() {
+            // TODO : this is added to support backward compatibility for _cat/master fix.
             //  We can remove this later if the writer changes has been adapted by all clusters in
             // fleet.
-            // query cat cluster_manager api directly to read the node's role in case the
-            // ClusterDetailsEvent
-            // received from writer does not have "IS_CLUSTER_MANAGER_NODE" field.
-            if (isClusterManager == null) {
-                final String electedClusterManagerHostAddress =
-                        RcaControllerHelper.getElectedClusterManagerHostAddress();
-                isClusterManager =
-                        this.hostAddress.equalsIgnoreCase(electedClusterManagerHostAddress);
+            // query cat master api directly to read the node's role in case the ClusterDetailsEvent
+            // received from writer does not have "IS_MASTER_NODE" field.
+            if (isMasterNode == null) {
+                final String electedMasterHostAddress =
+                        RcaControllerHelper.getElectedMasterHostAddress();
+                isMasterNode = this.hostAddress.equalsIgnoreCase(electedMasterHostAddress);
             }
-            return isClusterManager;
+            return isMasterNode;
         }
 
         public int getGrpcPort() {

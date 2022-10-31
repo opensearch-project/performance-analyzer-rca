@@ -19,10 +19,10 @@ import org.opensearch.performanceanalyzer.rca.framework.core.temperature.Tempera
 // TODO: This is just a placeholder. The methods are not implemented.
 
 /**
- * Although Pyrometer exists on all the nodes - data and cluster_manager but the APIs are only
- * accessible from the cluster_manager nodes. Pyrometer is able answer queries such as: - All nodes
- * by in Zone <i>Z</i> by dimension <i>D</i> order by <i>Temperature</i> in descending order. - The
- * top <i>K</i> warm shards on the hottest nodes by dimension D over a period of h hours -
+ * Although Pyrometer exists on all the nodes - data and master but the APIs are only accessible
+ * from the master nodes. Pyrometer is able answer queries such as: - All nodes by in Zone <i>Z</i>
+ * by dimension <i>D</i> order by <i>Temperature</i> in descending order. - The top <i>K</i> warm
+ * shards on the hottest nodes by dimension D over a period of h hours -
  */
 public class Api {
     enum Count {
@@ -39,20 +39,20 @@ public class Api {
     }
 
     /**
-     * Api class should be called only from elected cluster_manager node.
+     * Api class should be called only from elected master node.
      *
-     * @return true if elected cluster_manager or false otherwise.
+     * @return true if elected master or false otherwise.
      */
-    private static boolean checkIfElectedClusterManager() {
+    private static boolean checkIfElectedMaster() {
         return true;
     }
 
-    private static void failIfNotElectedClusterManager(String apiName) {
-        if (!checkIfElectedClusterManager()) {
+    private static void failIfNotElectedMaster(String apiName) {
+        if (!checkIfElectedMaster()) {
             StringBuilder builder = new StringBuilder();
             builder.append("Api (")
                     .append(apiName)
-                    .append(") can only be called from the elected" + " cluster_manager node.");
+                    .append(") can only be called from the elected" + " master node.");
 
             throw new IllegalStateException(builder.toString());
         }
@@ -66,7 +66,7 @@ public class Api {
      * @return The difference in temperature of the
      */
     public static boolean isClusterImbalanceAlongDimension(TemperatureDimension dimension) {
-        failIfNotElectedClusterManager("getClusterImbalanceAlongDimension");
+        failIfNotElectedMaster("getClusterImbalanceAlongDimension");
         // TODO: Calculate this
         return true;
     }
@@ -85,7 +85,7 @@ public class Api {
             final HeatZoneAssigner.Zone zone,
             final Count count,
             final SortOrder order) {
-        failIfNotElectedClusterManager("getNodes");
+        failIfNotElectedMaster("getNodes");
         return new ArrayList<>();
     }
 
@@ -97,7 +97,7 @@ public class Api {
      */
     public static @Nonnull Map<HeatZoneAssigner.Zone, List<CompactNodeSummary>> getNodesForAllZones(
             final TemperatureDimension dimension, final Count count, final SortOrder order) {
-        failIfNotElectedClusterManager("getNodes");
+        failIfNotElectedMaster("getNodes");
 
         Map<HeatZoneAssigner.Zone, List<CompactNodeSummary>> nodes = new HashMap<>();
 
@@ -110,9 +110,9 @@ public class Api {
 
     /**
      * This API only provides shards for a particular node. Although this API is called on the
-     * cluster_manager Pyrometer instance, but it is asking for details of a particular node. The
-     * cluster_manager Pyrometer might need to fetch the details from the node in question to
-     * respond to this request.
+     * master Pyrometer instance, but it is asking for details of a particular node. The master
+     * Pyrometer might need to fetch the details from the node in question to respond to this
+     * request.
      *
      * @param node This provides the nodeIp or nodeId. All other member values are invalid.
      * @param dimension The temperature for this dimension will be used to order the shards.

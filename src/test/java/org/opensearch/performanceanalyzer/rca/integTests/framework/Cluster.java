@@ -30,25 +30,24 @@ import org.opensearch.performanceanalyzer.threads.ThreadProvider;
 import org.opensearch.performanceanalyzer.threads.exceptions.PAThreadException;
 
 public class Cluster {
-    // A cluster can have 0 (single node) to 5 (multi node with dedicated cluster_managers) hosts.
-    // The
+    // A cluster can have 0 (single node) to 5 (multi node with dedicated masters) hosts. The
     // following three
     // maps specify what each host will be tagged as.
-    private static final Map<Integer, HostTag> hostIdToHostTagMapForDedicatedClusterManager =
+    private static final Map<Integer, HostTag> hostIdToHostTagMapForDedicatedMaster =
             new HashMap<Integer, HostTag>() {
                 {
-                    put(0, HostTag.ELECTED_CLUSTER_MANAGER);
-                    put(1, HostTag.STANDBY_CLUSTER_MANAGER_0);
-                    put(2, HostTag.STANDBY_CLUSTER_MANAGER_1);
+                    put(0, HostTag.ELECTED_MASTER);
+                    put(1, HostTag.STANDBY_MASTER_0);
+                    put(2, HostTag.STANDBY_MASTER_1);
                     put(3, HostTag.DATA_0);
                     put(4, HostTag.DATA_1);
                 }
             };
 
-    private static final Map<Integer, HostTag> hostIdToHostTagMapCoLocatedClusterManager =
+    private static final Map<Integer, HostTag> hostIdToHostTagMapCoLocatedMaster =
             new HashMap<Integer, HostTag>() {
                 {
-                    put(0, HostTag.ELECTED_CLUSTER_MANAGER);
+                    put(0, HostTag.ELECTED_MASTER);
                     put(1, HostTag.DATA_0);
                 }
             };
@@ -81,8 +80,7 @@ public class Cluster {
     private final Map<HostTag, Host> tagToHostMapping;
 
     /**
-     * @param type The type of cluster - can be dedicated cluster_manager, colocated cluster_manager
-     *     or single node.
+     * @param type The type of cluster - can be dedicated master, colocated master or single node.
      * @param clusterDir The directory that will be used by the cluster for files.
      * @param useHttps Should the http and grpc connections use https.
      */
@@ -103,11 +101,11 @@ public class Cluster {
             case SINGLE_NODE:
                 createSingleNodeCluster();
                 break;
-            case MULTI_NODE_CO_LOCATED_CLUSTER_MANAGER:
-                createMultiNodeCoLocatedClusterManager();
+            case MULTI_NODE_CO_LOCATED_MASTER:
+                createMultiNodeCoLocatedMaster();
                 break;
-            case MULTI_NODE_DEDICATED_CLUSTER_MANAGER:
-                createMultiNodeDedicatedClusterManager();
+            case MULTI_NODE_DEDICATED_MASTER:
+                createMultiNodeDedicatedMaster();
                 break;
         }
 
@@ -116,27 +114,20 @@ public class Cluster {
         }
     }
 
-    private void createMultiNodeDedicatedClusterManager() {
+    private void createMultiNodeDedicatedMaster() {
         int currWebServerPort = PluginSettings.WEBSERVICE_DEFAULT_PORT;
         int currGrpcServerPort = PluginSettings.RPC_DEFAULT_PORT;
         int hostIdx = 0;
 
         createHost(
-                hostIdx,
-                AllMetrics.NodeRole.ELECTED_CLUSTER_MANAGER,
-                currWebServerPort,
-                currGrpcServerPort);
+                hostIdx, AllMetrics.NodeRole.ELECTED_MASTER, currWebServerPort, currGrpcServerPort);
 
         currWebServerPort += 1;
         currGrpcServerPort += 1;
         hostIdx += 1;
 
-        for (int i = 0; i < Consts.numStandbyClusterManagerNodes; i++) {
-            createHost(
-                    hostIdx,
-                    AllMetrics.NodeRole.CLUSTER_MANAGER,
-                    currWebServerPort,
-                    currGrpcServerPort);
+        for (int i = 0; i < Consts.numStandbyMasterNodes; i++) {
+            createHost(hostIdx, AllMetrics.NodeRole.MASTER, currWebServerPort, currGrpcServerPort);
 
             currWebServerPort += 1;
             currGrpcServerPort += 1;
@@ -182,10 +173,10 @@ public class Cluster {
 
     private HostTag getTagForHostIdForHostTagAssignment(int hostId) {
         switch (clusterType) {
-            case MULTI_NODE_DEDICATED_CLUSTER_MANAGER:
-                return hostIdToHostTagMapForDedicatedClusterManager.get(hostId);
-            case MULTI_NODE_CO_LOCATED_CLUSTER_MANAGER:
-                return hostIdToHostTagMapCoLocatedClusterManager.get(hostId);
+            case MULTI_NODE_DEDICATED_MASTER:
+                return hostIdToHostTagMapForDedicatedMaster.get(hostId);
+            case MULTI_NODE_CO_LOCATED_MASTER:
+                return hostIdToHostTagMapCoLocatedMaster.get(hostId);
             case SINGLE_NODE:
                 return hostIdToHostTagMapSingleNode;
         }
@@ -212,22 +203,16 @@ public class Cluster {
         int hostIdx = 0;
 
         createHost(
-                hostIdx,
-                AllMetrics.NodeRole.ELECTED_CLUSTER_MANAGER,
-                currWebServerPort,
-                currGrpcServerPort);
+                hostIdx, AllMetrics.NodeRole.ELECTED_MASTER, currWebServerPort, currGrpcServerPort);
     }
 
-    private void createMultiNodeCoLocatedClusterManager() {
+    private void createMultiNodeCoLocatedMaster() {
         int currWebServerPort = PluginSettings.WEBSERVICE_DEFAULT_PORT;
         int currGrpcServerPort = PluginSettings.RPC_DEFAULT_PORT;
         int hostIdx = 0;
 
         createHost(
-                hostIdx,
-                AllMetrics.NodeRole.ELECTED_CLUSTER_MANAGER,
-                currWebServerPort,
-                currGrpcServerPort);
+                hostIdx, AllMetrics.NodeRole.ELECTED_MASTER, currWebServerPort, currGrpcServerPort);
 
         currWebServerPort += 1;
         currGrpcServerPort += 1;

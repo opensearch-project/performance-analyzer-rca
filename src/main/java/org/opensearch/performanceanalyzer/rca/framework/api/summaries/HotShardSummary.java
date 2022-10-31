@@ -28,7 +28,7 @@ import org.opensearch.performanceanalyzer.rca.framework.core.GenericSummary;
  * io_sys_callrate_threshold and time_period.
  *
  * <p>The hot shard summary is created by node level and cluster level RCAs running on data nodes
- * and elected cluster_manager node resp. This object is persisted in SQLite table Table name :
+ * and elected master node resp. This object is persisted in SQLite table Table name :
  * HotClusterSummary
  *
  * <p>schema : | ID(primary key) | index_name | shard_id | node_id | cpu_utilization |

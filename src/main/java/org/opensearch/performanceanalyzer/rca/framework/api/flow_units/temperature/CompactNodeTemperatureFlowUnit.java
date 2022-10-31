@@ -15,7 +15,7 @@ import org.opensearch.performanceanalyzer.rca.framework.util.InstanceDetails;
 
 /**
  * This is a grpc wrapper on top of the CompactNodeTemperatureSummary. The flow unit is passed
- * around from the data nodes to the cluster_manager. Its compact, because it does not contain the
+ * around from the data nodes to the master. Its compact, because it does not contain the
  * temperatures at the granularity of shards. As, some of our largest instances can have multiple
  * shards, it would be sending too many bytes over the wire.
  */

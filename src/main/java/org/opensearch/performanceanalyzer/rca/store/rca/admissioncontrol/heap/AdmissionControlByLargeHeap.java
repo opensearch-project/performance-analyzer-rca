@@ -33,6 +33,6 @@ public class AdmissionControlByLargeHeap implements AdmissionControlByHeap {
                 System.currentTimeMillis(),
                 new ResourceContext(HEALTHY),
                 nodeSummary,
-                !instanceDetails.getIsClusterManager());
+                !instanceDetails.getIsMaster());
     }
 }
