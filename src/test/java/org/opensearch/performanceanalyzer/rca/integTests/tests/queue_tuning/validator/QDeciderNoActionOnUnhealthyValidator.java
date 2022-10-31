@@ -24,7 +24,8 @@ public class QDeciderNoActionOnUnhealthyValidator implements IValidator {
     public QDeciderNoActionOnUnhealthyValidator() {
         appContext = new AppContext();
         startTime = System.currentTimeMillis();
-        rcaConf = RcaControllerHelper.pickRcaConfForRole(AllMetrics.NodeRole.ELECTED_MASTER);
+        rcaConf =
+                RcaControllerHelper.pickRcaConfForRole(AllMetrics.NodeRole.ELECTED_CLUSTER_MANAGER);
     }
 
     /**

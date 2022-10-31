@@ -83,7 +83,7 @@ public class HotNodeRca extends Rca<ResourceFlowUnit<HotNodeSummary>> {
             // check if the current node is data node. If it is the data node
             // then HotNodeRca is the top level RCA on this node and we want to persist summaries in
             // flowunit.
-            boolean isDataNode = !instanceDetails.getIsMaster();
+            boolean isDataNode = !instanceDetails.getIsClusterManager();
             return new ResourceFlowUnit<>(System.currentTimeMillis(), context, summary, isDataNode);
         } else {
             return new ResourceFlowUnit<>(System.currentTimeMillis());

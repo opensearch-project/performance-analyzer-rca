@@ -793,21 +793,32 @@ public class MetricsEmitter {
                 endTime - startTime);
     }
 
-    public static void emitMasterEventMetrics(
-            MetricsDB metricsDB, MasterEventMetricsSnapshot masterEventMetricsSnapshot) {
+    public static void emitClusterManagerEventMetrics(
+            MetricsDB metricsDB,
+            ClusterManagerEventMetricsSnapshot clusterManagerEventMetricsSnapshot) {
 
         long mCurrT = System.currentTimeMillis();
-        Result<Record> queueAndRunTimeResult = masterEventMetricsSnapshot.fetchQueueAndRunTime();
+        Result<Record> queueAndRunTimeResult =
+                clusterManagerEventMetricsSnapshot.fetchQueueAndRunTime();
 
         List<String> dims =
                 new ArrayList<String>() {
                     {
                         this.add(
-                                AllMetrics.MasterMetricDimensions.MASTER_TASK_INSERT_ORDER
+                                AllMetrics.ClusterManagerMetricDimensions
+                                        .CLUSTER_MANAGER_TASK_INSERT_ORDER
                                         .toString());
-                        this.add(AllMetrics.MasterMetricDimensions.MASTER_TASK_PRIORITY.toString());
-                        this.add(AllMetrics.MasterMetricDimensions.MASTER_TASK_TYPE.toString());
-                        this.add(AllMetrics.MasterMetricDimensions.MASTER_TASK_METADATA.toString());
+                        this.add(
+                                AllMetrics.ClusterManagerMetricDimensions
+                                        .CLUSTER_MANAGER_TASK_PRIORITY
+                                        .toString());
+                        this.add(
+                                AllMetrics.ClusterManagerMetricDimensions.CLUSTER_MANAGER_TASK_TYPE
+                                        .toString());
+                        this.add(
+                                AllMetrics.ClusterManagerMetricDimensions
+                                        .CLUSTER_MANAGER_TASK_METADATA
+                                        .toString());
                     }
                 };
 
@@ -816,7 +827,7 @@ public class MetricsEmitter {
 
         long mFinalT = System.currentTimeMillis();
         LOG.debug(
-                "Total time taken for writing master event queue metrics metricsdb: {}",
+                "Total time taken for writing cluster_manager event queue metrics metricsdb: {}",
                 mFinalT - mCurrT);
     }
 
@@ -825,13 +836,17 @@ public class MetricsEmitter {
 
         metricsDB.createMetric(
                 new Metric<Double>(
-                        AllMetrics.MasterMetricValues.MASTER_TASK_RUN_TIME.toString(), 0d),
+                        AllMetrics.ClusterManagerMetricValues.CLUSTER_MANAGER_TASK_RUN_TIME
+                                .toString(),
+                        0d),
                 dims);
 
         BatchBindStep handle =
                 metricsDB.startBatchPut(
                         new Metric<Double>(
-                                AllMetrics.MasterMetricValues.MASTER_TASK_RUN_TIME.toString(), 0d),
+                                AllMetrics.ClusterManagerMetricValues.CLUSTER_MANAGER_TASK_RUN_TIME
+                                        .toString(),
+                                0d),
                         dims);
 
         for (Record r : res) {
@@ -840,8 +855,8 @@ public class MetricsEmitter {
                     Double.parseDouble(
                             r.get(
                                             DBUtils.getAggFieldName(
-                                                    AllMetrics.MasterMetricDimensions
-                                                            .MASTER_TASK_RUN_TIME
+                                                    AllMetrics.ClusterManagerMetricDimensions
+                                                            .CLUSTER_MANAGER_TASK_RUN_TIME
                                                             .toString(),
                                                     MetricsDB.SUM))
                                     .toString());
@@ -850,8 +865,8 @@ public class MetricsEmitter {
                     Double.parseDouble(
                             r.get(
                                             DBUtils.getAggFieldName(
-                                                    AllMetrics.MasterMetricDimensions
-                                                            .MASTER_TASK_RUN_TIME
+                                                    AllMetrics.ClusterManagerMetricDimensions
+                                                            .CLUSTER_MANAGER_TASK_RUN_TIME
                                                             .toString(),
                                                     MetricsDB.AVG))
                                     .toString());
@@ -860,8 +875,8 @@ public class MetricsEmitter {
                     Double.parseDouble(
                             r.get(
                                             DBUtils.getAggFieldName(
-                                                    AllMetrics.MasterMetricDimensions
-                                                            .MASTER_TASK_RUN_TIME
+                                                    AllMetrics.ClusterManagerMetricDimensions
+                                                            .CLUSTER_MANAGER_TASK_RUN_TIME
                                                             .toString(),
                                                     MetricsDB.MIN))
                                     .toString());
@@ -870,19 +885,32 @@ public class MetricsEmitter {
                     Double.parseDouble(
                             r.get(
                                             DBUtils.getAggFieldName(
-                                                    AllMetrics.MasterMetricDimensions
-                                                            .MASTER_TASK_RUN_TIME
+                                                    AllMetrics.ClusterManagerMetricDimensions
+                                                            .CLUSTER_MANAGER_TASK_RUN_TIME
                                                             .toString(),
                                                     MetricsDB.MAX))
                                     .toString());
 
             handle.bind(
-                    r.get(AllMetrics.MasterMetricDimensions.MASTER_TASK_INSERT_ORDER.toString())
+                    r.get(
+                                    AllMetrics.ClusterManagerMetricDimensions
+                                            .CLUSTER_MANAGER_TASK_INSERT_ORDER
+                                            .toString())
                             .toString(),
-                    r.get(AllMetrics.MasterMetricDimensions.MASTER_TASK_PRIORITY.toString())
+                    r.get(
+                                    AllMetrics.ClusterManagerMetricDimensions
+                                            .CLUSTER_MANAGER_TASK_PRIORITY
+                                            .toString())
                             .toString(),
-                    r.get(AllMetrics.MasterMetricDimensions.MASTER_TASK_TYPE.toString()).toString(),
-                    r.get(AllMetrics.MasterMetricDimensions.MASTER_TASK_METADATA.toString())
+                    r.get(
+                                    AllMetrics.ClusterManagerMetricDimensions
+                                            .CLUSTER_MANAGER_TASK_TYPE
+                                            .toString())
+                            .toString(),
+                    r.get(
+                                    AllMetrics.ClusterManagerMetricDimensions
+                                            .CLUSTER_MANAGER_TASK_METADATA
+                                            .toString())
                             .toString(),
                     sumQueueTime,
                     avgQueueTime,
@@ -898,13 +926,17 @@ public class MetricsEmitter {
 
         metricsDB.createMetric(
                 new Metric<Double>(
-                        AllMetrics.MasterMetricValues.MASTER_TASK_QUEUE_TIME.toString(), 0d),
+                        AllMetrics.ClusterManagerMetricValues.CLUSTER_MANAGER_TASK_QUEUE_TIME
+                                .toString(),
+                        0d),
                 dims);
 
         BatchBindStep handle =
                 metricsDB.startBatchPut(
                         new Metric<Double>(
-                                AllMetrics.MasterMetricValues.MASTER_TASK_QUEUE_TIME.toString(),
+                                AllMetrics.ClusterManagerMetricValues
+                                        .CLUSTER_MANAGER_TASK_QUEUE_TIME
+                                        .toString(),
                                 0d),
                         dims);
 
@@ -914,8 +946,8 @@ public class MetricsEmitter {
                     Double.parseDouble(
                             r.get(
                                             DBUtils.getAggFieldName(
-                                                    AllMetrics.MasterMetricDimensions
-                                                            .MASTER_TASK_QUEUE_TIME
+                                                    AllMetrics.ClusterManagerMetricDimensions
+                                                            .CLUSTER_MANAGER_TASK_QUEUE_TIME
                                                             .toString(),
                                                     MetricsDB.SUM))
                                     .toString());
@@ -924,8 +956,8 @@ public class MetricsEmitter {
                     Double.parseDouble(
                             r.get(
                                             DBUtils.getAggFieldName(
-                                                    AllMetrics.MasterMetricDimensions
-                                                            .MASTER_TASK_QUEUE_TIME
+                                                    AllMetrics.ClusterManagerMetricDimensions
+                                                            .CLUSTER_MANAGER_TASK_QUEUE_TIME
                                                             .toString(),
                                                     MetricsDB.AVG))
                                     .toString());
@@ -934,8 +966,8 @@ public class MetricsEmitter {
                     Double.parseDouble(
                             r.get(
                                             DBUtils.getAggFieldName(
-                                                    AllMetrics.MasterMetricDimensions
-                                                            .MASTER_TASK_QUEUE_TIME
+                                                    AllMetrics.ClusterManagerMetricDimensions
+                                                            .CLUSTER_MANAGER_TASK_QUEUE_TIME
                                                             .toString(),
                                                     MetricsDB.MIN))
                                     .toString());
@@ -944,19 +976,32 @@ public class MetricsEmitter {
                     Double.parseDouble(
                             r.get(
                                             DBUtils.getAggFieldName(
-                                                    AllMetrics.MasterMetricDimensions
-                                                            .MASTER_TASK_QUEUE_TIME
+                                                    AllMetrics.ClusterManagerMetricDimensions
+                                                            .CLUSTER_MANAGER_TASK_QUEUE_TIME
                                                             .toString(),
                                                     MetricsDB.MAX))
                                     .toString());
 
             handle.bind(
-                    r.get(AllMetrics.MasterMetricDimensions.MASTER_TASK_INSERT_ORDER.toString())
+                    r.get(
+                                    AllMetrics.ClusterManagerMetricDimensions
+                                            .CLUSTER_MANAGER_TASK_INSERT_ORDER
+                                            .toString())
                             .toString(),
-                    r.get(AllMetrics.MasterMetricDimensions.MASTER_TASK_PRIORITY.toString())
+                    r.get(
+                                    AllMetrics.ClusterManagerMetricDimensions
+                                            .CLUSTER_MANAGER_TASK_PRIORITY
+                                            .toString())
                             .toString(),
-                    r.get(AllMetrics.MasterMetricDimensions.MASTER_TASK_TYPE.toString()).toString(),
-                    r.get(AllMetrics.MasterMetricDimensions.MASTER_TASK_METADATA.toString())
+                    r.get(
+                                    AllMetrics.ClusterManagerMetricDimensions
+                                            .CLUSTER_MANAGER_TASK_TYPE
+                                            .toString())
+                            .toString(),
+                    r.get(
+                                    AllMetrics.ClusterManagerMetricDimensions
+                                            .CLUSTER_MANAGER_TASK_METADATA
+                                            .toString())
                             .toString(),
                     sumQueueTime,
                     avgQueueTime,
@@ -1180,29 +1225,33 @@ public class MetricsEmitter {
                 mFinalT - mCurrT);
     }
 
-    public static void emitMasterThrottledTaskMetric(
-            MetricsDB metricsDB, MasterThrottlingMetricsSnapshot masterThrottlingMetricsSnapshot) {
+    public static void emitClusterManagerThrottledTaskMetric(
+            MetricsDB metricsDB,
+            ClusterManagerThrottlingMetricsSnapshot clusterManagerThrottlingMetricsSnapshot) {
         long mCurrT = System.currentTimeMillis();
-        Result<Record> masterThrottlingMetrics =
-                masterThrottlingMetricsSnapshot.fetchAggregatedMetrics();
+        Result<Record> clusterManagerThrottlingMetrics =
+                clusterManagerThrottlingMetricsSnapshot.fetchAggregatedMetrics();
 
         List<String> dims = new ArrayList<String>();
-        emitMasterThrottlingCount(metricsDB, masterThrottlingMetrics, dims);
-        emitDataThrottlingRetryingCount(metricsDB, masterThrottlingMetrics, dims);
+        emitClusterManagerThrottlingCount(metricsDB, clusterManagerThrottlingMetrics, dims);
+        emitDataThrottlingRetryingCount(metricsDB, clusterManagerThrottlingMetrics, dims);
 
         long mFinalT = System.currentTimeMillis();
         LOG.debug(
-                "Total time taken for writing master throttling metrics metricsdb: {}",
+                "Total time taken for writing cluster_manager throttling metrics metricsdb: {}",
                 mFinalT - mCurrT);
         PerformanceAnalyzerApp.READER_METRICS_AGGREGATOR.updateStat(
-                ReaderMetrics.MASTER_THROTTLING_EMITTER_EXECUTION_TIME, "", mFinalT - mCurrT);
+                ReaderMetrics.CLUSTER_MANAGER_THROTTLING_EMITTER_EXECUTION_TIME,
+                "",
+                mFinalT - mCurrT);
     }
 
-    public static void emitMasterThrottlingCount(
+    public static void emitClusterManagerThrottlingCount(
             MetricsDB metricsDB, Result<Record> res, List<String> dims) {
         metricsDB.createMetric(
                 new Metric<Double>(
-                        AllMetrics.MasterThrottlingValue.MASTER_THROTTLED_PENDING_TASK_COUNT
+                        AllMetrics.ClusterManagerThrottlingValue
+                                .CLUSTER_MANAGER_THROTTLED_PENDING_TASK_COUNT
                                 .toString(),
                         0d),
                 dims);
@@ -1210,58 +1259,59 @@ public class MetricsEmitter {
         BatchBindStep handle =
                 metricsDB.startBatchPut(
                         new Metric<Double>(
-                                AllMetrics.MasterThrottlingValue.MASTER_THROTTLED_PENDING_TASK_COUNT
+                                AllMetrics.ClusterManagerThrottlingValue
+                                        .CLUSTER_MANAGER_THROTTLED_PENDING_TASK_COUNT
                                         .toString(),
                                 0d),
                         dims);
 
         for (Record r : res) {
 
-            Double sumMasterThrottledTask =
+            Double sumClusterManagerThrottledTask =
                     Double.parseDouble(
                             r.get(
                                             DBUtils.getAggFieldName(
-                                                    AllMetrics.MasterThrottlingValue
-                                                            .MASTER_THROTTLED_PENDING_TASK_COUNT
+                                                    AllMetrics.ClusterManagerThrottlingValue
+                                                            .CLUSTER_MANAGER_THROTTLED_PENDING_TASK_COUNT
                                                             .toString(),
                                                     MetricsDB.SUM))
                                     .toString());
 
-            Double avgMasterThrottledTask =
+            Double avgClusterManagerThrottledTask =
                     Double.parseDouble(
                             r.get(
                                             DBUtils.getAggFieldName(
-                                                    AllMetrics.MasterThrottlingValue
-                                                            .MASTER_THROTTLED_PENDING_TASK_COUNT
+                                                    AllMetrics.ClusterManagerThrottlingValue
+                                                            .CLUSTER_MANAGER_THROTTLED_PENDING_TASK_COUNT
                                                             .toString(),
                                                     MetricsDB.AVG))
                                     .toString());
 
-            Double minMasterThrottledTask =
+            Double minClusterManagerThrottledTask =
                     Double.parseDouble(
                             r.get(
                                             DBUtils.getAggFieldName(
-                                                    AllMetrics.MasterThrottlingValue
-                                                            .MASTER_THROTTLED_PENDING_TASK_COUNT
+                                                    AllMetrics.ClusterManagerThrottlingValue
+                                                            .CLUSTER_MANAGER_THROTTLED_PENDING_TASK_COUNT
                                                             .toString(),
                                                     MetricsDB.MIN))
                                     .toString());
 
-            Double maxMasterThrottledTask =
+            Double maxClusterManagerThrottledTask =
                     Double.parseDouble(
                             r.get(
                                             DBUtils.getAggFieldName(
-                                                    AllMetrics.MasterThrottlingValue
-                                                            .MASTER_THROTTLED_PENDING_TASK_COUNT
+                                                    AllMetrics.ClusterManagerThrottlingValue
+                                                            .CLUSTER_MANAGER_THROTTLED_PENDING_TASK_COUNT
                                                             .toString(),
                                                     MetricsDB.MAX))
                                     .toString());
 
             handle.bind(
-                    sumMasterThrottledTask,
-                    avgMasterThrottledTask,
-                    minMasterThrottledTask,
-                    maxMasterThrottledTask);
+                    sumClusterManagerThrottledTask,
+                    avgClusterManagerThrottledTask,
+                    minClusterManagerThrottledTask,
+                    maxClusterManagerThrottledTask);
         }
 
         handle.execute();
@@ -1271,13 +1321,15 @@ public class MetricsEmitter {
             MetricsDB metricsDB, Result<Record> res, List<String> dims) {
         metricsDB.createMetric(
                 new Metric<Double>(
-                        AllMetrics.MasterThrottlingValue.DATA_RETRYING_TASK_COUNT.toString(), 0d),
+                        AllMetrics.ClusterManagerThrottlingValue.DATA_RETRYING_TASK_COUNT
+                                .toString(),
+                        0d),
                 dims);
 
         BatchBindStep handle =
                 metricsDB.startBatchPut(
                         new Metric<Double>(
-                                AllMetrics.MasterThrottlingValue.DATA_RETRYING_TASK_COUNT
+                                AllMetrics.ClusterManagerThrottlingValue.DATA_RETRYING_TASK_COUNT
                                         .toString(),
                                 0d),
                         dims);
@@ -1288,7 +1340,7 @@ public class MetricsEmitter {
                     Double.parseDouble(
                             r.get(
                                             DBUtils.getAggFieldName(
-                                                    AllMetrics.MasterThrottlingValue
+                                                    AllMetrics.ClusterManagerThrottlingValue
                                                             .DATA_RETRYING_TASK_COUNT
                                                             .toString(),
                                                     MetricsDB.SUM))
@@ -1298,7 +1350,7 @@ public class MetricsEmitter {
                     Double.parseDouble(
                             r.get(
                                             DBUtils.getAggFieldName(
-                                                    AllMetrics.MasterThrottlingValue
+                                                    AllMetrics.ClusterManagerThrottlingValue
                                                             .DATA_RETRYING_TASK_COUNT
                                                             .toString(),
                                                     MetricsDB.AVG))
@@ -1308,7 +1360,7 @@ public class MetricsEmitter {
                     Double.parseDouble(
                             r.get(
                                             DBUtils.getAggFieldName(
-                                                    AllMetrics.MasterThrottlingValue
+                                                    AllMetrics.ClusterManagerThrottlingValue
                                                             .DATA_RETRYING_TASK_COUNT
                                                             .toString(),
                                                     MetricsDB.MIN))
@@ -1318,7 +1370,7 @@ public class MetricsEmitter {
                     Double.parseDouble(
                             r.get(
                                             DBUtils.getAggFieldName(
-                                                    AllMetrics.MasterThrottlingValue
+                                                    AllMetrics.ClusterManagerThrottlingValue
                                                             .DATA_RETRYING_TASK_COUNT
                                                             .toString(),
                                                     MetricsDB.MAX))
