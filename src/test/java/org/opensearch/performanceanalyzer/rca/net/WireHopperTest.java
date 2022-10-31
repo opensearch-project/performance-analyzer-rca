@@ -208,7 +208,7 @@ public class WireHopperTest {
         Node<MetricFlowUnit> node = new Heap_Used(EVAL_INTERVAL_S);
         node.addTag(
                 RcaConsts.RcaTagConstants.TAG_LOCUS,
-                RcaConsts.RcaTagConstants.LOCUS_DATA_MASTER_NODE);
+                RcaConsts.RcaTagConstants.LOCUS_DATA_CLUSTER_MANAGER_NODE);
         // Verify resilience to null executor
         uut.readFromWire(node);
         // Execute test method and verify return value

@@ -29,7 +29,7 @@ import org.opensearch.performanceanalyzer.rca.integTests.tests.poc.validator.Poc
 
 @RunWith(RcaItNotEncryptedRunner.class)
 @Category(RcaItMarker.class)
-@AClusterType(ClusterType.MULTI_NODE_DEDICATED_MASTER)
+@AClusterType(ClusterType.MULTI_NODE_DEDICATED_CLUSTER_MANAGER)
 @ARcaGraph(RcaItPocDedicated.SimpleAnalysisGraphForDedicated.class)
 @AMetric(
         name = CPU_Utilization.class,
@@ -91,7 +91,7 @@ public class RcaItPocDedicated {
     @Test
     @AExpect(
             what = AExpect.Type.REST_API,
-            on = HostTag.ELECTED_MASTER,
+            on = HostTag.ELECTED_CLUSTER_MANAGER,
             validator = PocValidator.class,
             forRca = SimpleAnalysisGraphForDedicated.ClusterRca.class)
     public void simple() {}
@@ -117,7 +117,7 @@ public class RcaItPocDedicated {
             SimpleAnalysisGraph.ClusterRca clusterRca = new SimpleAnalysisGraph.ClusterRca(nodeRca);
             clusterRca.addTag(
                     RcaConsts.RcaTagConstants.TAG_LOCUS,
-                    RcaConsts.RcaTagConstants.LOCUS_MASTER_NODE);
+                    RcaConsts.RcaTagConstants.LOCUS_CLUSTER_MANAGER_NODE);
             clusterRca.addAllUpstreams(Collections.singletonList(nodeRca));
             clusterRca.addTag(
                     RcaConsts.RcaTagConstants.TAG_AGGREGATE_UPSTREAM,

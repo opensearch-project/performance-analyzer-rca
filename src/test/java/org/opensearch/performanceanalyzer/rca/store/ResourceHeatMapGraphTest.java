@@ -92,7 +92,7 @@ public class ResourceHeatMapGraphTest {
         persistable = PersistenceFactory.create(rcaConf);
         reader = new SQLiteReader(sqliteFile.toString());
 
-        AllMetrics.NodeRole nodeRole2 = AllMetrics.NodeRole.ELECTED_MASTER;
+        AllMetrics.NodeRole nodeRole2 = AllMetrics.NodeRole.ELECTED_CLUSTER_MANAGER;
         AppContext appContext = RcaTestHelper.setMyIp("192.168.0.2", nodeRole2);
         connectionManager = new GRPCConnectionManager(false);
         clientServers =
@@ -210,13 +210,13 @@ public class ResourceHeatMapGraphTest {
     // @Test
     //  public void clusterTemperatureProfile() throws Exception {
     //    AppContext appContext = RcaTestHelper.setMyIp("192.168.0.2",
-    // AllMetrics.NodeRole.ELECTED_MASTER);
+    // AllMetrics.NodeRole.ELECTED_CLUSTER_MANAGER);
     //
     //    List<ConnectedComponent> connectedComponents = createAndExecuteRcaGraph(appContext);
-    //    System.out.println("Now for the MAster RCA.");
-    //    String masterNodeRcaConf =
-    //        Paths.get(RcaConsts.TEST_CONFIG_PATH, "rca_elected_master.conf").toString();
-    //    RcaConf rcaConf2 = new RcaConf(masterNodeRcaConf);
+    //    System.out.println("Now for the ClusterManager RCA.");
+    //    String clusterManagerNodeRcaConf =
+    //        Paths.get(RcaConsts.TEST_CONFIG_PATH, "rca_elected_cluster_manager.conf").toString();
+    //    RcaConf rcaConf2 = new RcaConf(clusterManagerNodeRcaConf);
     //    SubscriptionManager subscriptionManager2 =
     //        new SubscriptionManager(new GRPCConnectionManager(false));
     //    subscriptionManager2.setCurrentLocus(rcaConf2.getTagMap().get("locus"));
@@ -229,7 +229,7 @@ public class ResourceHeatMapGraphTest {
     //        new ReceivedFlowUnitStore(rcaConf.getPerVertexBufferLength()), appContext);
     //
     //    InstanceDetails instanceDetails = appContext.getMyInstanceDetails();
-    //    RCASchedulerTask rcaSchedulerTaskMaster =
+    //    RCASchedulerTask rcaSchedulerTaskClusterManager =
     //        new RCASchedulerTask(
     //            1000,
     //            Executors.newFixedThreadPool(THREADS),
@@ -241,7 +241,7 @@ public class ResourceHeatMapGraphTest {
     //            appContext);
     //    AllMetrics.NodeRole nodeRole2 = instanceDetails.getRole();
     //    RcaTestHelper.setMyIp(instanceDetails.getInstanceIp().toString(), nodeRole2);
-    //    rcaSchedulerTaskMaster.run();
+    //    rcaSchedulerTaskClusterManager.run();
     //
     //    String resp = makeRestRequest(new String[]{"name", ClusterTemperatureRca.TABLE_NAME});
     //    testJsonResponse(resp);
@@ -585,7 +585,8 @@ public class ResourceHeatMapGraphTest {
     // {"AllTemperatureDimensions":[]}
     @Test
     public void mutedTemperatureProfile() {
-        AppContext appContext = RcaTestHelper.setMyIp("192.168.0.7", AllMetrics.NodeRole.MASTER);
+        AppContext appContext =
+                RcaTestHelper.setMyIp("192.168.0.7", AllMetrics.NodeRole.CLUSTER_MANAGER);
         createAndExecuteRcaGraph(appContext);
 
         Set<String> oldMuted = new HashSet<>();
@@ -631,13 +632,13 @@ public class ResourceHeatMapGraphTest {
 
             cpuUtilization.addTag(
                     RcaConsts.RcaTagConstants.TAG_LOCUS,
-                    RcaConsts.RcaTagConstants.LOCUS_DATA_MASTER_NODE);
+                    RcaConsts.RcaTagConstants.LOCUS_DATA_CLUSTER_MANAGER_NODE);
             ioTotThroughput.addTag(
                     RcaConsts.RcaTagConstants.TAG_LOCUS,
-                    RcaConsts.RcaTagConstants.LOCUS_DATA_MASTER_NODE);
+                    RcaConsts.RcaTagConstants.LOCUS_DATA_CLUSTER_MANAGER_NODE);
             ioTotSyscallRate.addTag(
                     RcaConsts.RcaTagConstants.TAG_LOCUS,
-                    RcaConsts.RcaTagConstants.LOCUS_DATA_MASTER_NODE);
+                    RcaConsts.RcaTagConstants.LOCUS_DATA_CLUSTER_MANAGER_NODE);
             addLeaf(cpuUtilization);
             addLeaf(ioTotThroughput);
             addLeaf(ioTotSyscallRate);
@@ -647,7 +648,7 @@ public class ResourceHeatMapGraphTest {
                     new HotShardRca(1, 1, cpuUtilization, ioTotThroughput, ioTotSyscallRate);
             hotShardRca.addTag(
                     RcaConsts.RcaTagConstants.TAG_LOCUS,
-                    RcaConsts.RcaTagConstants.LOCUS_DATA_MASTER_NODE);
+                    RcaConsts.RcaTagConstants.LOCUS_DATA_CLUSTER_MANAGER_NODE);
             hotShardRca.addAllUpstreams(
                     Arrays.asList(cpuUtilization, ioTotThroughput, ioTotSyscallRate));
 
@@ -655,7 +656,7 @@ public class ResourceHeatMapGraphTest {
             HotShardClusterRca hotShardClusterRca = new HotShardClusterRca(1, hotShardRca);
             hotShardClusterRca.addTag(
                     RcaConsts.RcaTagConstants.TAG_LOCUS,
-                    RcaConsts.RcaTagConstants.LOCUS_MASTER_NODE);
+                    RcaConsts.RcaTagConstants.LOCUS_CLUSTER_MANAGER_NODE);
             hotShardClusterRca.addAllUpstreams(Collections.singletonList(hotShardRca));
             hotShardClusterRca.addTag(
                     RcaConsts.RcaTagConstants.TAG_AGGREGATE_UPSTREAM,
@@ -702,15 +703,16 @@ public class ResourceHeatMapGraphTest {
         RcaTestHelper.setMyIp(dataInstance.getInstanceIp().toString(), nodeRole);
         rcaSchedulerTaskData.run();
 
-        String masterNodeRcaConf =
-                Paths.get(RcaConsts.TEST_CONFIG_PATH, "rca_elected_master.conf").toString();
-        RcaConf rcaConf2 = new RcaConf(masterNodeRcaConf);
+        String clusterManagerNodeRcaConf =
+                Paths.get(RcaConsts.TEST_CONFIG_PATH, "rca_elected_cluster_manager.conf")
+                        .toString();
+        RcaConf rcaConf2 = new RcaConf(clusterManagerNodeRcaConf);
         SubscriptionManager subscriptionManager2 =
                 new SubscriptionManager(new GRPCConnectionManager(false));
         subscriptionManager2.setCurrentLocus(rcaConf2.getTagMap().get("locus"));
 
-        AppContext appContextMaster =
-                RcaTestHelper.setMyIp("192.168.0.4", AllMetrics.NodeRole.ELECTED_MASTER);
+        AppContext appContextClusterManager =
+                RcaTestHelper.setMyIp("192.168.0.4", AllMetrics.NodeRole.ELECTED_CLUSTER_MANAGER);
 
         WireHopper wireHopper2 =
                 new WireHopper(
@@ -719,10 +721,10 @@ public class ResourceHeatMapGraphTest {
                         subscriptionManager2,
                         networkThreadPoolReference,
                         new ReceivedFlowUnitStore(rcaConf.getPerVertexBufferLength()),
-                        appContextMaster);
+                        appContextClusterManager);
 
-        InstanceDetails masterInstance = appContextMaster.getMyInstanceDetails();
-        RCASchedulerTask rcaSchedulerTaskMaster =
+        InstanceDetails clusterManagerInstance = appContextClusterManager.getMyInstanceDetails();
+        RCASchedulerTask rcaSchedulerTaskClusterManager =
                 new RCASchedulerTask(
                         1000,
                         Executors.newFixedThreadPool(THREADS),
@@ -731,10 +733,10 @@ public class ResourceHeatMapGraphTest {
                         persistable,
                         rcaConf2,
                         wireHopper2,
-                        appContextMaster);
-        AllMetrics.NodeRole nodeRole2 = masterInstance.getRole();
-        RcaTestHelper.setMyIp(masterInstance.getInstanceIp().toString(), nodeRole2);
-        rcaSchedulerTaskMaster.run();
+                        appContextClusterManager);
+        AllMetrics.NodeRole nodeRole2 = clusterManagerInstance.getRole();
+        RcaTestHelper.setMyIp(clusterManagerInstance.getInstanceIp().toString(), nodeRole2);
+        rcaSchedulerTaskClusterManager.run();
 
         URL url = null;
         url =

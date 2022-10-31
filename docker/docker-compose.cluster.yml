@@ -12,13 +12,13 @@ services:
     environment:
       - node.name=opensearch1
       - discovery.seed_hosts=opensearch2
-      - cluster.initial_master_nodes=opensearch1
+      - cluster.initial_cluster_manager_nodes=opensearch1
       - bootstrap.memory_lock=true
       - "OPENSEARCH_JAVA_OPTS=-Xms512m -Xmx512m"
   opensearch2:
     environment:
       - node.name=opensearch2
       - discovery.seed_hosts=opensearch1
-      - cluster.initial_master_nodes=opensearch1
+      - cluster.initial_cluster_manager_nodes=opensearch1
       - bootstrap.memory_lock=true
       - "OPENSEARCH_JAVA_OPTS=-Xms512m -Xmx512m"

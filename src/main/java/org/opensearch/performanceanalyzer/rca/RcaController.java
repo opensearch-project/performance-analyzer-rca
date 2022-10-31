@@ -457,8 +457,8 @@ public class RcaController {
     /**
      * Starts or stops the RCA runtime. If the RCA runtime is up but the currently RCA is disabled,
      * then this gracefully shuts down the RCA runtime. It restarts the RCA runtime if the node role
-     * has changed in the meantime (such as a new elected master). It also starts the RCA runtime if
-     * it wasn't already running but the current state of the flag expects it to.
+     * has changed in the meantime (such as a new elected cluster manager). It also starts the RCA
+     * runtime if it wasn't already running but the current state of the flag expects it to.
      */
     private void updateRcaState() {
         if (rcaScheduler != null && rcaScheduler.getState() == RcaSchedulerState.STATE_STARTED) {
@@ -504,8 +504,8 @@ public class RcaController {
         }
     }
 
-    public static String getCatMasterUrl() {
-        return RcaControllerHelper.CAT_MASTER_URL;
+    public static String getCatClusterManagerUrl() {
+        return RcaControllerHelper.CAT_CLUSTER_MANAGER_URL;
     }
 
     public static String getRcaEnabledConfFile() {

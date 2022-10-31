@@ -211,7 +211,7 @@ public class HotShardRca extends Rca<ResourceFlowUnit<HotNodeSummary>> {
             // check if the current node is data node. If it is the data node
             // then HotNodeRca is the top level RCA on this node and we want to persist summaries in
             // flowunit.
-            boolean isDataNode = !instanceDetails.getIsMaster();
+            boolean isDataNode = !instanceDetails.getIsClusterManager();
             return new ResourceFlowUnit<>(this.clock.millis(), context, nodeSummary, isDataNode);
         } else {
             LOG.debug("Empty FlowUnit returned for Hot Shard RCA");
