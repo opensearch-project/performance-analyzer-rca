@@ -338,8 +338,8 @@ dependencies {
     implementation('io.netty:netty-transport-native-unix-common:4.1.79.Final') {
         force = 'true'
     }
+    // TODO - This line should be removed once Spotbugs is upgraded to 4.7.4
     implementation('org.apache.bcel:bcel:6.6.0') {
-        // TODO - This line should be removed once Spotbugs is upgraded to 4.7.4
         force = 'true'
     }
     implementation 'io.grpc:grpc-stub:1.49.0'
