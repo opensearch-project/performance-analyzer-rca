@@ -55,6 +55,7 @@ ext {
     opensearch_version = System.getProperty("opensearch.version", "3.0.0-SNAPSHOT")
     isSnapshot = "true" == System.getProperty("build.snapshot", "true")
     buildVersionQualifier = System.getProperty("build.version_qualifier", "")
+    jdkVersion = System.getProperty("build.jdk_version", "11")
 
     // 3.0.0-SNAPSHOT -> 3.0.0.0-SNAPSHOT
     version_tokens = opensearch_version.tokenize('-')
@@ -462,7 +463,7 @@ task buildDocker(type: Exec) {
     dependsOn(copyAllArtifacts)
 
     workingDir(dockerArtifactsDir)
-    commandLine 'docker', 'build', '-t', 'opensearch/pa-rca:3.0', '.'
+    commandLine 'docker', 'build', '-t', 'opensearch/pa-rca:3.0', '.', '--build-arg', "JDK_VER=${jdkVersion}"
 }
 
 task runDocker(type: Exec) {
