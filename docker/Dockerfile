@@ -14,15 +14,16 @@ ARG JDK_VER=11
 
 ENV PATH /usr/share/opensearch/bin:$PATH
 
-RUN if [[ "${JDK_VER}" = "11" ]] ; then \
-    curl -s https://download.java.net/java/GA/jdk11/13/GPL/openjdk-11.0.1_linux-x64_bin.tar.gz | tar -C /opt -zxf -; \
-    mkdir /opt/jdk ; \
-    mv -v /opt/jdk-11.0.1/* /opt/jdk; \
-elif [[ "${JDK_VER}" = "17" ]] ; then \
+RUN if [[ "${JDK_VER}" = "17" ]] ; then \
     curl -s https://download.java.net/java/GA/jdk17.0.2/dfd4a8d0985749f896bed50d7138ee7f/8/GPL/openjdk-17.0.2_linux-x64_bin.tar.gz | tar -C /opt -zxf -; \
     mkdir /opt/jdk ; \
     mv -v /opt/jdk-17.0.2/* /opt/jdk; \
+else \
+    curl -s https://download.java.net/java/GA/jdk11/13/GPL/openjdk-11.0.1_linux-x64_bin.tar.gz | tar -C /opt -zxf -; \
+    mkdir /opt/jdk ; \
+    mv -v /opt/jdk-11.0.1/* /opt/jdk; \
 fi
+
 
 ENV OPENSEARCH_JAVA_HOME /opt/jdk
 RUN yum install -y unzip
