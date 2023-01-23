@@ -1,12 +1,12 @@
 name: Java CI
 
-on: 
-  push: 
-    branches: 
+on:
+  push:
+    branches:
       - "*"
 
   pull_request:
-    branches: 
+    branches:
       - "*"
 
 jobs:
@@ -20,64 +20,64 @@ jobs:
     runs-on: [ubuntu-latest]
     name: Building RCA package
     steps:
-    - name: Set up JDK
-      uses: actions/setup-java@v1
-      with:
-        java-version: ${{matrix.java}}
+      - name: Set up JDK
+        uses: actions/setup-java@v1
+        with:
+          java-version: ${{matrix.java}}
 
-    # RCA in ./tmp/performance-analyzer-rca
-    - name: Checkout RCA
-      uses: actions/checkout@v2
-      with:
-        path: ./tmp/performance-analyzer-rca
-    - name: Build RCA
-      working-directory:  ./tmp/performance-analyzer-rca
-      run: ./gradlew build --stacktrace
-    - name: Upload reports
-      uses: actions/upload-artifact@v2
-      with:
-        name: gradle-reports
-        path: ./tmp/performance-analyzer-rca/build/reports
-    - name: Generate Jacoco coverage report
-      working-directory: ./tmp/performance-analyzer-rca
-      run: ./gradlew jacocoTestReport
-    - name: Upload coverage report
-      working-directory: ./tmp/performance-analyzer-rca
-      env:
-        CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
-      run: bash <(curl -s https://codecov.io/bash) -f ./build/reports/jacoco/test/jacocoTestReport.xml
-    - name: Publish RCA jar to maven local
-      working-directory: ./tmp/performance-analyzer-rca
-      run: ./gradlew publishToMavenLocal
+      # RCA in ./tmp/performance-analyzer-rca
+      - name: Checkout RCA
+        uses: actions/checkout@v2
+        with:
+          path: ./tmp/performance-analyzer-rca
+      - name: Build RCA
+        working-directory:  ./tmp/performance-analyzer-rca
+        run: ./gradlew build --stacktrace
+      - name: Upload reports
+        uses: actions/upload-artifact@v2
+        with:
+          name: gradle-reports
+          path: ./tmp/performance-analyzer-rca/build/reports
+      - name: Generate Jacoco coverage report
+        working-directory: ./tmp/performance-analyzer-rca
+        run: ./gradlew jacocoTestReport
+      - name: Upload coverage report
+        working-directory: ./tmp/performance-analyzer-rca
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+        run: bash <(curl -s https://codecov.io/bash) -f ./build/reports/jacoco/test/jacocoTestReport.xml
+      - name: Publish RCA jar to maven local
+        working-directory: ./tmp/performance-analyzer-rca
+        run: ./gradlew publishToMavenLocal
 
-    # PA in ./tmp/performance-analyzer
-    - name: Checkout Performance Analyzer
-      uses: actions/checkout@v2
-      with:
-        repository: opensearch-project/performance-analyzer
-        ref: main
-        path: ./tmp/performance-analyzer
-    - name: Build PA gradle using the new RCA jar
-      working-directory: ./tmp/performance-analyzer
-      run: rm -f licenses/performanceanalyzer-rca-*.jar.sha1
-    - name: Update SHA
-      working-directory: ./tmp/performance-analyzer
-      run: ./gradlew updateShas
-    - name: Set docker-compose path
-      run: echo "DOCKER_COMPOSE_LOCATION=$(which docker-compose)" >> $GITHUB_ENV
-      # Set the vm.max_map_count system property to the minimum required to run OpenSearch
-    - name: Set vm.max_map_count
-      run: sudo sysctl -w vm.max_map_count=262144
-    - name: Build PA and run Unit Tests
-      working-directory: ./tmp/performance-analyzer
-      run: ./gradlew build
+      # PA in ./tmp/performance-analyzer
+      - name: Checkout Performance Analyzer
+        uses: actions/checkout@v2
+        with:
+          repository: opensearch-project/performance-analyzer
+          ref: main
+          path: ./tmp/performance-analyzer
+      - name: Build PA gradle using the new RCA jar
+        working-directory: ./tmp/performance-analyzer
+        run: rm -f licenses/performanceanalyzer-rca-*.jar.sha1
+      - name: Update SHA
+        working-directory: ./tmp/performance-analyzer
+        run: ./gradlew updateShas
+      - name: Set docker-compose path
+        run: echo "DOCKER_COMPOSE_LOCATION=$(which docker-compose)" >> $GITHUB_ENV
+        # Set the vm.max_map_count system property to the minimum required to run OpenSearch
+      - name: Set vm.max_map_count
+        run: sudo sysctl -w vm.max_map_count=262144
+      - name: Build PA and run Unit Tests
+        working-directory: ./tmp/performance-analyzer
+        run: ./gradlew build
 
-    # Enable RCA for Integration Tests
-    - name: Spin up Docker cluster for integ testing
-      working-directory: ./tmp/performance-analyzer-rca
-      run: ./gradlew enableRca
+      # Enable RCA for Integration Tests
+      - name: Spin up Docker cluster for integ testing
+        working-directory: ./tmp/performance-analyzer-rca
+        run: ./gradlew enableRca -Dbuild.docker_jdk_ver=${{matrix.java}}
 
-    # Run Integration Tests in PA
-    - name: Run integration tests
-      working-directory: ./tmp/performance-analyzer
-      run: ./gradlew integTest --info --stacktrace -Dtests.enableIT=true
+      # Run Integration Tests in PA
+      - name: Run integration tests
+        working-directory: ./tmp/performance-analyzer
+        run: ./gradlew integTest --info --stacktrace -Dtests.enableIT=true
