@@ -335,7 +335,10 @@ dependencies {
     implementation group: 'com.google.protobuf', name: 'protobuf-java', version: '3.21.12'
     implementation 'io.grpc:grpc-netty:1.52.1'
     implementation 'io.grpc:grpc-protobuf:1.52.1'
-    implementation('io.netty:netty-transport-native-unix-common:4.1.86.Final') {
+    implementation('io.netty:netty-codec-http2:4.1.86.Final') {
+        force = 'true'
+    }
+    implementation('io.netty:netty-handler-proxy:4.1.86.Final') {
         force = 'true'
     }
     implementation 'io.grpc:grpc-stub:1.52.1'
