@@ -166,7 +166,7 @@ public class ShardRequestMetricsSnapshot implements Removable {
                         this.add(DSL.field(DSL.name(Fields.SHARD_ROLE.toString()), String.class));
                         this.add(DSL.field(DSL.name(Fields.ST.toString()), Long.class));
                         this.add(DSL.field(DSL.name(Fields.ET.toString()), Long.class));
-                        this.add(DSL.field(DSL.name(Fields.DOC_COUNT.toString()), Long.class));
+                        this.add(DSL.field(DSL.name(Fields.DOC_COUNT.toString()), Double.class));
                         this.add(
                                 DSL.field(Fields.ET.toString())
                                         .minus(DSL.field(Fields.ST.toString()))
