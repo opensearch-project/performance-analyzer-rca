@@ -7,6 +7,7 @@ package org.opensearch.performanceanalyzer.reader;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -51,6 +52,42 @@ public class ReaderMetricsProcessorTests extends AbstractReaderTests {
     @Before
     public void before() throws Exception {
         rootLocation = "build/resources/test/reader/";
+    }
+
+    @Test
+    public void testShardBulkParseAndQuery() throws Exception {
+        deleteAll();
+        ReaderMetricsProcessor mp =
+                new ReaderMetricsProcessor(rootLocation, true, new AppContext());
+
+        mp.processMetrics(rootLocation, 1566413985000L);
+        mp.processMetrics(rootLocation, 1566413990000L);
+
+        Result<Record> res =
+                mp.getMetricsDB()
+                        .getValue()
+                        .queryMetric(
+                                Arrays.asList("ShardEvents", "ShardBulkDocs"),
+                                Arrays.asList("sum", "sum"),
+                                Arrays.asList("Operation"));
+
+        boolean shardbulkEncountered = false;
+
+        for (Record record : res) {
+            if (PerformanceAnalyzerMetrics.sShardBulkPath.equals(record.get("Operation"))) {
+                assertNotNull(record.get("ShardEvents"));
+                assertNotNull(record.get("ShardBulkDocs"));
+                assertEquals(1519.0, (Double) record.get("ShardEvents"), 0.0);
+                assertEquals(507096.0, (Double) record.get("ShardBulkDocs"), 0.0);
+                shardbulkEncountered = true;
+            }
+        }
+
+        assertTrue(shardbulkEncountered);
+
+        mp.trimOldSnapshots();
+        mp.trimOldMetricsDBFiles();
+        mp.deleteDBs();
     }
 
     @Test
