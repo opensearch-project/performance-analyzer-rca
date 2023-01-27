@@ -71,14 +71,19 @@ public class ReaderMetricsProcessorTests extends AbstractReaderTests {
                                 Arrays.asList("sum", "sum"),
                                 Arrays.asList("Operation"));
 
+        boolean shardbulkEncountered = false;
+
         for (Record record : res) {
             if (PerformanceAnalyzerMetrics.sShardBulkPath.equals(record.get("Operation"))) {
                 assertNotNull(record.get("ShardEvents"));
                 assertNotNull(record.get("ShardBulkDocs"));
                 assertTrue((Double) record.get("ShardEvents") >= 1.0);
                 assertTrue((Double) record.get("ShardBulkDocs") >= 1.0);
+                shardbulkEncountered = true;
             }
         }
+
+        assertTrue(shardbulkEncountered);
 
         mp.trimOldSnapshots();
         mp.trimOldMetricsDBFiles();
