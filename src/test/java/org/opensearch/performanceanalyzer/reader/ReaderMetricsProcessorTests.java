@@ -77,8 +77,8 @@ public class ReaderMetricsProcessorTests extends AbstractReaderTests {
             if (PerformanceAnalyzerMetrics.sShardBulkPath.equals(record.get("Operation"))) {
                 assertNotNull(record.get("ShardEvents"));
                 assertNotNull(record.get("ShardBulkDocs"));
-                assertTrue((Double) record.get("ShardEvents") >= 1.0);
-                assertTrue((Double) record.get("ShardBulkDocs") >= 1.0);
+                assertEquals(1519.0, (Double) record.get("ShardEvents"), 0.0);
+                assertEquals(507096.0, (Double) record.get("ShardBulkDocs"), 0.0);
                 shardbulkEncountered = true;
             }
         }
