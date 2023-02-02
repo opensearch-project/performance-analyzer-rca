@@ -22,7 +22,7 @@ public class FileHandlerTests {
     }
 
     @Test
-    public void testFindFiles() throws IOException {
+    public void testFindFiles() {
         FileHandler fileHandler = MetricPropertiesConfig.createFileHandler("indices", "path_elem");
         fileHandler.setRootLocation(rootLocation);
 
@@ -35,7 +35,7 @@ public class FileHandlerTests {
         FileHandler shardStateFileHandler = new MetricPropertiesConfig.ShardStatFileHandler();
         shardStateFileHandler.setRootLocation(rootLocation);
 
-        File file = new File(rootLocation + "15000000000000/indices/path_elem/123");
+        File file = new File(rootLocation + "15000000000000/indices/path_elem/15000000005000");
 
         String[] extraDimensions = shardStateFileHandler.processExtraDimensions(file);
         assertEquals(2, extraDimensions.length);
