@@ -81,7 +81,7 @@ public class ReaderMetricsProcessorTests extends AbstractReaderTests {
                 assertNotNull(record.get("ShardBulkDocs"));
                 assertEquals(1519.0, (Double) record.get("ShardEvents"), 0.0);
                 assertEquals(507096.0, (Double) record.get("ShardBulkDocs"), 0.0);
-                assertTrue((Double) record.get("CPU_Utilization") > 1.0);
+                assertEquals(1.89, (Double) record.get("CPU_Utilization"), 0.02);
                 shardbulkEncountered = true;
             }
         }
