@@ -60,6 +60,8 @@ public class ReaderMetricsProcessorTests extends AbstractReaderTests {
         ReaderMetricsProcessor mp =
                 new ReaderMetricsProcessor(rootLocation, true, new AppContext());
 
+        mp.processMetrics(rootLocation, 1566413975000L);
+        mp.processMetrics(rootLocation, 1566413980000L);
         mp.processMetrics(rootLocation, 1566413985000L);
         mp.processMetrics(rootLocation, 1566413990000L);
 
@@ -67,8 +69,8 @@ public class ReaderMetricsProcessorTests extends AbstractReaderTests {
                 mp.getMetricsDB()
                         .getValue()
                         .queryMetric(
-                                Arrays.asList("ShardEvents", "ShardBulkDocs"),
-                                Arrays.asList("sum", "sum"),
+                                Arrays.asList("ShardEvents", "ShardBulkDocs", "CPU_Utilization"),
+                                Arrays.asList("sum", "sum", "sum"),
                                 Arrays.asList("Operation"));
 
         boolean shardbulkEncountered = false;
@@ -79,6 +81,7 @@ public class ReaderMetricsProcessorTests extends AbstractReaderTests {
                 assertNotNull(record.get("ShardBulkDocs"));
                 assertEquals(1519.0, (Double) record.get("ShardEvents"), 0.0);
                 assertEquals(507096.0, (Double) record.get("ShardBulkDocs"), 0.0);
+                assertEquals(1.89, (Double) record.get("CPU_Utilization"), 0.02);
                 shardbulkEncountered = true;
             }
         }
