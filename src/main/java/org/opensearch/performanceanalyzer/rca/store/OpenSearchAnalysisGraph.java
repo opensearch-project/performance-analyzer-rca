@@ -514,15 +514,11 @@ public class OpenSearchAnalysisGraph extends AnalysisGraph {
         // High CPU Utilization RCA
         HotShardRca hotShardRca =
                 new HotShardRca(
-                        EVALUATION_INTERVAL_SECONDS,
-                        RCA_PERIOD,
-                        cpuUtilization,
-                        heapAllocRate);
+                        EVALUATION_INTERVAL_SECONDS, RCA_PERIOD, cpuUtilization, heapAllocRate);
         hotShardRca.addTag(
                 RcaConsts.RcaTagConstants.TAG_LOCUS,
                 RcaConsts.RcaTagConstants.LOCUS_DATA_CLUSTER_MANAGER_NODE);
-        hotShardRca.addAllUpstreams(
-                Arrays.asList(cpuUtilization, heapAllocRate));
+        hotShardRca.addAllUpstreams(Arrays.asList(cpuUtilization, heapAllocRate));
 
         // Hot Shard Cluster RCA which consumes the above
         HotShardClusterRca hotShardClusterRca = new HotShardClusterRca(RCA_PERIOD, hotShardRca);

@@ -105,13 +105,8 @@ public class HotShardClusterRca extends Rca<ResourceFlowUnit<HotClusterSummary>>
                 populateResourceInfoTable(
                         indexName,
                         nodeShardKey,
-                        hotShardSummary.getIOThroughput(),
+                        hotShardSummary.getHeapAllocRate(),
                         IOThroughputInfoTable);
-                populateResourceInfoTable(
-                        indexName,
-                        nodeShardKey,
-                        hotShardSummary.getIOSysCallrate(),
-                        IOSysCallRateInfoTable);
             }
         }
     }
