@@ -152,10 +152,8 @@ message HotShardSummaryMessage {
     string nodeId = 3;
     double cpu_utilization = 4;
     double cpu_utilization_threshold = 5;
-    double io_throughput = 6;
-    double io_throughput_threshold = 7;
-    double io_sys_callrate = 8;
-    double io_sys_callrate_threshold = 9;
+    double heap_alloc_rate = 6;
+    double heap_alloc_rate_threshold = 7;
     int32 timePeriod = 10;
 }
 message HotNodeSummaryMessage {

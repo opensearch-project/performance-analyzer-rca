@@ -8,14 +8,15 @@ package org.opensearch.performanceanalyzer.rca.store.rca.hotshard;
 
 import java.time.Clock;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jooq.Record;
+import org.openjdk.jol.info.GraphLayout;
 import org.opensearch.performanceanalyzer.PerformanceAnalyzerApp;
 import org.opensearch.performanceanalyzer.grpc.FlowUnitMessage;
 import org.opensearch.performanceanalyzer.metrics.AllMetrics;
@@ -26,6 +27,7 @@ import org.opensearch.performanceanalyzer.rca.framework.api.Rca;
 import org.opensearch.performanceanalyzer.rca.framework.api.Resources;
 import org.opensearch.performanceanalyzer.rca.framework.api.aggregators.SlidingWindow;
 import org.opensearch.performanceanalyzer.rca.framework.api.aggregators.SlidingWindowData;
+import org.opensearch.performanceanalyzer.rca.framework.api.aggregators.SummarizedWindow;
 import org.opensearch.performanceanalyzer.rca.framework.api.contexts.ResourceContext;
 import org.opensearch.performanceanalyzer.rca.framework.api.flow_units.MetricFlowUnit;
 import org.opensearch.performanceanalyzer.rca.framework.api.flow_units.ResourceFlowUnit;
@@ -53,48 +55,37 @@ public class HotShardRca extends Rca<ResourceFlowUnit<HotNodeSummary>> {
     private static final int SLIDING_WINDOW_IN_SECONDS = 60;
 
     private double cpuUtilizationThreshold;
-    private double ioTotThroughputThreshold;
-    private double ioTotSysCallRateThreshold;
+    private double heapAllocRateThreshold;
 
     private final Metric cpuUtilization;
-    private final Metric ioTotThroughput;
-    private final Metric ioTotSyscallRate;
+    private final Metric heapAllocRate;
     private final int rcaPeriod;
     private int counter;
     protected Clock clock;
 
     // HashMap with IndexShardKey object as key and SlidingWindowData object of metric data as value
-    private HashMap<IndexShardKey, SlidingWindow<SlidingWindowData>> cpuUtilizationMap;
-    private HashMap<IndexShardKey, SlidingWindow<SlidingWindowData>> ioTotThroughputMap;
-    private HashMap<IndexShardKey, SlidingWindow<SlidingWindowData>> ioTotSyscallRateMap;
+    private Map<IndexShardKey, SummarizedWindow> summarizationMap;
 
     public <M extends Metric> HotShardRca(
             final long evaluationIntervalSeconds,
             final int rcaPeriod,
             final M cpuUtilization,
-            final M ioTotThroughput,
-            final M ioTotSyscallRate) {
+            final M heapAllocRate) {
         super(evaluationIntervalSeconds);
         this.cpuUtilization = cpuUtilization;
-        this.ioTotThroughput = ioTotThroughput;
-        this.ioTotSyscallRate = ioTotSyscallRate;
+        this.heapAllocRate = heapAllocRate;
         this.rcaPeriod = rcaPeriod;
         this.counter = 0;
         this.clock = Clock.systemUTC();
-        this.cpuUtilizationMap = new HashMap<>();
-        this.ioTotThroughputMap = new HashMap<>();
-        this.ioTotSyscallRateMap = new HashMap<>();
+        this.summarizationMap = new HashMap<>();
         this.cpuUtilizationThreshold = HotShardRcaConfig.DEFAULT_CPU_UTILIZATION_THRESHOLD;
-        this.ioTotThroughputThreshold =
-                HotShardRcaConfig.DEFAULT_IO_TOTAL_THROUGHPUT_THRESHOLD_IN_BYTE_PER_SEC;
-        this.ioTotSysCallRateThreshold =
-                HotShardRcaConfig.DEFAULT_IO_TOTAL_SYSCALL_RATE_THRESHOLD_PER_SEC;
+        this.heapAllocRateThreshold =
+                HotShardRcaConfig.DEFAULT_HEAP_ALLOC_RATE_THRESHOLD_IN_BYTE_PER_SEC;
     }
 
     private void consumeFlowUnit(
             final MetricFlowUnit metricFlowUnit,
-            final String metricType,
-            final HashMap<IndexShardKey, SlidingWindow<SlidingWindowData>> metricMap) {
+            AllMetrics.OSMetrics metricType) {
         for (Record record : metricFlowUnit.getData()) {
             try {
                 String indexName =
@@ -105,29 +96,31 @@ public class HotShardRca extends Rca<ResourceFlowUnit<HotNodeSummary>> {
                                 AllMetrics.CommonDimension.SHARD_ID.toString(), Integer.class);
                 if (indexName != null && shardId != null) {
                     IndexShardKey indexShardKey = IndexShardKey.buildIndexShardKey(record);
+
                     double usage = record.getValue(MetricsDB.SUM, Double.class);
-                    SlidingWindow<SlidingWindowData> usageDeque = metricMap.get(indexShardKey);
-                    if (null == usageDeque) {
-                        usageDeque =
-                                new SlidingWindow<>(SLIDING_WINDOW_IN_SECONDS, TimeUnit.SECONDS);
-                        metricMap.put(indexShardKey, usageDeque);
+                    long timestamp = this.clock.millis();
+
+                    SummarizedWindow usageWindow = summarizationMap.get(indexShardKey);
+                    if (null == usageWindow) {
+                        usageWindow = new SummarizedWindow();
+                        summarizationMap.put(indexShardKey, usageWindow);
+                        timestamp = SummarizedWindow.recycleTimestamp;
                     }
-                    usageDeque.next(new SlidingWindowData(this.clock.millis(), usage));
+
+                    usageWindow.next(metricType, usage, timestamp);
                 }
             } catch (Exception e) {
                 PerformanceAnalyzerApp.RCA_VERTICES_METRICS_AGGREGATOR.updateStat(
                         RcaVerticesMetrics.HOT_SHARD_RCA_ERROR, "", 1);
-                LOG.error("Failed to parse metric in FlowUnit: {} from {}", record, metricType, e);
+                LOG.error("Failed to parse metric in FlowUnit: {} from {}", record, metricType.toString(), e);
             }
         }
     }
 
-    private void consumeMetrics(
-            final Metric metric,
-            final HashMap<IndexShardKey, SlidingWindow<SlidingWindowData>> metricMap) {
+    private void consumeMetric(Metric metric, AllMetrics.OSMetrics metricType) {
         for (MetricFlowUnit metricFlowUnit : metric.getFlowUnits()) {
             if (metricFlowUnit.getData() != null) {
-                consumeFlowUnit(metricFlowUnit, metric.getClass().getName(), metricMap);
+                consumeFlowUnit(metricFlowUnit, metricType);
             }
         }
     }
@@ -152,35 +145,24 @@ public class HotShardRca extends Rca<ResourceFlowUnit<HotNodeSummary>> {
     @Override
     public ResourceFlowUnit<HotNodeSummary> operate() {
         counter += 1;
-
-        // Populate the Resource HashMaps
-        consumeMetrics(cpuUtilization, cpuUtilizationMap);
-        consumeMetrics(ioTotThroughput, ioTotThroughputMap);
-        consumeMetrics(ioTotSyscallRate, ioTotSyscallRateMap);
-        ;
+        // Populate the Resource maps
+        consumeMetric(cpuUtilization, AllMetrics.OSMetrics.CPU_UTILIZATION);
+        consumeMetric(heapAllocRate, AllMetrics.OSMetrics.HEAP_ALLOC_RATE);
 
         if (counter == rcaPeriod) {
             ResourceContext context = new ResourceContext(Resources.State.HEALTHY);
-
             InstanceDetails instanceDetails = getInstanceDetails();
-
-            Set<IndexShardKey> indexShardKeySet = new HashSet<>(cpuUtilizationMap.keySet());
-            indexShardKeySet.addAll(ioTotThroughputMap.keySet());
-            indexShardKeySet.addAll(ioTotSyscallRateMap.keySet());
 
             HotNodeSummary nodeSummary =
                     new HotNodeSummary(
                             instanceDetails.getInstanceId(), instanceDetails.getInstanceIp());
-            for (IndexShardKey indexShardKey : indexShardKeySet) {
-                double avgCpuUtilization = fetchUsageValueFromMap(cpuUtilizationMap, indexShardKey);
-                double avgIoTotThroughput =
-                        fetchUsageValueFromMap(ioTotThroughputMap, indexShardKey);
-                double avgIoTotSyscallRate =
-                        fetchUsageValueFromMap(ioTotSyscallRateMap, indexShardKey);
 
-                if (avgCpuUtilization > cpuUtilizationThreshold
-                        || avgIoTotThroughput > ioTotThroughputThreshold
-                        || avgIoTotSyscallRate > ioTotSysCallRateThreshold) {
+            for (Map.Entry<IndexShardKey, SummarizedWindow> entry : summarizationMap.entrySet()) {
+                IndexShardKey indexShardKey = entry.getKey();
+                double avgCpuUtilization = entry.getValue().readAvgCpuUtilization(TimeUnit.SECONDS);
+                double avgHeapAllocRate = entry.getValue().readAvgHeapAllocRate(TimeUnit.SECONDS);
+
+                if (avgCpuUtilization > cpuUtilizationThreshold || avgHeapAllocRate > heapAllocRateThreshold) {
                     HotShardSummary summary =
                             new HotShardSummary(
                                     indexShardKey.getIndexName(),
@@ -189,22 +171,19 @@ public class HotShardRca extends Rca<ResourceFlowUnit<HotNodeSummary>> {
                                     SLIDING_WINDOW_IN_SECONDS);
                     summary.setcpuUtilization(avgCpuUtilization);
                     summary.setCpuUtilizationThreshold(cpuUtilizationThreshold);
-                    summary.setIoThroughput(avgIoTotThroughput);
-                    summary.setIoThroughputThreshold(ioTotThroughputThreshold);
-                    summary.setIoSysCallrate(avgIoTotSyscallRate);
-                    summary.setIoSysCallrateThreshold(ioTotSysCallRateThreshold);
+                    summary.setHeapAllocRate(avgHeapAllocRate);
+                    summary.setHeapAllocRateThreshold(heapAllocRateThreshold);
+
                     nodeSummary.appendNestedSummary(summary);
                     context = new ResourceContext(Resources.State.UNHEALTHY);
                     LOG.debug(
-                            "Hot Shard Identified, Shard : {} , avgCpuUtilization = {} , avgIoTotThroughput = {}, "
-                                    + "avgIoTotSyscallRate = {}",
+                            "Hot Shard Identified, Shard : {} , avgCpuUtilization = {} , avgHeapAllocRate = {}, ",
                             indexShardKey,
                             avgCpuUtilization,
-                            avgIoTotThroughput,
-                            avgIoTotSyscallRate);
+                            avgHeapAllocRate
+                            );
                 }
             }
-
             // reset the variables
             counter = 0;
 
@@ -212,6 +191,22 @@ public class HotShardRca extends Rca<ResourceFlowUnit<HotNodeSummary>> {
             // then HotNodeRca is the top level RCA on this node and we want to persist summaries in
             // flowunit.
             boolean isDataNode = !instanceDetails.getIsClusterManager();
+
+            try {
+                long usage = GraphLayout.parseInstance(summarizationMap).totalSize();
+                LOG.debug("-------LOGGING-------- The usage is currently: " + Long.toString(usage));
+            } catch (Exception e) {
+                LOG.error(
+                        "-------BAD LOGGING-------- The message: "
+                                + e.getMessage()
+                                + "\n"
+                                + e.getCause()
+                                + "\n"
+                                + e
+                                + "\n"
+                                + Arrays.toString(e.getStackTrace()));
+            }
+
             return new ResourceFlowUnit<>(this.clock.millis(), context, nodeSummary, isDataNode);
         } else {
             LOG.debug("Empty FlowUnit returned for Hot Shard RCA");
@@ -228,8 +223,7 @@ public class HotShardRca extends Rca<ResourceFlowUnit<HotNodeSummary>> {
     public void readRcaConf(RcaConf conf) {
         HotShardRcaConfig configObj = conf.getHotShardRcaConfig();
         cpuUtilizationThreshold = configObj.getCpuUtilizationThreshold();
-        ioTotThroughputThreshold = configObj.getIoTotThroughputThreshold();
-        ioTotSysCallRateThreshold = configObj.getIoTotSysCallRateThreshold();
+        heapAllocRateThreshold = configObj.getHeapAllocRateThreshold();
     }
 
     @Override
