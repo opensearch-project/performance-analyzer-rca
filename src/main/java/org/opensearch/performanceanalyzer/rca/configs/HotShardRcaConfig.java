@@ -38,11 +38,10 @@ public class HotShardRcaConfig {
         maxConsumersToSend =
                 rcaConf.readRcaConfig(
                         CONFIG_NAME,
-                        HotShardRcaConfig.RCA_CONF_KEY_CONSTANTS.HEAP_ALLOC_RATE_THRESHOLD_IN_BYTES,
+                        HotShardRcaConfig.RCA_CONF_KEY_CONSTANTS.MAX_CONSUMERS_TO_SEND,
                         DEFAULT_MAXIMUM_CONSUMERS_TO_SEND,
                         (s) -> (s > 0),
                         Integer.class);
-
     }
 
     public double getCpuUtilizationThreshold() {

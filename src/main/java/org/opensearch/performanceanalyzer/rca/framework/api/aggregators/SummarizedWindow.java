@@ -6,10 +6,8 @@
 package org.opensearch.performanceanalyzer.rca.framework.api.aggregators;
 
 
-import java.util.Comparator;
 import java.util.concurrent.TimeUnit;
 import org.opensearch.performanceanalyzer.metrics.AllMetrics;
-import org.opensearch.performanceanalyzer.rca.store.rca.hotshard.IndexShardKey;
 
 /* Specific class for HotShard analysis. */
 public class SummarizedWindow {
@@ -19,7 +17,7 @@ public class SummarizedWindow {
     protected long timeStampRecent = 0;
 
     protected void reset() {
-        this.timeStampDistant = this.timeStampRecent = 0;
+        this.timeStampDistant = this.timeStampRecent = 0L;
         this.sumHeapAllocRate = this.sumCpuUtilization = 0.0;
     }
 

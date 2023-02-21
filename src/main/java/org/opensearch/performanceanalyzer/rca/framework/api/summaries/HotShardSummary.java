@@ -93,7 +93,6 @@ public class HotShardSummary extends GenericSummary {
         return this.heap_alloc_rate;
     }
 
-
     @Override
     public HotShardSummaryMessage buildSummaryMessage() {
         final HotShardSummaryMessage.Builder summaryMessageBuilder =

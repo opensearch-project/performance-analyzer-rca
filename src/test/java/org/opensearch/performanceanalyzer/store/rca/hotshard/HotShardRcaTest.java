@@ -35,8 +35,7 @@ public class HotShardRcaTest {
 
     private HotShardRcaX hotShardRcaX;
     private MetricTestHelper cpuUtilization;
-    private MetricTestHelper ioTotThroughput;
-    private MetricTestHelper ioTotSyscallRate;
+    private MetricTestHelper heapAllocRate;
     private List<String> columnName;
 
     private enum index {
@@ -47,9 +46,8 @@ public class HotShardRcaTest {
     @Before
     public void setup() {
         cpuUtilization = new MetricTestHelper(5);
-        ioTotThroughput = new MetricTestHelper(5);
-        ioTotSyscallRate = new MetricTestHelper(5);
-        hotShardRcaX = new HotShardRcaX(5, 1, cpuUtilization, ioTotThroughput, ioTotSyscallRate);
+        heapAllocRate = new MetricTestHelper(5);
+        hotShardRcaX = new HotShardRcaX(5, 1, cpuUtilization, heapAllocRate);
         columnName =
                 Arrays.asList(
                         AllMetrics.CommonDimension.INDEX_NAME.toString(),
@@ -71,8 +69,7 @@ public class HotShardRcaTest {
     @Test
     public void testOperateForMissingFlowUnits() {
         cpuUtilization = null;
-        ioTotThroughput = null;
-        ioTotSyscallRate = null;
+        heapAllocRate = null;
 
         ResourceFlowUnit flowUnit = hotShardRcaX.operate();
         Assert.assertFalse(flowUnit.getResourceContext().isUnhealthy());
@@ -82,8 +79,7 @@ public class HotShardRcaTest {
     @Test
     public void testOperateForEmptyFlowUnits() {
         cpuUtilization.createTestFlowUnits(columnName, Collections.emptyList());
-        ioTotThroughput.createTestFlowUnits(columnName, Collections.emptyList());
-        ioTotSyscallRate.createTestFlowUnits(columnName, Collections.emptyList());
+        heapAllocRate.createTestFlowUnits(columnName, Collections.emptyList());
 
         ResourceFlowUnit flowUnit = hotShardRcaX.operate();
         Assert.assertFalse(flowUnit.getResourceContext().isUnhealthy());
@@ -99,10 +95,9 @@ public class HotShardRcaTest {
         // ioTotSyscallRate = 0
         cpuUtilization.createTestFlowUnits(
                 columnName, Arrays.asList(index.index_1.toString(), "1", String.valueOf(0)));
-        ioTotThroughput.createTestFlowUnits(
+        heapAllocRate.createTestFlowUnits(
                 columnName, Arrays.asList(index.index_1.toString(), "1", String.valueOf(0)));
-        ioTotSyscallRate.createTestFlowUnits(
-                columnName, Arrays.asList(index.index_1.toString(), "1", String.valueOf(0)));
+
         hotShardRcaX.setClock(constantClock);
         ResourceFlowUnit flowUnit = hotShardRcaX.operate();
         Assert.assertFalse(flowUnit.getResourceContext().isUnhealthy());
@@ -112,10 +107,8 @@ public class HotShardRcaTest {
         // ioTotSyscallRate = 0.005
         cpuUtilization.createTestFlowUnits(
                 columnName, Arrays.asList(index.index_1.toString(), "1", String.valueOf(0.005)));
-        ioTotThroughput.createTestFlowUnits(
+        heapAllocRate.createTestFlowUnits(
                 columnName, Arrays.asList(index.index_1.toString(), "1", String.valueOf(200000)));
-        ioTotSyscallRate.createTestFlowUnits(
-                columnName, Arrays.asList(index.index_1.toString(), "1", String.valueOf(0.005)));
 
         hotShardRcaX.setClock(Clock.offset(constantClock, Duration.ofSeconds(1)));
         flowUnit = hotShardRcaX.operate();
@@ -126,10 +119,8 @@ public class HotShardRcaTest {
         // ioTotSyscallRate = 0.005
         cpuUtilization.createTestFlowUnits(
                 columnName, Arrays.asList(index.index_1.toString(), "1", String.valueOf(0.75)));
-        ioTotThroughput.createTestFlowUnits(
+        heapAllocRate.createTestFlowUnits(
                 columnName, Arrays.asList(index.index_1.toString(), "1", String.valueOf(200000)));
-        ioTotSyscallRate.createTestFlowUnits(
-                columnName, Arrays.asList(index.index_1.toString(), "1", String.valueOf(0.005)));
 
         hotShardRcaX.setClock(Clock.offset(constantClock, Duration.ofSeconds(2)));
         flowUnit = hotShardRcaX.operate();
@@ -154,22 +145,16 @@ public class HotShardRcaTest {
         // ioTotSyscallRate = 0.10
         cpuUtilization.createTestFlowUnits(
                 columnName, Arrays.asList(index.index_1.toString(), "2", String.valueOf(0.75)));
-        ioTotThroughput.createTestFlowUnits(
+        heapAllocRate.createTestFlowUnits(
                 columnName, Arrays.asList(index.index_1.toString(), "2", String.valueOf(400000)));
-        ioTotSyscallRate.createTestFlowUnits(
-                columnName, Arrays.asList(index.index_1.toString(), "2", String.valueOf(0.10)));
-        ;
 
         hotShardRcaX.setClock(Clock.offset(constantClock, Duration.ofSeconds(3)));
         flowUnit = hotShardRcaX.operate();
 
         cpuUtilization.createTestFlowUnits(
                 columnName, Arrays.asList(index.index_1.toString(), "2", String.valueOf(0.25)));
-        ioTotThroughput.createTestFlowUnits(
+        heapAllocRate.createTestFlowUnits(
                 columnName, Arrays.asList(index.index_1.toString(), "2", String.valueOf(100000)));
-        ioTotSyscallRate.createTestFlowUnits(
-                columnName, Arrays.asList(index.index_1.toString(), "2", String.valueOf(0.10)));
-        ;
 
         hotShardRcaX.setClock(Clock.offset(constantClock, Duration.ofSeconds(4)));
         flowUnit = hotShardRcaX.operate();
@@ -194,14 +179,8 @@ public class HotShardRcaTest {
                 final long evaluationIntervalSeconds,
                 final int rcaPeriod,
                 final M cpuUtilization,
-                final M ioTotThroughput,
-                final M ioTotSyscallRate) {
-            super(
-                    evaluationIntervalSeconds,
-                    rcaPeriod,
-                    cpuUtilization,
-                    ioTotThroughput,
-                    ioTotSyscallRate);
+                final M heapAllocRate) {
+            super(evaluationIntervalSeconds, rcaPeriod, cpuUtilization, heapAllocRate);
         }
 
         public void setClock(Clock clock) {

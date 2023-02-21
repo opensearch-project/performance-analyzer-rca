@@ -44,8 +44,7 @@ public class HotShardClusterRca extends Rca<ResourceFlowUnit<HotClusterSummary>>
     private static final int SLIDING_WINDOW_IN_SECONDS = 60;
 
     private double cpuUtilizationClusterThreshold;
-    private double ioTotThroughputClusterThreshold;
-    private double ioTotSysCallRateClusterThreshold;
+    private double heapAllocRateClusterThreshold;
 
     private final Rca<ResourceFlowUnit<HotNodeSummary>> hotShardRca;
     private int rcaPeriod;
@@ -54,8 +53,7 @@ public class HotShardClusterRca extends Rca<ResourceFlowUnit<HotClusterSummary>>
 
     // Guava Table with Row: 'Index_Name', Column: 'NodeShardKey', Cell Value: 'Value'
     private Table<String, NodeShardKey, Double> cpuUtilizationInfoTable;
-    private Table<String, NodeShardKey, Double> IOThroughputInfoTable;
-    private Table<String, NodeShardKey, Double> IOSysCallRateInfoTable;
+    private Table<String, NodeShardKey, Double> heapAllocRateInfoTable;
 
     public <R extends Rca<ResourceFlowUnit<HotNodeSummary>>> HotShardClusterRca(
             final int rcaPeriod, final R hotShardRca) {
@@ -65,14 +63,11 @@ public class HotShardClusterRca extends Rca<ResourceFlowUnit<HotClusterSummary>>
         this.counter = 0;
         this.unhealthyNodes = new HashSet<>();
         this.cpuUtilizationInfoTable = HashBasedTable.create();
-        this.IOThroughputInfoTable = HashBasedTable.create();
-        this.IOSysCallRateInfoTable = HashBasedTable.create();
+        this.heapAllocRateInfoTable = HashBasedTable.create();
         this.cpuUtilizationClusterThreshold =
                 HotShardClusterRcaConfig.DEFAULT_CPU_UTILIZATION_CLUSTER_THRESHOLD;
-        this.ioTotThroughputClusterThreshold =
-                HotShardClusterRcaConfig.DEFAULT_IO_TOTAL_THROUGHPUT_CLUSTER_THRESHOLD;
-        this.ioTotSysCallRateClusterThreshold =
-                HotShardClusterRcaConfig.DEFAULT_IO_TOTAL_SYSCALL_RATE_CLUSTER_THRESHOLD;
+        this.heapAllocRateClusterThreshold =
+                HotShardClusterRcaConfig.DEFAULT_HEAP_ALLOC_RATE_CLUSTER_THRESHOLD;
     }
 
     private void populateResourceInfoTable(
@@ -106,7 +101,7 @@ public class HotShardClusterRca extends Rca<ResourceFlowUnit<HotClusterSummary>>
                         indexName,
                         nodeShardKey,
                         hotShardSummary.getHeapAllocRate(),
-                        IOThroughputInfoTable);
+                        heapAllocRateInfoTable);
             }
         }
     }
@@ -213,16 +208,10 @@ public class HotShardClusterRca extends Rca<ResourceFlowUnit<HotClusterSummary>>
                     ResourceUtil.CPU_USAGE);
 
             findHotShardAndCreateSummary(
-                    IOThroughputInfoTable,
-                    ioTotThroughputClusterThreshold,
+                    heapAllocRateInfoTable,
+                    heapAllocRateClusterThreshold,
                     hotShardSummaryList,
-                    ResourceUtil.IO_TOTAL_THROUGHPUT);
-
-            findHotShardAndCreateSummary(
-                    IOSysCallRateInfoTable,
-                    ioTotSysCallRateClusterThreshold,
-                    hotShardSummaryList,
-                    ResourceUtil.IO_TOTAL_SYS_CALLRATE);
+                    ResourceUtil.HEAP_ALLOC_RATE);
 
             if (hotShardSummaryList.isEmpty()) {
                 context = new ResourceContext(Resources.State.HEALTHY);
@@ -244,8 +233,7 @@ public class HotShardClusterRca extends Rca<ResourceFlowUnit<HotClusterSummary>>
             counter = 0;
             this.unhealthyNodes.clear();
             this.cpuUtilizationInfoTable.clear();
-            this.IOThroughputInfoTable.clear();
-            this.IOSysCallRateInfoTable.clear();
+            this.heapAllocRateInfoTable.clear();
             LOG.debug("Hot Shard Cluster RCA Context :  " + context.toString());
             return new ResourceFlowUnit<>(System.currentTimeMillis(), context, summary, true);
         } else {
@@ -263,8 +251,7 @@ public class HotShardClusterRca extends Rca<ResourceFlowUnit<HotClusterSummary>>
     public void readRcaConf(RcaConf conf) {
         HotShardClusterRcaConfig configObj = conf.getHotShardClusterRcaConfig();
         cpuUtilizationClusterThreshold = configObj.getCpuUtilizationClusterThreshold();
-        ioTotThroughputClusterThreshold = configObj.getIoTotThroughputClusterThreshold();
-        ioTotSysCallRateClusterThreshold = configObj.getIoTotSysCallRateClusterThreshold();
+        heapAllocRateClusterThreshold = configObj.getHeapAllocRateClusterThreshold();
     }
 
     /**
