@@ -11,6 +11,7 @@ import org.opensearch.performanceanalyzer.metrics.AllMetrics;
 
 /* Specific class for HotShard analysis. */
 public class SummarizedWindow {
+    private static final long tickExtension = 5000L;
     protected double sumCpuUtilization = 0.0;
     protected double sumHeapAllocRate = 0.0;
     protected long timeStampDistant = 0;
@@ -44,14 +45,22 @@ public class SummarizedWindow {
     }
 
     public double readAvgCpuUtilization(TimeUnit timeUnit) {
-        return sumCpuUtilization
-                / (double) (timeStampRecent - timeStampDistant)
-                / (double) timeUnit.toMillis(1);
+        if (empty()) {
+            return Double.NaN;
+        }
+        long timestampDiff = timeStampRecent - timeStampDistant + tickExtension;
+        return sumCpuUtilization / ((double) timestampDiff / (double) timeUnit.toMillis(1));
     }
 
     public double readAvgHeapAllocRate(TimeUnit timeUnit) {
-        return sumHeapAllocRate
-                / (double) (timeStampRecent - timeStampDistant)
-                / (double) timeUnit.toMillis(1);
+        if (empty()) {
+            return Double.NaN;
+        }
+        long timestampDiff = timeStampRecent - timeStampDistant + tickExtension;
+        return sumHeapAllocRate / ((double) timestampDiff / (double) timeUnit.toMillis(1));
+    }
+
+    private boolean empty() {
+        return this.timeStampDistant == 0L;
     }
 }

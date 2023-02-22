@@ -174,7 +174,7 @@ public class HotShardClusterRca extends Rca<ResourceFlowUnit<HotClusterSummary>>
      * Compare between the shard counterparts. Within an index, the shard which is (threshold)%
      * higher than the mean resource utilization is hot.
      *
-     * <p>We are evaluating hot shards on 3 dimensions and if shard is hot in any of the 3
+     * <p>We are evaluating hot shards on 2 dimensions and if shard is hot in any of the 2
      * dimension, we declare it hot.
      */
     @Override
@@ -200,7 +200,7 @@ public class HotShardClusterRca extends Rca<ResourceFlowUnit<HotClusterSummary>>
             HotClusterSummary summary =
                     new HotClusterSummary(getAllClusterInstances().size(), unhealthyNodes.size());
 
-            // We evaluate hot shards individually on all the 3 dimensions
+            // We evaluate hot shards individually on both dimensions
             findHotShardAndCreateSummary(
                     cpuUtilizationInfoTable,
                     cpuUtilizationClusterThreshold,

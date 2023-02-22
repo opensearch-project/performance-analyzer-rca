@@ -9,7 +9,6 @@ package org.opensearch.performanceanalyzer.rca.store.rca.hotshard;
 import com.google.common.collect.MinMaxPriorityQueue;
 import java.time.Clock;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -18,7 +17,6 @@ import java.util.concurrent.TimeUnit;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jooq.Record;
-import org.openjdk.jol.info.GraphLayout;
 import org.opensearch.performanceanalyzer.PerformanceAnalyzerApp;
 import org.opensearch.performanceanalyzer.grpc.FlowUnitMessage;
 import org.opensearch.performanceanalyzer.metrics.AllMetrics;
@@ -62,8 +60,9 @@ public class HotShardRca extends Rca<ResourceFlowUnit<HotNodeSummary>> {
     private final int rcaPeriod;
     private int counter;
     protected Clock clock;
-
-    // HashMap with IndexShardKey object as key and SlidingWindowData object of metric data as value
+    /* HashMap with IndexShardKey object as key and SummarizedWindow object of metric data as value
+       which contains both metrics of interest and their common timestamps
+    */
     private Map<IndexShardKey, SummarizedWindow> summarizationMap;
 
     public <M extends Metric> HotShardRca(
@@ -97,13 +96,11 @@ public class HotShardRca extends Rca<ResourceFlowUnit<HotNodeSummary>> {
                 if (indexName != null && shardId != null) {
                     IndexShardKey indexShardKey = IndexShardKey.buildIndexShardKey(record);
                     double usage = record.getValue(MetricsDB.SUM, Double.class);
-
                     SummarizedWindow usageWindow = summarizationMap.get(indexShardKey);
                     if (null == usageWindow) {
                         usageWindow = new SummarizedWindow();
                         summarizationMap.put(indexShardKey, usageWindow);
                     }
-
                     usageWindow.next(metricType, usage, this.clock.millis());
                 }
             } catch (Exception e) {

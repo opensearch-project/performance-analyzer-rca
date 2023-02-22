@@ -17,8 +17,8 @@ public class HotShardRcaConfig {
     private final Integer maxConsumersToSend;
 
     public static final double DEFAULT_CPU_UTILIZATION_THRESHOLD = 0.01;
-    public static final double DEFAULT_HEAP_ALLOC_RATE_THRESHOLD_IN_BYTE_PER_SEC = 2500.0;
-    public static final int DEFAULT_MAXIMUM_CONSUMERS_TO_SEND = 10;
+    public static final double DEFAULT_HEAP_ALLOC_RATE_THRESHOLD_IN_BYTE_PER_SEC = 250000.0;
+    public static final int DEFAULT_MAXIMUM_CONSUMERS_TO_SEND = 50;
 
     public HotShardRcaConfig(final RcaConf rcaConf) {
         cpuUtilizationThreshold =
