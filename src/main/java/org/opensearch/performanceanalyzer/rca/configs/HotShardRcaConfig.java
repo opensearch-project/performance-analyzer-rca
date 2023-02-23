@@ -18,7 +18,7 @@ public class HotShardRcaConfig {
 
     public static final double DEFAULT_CPU_UTILIZATION_THRESHOLD = 0.01;
     public static final double DEFAULT_HEAP_ALLOC_RATE_THRESHOLD_IN_BYTE_PER_SEC = 250000.0;
-    public static final int DEFAULT_MAXIMUM_CONSUMERS_TO_SEND = 50;
+    public static final int DEFAULT_TOP_K_CONSUMERS = 50;
 
     public HotShardRcaConfig(final RcaConf rcaConf) {
         cpuUtilizationThreshold =
@@ -38,8 +38,8 @@ public class HotShardRcaConfig {
         maxConsumersToSend =
                 rcaConf.readRcaConfig(
                         CONFIG_NAME,
-                        HotShardRcaConfig.RCA_CONF_KEY_CONSTANTS.MAX_CONSUMERS_TO_SEND,
-                        DEFAULT_MAXIMUM_CONSUMERS_TO_SEND,
+                        HotShardRcaConfig.RCA_CONF_KEY_CONSTANTS.TOP_K_CONSUMERS,
+                        DEFAULT_TOP_K_CONSUMERS,
                         (s) -> (s > 0),
                         Integer.class);
     }
@@ -59,6 +59,6 @@ public class HotShardRcaConfig {
     public static class RCA_CONF_KEY_CONSTANTS {
         public static final String CPU_UTILIZATION_THRESHOLD = "cpu-utilization";
         public static final String HEAP_ALLOC_RATE_THRESHOLD_IN_BYTES = "heap-alloc-rate-in-bytes";
-        public static final String MAX_CONSUMERS_TO_SEND = "max-consumers-to-send";
+        public static final String TOP_K_CONSUMERS = "top-k-consumers";
     }
 }

@@ -638,7 +638,7 @@ public class ResourceHeatMapGraphTest {
             addLeaf(cpuUtilization);
             addLeaf(heapAllocRate);
 
-            // High CPU Utilization RCA
+            // Hot Shard RCA consuming CPU_Utilization and Heap_AllocRate
             HotShardRca hotShardRca = new HotShardRca(1, 1, cpuUtilization, heapAllocRate);
             hotShardRca.addTag(
                     RcaConsts.RcaTagConstants.TAG_LOCUS,
