@@ -42,12 +42,14 @@ public class HeapMetrics {
             } else if ("Par Eden Space".equals(item.getName())
                     || "Eden Space".equals(item.getName())
                     || "PS Eden Space".equals(item.getName())
-                    || "G1 Eden".equals(item.getName())) {
+                    || "G1 Eden".equals(item.getName())
+                    || "G1 Eden Space".equals(item.getName())) {
                 memoryUsageSuppliers.put("Eden", () -> item.getUsage());
             } else if ("Par Survivor Space".equals(item.getName())
                     || "Survivor Space".equals(item.getName())
                     || "PS Survivor Space".equals(item.getName())
-                    || "G1 Survivor".equals(item.getName())) {
+                    || "G1 Survivor".equals(item.getName())
+                    || "G1 Survivor Space".equals(item.getName())) {
                 memoryUsageSuppliers.put("Survivor", () -> item.getUsage());
             }
         }
