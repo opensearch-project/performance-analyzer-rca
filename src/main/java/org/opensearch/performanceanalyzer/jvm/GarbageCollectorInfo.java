@@ -45,11 +45,13 @@ public class GarbageCollectorInfo {
                         .put("Eden Space", EDEN)
                         .put("PS Eden Space", EDEN)
                         .put("G1 Eden", EDEN)
+                        .put("G1 Eden Space", EDEN)
                         // Survivor space as read by different collectors.
                         .put("Par Survivor Space", SURVIVOR)
                         .put("Survivor Space", SURVIVOR)
                         .put("PS Survivor Space", SURVIVOR)
                         .put("G1 Survivor", SURVIVOR)
+                        .put("G1 Survivor Space", SURVIVOR)
                         .build();
 
         List<GarbageCollectorMXBean> gcBeans = ManagementFactory.getGarbageCollectorMXBeans();
