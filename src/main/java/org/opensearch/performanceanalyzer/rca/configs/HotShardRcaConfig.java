@@ -11,13 +11,14 @@ import org.opensearch.performanceanalyzer.rca.framework.core.RcaConf;
 public class HotShardRcaConfig {
     public static final String CONFIG_NAME = "hot-shard-rca";
 
-    private Double cpuUtilizationThreshold;
-    private Double ioTotThroughputThreshold;
-    private Double ioTotSysCallRateThreshold;
+    private final Double cpuUtilizationThreshold;
+    private final Double heapAllocRateThreshold;
+
+    private final Integer maxConsumersToSend;
 
     public static final double DEFAULT_CPU_UTILIZATION_THRESHOLD = 0.01;
-    public static final double DEFAULT_IO_TOTAL_THROUGHPUT_THRESHOLD_IN_BYTE_PER_SEC = 250000.0;
-    public static final double DEFAULT_IO_TOTAL_SYSCALL_RATE_THRESHOLD_PER_SEC = 0.01;
+    public static final double DEFAULT_HEAP_ALLOC_RATE_THRESHOLD_IN_BYTE_PER_SEC = 250000.0;
+    public static final int DEFAULT_TOP_K_CONSUMERS = 50;
 
     public HotShardRcaConfig(final RcaConf rcaConf) {
         cpuUtilizationThreshold =
@@ -27,41 +28,37 @@ public class HotShardRcaConfig {
                         DEFAULT_CPU_UTILIZATION_THRESHOLD,
                         (s) -> (s > 0),
                         Double.class);
-        ioTotThroughputThreshold =
+        heapAllocRateThreshold =
                 rcaConf.readRcaConfig(
                         CONFIG_NAME,
-                        HotShardRcaConfig.RCA_CONF_KEY_CONSTANTS
-                                .IO_TOT_THROUGHPUT_THRESHOLD_IN_BYTES,
-                        DEFAULT_IO_TOTAL_THROUGHPUT_THRESHOLD_IN_BYTE_PER_SEC,
+                        HotShardRcaConfig.RCA_CONF_KEY_CONSTANTS.HEAP_ALLOC_RATE_THRESHOLD_IN_BYTES,
+                        DEFAULT_HEAP_ALLOC_RATE_THRESHOLD_IN_BYTE_PER_SEC,
                         (s) -> (s > 0),
                         Double.class);
-        ioTotSysCallRateThreshold =
+        maxConsumersToSend =
                 rcaConf.readRcaConfig(
                         CONFIG_NAME,
-                        HotShardRcaConfig.RCA_CONF_KEY_CONSTANTS
-                                .IO_TOT_SYSCALL_RATE_THRESHOLD_PER_SECOND,
-                        DEFAULT_IO_TOTAL_SYSCALL_RATE_THRESHOLD_PER_SEC,
+                        HotShardRcaConfig.RCA_CONF_KEY_CONSTANTS.TOP_K_CONSUMERS,
+                        DEFAULT_TOP_K_CONSUMERS,
                         (s) -> (s > 0),
-                        Double.class);
+                        Integer.class);
     }
 
     public double getCpuUtilizationThreshold() {
         return cpuUtilizationThreshold;
     }
 
-    public double getIoTotThroughputThreshold() {
-        return ioTotThroughputThreshold;
+    public double getHeapAllocRateThreshold() {
+        return heapAllocRateThreshold;
     }
 
-    public double getIoTotSysCallRateThreshold() {
-        return ioTotSysCallRateThreshold;
+    public int getMaximumConsumersToSend() {
+        return maxConsumersToSend;
     }
 
     public static class RCA_CONF_KEY_CONSTANTS {
         public static final String CPU_UTILIZATION_THRESHOLD = "cpu-utilization";
-        public static final String IO_TOT_THROUGHPUT_THRESHOLD_IN_BYTES =
-                "io-total-throughput-in-bytes";
-        public static final String IO_TOT_SYSCALL_RATE_THRESHOLD_PER_SECOND =
-                "io-total-syscallrate-per-second";
+        public static final String HEAP_ALLOC_RATE_THRESHOLD_IN_BYTES = "heap-alloc-rate-in-bytes";
+        public static final String TOP_K_CONSUMERS = "top-k-consumers";
     }
 }

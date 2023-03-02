@@ -28,7 +28,7 @@ import org.opensearch.performanceanalyzer.rca.framework.core.GenericSummary;
  * io_sys_callrate_threshold and time_period.
  *
  * <p>The hot shard summary is created by node level and cluster level RCAs running on data nodes
- * and elected master node resp. This object is persisted in SQLite table Table name :
+ * and elected cluster_manager node resp. This object is persisted in SQLite table Table name :
  * HotClusterSummary
  *
  * <p>schema : | ID(primary key) | index_name | shard_id | node_id | cpu_utilization |
@@ -44,10 +44,9 @@ public class HotShardSummary extends GenericSummary {
     private final String nodeId;
     private double cpu_utilization;
     private double cpu_utilization_threshold;
-    private double io_throughput;
-    private double io_throughput_threshold;
-    private double io_sys_callrate;
-    private double io_sys_callrate_threshold;
+    private double heap_alloc_rate;
+    private double heap_alloc_rate_threshold;
+
     private int timePeriodInSeconds;
 
     public HotShardSummary(String indexName, String shardId, String nodeId, int timePeriod) {
@@ -66,20 +65,12 @@ public class HotShardSummary extends GenericSummary {
         this.cpu_utilization_threshold = cpu_utilization_threshold;
     }
 
-    public void setIoThroughput(final double io_throughput) {
-        this.io_throughput = io_throughput;
+    public void setHeapAllocRate(final double heap_alloc_rate) {
+        this.heap_alloc_rate = heap_alloc_rate;
     }
 
-    public void setIoThroughputThreshold(final double io_throughput_threshold) {
-        this.io_throughput_threshold = io_throughput_threshold;
-    }
-
-    public void setIoSysCallrate(final double io_sys_callrate) {
-        this.io_sys_callrate = io_sys_callrate;
-    }
-
-    public void setIoSysCallrateThreshold(final double io_sys_callrate_threshold) {
-        this.io_sys_callrate_threshold = io_sys_callrate_threshold;
+    public void setHeapAllocRateThreshold(final double heap_alloc_rate_threshold) {
+        this.heap_alloc_rate_threshold = heap_alloc_rate_threshold;
     }
 
     public String getIndexName() {
@@ -98,12 +89,8 @@ public class HotShardSummary extends GenericSummary {
         return this.cpu_utilization;
     }
 
-    public double getIOThroughput() {
-        return this.io_throughput;
-    }
-
-    public double getIOSysCallrate() {
-        return this.io_sys_callrate;
+    public double getHeapAllocRate() {
+        return this.heap_alloc_rate;
     }
 
     @Override
@@ -115,10 +102,8 @@ public class HotShardSummary extends GenericSummary {
         summaryMessageBuilder.setNodeId(this.nodeId);
         summaryMessageBuilder.setCpuUtilization(this.cpu_utilization);
         summaryMessageBuilder.setCpuUtilizationThreshold(this.cpu_utilization_threshold);
-        summaryMessageBuilder.setIoThroughput(this.io_throughput);
-        summaryMessageBuilder.setIoThroughputThreshold(this.io_throughput_threshold);
-        summaryMessageBuilder.setIoSysCallrate(this.io_sys_callrate);
-        summaryMessageBuilder.setIoSysCallrateThreshold(this.io_sys_callrate_threshold);
+        summaryMessageBuilder.setHeapAllocRate(this.heap_alloc_rate);
+        summaryMessageBuilder.setHeapAllocRateThreshold(this.heap_alloc_rate_threshold);
         summaryMessageBuilder.setTimePeriod(this.timePeriodInSeconds);
         return summaryMessageBuilder.build();
     }
@@ -137,10 +122,8 @@ public class HotShardSummary extends GenericSummary {
                         message.getTimePeriod());
         summary.setcpuUtilization(message.getCpuUtilization());
         summary.setCpuUtilizationThreshold(message.getCpuUtilizationThreshold());
-        summary.setIoThroughput(message.getIoThroughput());
-        summary.setIoThroughputThreshold(message.getIoThroughputThreshold());
-        summary.setIoSysCallrate(message.getIoSysCallrate());
-        summary.setIoSysCallrateThreshold(message.getIoSysCallrateThreshold());
+        summary.setHeapAllocRate(message.getHeapAllocRate());
+        summary.setHeapAllocRateThreshold(message.getHeapAllocRateThreshold());
         return summary;
     }
 
@@ -154,10 +137,8 @@ public class HotShardSummary extends GenericSummary {
                     this.nodeId,
                     String.valueOf(this.cpu_utilization),
                     String.valueOf(this.cpu_utilization_threshold),
-                    String.valueOf(this.io_throughput),
-                    String.valueOf(this.io_throughput_threshold),
-                    String.valueOf(io_sys_callrate),
-                    String.valueOf(io_sys_callrate_threshold)
+                    String.valueOf(this.heap_alloc_rate),
+                    String.valueOf(this.heap_alloc_rate_threshold),
                 });
     }
 
@@ -174,10 +155,8 @@ public class HotShardSummary extends GenericSummary {
         schema.add(HotShardSummaryField.NODE_ID_FIELD.getField());
         schema.add(HotShardSummaryField.CPU_UTILIZATION_FIELD.getField());
         schema.add(HotShardSummaryField.CPU_UTILIZATION_THRESHOLD_FIELD.getField());
-        schema.add(HotShardSummaryField.IO_THROUGHPUT_FIELD.getField());
-        schema.add(HotShardSummaryField.IO_THROUGHPUT_THRESHOLD_FIELD.getField());
-        schema.add(HotShardSummaryField.IO_SYSCALLRATE_FIELD.getField());
-        schema.add(HotShardSummaryField.IO_SYSCALLRATE_THRESHOLD_FIELD.getField());
+        schema.add(HotShardSummaryField.HEAP_ALLOC_RATE_FIELD.getField());
+        schema.add(HotShardSummaryField.HEAP_ALLOC_RATE_THRESHOLD_FIELD.getField());
         schema.add(HotShardSummaryField.TIME_PERIOD_FIELD.getField());
         return schema;
     }
@@ -190,10 +169,8 @@ public class HotShardSummary extends GenericSummary {
         value.add(this.nodeId);
         value.add(this.cpu_utilization);
         value.add(this.cpu_utilization_threshold);
-        value.add(this.io_throughput);
-        value.add(this.io_throughput_threshold);
-        value.add(this.io_sys_callrate);
-        value.add(this.io_sys_callrate_threshold);
+        value.add(this.heap_alloc_rate);
+        value.add(this.heap_alloc_rate_threshold);
         value.add(Integer.valueOf(this.timePeriodInSeconds));
         return value;
     }
@@ -213,14 +190,10 @@ public class HotShardSummary extends GenericSummary {
         summaryObj.addProperty(
                 SQL_SCHEMA_CONSTANTS.CPU_UTILIZATION_THRESHOLD_COL_NAME,
                 this.cpu_utilization_threshold);
-        summaryObj.addProperty(SQL_SCHEMA_CONSTANTS.IO_THROUGHPUT_COL_NAME, this.io_throughput);
+        summaryObj.addProperty(SQL_SCHEMA_CONSTANTS.HEAP_ALLOC_RATE_COL_NAME, this.heap_alloc_rate);
         summaryObj.addProperty(
-                SQL_SCHEMA_CONSTANTS.IO_THROUGHPUT_THRESHOLD_COL_NAME,
-                this.io_throughput_threshold);
-        summaryObj.addProperty(SQL_SCHEMA_CONSTANTS.IO_SYSCALLRATE_COL_NAME, this.io_sys_callrate);
-        summaryObj.addProperty(
-                SQL_SCHEMA_CONSTANTS.IO_SYSCALLRATE_THRESHOLD_COL_NAME,
-                this.io_sys_callrate_threshold);
+                SQL_SCHEMA_CONSTANTS.HEAP_ALLOC_RATE_THRESHOLD_COL_NAME,
+                this.heap_alloc_rate_threshold);
         summaryObj.addProperty(SQL_SCHEMA_CONSTANTS.TIME_PERIOD_COL_NAME, this.timePeriodInSeconds);
         return summaryObj;
     }
@@ -231,10 +204,8 @@ public class HotShardSummary extends GenericSummary {
         public static final String NODE_ID_COL_NAME = "node_id";
         public static final String CPU_UTILIZATION_COL_NAME = "cpu_utilization";
         public static final String CPU_UTILIZATION_THRESHOLD_COL_NAME = "cpu_utilization_threshold";
-        public static final String IO_THROUGHPUT_COL_NAME = "io_throughput";
-        public static final String IO_THROUGHPUT_THRESHOLD_COL_NAME = "io_throughput_threshold";
-        public static final String IO_SYSCALLRATE_COL_NAME = "io_sys_callrate";
-        public static final String IO_SYSCALLRATE_THRESHOLD_COL_NAME = "io_sys_callrate_threshold";
+        public static final String HEAP_ALLOC_RATE_COL_NAME = "heap_alloc_rate";
+        public static final String HEAP_ALLOC_RATE_THRESHOLD_COL_NAME = "heap_alloc_rate_threshold";
         public static final String TIME_PERIOD_COL_NAME = "time_period";
     }
 
@@ -246,12 +217,9 @@ public class HotShardSummary extends GenericSummary {
         CPU_UTILIZATION_FIELD(SQL_SCHEMA_CONSTANTS.CPU_UTILIZATION_COL_NAME, Double.class),
         CPU_UTILIZATION_THRESHOLD_FIELD(
                 SQL_SCHEMA_CONSTANTS.CPU_UTILIZATION_THRESHOLD_COL_NAME, Double.class),
-        IO_THROUGHPUT_FIELD(SQL_SCHEMA_CONSTANTS.IO_THROUGHPUT_COL_NAME, Double.class),
-        IO_THROUGHPUT_THRESHOLD_FIELD(
-                SQL_SCHEMA_CONSTANTS.IO_THROUGHPUT_THRESHOLD_COL_NAME, Double.class),
-        IO_SYSCALLRATE_FIELD(SQL_SCHEMA_CONSTANTS.IO_SYSCALLRATE_COL_NAME, Double.class),
-        IO_SYSCALLRATE_THRESHOLD_FIELD(
-                SQL_SCHEMA_CONSTANTS.IO_SYSCALLRATE_THRESHOLD_COL_NAME, Double.class),
+        HEAP_ALLOC_RATE_FIELD(SQL_SCHEMA_CONSTANTS.HEAP_ALLOC_RATE_COL_NAME, Double.class),
+        HEAP_ALLOC_RATE_THRESHOLD_FIELD(
+                SQL_SCHEMA_CONSTANTS.HEAP_ALLOC_RATE_THRESHOLD_COL_NAME, Double.class),
         TIME_PERIOD_FIELD(SQL_SCHEMA_CONSTANTS.TIME_PERIOD_COL_NAME, Integer.class);
 
         private String name;
@@ -281,6 +249,9 @@ public class HotShardSummary extends GenericSummary {
      */
     @Nullable
     public static HotShardSummary buildSummary(final Record record) {
+        if (record == null) {
+            return null;
+        }
         HotShardSummary summary = null;
         try {
             String indexName =
@@ -294,36 +265,39 @@ public class HotShardSummary extends GenericSummary {
                     record.get(
                             HotShardSummaryField.CPU_UTILIZATION_THRESHOLD_FIELD.getField(),
                             Double.class);
-            Double io_throughput =
-                    record.get(HotShardSummaryField.IO_THROUGHPUT_FIELD.getField(), Double.class);
-            Double io_throughput_threshold =
+            Double heap_alloc_rate =
+                    record.get(HotShardSummaryField.HEAP_ALLOC_RATE_FIELD.getField(), Double.class);
+            Double heap_alloc_rate_threshold =
                     record.get(
-                            HotShardSummaryField.IO_THROUGHPUT_THRESHOLD_FIELD.getField(),
+                            HotShardSummaryField.HEAP_ALLOC_RATE_THRESHOLD_FIELD.getField(),
                             Double.class);
-            Double io_sys_callrate =
-                    record.get(HotShardSummaryField.IO_SYSCALLRATE_FIELD.getField(), Double.class);
-            Double io_sys_callrate_threshold =
-                    record.get(
-                            HotShardSummaryField.IO_SYSCALLRATE_THRESHOLD_FIELD.getField(),
-                            Double.class);
+
             Integer timePeriod =
                     record.get(HotShardSummaryField.TIME_PERIOD_FIELD.getField(), Integer.class);
+            if (timePeriod == null
+                    || cpu_utilization == null
+                    || cpu_utilization_threshold == null
+                    || heap_alloc_rate == null
+                    || heap_alloc_rate_threshold == null) {
+                LOG.warn(
+                        "read null object from SQL, timePeriod: {},  cpu_utilization: {}, cpu_utilization_threshold: {},"
+                                + " heap_alloc_rate: {},  heap_alloc_rate_threshold: {}",
+                        timePeriod,
+                        cpu_utilization,
+                        cpu_utilization_threshold,
+                        heap_alloc_rate,
+                        heap_alloc_rate_threshold);
+                return null;
+            }
             summary = new HotShardSummary(indexName, shardId, nodeId, timePeriod);
             summary.setcpuUtilization(cpu_utilization);
             summary.setCpuUtilizationThreshold(cpu_utilization_threshold);
-            summary.setIoThroughput(io_throughput);
-            summary.setIoThroughputThreshold(io_throughput_threshold);
-            summary.setIoSysCallrate(io_sys_callrate);
-            summary.setIoSysCallrateThreshold(io_sys_callrate_threshold);
+            summary.setHeapAllocRate(heap_alloc_rate);
+            summary.setHeapAllocRateThreshold(heap_alloc_rate_threshold);
         } catch (IllegalArgumentException ie) {
             LOG.error("Some fields might not be found in record, cause : {}", ie.getMessage());
         } catch (DataTypeException de) {
             LOG.error("Fails to convert data type");
-        }
-        // we are very unlikely to catch this exception unless some fields are not persisted
-        // properly.
-        catch (NullPointerException ne) {
-            LOG.error("read null object from SQL, trace : {} ", ne.getStackTrace());
         }
         return summary;
     }
