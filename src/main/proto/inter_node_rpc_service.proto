@@ -101,7 +101,7 @@ enum MetricEnum {
 
   // Heap
   HEAP_MAX = 16 [(additional_fields).name = "heap max", (additional_fields).description = "max heap size in bytes"];
-
+  HEAP_ALLOC_RATE = 17 [(additional_fields).name = "heap alloc rate", (additional_fields).description = "heap alloc rate in bytes per second"];
   // JVM Contd.
   OLD_GEN_USAGE_AFTER_FULL_GC = 31 [(additional_fields).name = "full gc", (additional_fields).description = "old gen usage after full gc in mb"];
   // GC
@@ -152,10 +152,8 @@ message HotShardSummaryMessage {
     string nodeId = 3;
     double cpu_utilization = 4;
     double cpu_utilization_threshold = 5;
-    double io_throughput = 6;
-    double io_throughput_threshold = 7;
-    double io_sys_callrate = 8;
-    double io_sys_callrate_threshold = 9;
+    double heap_alloc_rate = 6;
+    double heap_alloc_rate_threshold = 7;
     int32 timePeriod = 10;
 }
 message HotNodeSummaryMessage {

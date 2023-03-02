@@ -27,6 +27,13 @@ public class ResourceUtil {
                     .setResourceEnum(ResourceEnum.HEAP)
                     .setMetricEnum(MetricEnum.HEAP_MAX)
                     .build();
+
+    public static final Resource HEAP_ALLOC_RATE =
+            Resource.newBuilder()
+                    .setResourceEnum(ResourceEnum.HEAP)
+                    .setMetricEnum(MetricEnum.HEAP_ALLOC_RATE)
+                    .build();
+
     public static final Resource OLD_GEN_HEAP_USAGE =
             Resource.newBuilder()
                     .setResourceEnum(ResourceEnum.OLD_GEN)

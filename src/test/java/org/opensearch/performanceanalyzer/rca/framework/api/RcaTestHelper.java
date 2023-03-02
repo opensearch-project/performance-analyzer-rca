@@ -131,16 +131,13 @@ public class RcaTestHelper<T extends GenericSummary> extends Rca<ResourceFlowUni
             String shardId,
             String nodeID,
             double cpu_utilization,
-            double io_throughput,
-            double io_sys_callrate,
+            double heap_alloc_rate,
             Resources.State health) {
         HotShardSummary hotShardSummary = new HotShardSummary(indexName, shardId, nodeID, 60);
         hotShardSummary.setcpuUtilization(cpu_utilization);
         hotShardSummary.setCpuUtilizationThreshold(0.50);
-        hotShardSummary.setIoThroughput(io_throughput);
-        hotShardSummary.setIoThroughputThreshold(500000);
-        hotShardSummary.setIoSysCallrate(io_sys_callrate);
-        hotShardSummary.setIoSysCallrateThreshold(0.50);
+        hotShardSummary.setHeapAllocRate(heap_alloc_rate);
+        hotShardSummary.setHeapAllocRateThreshold(2500);
         HotNodeSummary nodeSummary =
                 new HotNodeSummary(
                         new InstanceDetails.Id(nodeID), new InstanceDetails.Ip("127.0.0.0"));

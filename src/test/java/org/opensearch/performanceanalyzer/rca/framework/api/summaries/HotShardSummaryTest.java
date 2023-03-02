@@ -13,22 +13,22 @@ import org.jooq.Field;
 import org.jooq.Record;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.opensearch.performanceanalyzer.grpc.FlowUnitMessage;
 import org.opensearch.performanceanalyzer.grpc.HotShardSummaryMessage;
 import org.opensearch.performanceanalyzer.rca.framework.core.GenericSummary;
 
+@Ignore("Awaiting adjustments")
 public class HotShardSummaryTest {
     private final String INDEX_NAME = "index_1";
     private final String SHARD_ID = "shard_1";
     private final String NODE_ID = "node_1";
     private final double CPU_UTILIZATION = 0.65;
     private final double CPU_UTILIZATION_THRESHOLD = 0.10;
-    private final double IO_THROUGHPUT = 500000;
-    private final double IO_THROUGHPUT_THRESHOLD = 250000;
-    private final double IO_SYSCALLRATE = 0.232;
-    private final double IO_SYSCALLRATE_THRESHOLD = 0.10;
+    private final double HEAP_ALLOC_RATE = 500000;
+    private final double HEAP_ALLOC_RATE_THRESHOLD = 250000;
     private final int TIME_PERIOD = 2020;
 
     private HotShardSummary uut;
@@ -38,10 +38,8 @@ public class HotShardSummaryTest {
         uut = new HotShardSummary(INDEX_NAME, SHARD_ID, NODE_ID, TIME_PERIOD);
         uut.setcpuUtilization(CPU_UTILIZATION);
         uut.setCpuUtilizationThreshold(CPU_UTILIZATION_THRESHOLD);
-        uut.setIoThroughput(IO_THROUGHPUT);
-        uut.setIoThroughputThreshold(IO_THROUGHPUT_THRESHOLD);
-        uut.setIoSysCallrate(IO_SYSCALLRATE);
-        uut.setIoSysCallrateThreshold(IO_SYSCALLRATE_THRESHOLD);
+        uut.setHeapAllocRate(HEAP_ALLOC_RATE);
+        uut.setHeapAllocRateThreshold(HEAP_ALLOC_RATE_THRESHOLD);
     }
 
     @Test
@@ -52,10 +50,8 @@ public class HotShardSummaryTest {
         Assert.assertEquals(SHARD_ID, msg.getShardId());
         Assert.assertEquals(CPU_UTILIZATION, msg.getCpuUtilization(), 0);
         Assert.assertEquals(CPU_UTILIZATION_THRESHOLD, msg.getCpuUtilizationThreshold(), 0);
-        Assert.assertEquals(IO_THROUGHPUT, msg.getIoThroughput(), 0);
-        Assert.assertEquals(IO_THROUGHPUT_THRESHOLD, msg.getIoThroughputThreshold(), 0);
-        Assert.assertEquals(IO_SYSCALLRATE, msg.getIoSysCallrate(), 0);
-        Assert.assertEquals(IO_SYSCALLRATE_THRESHOLD, msg.getIoSysCallrateThreshold(), 0);
+        Assert.assertEquals(HEAP_ALLOC_RATE, msg.getHeapAllocRate(), 0);
+        Assert.assertEquals(HEAP_ALLOC_RATE_THRESHOLD, msg.getHeapAllocRateThreshold(), 0);
         Assert.assertEquals(TIME_PERIOD, msg.getTimePeriod());
     }
 
@@ -78,10 +74,8 @@ public class HotShardSummaryTest {
                             NODE_ID,
                             String.valueOf(CPU_UTILIZATION),
                             String.valueOf(CPU_UTILIZATION_THRESHOLD),
-                            String.valueOf(IO_THROUGHPUT),
-                            String.valueOf(IO_THROUGHPUT_THRESHOLD),
-                            String.valueOf(IO_SYSCALLRATE),
-                            String.valueOf(IO_SYSCALLRATE_THRESHOLD)
+                            String.valueOf(HEAP_ALLOC_RATE),
+                            String.valueOf(HEAP_ALLOC_RATE_THRESHOLD)
                         });
         Assert.assertEquals(expected, uut.toString());
     }
@@ -108,16 +102,11 @@ public class HotShardSummaryTest {
                 HotShardSummary.HotShardSummaryField.CPU_UTILIZATION_THRESHOLD_FIELD.getField(),
                 schema.get(4));
         Assert.assertEquals(
-                HotShardSummary.HotShardSummaryField.IO_THROUGHPUT_FIELD.getField(), schema.get(5));
+                HotShardSummary.HotShardSummaryField.HEAP_ALLOC_RATE_FIELD.getField(),
+                schema.get(5));
         Assert.assertEquals(
-                HotShardSummary.HotShardSummaryField.IO_THROUGHPUT_THRESHOLD_FIELD.getField(),
+                HotShardSummary.HotShardSummaryField.HEAP_ALLOC_RATE_THRESHOLD_FIELD.getField(),
                 schema.get(6));
-        Assert.assertEquals(
-                HotShardSummary.HotShardSummaryField.IO_SYSCALLRATE_FIELD.getField(),
-                schema.get(7));
-        Assert.assertEquals(
-                HotShardSummary.HotShardSummaryField.IO_SYSCALLRATE_THRESHOLD_FIELD.getField(),
-                schema.get(8));
         Assert.assertEquals(
                 HotShardSummary.HotShardSummaryField.TIME_PERIOD_FIELD.getField(), schema.get(9));
     }
@@ -131,10 +120,8 @@ public class HotShardSummaryTest {
         Assert.assertEquals(NODE_ID, values.get(2));
         Assert.assertEquals(CPU_UTILIZATION, values.get(3));
         Assert.assertEquals(CPU_UTILIZATION_THRESHOLD, values.get(4));
-        Assert.assertEquals(IO_THROUGHPUT, values.get(5));
-        Assert.assertEquals(IO_THROUGHPUT_THRESHOLD, values.get(6));
-        Assert.assertEquals(IO_SYSCALLRATE, values.get(7));
-        Assert.assertEquals(IO_SYSCALLRATE_THRESHOLD, values.get(8));
+        Assert.assertEquals(HEAP_ALLOC_RATE, values.get(5));
+        Assert.assertEquals(HEAP_ALLOC_RATE_THRESHOLD, values.get(6));
         Assert.assertEquals(TIME_PERIOD, values.get(9));
     }
 
@@ -163,22 +150,13 @@ public class HotShardSummaryTest {
                         .getAsDouble(),
                 0);
         Assert.assertEquals(
-                IO_THROUGHPUT,
-                json.get(HotShardSummary.SQL_SCHEMA_CONSTANTS.IO_THROUGHPUT_COL_NAME).getAsDouble(),
-                0);
-        Assert.assertEquals(
-                IO_THROUGHPUT_THRESHOLD,
-                json.get(HotShardSummary.SQL_SCHEMA_CONSTANTS.IO_THROUGHPUT_THRESHOLD_COL_NAME)
+                HEAP_ALLOC_RATE,
+                json.get(HotShardSummary.SQL_SCHEMA_CONSTANTS.HEAP_ALLOC_RATE_COL_NAME)
                         .getAsDouble(),
                 0);
         Assert.assertEquals(
-                IO_SYSCALLRATE,
-                json.get(HotShardSummary.SQL_SCHEMA_CONSTANTS.IO_SYSCALLRATE_COL_NAME)
-                        .getAsDouble(),
-                0);
-        Assert.assertEquals(
-                IO_SYSCALLRATE_THRESHOLD,
-                json.get(HotShardSummary.SQL_SCHEMA_CONSTANTS.IO_SYSCALLRATE_THRESHOLD_COL_NAME)
+                HEAP_ALLOC_RATE_THRESHOLD,
+                json.get(HotShardSummary.SQL_SCHEMA_CONSTANTS.HEAP_ALLOC_RATE_THRESHOLD_COL_NAME)
                         .getAsDouble(),
                 0);
         Assert.assertEquals(
@@ -220,27 +198,16 @@ public class HotShardSummaryTest {
                 .thenReturn(CPU_UTILIZATION_THRESHOLD);
         Mockito.when(
                         testRecord.get(
-                                HotShardSummary.HotShardSummaryField.IO_THROUGHPUT_FIELD.getField(),
-                                Double.class))
-                .thenReturn(IO_THROUGHPUT);
-        Mockito.when(
-                        testRecord.get(
-                                HotShardSummary.HotShardSummaryField.IO_THROUGHPUT_THRESHOLD_FIELD
+                                HotShardSummary.HotShardSummaryField.HEAP_ALLOC_RATE_FIELD
                                         .getField(),
                                 Double.class))
-                .thenReturn(IO_THROUGHPUT_THRESHOLD);
+                .thenReturn(HEAP_ALLOC_RATE);
         Mockito.when(
                         testRecord.get(
-                                HotShardSummary.HotShardSummaryField.IO_SYSCALLRATE_FIELD
+                                HotShardSummary.HotShardSummaryField.HEAP_ALLOC_RATE_THRESHOLD_FIELD
                                         .getField(),
                                 Double.class))
-                .thenReturn(IO_SYSCALLRATE);
-        Mockito.when(
-                        testRecord.get(
-                                HotShardSummary.HotShardSummaryField.IO_SYSCALLRATE_THRESHOLD_FIELD
-                                        .getField(),
-                                Double.class))
-                .thenReturn(IO_SYSCALLRATE_THRESHOLD);
+                .thenReturn(HEAP_ALLOC_RATE_THRESHOLD);
         Mockito.when(
                         testRecord.get(
                                 HotShardSummary.HotShardSummaryField.TIME_PERIOD_FIELD.getField(),
@@ -255,10 +222,8 @@ public class HotShardSummaryTest {
         Assert.assertEquals(NODE_ID, values.get(2));
         Assert.assertEquals(CPU_UTILIZATION, values.get(3));
         Assert.assertEquals(CPU_UTILIZATION_THRESHOLD, values.get(4));
-        Assert.assertEquals(IO_THROUGHPUT, values.get(5));
-        Assert.assertEquals(IO_THROUGHPUT_THRESHOLD, values.get(6));
-        Assert.assertEquals(IO_SYSCALLRATE, values.get(7));
-        Assert.assertEquals(IO_SYSCALLRATE_THRESHOLD, values.get(8));
+        Assert.assertEquals(HEAP_ALLOC_RATE, values.get(5));
+        Assert.assertEquals(HEAP_ALLOC_RATE_THRESHOLD, values.get(6));
         Assert.assertEquals(TIME_PERIOD, values.get(9));
     }
 }

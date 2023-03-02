@@ -38,10 +38,9 @@ import org.opensearch.performanceanalyzer.rca.framework.api.metrics.Cache_Reques
 import org.opensearch.performanceanalyzer.rca.framework.api.metrics.GC_Collection_Event;
 import org.opensearch.performanceanalyzer.rca.framework.api.metrics.GC_Collection_Time;
 import org.opensearch.performanceanalyzer.rca.framework.api.metrics.GC_Type;
+import org.opensearch.performanceanalyzer.rca.framework.api.metrics.Heap_AllocRate;
 import org.opensearch.performanceanalyzer.rca.framework.api.metrics.Heap_Max;
 import org.opensearch.performanceanalyzer.rca.framework.api.metrics.Heap_Used;
-import org.opensearch.performanceanalyzer.rca.framework.api.metrics.IO_TotThroughput;
-import org.opensearch.performanceanalyzer.rca.framework.api.metrics.IO_TotalSyscallRate;
 import org.opensearch.performanceanalyzer.rca.framework.api.metrics.IndexWriter_Memory;
 import org.opensearch.performanceanalyzer.rca.framework.api.metrics.ThreadPool_QueueCapacity;
 import org.opensearch.performanceanalyzer.rca.framework.api.metrics.ThreadPool_RejectedReqs;
@@ -500,35 +499,26 @@ public class OpenSearchAnalysisGraph extends AnalysisGraph {
 
     private void constructShardResourceUsageGraph() {
         Metric cpuUtilization = new CPU_Utilization(EVALUATION_INTERVAL_SECONDS);
-        Metric ioTotThroughput = new IO_TotThroughput(EVALUATION_INTERVAL_SECONDS);
-        Metric ioTotSyscallRate = new IO_TotalSyscallRate(EVALUATION_INTERVAL_SECONDS);
+        Metric heapAllocRate = new Heap_AllocRate(EVALUATION_INTERVAL_SECONDS);
 
         cpuUtilization.addTag(
                 RcaConsts.RcaTagConstants.TAG_LOCUS,
                 RcaConsts.RcaTagConstants.LOCUS_DATA_CLUSTER_MANAGER_NODE);
-        ioTotThroughput.addTag(
+        heapAllocRate.addTag(
                 RcaConsts.RcaTagConstants.TAG_LOCUS,
                 RcaConsts.RcaTagConstants.LOCUS_DATA_CLUSTER_MANAGER_NODE);
-        ioTotSyscallRate.addTag(
-                RcaConsts.RcaTagConstants.TAG_LOCUS,
-                RcaConsts.RcaTagConstants.LOCUS_DATA_CLUSTER_MANAGER_NODE);
+
         addLeaf(cpuUtilization);
-        addLeaf(ioTotThroughput);
-        addLeaf(ioTotSyscallRate);
+        addLeaf(heapAllocRate);
 
         // High CPU Utilization RCA
         HotShardRca hotShardRca =
                 new HotShardRca(
-                        EVALUATION_INTERVAL_SECONDS,
-                        RCA_PERIOD,
-                        cpuUtilization,
-                        ioTotThroughput,
-                        ioTotSyscallRate);
+                        EVALUATION_INTERVAL_SECONDS, RCA_PERIOD, cpuUtilization, heapAllocRate);
         hotShardRca.addTag(
                 RcaConsts.RcaTagConstants.TAG_LOCUS,
                 RcaConsts.RcaTagConstants.LOCUS_DATA_CLUSTER_MANAGER_NODE);
-        hotShardRca.addAllUpstreams(
-                Arrays.asList(cpuUtilization, ioTotThroughput, ioTotSyscallRate));
+        hotShardRca.addAllUpstreams(Arrays.asList(cpuUtilization, heapAllocRate));
 
         // Hot Shard Cluster RCA which consumes the above
         HotShardClusterRca hotShardClusterRca = new HotShardClusterRca(RCA_PERIOD, hotShardRca);
