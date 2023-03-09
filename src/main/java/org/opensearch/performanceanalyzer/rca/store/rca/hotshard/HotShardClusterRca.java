@@ -52,7 +52,8 @@ public class HotShardClusterRca extends Rca<ResourceFlowUnit<HotClusterSummary>>
     private Set<String> unhealthyNodes;
 
     // Guava Table with Row: 'Index_Name', Column: 'NodeShardKey', Cell Value: 'Value'
-    // TODO: Use the fact that we're getting at max topK*2 consumers from each node and perform further optimization.
+    // TODO: Use the fact that we're getting at max topK*2 consumers from each node and perform
+    // further optimization.
     private Table<String, NodeShardKey, Double> cpuUtilizationInfoTable;
     private Table<String, NodeShardKey, Double> heapAllocRateInfoTable;
 

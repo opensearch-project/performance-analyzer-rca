@@ -213,7 +213,8 @@ public class HotShardRca extends Rca<ResourceFlowUnit<HotNodeSummary>> {
                             .maximumSize(topKConsumers)
                             .create();
 
-            for (Map.Entry<IndexShardKey, SummarizedWindow> entry : shardResourceSummarizationMap.entrySet()) {
+            for (Map.Entry<IndexShardKey, SummarizedWindow> entry :
+                    shardResourceSummarizationMap.entrySet()) {
                 isTopConsumer(
                         cpuUtilTopConsumers,
                         entry.getKey(),
@@ -227,6 +228,15 @@ public class HotShardRca extends Rca<ResourceFlowUnit<HotNodeSummary>> {
                         entry.getValue(),
                         AllMetrics.OSMetrics.HEAP_ALLOC_RATE,
                         heapAllocRateThreshold);
+
+                LOG.error(
+                        "Encountered "
+                                + entry.getKey()
+                                + " with metrics: ("
+                                + entry.getValue().readAvgCpuUtilization(TimeUnit.SECONDS)
+                                + ", "
+                                + entry.getValue().readAvgHeapAllocRate(TimeUnit.SECONDS)
+                                + ")");
             }
 
             shardResourceSummarizationMap.clear();
@@ -234,6 +244,19 @@ public class HotShardRca extends Rca<ResourceFlowUnit<HotNodeSummary>> {
             Map<IndexShardKey, SummarizedWindow> consumersToSend = new HashMap<>();
             drainQueue(cpuUtilTopConsumers, consumersToSend);
             drainQueue(heapAllocRateTopConsumers, consumersToSend);
+
+            LOG.error("SEND_START");
+            for (Map.Entry<IndexShardKey, SummarizedWindow> entry : consumersToSend.entrySet()) {
+                LOG.error(
+                        "Sending "
+                                + entry.getKey()
+                                + " with metrics: ("
+                                + entry.getValue().readAvgCpuUtilization(TimeUnit.SECONDS)
+                                + ", "
+                                + entry.getValue().readAvgHeapAllocRate(TimeUnit.SECONDS)
+                                + ")");
+            }
+            LOG.error("SEND_END");
 
             InstanceDetails instanceDetails = getInstanceDetails();
             HotNodeSummary nodeSummary = summarize(consumersToSend, instanceDetails);
