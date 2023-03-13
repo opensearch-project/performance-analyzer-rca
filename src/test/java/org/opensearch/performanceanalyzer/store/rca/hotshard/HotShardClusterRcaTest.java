@@ -11,7 +11,6 @@ import java.util.Collections;
 import java.util.List;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.opensearch.performanceanalyzer.AppContext;
@@ -28,7 +27,6 @@ import org.opensearch.performanceanalyzer.rca.store.rca.hotshard.HotShardCluster
 import org.opensearch.performanceanalyzer.reader.ClusterDetailsEventProcessor;
 
 @Category(GradleTaskForRca.class)
-@Ignore("Awaiting adjustments")
 public class HotShardClusterRcaTest {
 
     private RcaTestHelper hotShardRca;
@@ -98,9 +96,8 @@ public class HotShardClusterRcaTest {
     }
 
     // 3. Healthy FlowUnits received, i.e :
-    //     CPU_UTILIZATION < CPU_UTILIZATION_threshold
-    // and IO_THROUGHPUT < IO_THROUGHPUT_threshold
-    // and IO_SYSCALLRATE < IO_SYSCALLRATE_threshold
+    // CPU_UTILIZATION < CPU_UTILIZATION_threshold
+    // and HEAP_ALLOC_RATE < HEAP_ALLOC_RATE_threshold
     @Test
     public void testOperateForHealthyFlowUnits() {
         // 3.1  Flow Units received from single node
@@ -241,8 +238,8 @@ public class HotShardClusterRcaTest {
         Assert.assertEquals(index.index_2.name(), nodeIndexShardInfo2[1]);
         Assert.assertEquals(shard.shard_2.name(), nodeIndexShardInfo2[2]);
 
-        // 4.3  hot shards across multiple indices as per IO Total Throughput,
-        // ie. : IO_TOTAL_THROUGHPUT >= IO_TOTAL_THROUGHPUT_threshold
+        // 4.3  hot shards across multiple indices as per Heap alloc rate, CPU_Utilization
+        // ie. : HEAP_ALLOC_RATE >= HEAP_ALLOC_RATE_threshold
         hotShardRca.mockFlowUnits(
                 Arrays.asList(
                         RcaTestHelper.generateFlowUnitForHotShard(
@@ -297,11 +294,9 @@ public class HotShardClusterRcaTest {
         List<Object> hotShard3 = nodeSummary.getNestedSummaryList().get(0).getSqlValue();
         List<Object> hotShard4 = nodeSummary.getNestedSummaryList().get(1).getSqlValue();
 
-        // verify the resource type, IO total throughput, node ID, Index Name, shard ID
-        Assert.assertEquals(
-                ResourceUtil.IO_TOTAL_THROUGHPUT.getResourceEnumValue(), hotShard3.get(0));
-        Assert.assertEquals(
-                ResourceUtil.IO_TOTAL_THROUGHPUT.getResourceEnumValue(), hotShard4.get(0));
+        // verify the resource type, Heap alloc rate, node ID, Index Name, shard ID
+        Assert.assertEquals(ResourceUtil.HEAP_ALLOC_RATE.getResourceEnumValue(), hotShard3.get(0));
+        Assert.assertEquals(ResourceUtil.HEAP_ALLOC_RATE.getResourceEnumValue(), hotShard4.get(0));
 
         Assert.assertEquals(550000.0, hotShard3.get(3));
         String[] nodeIndexShardInfo3 = hotShard3.get(8).toString().split(" ");
@@ -315,23 +310,24 @@ public class HotShardClusterRcaTest {
         Assert.assertEquals(index.index_2.name(), nodeIndexShardInfo4[1]);
         Assert.assertEquals(shard.shard_1.name(), nodeIndexShardInfo4[2]);
 
-        // 4.4  hot shards across multiple indices as per IO Total Throughput,
-        // ie. : IO_TOTAL_SYS_CALLRATE >= IO_TOTAL_SYS_CALLRATE_threshold
+        // 4.4  hot shards across indices as per Heap Alloc Rate,
+        // ie. : HEAP_ALLOC_RATE >= HEAP_ALLOC_RATE_threshold
+        // and CPU_UTILIZATION >= CPU_UTILIZATION_threshold
         hotShardRca.mockFlowUnits(
                 Arrays.asList(
                         RcaTestHelper.generateFlowUnitForHotShard(
                                 index.index_1.name(),
                                 shard.shard_1.name(),
                                 node.node_1.name(),
-                                0.45,
-                                490000,
+                                0.80,
+                                400000,
                                 Resources.State.UNHEALTHY),
                         RcaTestHelper.generateFlowUnitForHotShard(
                                 index.index_1.name(),
                                 shard.shard_2.name(),
                                 node.node_1.name(),
                                 0.50,
-                                400000,
+                                370000,
                                 Resources.State.UNHEALTHY),
                         RcaTestHelper.generateFlowUnitForHotShard(
                                 index.index_1.name(),
@@ -345,14 +341,14 @@ public class HotShardClusterRcaTest {
                                 shard.shard_1.name(),
                                 node.node_1.name(),
                                 0.20,
-                                350000,
+                                250000,
                                 Resources.State.UNHEALTHY),
                         RcaTestHelper.generateFlowUnitForHotShard(
                                 index.index_2.name(),
                                 shard.shard_2.name(),
                                 node.node_2.name(),
                                 0.25,
-                                370000,
+                                550000,
                                 Resources.State.UNHEALTHY)));
 
         ResourceFlowUnit flowUnit4 = hotShardClusterRca.operate();
@@ -364,19 +360,17 @@ public class HotShardClusterRcaTest {
         List<Object> hotShard5 = nodeSummary.getNestedSummaryList().get(0).getSqlValue();
         List<Object> hotShard6 = nodeSummary.getNestedSummaryList().get(1).getSqlValue();
 
-        // verify the resource type, IO total sys callrate, node ID, Index Name, shard ID
-        Assert.assertEquals(
-                ResourceUtil.IO_TOTAL_SYS_CALLRATE.getResourceEnumValue(), hotShard5.get(0));
-        Assert.assertEquals(
-                ResourceUtil.IO_TOTAL_SYS_CALLRATE.getResourceEnumValue(), hotShard6.get(0));
+        // verify the resource type, cpu usage and heap alloc rate, node ID, Index Name, shard ID
+        Assert.assertEquals(ResourceUtil.CPU_USAGE.getResourceEnumValue(), hotShard5.get(0));
+        Assert.assertEquals(ResourceUtil.HEAP_ALLOC_RATE.getResourceEnumValue(), hotShard6.get(0));
 
-        Assert.assertEquals(0.75, hotShard5.get(3));
+        Assert.assertEquals(0.80, hotShard5.get(3));
         String[] nodeIndexShardInfo5 = hotShard5.get(8).toString().split(" ");
         Assert.assertEquals(node.node_1.name(), nodeIndexShardInfo5[0]);
         Assert.assertEquals(index.index_1.name(), nodeIndexShardInfo5[1]);
         Assert.assertEquals(shard.shard_1.name(), nodeIndexShardInfo5[2]);
 
-        Assert.assertEquals(0.50, hotShard6.get(3));
+        Assert.assertEquals(550000.0, hotShard6.get(3));
         String[] nodeIndexShardInfo6 = hotShard6.get(8).toString().split(" ");
         Assert.assertEquals(node.node_2.name(), nodeIndexShardInfo6[0]);
         Assert.assertEquals(index.index_2.name(), nodeIndexShardInfo6[1]);
@@ -386,8 +380,8 @@ public class HotShardClusterRcaTest {
     // 5. UnHealthy FlowUnits received, hot shard identification on multiple Dimension
     @Test
     public void testOperateForHotShardonMultipleDimension() {
-        // CPU_UTILIZATION >= CPU_UTILIZATION_threshold, IO_TOTAL_SYS_CALLRATE >=
-        // IO_TOTAL_SYS_CALLRATE_threshold
+        // CPU_UTILIZATION >= CPU_UTILIZATION_threshold, HEAP_ALLOC_RATE >=
+        // HEAP_ALLOC_RATE_threshold
         hotShardRca.mockFlowUnits(
                 Arrays.asList(
                         RcaTestHelper.generateFlowUnitForHotShard(
@@ -431,16 +425,12 @@ public class HotShardClusterRcaTest {
 
         Assert.assertEquals(1, flowUnit2.getSummary().getNestedSummaryList().size());
         GenericSummary nodeSummary = flowUnit2.getSummary().getNestedSummaryList().get(0);
-        Assert.assertEquals(3, nodeSummary.getNestedSummaryList().size());
+        Assert.assertEquals(2, nodeSummary.getNestedSummaryList().size());
         List<Object> hotShard1 = nodeSummary.getNestedSummaryList().get(0).getSqlValue();
         List<Object> hotShard2 = nodeSummary.getNestedSummaryList().get(1).getSqlValue();
-        List<Object> hotShard3 = nodeSummary.getNestedSummaryList().get(2).getSqlValue();
 
         Assert.assertEquals(ResourceUtil.CPU_USAGE.getResourceEnumValue(), hotShard1.get(0));
-        Assert.assertEquals(
-                ResourceUtil.IO_TOTAL_THROUGHPUT.getResourceEnumValue(), hotShard2.get(0));
-        Assert.assertEquals(
-                ResourceUtil.IO_TOTAL_SYS_CALLRATE.getResourceEnumValue(), hotShard3.get(0));
+        Assert.assertEquals(ResourceUtil.HEAP_ALLOC_RATE.getResourceEnumValue(), hotShard2.get(0));
 
         // verify the resource type, cpu utilization value, node ID, Index Name, shard ID
         Assert.assertEquals(0.75, hotShard1.get(3));
@@ -449,18 +439,11 @@ public class HotShardClusterRcaTest {
         Assert.assertEquals(index.index_1.name(), nodeIndexShardInfo1[1]);
         Assert.assertEquals(shard.shard_1.name(), nodeIndexShardInfo1[2]);
 
-        // verify the resource type, IO total throughput, node ID, Index Name, shard ID
+        // verify the resource type, heap alloc rate, node ID, Index Name, shard ID
         Assert.assertEquals(560000.0, hotShard2.get(3));
         String[] nodeIndexShardInfo2 = hotShard2.get(8).toString().split(" ");
         Assert.assertEquals(node.node_1.name(), nodeIndexShardInfo2[0]);
         Assert.assertEquals(index.index_1.name(), nodeIndexShardInfo2[1]);
         Assert.assertEquals(shard.shard_2.name(), nodeIndexShardInfo2[2]);
-
-        // verify the resource type, IO total sys callrate, node ID, Index Name, shard ID
-        Assert.assertEquals(0.50, hotShard3.get(3));
-        String[] nodeIndexShardInfo3 = hotShard3.get(8).toString().split(" ");
-        Assert.assertEquals(node.node_2.name(), nodeIndexShardInfo3[0]);
-        Assert.assertEquals(index.index_2.name(), nodeIndexShardInfo3[1]);
-        Assert.assertEquals(shard.shard_2.name(), nodeIndexShardInfo3[2]);
     }
 }
