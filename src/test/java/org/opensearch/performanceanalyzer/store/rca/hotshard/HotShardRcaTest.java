@@ -15,7 +15,6 @@ import java.util.Collections;
 import java.util.List;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.opensearch.performanceanalyzer.AppContext;
@@ -32,7 +31,6 @@ import org.opensearch.performanceanalyzer.rca.store.rca.hotshard.HotShardRca;
 import org.opensearch.performanceanalyzer.reader.ClusterDetailsEventProcessor;
 
 @Category(GradleTaskForRca.class)
-@Ignore("Awaiting adjustments")
 public class HotShardRcaTest {
 
     private HotShardRcaX hotShardRcaX;
@@ -93,8 +91,7 @@ public class HotShardRcaTest {
         Clock constantClock = Clock.fixed(ofEpochMilli(0), ZoneId.systemDefault());
 
         // ts = 0
-        // index = index_1, shard = shard_1, cpuUtilization = 0, ioTotThroughput = 0,
-        // ioTotSyscallRate = 0
+        // index = index_1, shard = shard_1, cpuUtilization = 0, heapAllocRate = 0
         cpuUtilization.createTestFlowUnits(
                 columnName, Arrays.asList(index.index_1.toString(), "1", String.valueOf(0)));
         heapAllocRate.createTestFlowUnits(
@@ -105,8 +102,7 @@ public class HotShardRcaTest {
         Assert.assertFalse(flowUnit.getResourceContext().isUnhealthy());
 
         // ts = 1
-        // index = index_1, shard = shard_1, cpuUtilization = 0.005, ioTotThroughput = 200000,
-        // ioTotSyscallRate = 0.005
+        // index = index_1, shard = shard_1, cpuUtilization = 0.005, heapAllocRate = 200000
         cpuUtilization.createTestFlowUnits(
                 columnName, Arrays.asList(index.index_1.toString(), "1", String.valueOf(0.005)));
         heapAllocRate.createTestFlowUnits(
@@ -117,8 +113,7 @@ public class HotShardRcaTest {
         Assert.assertFalse(flowUnit.getResourceContext().isUnhealthy());
 
         // ts = 2
-        // index = index_1, shard = shard_1, cpuUtilization = 0.75, ioTotThroughput = 200000,
-        // ioTotSyscallRate = 0.005
+        // index = index_1, shard = shard_1, cpuUtilization = 0.75, heapAllocRate = 200000
         cpuUtilization.createTestFlowUnits(
                 columnName, Arrays.asList(index.index_1.toString(), "1", String.valueOf(0.75)));
         heapAllocRate.createTestFlowUnits(
@@ -138,27 +133,22 @@ public class HotShardRcaTest {
         Assert.assertEquals("node1", hotShardSummary1.getNodeId());
 
         // ts = 3
-        // index = index_1, shard = shard_2, cpuUtilization = 0.75, ioTotThroughput = 400000,
-        // ioTotSyscallRate = 0.10
-        //
-        // and
-        // ts = 4
-        // index = index_1, shard = shard_2, cpuUtilization = 0.25, ioTotThroughput = 100000,
-        // ioTotSyscallRate = 0.10
-        cpuUtilization.createTestFlowUnits(
-                columnName, Arrays.asList(index.index_1.toString(), "2", String.valueOf(0.75)));
-        heapAllocRate.createTestFlowUnits(
-                columnName, Arrays.asList(index.index_1.toString(), "2", String.valueOf(400000)));
+        // index = index_1, shard = shard_2, cpuUtilization = 0.75, heapAllocRate = 100000
+        // index = index_1, shard = shard_3, cpuUtilization = 0.45, heapAllocRate = 1500000
+
+        cpuUtilization.createTestFlowUnitsWithMultipleRows(
+                columnName,
+                Arrays.asList(
+                        Arrays.asList(index.index_1.toString(), "2", String.valueOf(0.75)),
+                        Arrays.asList(index.index_1.toString(), "3", String.valueOf(0.45))));
+        heapAllocRate.createTestFlowUnitsWithMultipleRows(
+                columnName,
+                Arrays.asList(
+                        Arrays.asList(index.index_1.toString(), "2", String.valueOf(400000)),
+                        Arrays.asList(index.index_1.toString(), "3", String.valueOf(1500000))));
 
         hotShardRcaX.setClock(Clock.offset(constantClock, Duration.ofSeconds(3)));
-        flowUnit = hotShardRcaX.operate();
 
-        cpuUtilization.createTestFlowUnits(
-                columnName, Arrays.asList(index.index_1.toString(), "2", String.valueOf(0.25)));
-        heapAllocRate.createTestFlowUnits(
-                columnName, Arrays.asList(index.index_1.toString(), "2", String.valueOf(100000)));
-
-        hotShardRcaX.setClock(Clock.offset(constantClock, Duration.ofSeconds(4)));
         flowUnit = hotShardRcaX.operate();
         HotNodeSummary summary2 = (HotNodeSummary) flowUnit.getSummary();
         List<GenericSummary> hotShardSummaryList2 = summary2.getNestedSummaryList();
@@ -169,10 +159,11 @@ public class HotShardRcaTest {
         HotShardSummary hotShardSummary2 = (HotShardSummary) hotShardSummaryList2.get(0);
         HotShardSummary hotShardSummary3 = (HotShardSummary) hotShardSummaryList2.get(1);
         Assert.assertEquals(index.index_1.toString(), hotShardSummary2.getIndexName());
-        Assert.assertEquals("1", hotShardSummary2.getShardId());
+        Assert.assertEquals("2", hotShardSummary2.getShardId());
         Assert.assertEquals("node1", hotShardSummary2.getNodeId());
-        Assert.assertEquals("2", hotShardSummary3.getShardId());
+
         Assert.assertEquals(index.index_1.toString(), hotShardSummary3.getIndexName());
+        Assert.assertEquals("3", hotShardSummary3.getShardId());
         Assert.assertEquals("node1", hotShardSummary3.getNodeId());
     }
 
