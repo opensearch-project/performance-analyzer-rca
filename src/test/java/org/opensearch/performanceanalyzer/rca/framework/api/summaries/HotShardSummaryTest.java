@@ -13,14 +13,12 @@ import org.jooq.Field;
 import org.jooq.Record;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.opensearch.performanceanalyzer.grpc.FlowUnitMessage;
 import org.opensearch.performanceanalyzer.grpc.HotShardSummaryMessage;
 import org.opensearch.performanceanalyzer.rca.framework.core.GenericSummary;
 
-@Ignore("Awaiting adjustments")
 public class HotShardSummaryTest {
     private final String INDEX_NAME = "index_1";
     private final String SHARD_ID = "shard_1";
@@ -88,7 +86,7 @@ public class HotShardSummaryTest {
     @Test
     public void testGetSqlSchema() {
         List<Field<?>> schema = uut.getSqlSchema();
-        Assert.assertEquals(10, schema.size());
+        Assert.assertEquals(8, schema.size());
         Assert.assertEquals(
                 HotShardSummary.HotShardSummaryField.INDEX_NAME_FIELD.getField(), schema.get(0));
         Assert.assertEquals(
@@ -108,13 +106,13 @@ public class HotShardSummaryTest {
                 HotShardSummary.HotShardSummaryField.HEAP_ALLOC_RATE_THRESHOLD_FIELD.getField(),
                 schema.get(6));
         Assert.assertEquals(
-                HotShardSummary.HotShardSummaryField.TIME_PERIOD_FIELD.getField(), schema.get(9));
+                HotShardSummary.HotShardSummaryField.TIME_PERIOD_FIELD.getField(), schema.get(7));
     }
 
     @Test
     public void testGetSqlValue() {
         List<Object> values = uut.getSqlValue();
-        Assert.assertEquals(10, values.size());
+        Assert.assertEquals(8, values.size());
         Assert.assertEquals(INDEX_NAME, values.get(0));
         Assert.assertEquals(SHARD_ID, values.get(1));
         Assert.assertEquals(NODE_ID, values.get(2));
@@ -122,7 +120,7 @@ public class HotShardSummaryTest {
         Assert.assertEquals(CPU_UTILIZATION_THRESHOLD, values.get(4));
         Assert.assertEquals(HEAP_ALLOC_RATE, values.get(5));
         Assert.assertEquals(HEAP_ALLOC_RATE_THRESHOLD, values.get(6));
-        Assert.assertEquals(TIME_PERIOD, values.get(9));
+        Assert.assertEquals(TIME_PERIOD, values.get(7));
     }
 
     @Test
@@ -216,7 +214,7 @@ public class HotShardSummaryTest {
         GenericSummary summary = HotShardSummary.buildSummary(testRecord);
         Assert.assertNotNull(summary);
         List<Object> values = summary.getSqlValue();
-        Assert.assertEquals(10, values.size());
+        Assert.assertEquals(8, values.size());
         Assert.assertEquals(INDEX_NAME, values.get(0));
         Assert.assertEquals(SHARD_ID, values.get(1));
         Assert.assertEquals(NODE_ID, values.get(2));
@@ -224,6 +222,6 @@ public class HotShardSummaryTest {
         Assert.assertEquals(CPU_UTILIZATION_THRESHOLD, values.get(4));
         Assert.assertEquals(HEAP_ALLOC_RATE, values.get(5));
         Assert.assertEquals(HEAP_ALLOC_RATE_THRESHOLD, values.get(6));
-        Assert.assertEquals(TIME_PERIOD, values.get(9));
+        Assert.assertEquals(TIME_PERIOD, values.get(7));
     }
 }
