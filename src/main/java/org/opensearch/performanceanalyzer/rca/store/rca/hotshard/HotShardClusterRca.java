@@ -94,16 +94,27 @@ public class HotShardClusterRca extends Rca<ResourceFlowUnit<HotClusterSummary>>
                 String indexName = hotShardSummary.getIndexName();
                 NodeShardKey nodeShardKey = new NodeShardKey(nodeId, hotShardSummary.getShardId());
 
+                LOG.error(
+                        "*CLUSTER* Encountered:  "
+                                + "["
+                                + indexName
+                                + "]["
+                                + hotShardSummary.getShardId()
+                                + "] with metric: "
+                                + hotShardSummary.getResourceValue()
+                                + " ["
+                                + hotShardSummary.getResource().getMetricEnum().toString()
+                                + "].");
+
+                Table<String, NodeShardKey, Double> infoTableToPopulate = cpuUtilizationInfoTable;
+                if (ResourceUtil.HEAP_ALLOC_RATE.equals(hotShardSummary.getResource())) {
+                    infoTableToPopulate = heapAllocRateInfoTable;
+                }
                 populateResourceInfoTable(
                         indexName,
                         nodeShardKey,
-                        hotShardSummary.getCpuUtilization(),
-                        cpuUtilizationInfoTable);
-                populateResourceInfoTable(
-                        indexName,
-                        nodeShardKey,
-                        hotShardSummary.getHeapAllocRate(),
-                        heapAllocRateInfoTable);
+                        hotShardSummary.getResourceValue(),
+                        infoTableToPopulate);
             }
         }
     }
@@ -160,6 +171,18 @@ public class HotShardClusterRca extends Rca<ResourceFlowUnit<HotClusterSummary>>
                                     });
 
                     // Add to hotResourceSummaryList
+                    LOG.error(
+                            "*CLUSTER* Hot identified:  "
+                                    + "["
+                                    + indexName
+                                    + "]["
+                                    + shardInfo.getKey().getShardId()
+                                    + "] with value: "
+                                    + shardInfo.getValue()
+                                    + " ["
+                                    + resource.getMetricEnum().toString()
+                                    + "]");
+
                     hotResourceSummaryList.add(
                             new HotResourceSummary(
                                     resource,
@@ -182,7 +205,6 @@ public class HotShardClusterRca extends Rca<ResourceFlowUnit<HotClusterSummary>>
     @Override
     public ResourceFlowUnit<HotClusterSummary> operate() {
         counter++;
-
         // Populate the Table, compiling the information per index
         final List<ResourceFlowUnit<HotNodeSummary>> resourceFlowUnits = hotShardRca.getFlowUnits();
         for (final ResourceFlowUnit<HotNodeSummary> resourceFlowUnit : resourceFlowUnits) {

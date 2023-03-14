@@ -83,6 +83,14 @@ public class HotShardRca extends Rca<ResourceFlowUnit<HotNodeSummary>> {
         this.topKConsumers = HotShardRcaConfig.DEFAULT_TOP_K_CONSUMERS;
     }
 
+    private double getResourceThreshold(AllMetrics.OSMetrics metricType) {
+        if (AllMetrics.OSMetrics.HEAP_ALLOC_RATE.equals(metricType)) {
+            return heapAllocRateThreshold;
+        } else {
+            return cpuUtilizationThreshold;
+        }
+    }
+
     private void consumeFlowUnit(
             final MetricFlowUnit metricFlowUnit, AllMetrics.OSMetrics metricType) {
         for (Record record : metricFlowUnit.getData()) {
@@ -143,30 +151,18 @@ public class HotShardRca extends Rca<ResourceFlowUnit<HotNodeSummary>> {
         }
     }
 
-    private void drainQueue(
+    private void summarize(
+            HotNodeSummary nodeSummary,
             MinMaxPriorityQueue<NamedSummarizedWindow> queue,
-            Map<IndexShardKey, SummarizedWindow> consumersToSend) {
+            InstanceDetails instanceDetails,
+            AllMetrics.OSMetrics metricType) {
+
         while (!queue.isEmpty()) {
             NamedSummarizedWindow candidate = queue.remove();
-            if (consumersToSend.containsKey(candidate.indexShardKey)) {
-                continue;
-            }
-            consumersToSend.put(candidate.indexShardKey, candidate.summarizedWindow);
-        }
-    }
-
-    private HotNodeSummary summarize(
-            Map<IndexShardKey, SummarizedWindow> consumersToSend, InstanceDetails instanceDetails) {
-
-        HotNodeSummary nodeSummary =
-                new HotNodeSummary(
-                        instanceDetails.getInstanceId(), instanceDetails.getInstanceIp());
-
-        for (Map.Entry<IndexShardKey, SummarizedWindow> entry : consumersToSend.entrySet()) {
-
-            IndexShardKey indexShardKey = entry.getKey();
-            double avgCpuUtilization = entry.getValue().readAvgCpuUtilization(TimeUnit.SECONDS);
-            double avgHeapAllocRate = entry.getValue().readAvgHeapAllocRate(TimeUnit.SECONDS);
+            IndexShardKey indexShardKey = candidate.indexShardKey;
+            double avgResourceValue =
+                    candidate.summarizedWindow.readAvgMetricValue(TimeUnit.SECONDS, metricType);
+            double resourceThreshold = getResourceThreshold(metricType);
 
             HotShardSummary summary =
                     new HotShardSummary(
@@ -175,15 +171,21 @@ public class HotShardRca extends Rca<ResourceFlowUnit<HotNodeSummary>> {
                             instanceDetails.getInstanceId().toString(),
                             SLIDING_WINDOW_IN_SECONDS);
 
-            summary.setcpuUtilization(avgCpuUtilization);
-            summary.setCpuUtilizationThreshold(cpuUtilizationThreshold);
-            summary.setHeapAllocRate(avgHeapAllocRate);
-            summary.setHeapAllocRateThreshold(heapAllocRateThreshold);
+            LOG.error(
+                    "Sending "
+                            + indexShardKey
+                            + " with metric: "
+                            + avgResourceValue
+                            + " ["
+                            + metricType
+                            + "].");
+
+            summary.setResourceValue(avgResourceValue);
+            summary.setResourceThreshold(resourceThreshold);
+            summary.setResource(metricType.toString());
 
             nodeSummary.appendNestedSummary(summary);
         }
-
-        return nodeSummary;
     }
 
     /**
@@ -241,25 +243,24 @@ public class HotShardRca extends Rca<ResourceFlowUnit<HotNodeSummary>> {
 
             shardResourceSummarizationMap.clear();
 
-            Map<IndexShardKey, SummarizedWindow> consumersToSend = new HashMap<>();
-            drainQueue(cpuUtilTopConsumers, consumersToSend);
-            drainQueue(heapAllocRateTopConsumers, consumersToSend);
-
             LOG.error("SEND_START");
-            for (Map.Entry<IndexShardKey, SummarizedWindow> entry : consumersToSend.entrySet()) {
-                LOG.error(
-                        "Sending "
-                                + entry.getKey()
-                                + " with metrics: ("
-                                + entry.getValue().readAvgCpuUtilization(TimeUnit.SECONDS)
-                                + ", "
-                                + entry.getValue().readAvgHeapAllocRate(TimeUnit.SECONDS)
-                                + ")");
-            }
-            LOG.error("SEND_END");
 
             InstanceDetails instanceDetails = getInstanceDetails();
-            HotNodeSummary nodeSummary = summarize(consumersToSend, instanceDetails);
+            HotNodeSummary nodeSummary =
+                    new HotNodeSummary(
+                            instanceDetails.getInstanceId(), instanceDetails.getInstanceIp());
+            LOG.error("SEND_START");
+            summarize(
+                    nodeSummary,
+                    heapAllocRateTopConsumers,
+                    instanceDetails,
+                    AllMetrics.OSMetrics.HEAP_ALLOC_RATE);
+            summarize(
+                    nodeSummary,
+                    cpuUtilTopConsumers,
+                    instanceDetails,
+                    AllMetrics.OSMetrics.CPU_UTILIZATION);
+            LOG.error("SEND_END");
             ResourceContext context =
                     new ResourceContext(
                             nodeSummary.getNestedSummaryList().isEmpty()

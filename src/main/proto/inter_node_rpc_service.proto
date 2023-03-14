@@ -150,10 +150,9 @@ message HotShardSummaryMessage {
     string indexName = 1;
     string shardId = 2;
     string nodeId = 3;
-    double cpu_utilization = 4;
-    double cpu_utilization_threshold = 5;
-    double heap_alloc_rate = 6;
-    double heap_alloc_rate_threshold = 7;
+    double resourceValue = 4;
+    double resourceThreshold = 5;
+    Resource resource = 6;
     int32 timePeriod = 10;
 }
 message HotNodeSummaryMessage {
