@@ -34,7 +34,7 @@ import org.opensearch.performanceanalyzer.rca.scheduler.FlowUnitOperationArgWrap
 
 /**
  * This RCA is used to find hot shards per index in a cluster using the HotShardSummary sent from
- * each node via 'HotShardRca'. If the resource utilization is (threshold)% higher than the mean
+ * each node via {@link HotShardRca}. If the resource utilization is (threshold)% higher than the median
  * resource utilization for the index, we declare the shard hot.
  */
 public class HotShardClusterRca extends Rca<ResourceFlowUnit<HotClusterSummary>> {
@@ -93,19 +93,7 @@ public class HotShardClusterRca extends Rca<ResourceFlowUnit<HotClusterSummary>>
                 HotShardSummary hotShardSummary = (HotShardSummary) summary;
                 String indexName = hotShardSummary.getIndexName();
                 NodeShardKey nodeShardKey = new NodeShardKey(nodeId, hotShardSummary.getShardId());
-
-                LOG.error(
-                        "*CLUSTER* Encountered:  "
-                                + "["
-                                + indexName
-                                + "]["
-                                + hotShardSummary.getShardId()
-                                + "] with metric: "
-                                + hotShardSummary.getResourceValue()
-                                + " ["
-                                + hotShardSummary.getResource().getMetricEnum().toString()
-                                + "].");
-
+                // Incoming FlowUnits have to be triaged based on their resource and metric type
                 Table<String, NodeShardKey, Double> infoTableToPopulate = cpuUtilizationInfoTable;
                 if (ResourceUtil.HEAP_ALLOC_RATE.equals(hotShardSummary.getResource())) {
                     infoTableToPopulate = heapAllocRateInfoTable;
@@ -171,18 +159,6 @@ public class HotShardClusterRca extends Rca<ResourceFlowUnit<HotClusterSummary>>
                                     });
 
                     // Add to hotResourceSummaryList
-                    LOG.error(
-                            "*CLUSTER* Hot identified:  "
-                                    + "["
-                                    + indexName
-                                    + "]["
-                                    + shardInfo.getKey().getShardId()
-                                    + "] with value: "
-                                    + shardInfo.getValue()
-                                    + " ["
-                                    + resource.getMetricEnum().toString()
-                                    + "]");
-
                     hotResourceSummaryList.add(
                             new HotResourceSummary(
                                     resource,

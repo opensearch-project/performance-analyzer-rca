@@ -21,6 +21,7 @@ import org.opensearch.performanceanalyzer.rca.framework.api.metrics.CPU_Utilizat
 import org.opensearch.performanceanalyzer.rca.framework.api.summaries.HotClusterSummary;
 import org.opensearch.performanceanalyzer.rca.framework.api.summaries.HotNodeSummary;
 import org.opensearch.performanceanalyzer.rca.framework.api.summaries.HotShardSummary;
+import org.opensearch.performanceanalyzer.rca.framework.api.summaries.ResourceUtil;
 import org.opensearch.performanceanalyzer.rca.framework.util.InstanceDetails;
 import org.opensearch.performanceanalyzer.rca.scheduler.FlowUnitOperationArgWrapper;
 import org.opensearch.performanceanalyzer.rca.store.OpenSearchAnalysisGraph;
@@ -92,7 +93,8 @@ public class SimpleAnalysisGraph extends OpenSearchAnalysisGraph {
                                 String.valueOf(indexShardKey.getShardId()),
                                 instanceDetails.getInstanceId().toString(),
                                 0);
-                summary.setcpuUtilization(maxCpu);
+                summary.setResourceValue(maxCpu);
+                summary.setResource(ResourceUtil.CPU_USAGE);
                 nodeSummary.appendNestedSummary(summary);
                 rfu =
                         new ResourceFlowUnit<>(
@@ -145,7 +147,7 @@ public class SimpleAnalysisGraph extends OpenSearchAnalysisGraph {
                 }
                 HotNodeSummary nodeSummary = resourceFlowUnit.getSummary();
                 HotShardSummary hotShardSummary = nodeSummary.getHotShardSummaryList().get(0);
-                double cpu = hotShardSummary.getCpuUtilization();
+                double cpu = hotShardSummary.getResourceValue();
                 if (cpu > cpuUtilization) {
                     hotNodeId = nodeSummary.getNodeID();
                     hotsNodeAddr = nodeSummary.getHostAddress();
@@ -162,7 +164,8 @@ public class SimpleAnalysisGraph extends OpenSearchAnalysisGraph {
                 HotNodeSummary hotNodeSummary = new HotNodeSummary(hotNodeId, hotsNodeAddr);
                 HotShardSummary hotShardSummary =
                         new HotShardSummary(hotShardIndex, hotShard, hotNodeId.toString(), 0);
-                hotShardSummary.setcpuUtilization(cpuUtilization);
+                hotShardSummary.setResourceValue(cpuUtilization);
+                hotShardSummary.setResource(ResourceUtil.CPU_USAGE);
                 hotNodeSummary.appendNestedSummary(hotShardSummary);
                 hotClusterSummary.appendNestedSummary(hotNodeSummary);
 

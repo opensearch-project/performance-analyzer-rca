@@ -16,6 +16,7 @@ import org.opensearch.performanceanalyzer.rca.framework.api.flow_units.ResourceF
 import org.opensearch.performanceanalyzer.rca.framework.api.summaries.HotNodeSummary;
 import org.opensearch.performanceanalyzer.rca.framework.api.summaries.HotResourceSummary;
 import org.opensearch.performanceanalyzer.rca.framework.api.summaries.HotShardSummary;
+import org.opensearch.performanceanalyzer.rca.framework.api.summaries.ResourceUtil;
 import org.opensearch.performanceanalyzer.rca.framework.core.GenericSummary;
 import org.opensearch.performanceanalyzer.rca.framework.util.InstanceDetails;
 import org.opensearch.performanceanalyzer.rca.scheduler.FlowUnitOperationArgWrapper;
@@ -130,14 +131,14 @@ public class RcaTestHelper<T extends GenericSummary> extends Rca<ResourceFlowUni
             String indexName,
             String shardId,
             String nodeID,
-            double cpu_utilization,
-            double heap_alloc_rate,
+            double resourceValue,
+            Resource resource,
             Resources.State health) {
         HotShardSummary hotShardSummary = new HotShardSummary(indexName, shardId, nodeID, 60);
-        hotShardSummary.setcpuUtilization(cpu_utilization);
-        hotShardSummary.setCpuUtilizationThreshold(0.50);
-        hotShardSummary.setHeapAllocRate(heap_alloc_rate);
-        hotShardSummary.setHeapAllocRateThreshold(2500);
+        hotShardSummary.setResource(resource);
+        hotShardSummary.setResourceValue(resourceValue);
+        hotShardSummary.setResourceThreshold(
+                ResourceUtil.CPU_USAGE.equals(resource) ? 0.05 : 1400000);
         HotNodeSummary nodeSummary =
                 new HotNodeSummary(
                         new InstanceDetails.Id(nodeID), new InstanceDetails.Ip("127.0.0.0"));

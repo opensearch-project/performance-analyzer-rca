@@ -143,9 +143,7 @@ public class HotShardSummary extends GenericSummary {
                     this.nodeId,
                     String.valueOf(this.resourceValue),
                     String.valueOf(this.resourceThreshold),
-                    String.valueOf(this.resource),
-                    ResourceUtil.getResourceTypeName(resource),
-                    ResourceUtil.getResourceMetricName(resource)
+                    String.valueOf(this.resource)
                 });
     }
 

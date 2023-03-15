@@ -38,14 +38,15 @@ import org.opensearch.performanceanalyzer.rca.scheduler.FlowUnitOperationArgWrap
 
 /**
  * This RCA is to identify a hot shard within an index. A Hot shard is an outlier within its
- * counterparts. The RCA subscribes to following metrics : 1. CPU_Utilization 2. IO_TotThroughput 3.
- * IO_TotalSyscallRate
+ * counterparts. The RCA subscribes to following metrics : 1. CPU_Utilization 2. Heap_AllocRate.
  *
- * <p>The RCA looks at the above 3 metric data, compares the values against the threshold for each
- * resource and if the usage for any of 3 resources is greater than their individual threshold, we
+ * <p>The RCA looks at the above 2 metric data, compares the values against the threshold for each
+ * resource and if the usage for any of 2 resources is greater than their individual threshold, we
  * mark the context as 'UnHealthy' and create a HotShardResourceSummary for the shard.
  *
- * <p>Optional metrics which can be added in future : 1. Heap_AllocRate 2. Paging_RSS
+ * <p>This RCA is to be used as an upstream Node to the {@link HotShardClusterRca}.
+ *
+ * <p>Optional metrics which can be added in the future : 1. IO_TotThroughput 2. Thread_Blocked_Time
  */
 public class HotShardRca extends Rca<ResourceFlowUnit<HotNodeSummary>> {
 
@@ -61,8 +62,7 @@ public class HotShardRca extends Rca<ResourceFlowUnit<HotNodeSummary>> {
     private int counter;
     protected Clock clock;
     /* HashMap with IndexShardKey object as key and SummarizedWindow object of metric data as value
-       which contains both metrics of interest and their common timestamps
-    */
+       which contains both metrics of interest and their common timestamps*/
     private Map<IndexShardKey, SummarizedWindow> shardResourceSummarizationMap;
 
     public <M extends Metric> HotShardRca(
@@ -137,7 +137,6 @@ public class HotShardRca extends Rca<ResourceFlowUnit<HotNodeSummary>> {
             SummarizedWindow summarizedWindow,
             AllMetrics.OSMetrics metricType,
             double threshold) {
-        // TODO : Check if null can break out here
         double metricValue = summarizedWindow.readAvgMetricValue(TimeUnit.SECONDS, metricType);
         if (metricValue > threshold) {
             queue.add(new NamedSummarizedWindow(summarizedWindow, indexShardKey));
@@ -170,15 +169,6 @@ public class HotShardRca extends Rca<ResourceFlowUnit<HotNodeSummary>> {
                             String.valueOf(indexShardKey.getShardId()),
                             instanceDetails.getInstanceId().toString(),
                             SLIDING_WINDOW_IN_SECONDS);
-
-            LOG.error(
-                    "Sending "
-                            + indexShardKey
-                            + " with metric: "
-                            + avgResourceValue
-                            + " ["
-                            + metricType
-                            + "].");
 
             summary.setResourceValue(avgResourceValue);
             summary.setResourceThreshold(resourceThreshold);
@@ -217,6 +207,7 @@ public class HotShardRca extends Rca<ResourceFlowUnit<HotNodeSummary>> {
 
             for (Map.Entry<IndexShardKey, SummarizedWindow> entry :
                     shardResourceSummarizationMap.entrySet()) {
+                // Shard can end up in both queues, which will share the reference of the same window object
                 isTopConsumer(
                         cpuUtilTopConsumers,
                         entry.getKey(),
@@ -230,26 +221,15 @@ public class HotShardRca extends Rca<ResourceFlowUnit<HotNodeSummary>> {
                         entry.getValue(),
                         AllMetrics.OSMetrics.HEAP_ALLOC_RATE,
                         heapAllocRateThreshold);
-
-                LOG.error(
-                        "Encountered "
-                                + entry.getKey()
-                                + " with metrics: ("
-                                + entry.getValue().readAvgCpuUtilization(TimeUnit.SECONDS)
-                                + ", "
-                                + entry.getValue().readAvgHeapAllocRate(TimeUnit.SECONDS)
-                                + ")");
             }
 
             shardResourceSummarizationMap.clear();
-
-            LOG.error("SEND_START");
-
             InstanceDetails instanceDetails = getInstanceDetails();
             HotNodeSummary nodeSummary =
                     new HotNodeSummary(
                             instanceDetails.getInstanceId(), instanceDetails.getInstanceIp());
-            LOG.error("SEND_START");
+            /* For each candidate, a summary is created.
+               Same shard can end up in two separate summaries if it crosses both metric thresholds. */
             summarize(
                     nodeSummary,
                     heapAllocRateTopConsumers,
@@ -269,8 +249,8 @@ public class HotShardRca extends Rca<ResourceFlowUnit<HotNodeSummary>> {
             // reset the variables
             counter = 0;
             // check if the current node is data node. If it is the data node
-            // then HotNodeRca is the top level RCA on this node and we want to persist summaries in
-            // flowunit.
+            // then HotNodeRca is the top level RCA on this node, and we want to persist summaries in
+            // FlowUnit.
             boolean isDataNode = !instanceDetails.getIsClusterManager();
             return new ResourceFlowUnit<>(this.clock.millis(), context, nodeSummary, isDataNode);
         } else {
@@ -304,7 +284,8 @@ public class HotShardRca extends Rca<ResourceFlowUnit<HotNodeSummary>> {
     }
 }
 
-/* This class is used for IndexShardKey reconstruction from priority queues */
+/* When going into queues from maps, Shard identification (from map key) has to be persisted.
+   This class is used for IndexShardKey reconstruction from priority queues */
 class NamedSummarizedWindow {
     protected SummarizedWindow summarizedWindow;
     protected IndexShardKey indexShardKey;
@@ -314,7 +295,8 @@ class NamedSummarizedWindow {
         this.indexShardKey = indexShardKey;
     }
 }
-
+/* Comparators for SummarizedWindow, comparing by different metrics.
+   This way already existing structures can be recycled. */
 class SummarizedWindowCPUComparator implements Comparator<NamedSummarizedWindow> {
     @Override
     public int compare(NamedSummarizedWindow o1, NamedSummarizedWindow o2) {

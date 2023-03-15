@@ -15,7 +15,7 @@ public class HotShardClusterRcaConfig {
     private Double heapAllocRateClusterThreshold;
 
     public static final double DEFAULT_CPU_UTILIZATION_CLUSTER_THRESHOLD = 0.3;
-    public static final double DEFAULT_HEAP_ALLOC_RATE_CLUSTER_THRESHOLD = 0.2;
+    public static final double DEFAULT_HEAP_ALLOC_RATE_CLUSTER_THRESHOLD = 0.3;
 
     public HotShardClusterRcaConfig(final RcaConf rcaConf) {
         cpuUtilizationClusterThreshold =
