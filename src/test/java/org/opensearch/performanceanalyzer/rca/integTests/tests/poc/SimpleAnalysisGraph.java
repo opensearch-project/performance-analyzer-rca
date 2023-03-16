@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 import org.jooq.Record;
 import org.opensearch.performanceanalyzer.grpc.FlowUnitMessage;
+import org.opensearch.performanceanalyzer.grpc.HotShardSummaryMessage.CriteriaEnum;
 import org.opensearch.performanceanalyzer.metrics.AllMetrics;
 import org.opensearch.performanceanalyzer.metricsdb.MetricsDB;
 import org.opensearch.performanceanalyzer.rca.framework.api.Rca;
@@ -21,7 +22,6 @@ import org.opensearch.performanceanalyzer.rca.framework.api.metrics.CPU_Utilizat
 import org.opensearch.performanceanalyzer.rca.framework.api.summaries.HotClusterSummary;
 import org.opensearch.performanceanalyzer.rca.framework.api.summaries.HotNodeSummary;
 import org.opensearch.performanceanalyzer.rca.framework.api.summaries.HotShardSummary;
-import org.opensearch.performanceanalyzer.rca.framework.api.summaries.ResourceUtil;
 import org.opensearch.performanceanalyzer.rca.framework.util.InstanceDetails;
 import org.opensearch.performanceanalyzer.rca.scheduler.FlowUnitOperationArgWrapper;
 import org.opensearch.performanceanalyzer.rca.store.OpenSearchAnalysisGraph;
@@ -93,8 +93,8 @@ public class SimpleAnalysisGraph extends OpenSearchAnalysisGraph {
                                 String.valueOf(indexShardKey.getShardId()),
                                 instanceDetails.getInstanceId().toString(),
                                 0);
-                summary.setResourceValue(maxCpu);
-                summary.setResource(ResourceUtil.CPU_USAGE);
+                summary.setCpuUtilization(maxCpu);
+                summary.setCriteria(CriteriaEnum.CPU_UTILIZATION_CRITERIA);
                 nodeSummary.appendNestedSummary(summary);
                 rfu =
                         new ResourceFlowUnit<>(
@@ -147,7 +147,7 @@ public class SimpleAnalysisGraph extends OpenSearchAnalysisGraph {
                 }
                 HotNodeSummary nodeSummary = resourceFlowUnit.getSummary();
                 HotShardSummary hotShardSummary = nodeSummary.getHotShardSummaryList().get(0);
-                double cpu = hotShardSummary.getResourceValue();
+                double cpu = hotShardSummary.getCpuUtilization();
                 if (cpu > cpuUtilization) {
                     hotNodeId = nodeSummary.getNodeID();
                     hotsNodeAddr = nodeSummary.getHostAddress();
@@ -164,8 +164,8 @@ public class SimpleAnalysisGraph extends OpenSearchAnalysisGraph {
                 HotNodeSummary hotNodeSummary = new HotNodeSummary(hotNodeId, hotsNodeAddr);
                 HotShardSummary hotShardSummary =
                         new HotShardSummary(hotShardIndex, hotShard, hotNodeId.toString(), 0);
-                hotShardSummary.setResourceValue(cpuUtilization);
-                hotShardSummary.setResource(ResourceUtil.CPU_USAGE);
+                hotShardSummary.setCpuUtilization(cpuUtilization);
+                hotShardSummary.setCriteria(CriteriaEnum.CPU_UTILIZATION_CRITERIA);
                 hotNodeSummary.appendNestedSummary(hotShardSummary);
                 hotClusterSummary.appendNestedSummary(hotNodeSummary);
 

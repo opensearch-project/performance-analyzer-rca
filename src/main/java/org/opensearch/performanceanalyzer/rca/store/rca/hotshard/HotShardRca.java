@@ -19,7 +19,9 @@ import org.apache.logging.log4j.Logger;
 import org.jooq.Record;
 import org.opensearch.performanceanalyzer.PerformanceAnalyzerApp;
 import org.opensearch.performanceanalyzer.grpc.FlowUnitMessage;
+import org.opensearch.performanceanalyzer.grpc.HotShardSummaryMessage.CriteriaEnum;
 import org.opensearch.performanceanalyzer.metrics.AllMetrics;
+import org.opensearch.performanceanalyzer.metrics.AllMetrics.OSMetrics;
 import org.opensearch.performanceanalyzer.metricsdb.MetricsDB;
 import org.opensearch.performanceanalyzer.rca.configs.HotShardRcaConfig;
 import org.opensearch.performanceanalyzer.rca.framework.api.Metric;
@@ -62,7 +64,7 @@ public class HotShardRca extends Rca<ResourceFlowUnit<HotNodeSummary>> {
     private int counter;
     protected Clock clock;
     /* HashMap with IndexShardKey object as key and SummarizedWindow object of metric data as value
-       which contains both metrics of interest and their common timestamps*/
+    which contains both metrics of interest and their common timestamps*/
     private Map<IndexShardKey, SummarizedWindow> shardResourceSummarizationMap;
 
     public <M extends Metric> HotShardRca(
@@ -83,16 +85,7 @@ public class HotShardRca extends Rca<ResourceFlowUnit<HotNodeSummary>> {
         this.topKConsumers = HotShardRcaConfig.DEFAULT_TOP_K_CONSUMERS;
     }
 
-    private double getResourceThreshold(AllMetrics.OSMetrics metricType) {
-        if (AllMetrics.OSMetrics.HEAP_ALLOC_RATE.equals(metricType)) {
-            return heapAllocRateThreshold;
-        } else {
-            return cpuUtilizationThreshold;
-        }
-    }
-
-    private void consumeFlowUnit(
-            final MetricFlowUnit metricFlowUnit, AllMetrics.OSMetrics metricType) {
+    private void consumeFlowUnit(final MetricFlowUnit metricFlowUnit, OSMetrics metricType) {
         for (Record record : metricFlowUnit.getData()) {
             try {
                 String indexName =
@@ -123,7 +116,7 @@ public class HotShardRca extends Rca<ResourceFlowUnit<HotNodeSummary>> {
         }
     }
 
-    private void consumeMetric(Metric metric, AllMetrics.OSMetrics metricType) {
+    private void consumeMetric(Metric metric, OSMetrics metricType) {
         for (MetricFlowUnit metricFlowUnit : metric.getFlowUnits()) {
             if (metricFlowUnit.getData() != null) {
                 consumeFlowUnit(metricFlowUnit, metricType);
@@ -131,11 +124,53 @@ public class HotShardRca extends Rca<ResourceFlowUnit<HotNodeSummary>> {
         }
     }
 
+    /**
+     * If Shard is already meant to be sent to {@link HotShardClusterRca} we just mark his other
+     * criteria, by setting the field to double.
+     *
+     * <p>If it's shard's first occurrence, we fill both the metric values and set adequate
+     * criteria.
+     */
+    private void drainQueue(
+            MinMaxPriorityQueue<NamedSummarizedWindow> queue,
+            Map<IndexShardKey, HotShardSummary> consumersToSend,
+            InstanceDetails instanceDetails,
+            OSMetrics metricType) {
+        while (!queue.isEmpty()) {
+            NamedSummarizedWindow candidate = queue.remove();
+            if (consumersToSend.containsKey(candidate.indexShardKey)) {
+                HotShardSummary summary = consumersToSend.get(candidate.indexShardKey);
+                summary.setCriteria(CriteriaEnum.DOUBLE_CRITERIA);
+                continue;
+            }
+            HotShardSummary summary =
+                    new HotShardSummary(
+                            candidate.indexShardKey.getIndexName(),
+                            String.valueOf(candidate.indexShardKey.getShardId()),
+                            instanceDetails.getInstanceId().toString(),
+                            SLIDING_WINDOW_IN_SECONDS);
+
+            double avgCpuUtilization =
+                    candidate.summarizedWindow.readAvgCpuUtilization(TimeUnit.SECONDS);
+            double avgHeapAllocRate =
+                    candidate.summarizedWindow.readAvgHeapAllocRate(TimeUnit.SECONDS);
+
+            summary.setCpuUtilization(avgCpuUtilization);
+            summary.setHeapAllocRate(avgHeapAllocRate);
+            summary.setCriteria(
+                    OSMetrics.CPU_UTILIZATION.equals(metricType)
+                            ? CriteriaEnum.CPU_UTILIZATION_CRITERIA
+                            : CriteriaEnum.HEAP_ALLOC_RATE_CRITERIA);
+
+            consumersToSend.put(candidate.indexShardKey, summary);
+        }
+    }
+
     private void isTopConsumer(
             MinMaxPriorityQueue<NamedSummarizedWindow> queue,
             IndexShardKey indexShardKey,
             SummarizedWindow summarizedWindow,
-            AllMetrics.OSMetrics metricType,
+            OSMetrics metricType,
             double threshold) {
         double metricValue = summarizedWindow.readAvgMetricValue(TimeUnit.SECONDS, metricType);
         if (metricValue > threshold) {
@@ -150,34 +185,6 @@ public class HotShardRca extends Rca<ResourceFlowUnit<HotNodeSummary>> {
         }
     }
 
-    private void summarize(
-            HotNodeSummary nodeSummary,
-            MinMaxPriorityQueue<NamedSummarizedWindow> queue,
-            InstanceDetails instanceDetails,
-            AllMetrics.OSMetrics metricType) {
-
-        while (!queue.isEmpty()) {
-            NamedSummarizedWindow candidate = queue.remove();
-            IndexShardKey indexShardKey = candidate.indexShardKey;
-            double avgResourceValue =
-                    candidate.summarizedWindow.readAvgMetricValue(TimeUnit.SECONDS, metricType);
-            double resourceThreshold = getResourceThreshold(metricType);
-
-            HotShardSummary summary =
-                    new HotShardSummary(
-                            indexShardKey.getIndexName(),
-                            String.valueOf(indexShardKey.getShardId()),
-                            instanceDetails.getInstanceId().toString(),
-                            SLIDING_WINDOW_IN_SECONDS);
-
-            summary.setResourceValue(avgResourceValue);
-            summary.setResourceThreshold(resourceThreshold);
-            summary.setResource(metricType.toString());
-
-            nodeSummary.appendNestedSummary(summary);
-        }
-    }
-
     /**
      * Locally identifies hot shards on the node. The function uses CPU_Utilization, HEAP_Alloc_Rate
      * FlowUnits to identify a Hot Shard.
@@ -189,8 +196,8 @@ public class HotShardRca extends Rca<ResourceFlowUnit<HotNodeSummary>> {
     public ResourceFlowUnit<HotNodeSummary> operate() {
         counter += 1;
         // Populate the Resource maps
-        consumeMetric(cpuUtilization, AllMetrics.OSMetrics.CPU_UTILIZATION);
-        consumeMetric(heapAllocRate, AllMetrics.OSMetrics.HEAP_ALLOC_RATE);
+        consumeMetric(cpuUtilization, OSMetrics.CPU_UTILIZATION);
+        consumeMetric(heapAllocRate, OSMetrics.HEAP_ALLOC_RATE);
 
         if (counter == rcaPeriod) {
             /* We limit the queues by maxConsumersToSend. This guarantees no heap re-allocations for
@@ -207,40 +214,45 @@ public class HotShardRca extends Rca<ResourceFlowUnit<HotNodeSummary>> {
 
             for (Map.Entry<IndexShardKey, SummarizedWindow> entry :
                     shardResourceSummarizationMap.entrySet()) {
-                // Shard can end up in both queues, which will share the reference of the same window object
+                // Shard can end up in both queues, which will share the reference of the same
+                // window object
                 isTopConsumer(
                         cpuUtilTopConsumers,
                         entry.getKey(),
                         entry.getValue(),
-                        AllMetrics.OSMetrics.CPU_UTILIZATION,
+                        OSMetrics.CPU_UTILIZATION,
                         cpuUtilizationThreshold);
 
                 isTopConsumer(
                         heapAllocRateTopConsumers,
                         entry.getKey(),
                         entry.getValue(),
-                        AllMetrics.OSMetrics.HEAP_ALLOC_RATE,
+                        OSMetrics.HEAP_ALLOC_RATE,
                         heapAllocRateThreshold);
             }
 
             shardResourceSummarizationMap.clear();
+
             InstanceDetails instanceDetails = getInstanceDetails();
+            Map<IndexShardKey, HotShardSummary> consumersToSend = new HashMap<>();
+
+            drainQueue(
+                    cpuUtilTopConsumers,
+                    consumersToSend,
+                    instanceDetails,
+                    OSMetrics.CPU_UTILIZATION);
+            drainQueue(
+                    heapAllocRateTopConsumers,
+                    consumersToSend,
+                    instanceDetails,
+                    OSMetrics.HEAP_ALLOC_RATE);
+
             HotNodeSummary nodeSummary =
                     new HotNodeSummary(
                             instanceDetails.getInstanceId(), instanceDetails.getInstanceIp());
-            /* For each candidate, a summary is created.
-               Same shard can end up in two separate summaries if it crosses both metric thresholds. */
-            summarize(
-                    nodeSummary,
-                    heapAllocRateTopConsumers,
-                    instanceDetails,
-                    AllMetrics.OSMetrics.HEAP_ALLOC_RATE);
-            summarize(
-                    nodeSummary,
-                    cpuUtilTopConsumers,
-                    instanceDetails,
-                    AllMetrics.OSMetrics.CPU_UTILIZATION);
-            LOG.error("SEND_END");
+
+            nodeSummary.setHotShardSummaryList(new ArrayList<>(consumersToSend.values()));
+
             ResourceContext context =
                     new ResourceContext(
                             nodeSummary.getNestedSummaryList().isEmpty()
@@ -249,7 +261,8 @@ public class HotShardRca extends Rca<ResourceFlowUnit<HotNodeSummary>> {
             // reset the variables
             counter = 0;
             // check if the current node is data node. If it is the data node
-            // then HotNodeRca is the top level RCA on this node, and we want to persist summaries in
+            // then HotNodeRca is the top level RCA on this node, and we want to persist summaries
+            // in
             // FlowUnit.
             boolean isDataNode = !instanceDetails.getIsClusterManager();
             return new ResourceFlowUnit<>(this.clock.millis(), context, nodeSummary, isDataNode);
@@ -285,7 +298,7 @@ public class HotShardRca extends Rca<ResourceFlowUnit<HotNodeSummary>> {
 }
 
 /* When going into queues from maps, Shard identification (from map key) has to be persisted.
-   This class is used for IndexShardKey reconstruction from priority queues */
+This class is used for IndexShardKey reconstruction from priority queues */
 class NamedSummarizedWindow {
     protected SummarizedWindow summarizedWindow;
     protected IndexShardKey indexShardKey;
@@ -296,7 +309,7 @@ class NamedSummarizedWindow {
     }
 }
 /* Comparators for SummarizedWindow, comparing by different metrics.
-   This way already existing structures can be recycled. */
+This way already existing structures can be recycled. */
 class SummarizedWindowCPUComparator implements Comparator<NamedSummarizedWindow> {
     @Override
     public int compare(NamedSummarizedWindow o1, NamedSummarizedWindow o2) {

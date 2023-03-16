@@ -10,13 +10,13 @@ import java.time.Clock;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import org.opensearch.performanceanalyzer.grpc.HotShardSummaryMessage.CriteriaEnum;
 import org.opensearch.performanceanalyzer.grpc.Resource;
 import org.opensearch.performanceanalyzer.rca.framework.api.contexts.ResourceContext;
 import org.opensearch.performanceanalyzer.rca.framework.api.flow_units.ResourceFlowUnit;
 import org.opensearch.performanceanalyzer.rca.framework.api.summaries.HotNodeSummary;
 import org.opensearch.performanceanalyzer.rca.framework.api.summaries.HotResourceSummary;
 import org.opensearch.performanceanalyzer.rca.framework.api.summaries.HotShardSummary;
-import org.opensearch.performanceanalyzer.rca.framework.api.summaries.ResourceUtil;
 import org.opensearch.performanceanalyzer.rca.framework.core.GenericSummary;
 import org.opensearch.performanceanalyzer.rca.framework.util.InstanceDetails;
 import org.opensearch.performanceanalyzer.rca.scheduler.FlowUnitOperationArgWrapper;
@@ -131,14 +131,14 @@ public class RcaTestHelper<T extends GenericSummary> extends Rca<ResourceFlowUni
             String indexName,
             String shardId,
             String nodeID,
-            double resourceValue,
-            Resource resource,
+            double cpuUtilization,
+            double heapAllocRate,
+            CriteriaEnum criteria,
             Resources.State health) {
         HotShardSummary hotShardSummary = new HotShardSummary(indexName, shardId, nodeID, 60);
-        hotShardSummary.setResource(resource);
-        hotShardSummary.setResourceValue(resourceValue);
-        hotShardSummary.setResourceThreshold(
-                ResourceUtil.CPU_USAGE.equals(resource) ? 0.05 : 1400000);
+        hotShardSummary.setCriteria(criteria);
+        hotShardSummary.setCpuUtilization(cpuUtilization);
+        hotShardSummary.setHeapAllocRate(heapAllocRate);
         HotNodeSummary nodeSummary =
                 new HotNodeSummary(
                         new InstanceDetails.Id(nodeID), new InstanceDetails.Ip("127.0.0.0"));

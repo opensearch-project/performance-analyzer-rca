@@ -66,8 +66,9 @@ if both of its metrics cross their respective thresholds. This way, during the p
 consumers that have a chance of being sent to the Cluster Manager are being stored plus saving
 memory and having a memory size - fixed structure under the queues' implementations. We also pass
 references to the same `SummarizedWindow` structures to both queues and only give them different
-comparator objects, this also saves heap. At the end, union of queues' elements is being created,
-and it will form the summaries sent to the `HotShardClusterRCA`. Note that due to reference sharing
+comparator objects, this also saves heap. At the end, union of queues' elements is being created inside a 
+single map, where corresponding criteria are assigned based on shards presence inside the maps. Values of 
+this map will form the summaries sent to the `HotShardClusterRCA`. Note that due to reference sharing
 all metric info is preserved even if consumer is present only in one queue after the triage.
 
 As a final process for a Data node's `HotShardRCA`, data from queues is converted to Summary

@@ -14,6 +14,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.opensearch.performanceanalyzer.AppContext;
+import org.opensearch.performanceanalyzer.grpc.HotShardSummaryMessage.CriteriaEnum;
 import org.opensearch.performanceanalyzer.metrics.AllMetrics;
 import org.opensearch.performanceanalyzer.rca.GradleTaskForRca;
 import org.opensearch.performanceanalyzer.rca.framework.api.RcaTestHelper;
@@ -108,14 +109,16 @@ public class HotShardClusterRcaTest {
                                 shard.shard_1.name(),
                                 node.node_1.name(),
                                 0.04,
-                                ResourceUtil.CPU_USAGE,
+                                500000,
+                                CriteriaEnum.CPU_UTILIZATION_CRITERIA,
                                 Resources.State.HEALTHY),
                         RcaTestHelper.generateFlowUnitForHotShard(
                                 index.index_1.name(),
                                 shard.shard_2.name(),
                                 node.node_1.name(),
+                                0.01,
                                 1.0E6,
-                                ResourceUtil.HEAP_ALLOC_RATE,
+                                CriteriaEnum.HEAP_ALLOC_RATE_CRITERIA,
                                 Resources.State.HEALTHY)));
 
         ResourceFlowUnit flowUnit = hotShardClusterRca.operate();
@@ -130,21 +133,24 @@ public class HotShardClusterRcaTest {
                                 shard.shard_1.name(),
                                 node.node_1.name(),
                                 0.02,
-                                ResourceUtil.CPU_USAGE,
+                                1.0E6,
+                                CriteriaEnum.CPU_UTILIZATION_CRITERIA,
                                 Resources.State.HEALTHY),
                         RcaTestHelper.generateFlowUnitForHotShard(
                                 index.index_1.name(),
                                 shard.shard_2.name(),
                                 node.node_1.name(),
+                                0.01,
                                 4.0E5,
-                                ResourceUtil.HEAP_ALLOC_RATE,
+                                CriteriaEnum.HEAP_ALLOC_RATE_CRITERIA,
                                 Resources.State.HEALTHY),
                         RcaTestHelper.generateFlowUnitForHotShard(
                                 index.index_1.name(),
                                 shard.shard_1.name(),
                                 node.node_2.name(),
+                                0.002,
                                 6.0E5,
-                                ResourceUtil.HEAP_ALLOC_RATE,
+                                CriteriaEnum.HEAP_ALLOC_RATE_CRITERIA,
                                 Resources.State.HEALTHY)));
     }
 
@@ -158,15 +164,17 @@ public class HotShardClusterRcaTest {
                                 index.index_1.name(),
                                 shard.shard_1.name(),
                                 node.node_1.name(),
+                                0.03,
                                 1.1E6,
-                                ResourceUtil.HEAP_ALLOC_RATE,
+                                CriteriaEnum.HEAP_ALLOC_RATE_CRITERIA,
                                 Resources.State.UNHEALTHY),
                         RcaTestHelper.generateFlowUnitForHotShard(
                                 index.index_1.name(),
                                 shard.shard_1.name(),
                                 node.node_2.name(),
                                 0.035,
-                                ResourceUtil.CPU_USAGE,
+                                1.3E6,
+                                CriteriaEnum.CPU_UTILIZATION_CRITERIA,
                                 Resources.State.UNHEALTHY)));
 
         ResourceFlowUnit flowUnit1 = hotShardClusterRca.operate();
@@ -182,35 +190,40 @@ public class HotShardClusterRcaTest {
                                 shard.shard_1.name(),
                                 node.node_1.name(),
                                 0.075,
-                                ResourceUtil.CPU_USAGE,
+                                500000,
+                                CriteriaEnum.CPU_UTILIZATION_CRITERIA,
                                 Resources.State.UNHEALTHY),
                         RcaTestHelper.generateFlowUnitForHotShard(
                                 index.index_1.name(),
                                 shard.shard_2.name(),
                                 node.node_1.name(),
                                 0.01,
-                                ResourceUtil.CPU_USAGE,
+                                550000,
+                                CriteriaEnum.CPU_UTILIZATION_CRITERIA,
                                 Resources.State.UNHEALTHY),
                         RcaTestHelper.generateFlowUnitForHotShard(
                                 index.index_1.name(),
                                 shard.shard_1.name(),
                                 node.node_2.name(),
                                 0.011,
-                                ResourceUtil.CPU_USAGE,
+                                500000,
+                                CriteriaEnum.CPU_UTILIZATION_CRITERIA,
                                 Resources.State.UNHEALTHY),
                         RcaTestHelper.generateFlowUnitForHotShard(
                                 index.index_2.name(),
                                 shard.shard_1.name(),
                                 node.node_1.name(),
                                 0.02,
-                                ResourceUtil.CPU_USAGE,
+                                500000,
+                                CriteriaEnum.CPU_UTILIZATION_CRITERIA,
                                 Resources.State.UNHEALTHY),
                         RcaTestHelper.generateFlowUnitForHotShard(
                                 index.index_2.name(),
                                 shard.shard_2.name(),
                                 node.node_2.name(),
                                 0.08,
-                                ResourceUtil.CPU_USAGE,
+                                500000,
+                                CriteriaEnum.CPU_UTILIZATION_CRITERIA,
                                 Resources.State.UNHEALTHY)));
 
         ResourceFlowUnit flowUnit2 = hotShardClusterRca.operate();
@@ -238,51 +251,57 @@ public class HotShardClusterRcaTest {
         Assert.assertEquals(index.index_2.name(), nodeIndexShardInfo2[1]);
         Assert.assertEquals(shard.shard_2.name(), nodeIndexShardInfo2[2]);
 
-        //         4.3  hot shards across multiple indices as per Heap alloc rate, CPU_Utilization
-        //         ie. : HEAP_ALLOC_RATE >= HEAP_ALLOC_RATE_threshold
+        // 4.3  hot shards across multiple indices as per Heap alloc rate, CPU_Utilization
+        // ie. : HEAP_ALLOC_RATE >= HEAP_ALLOC_RATE_threshold
         hotShardRca.mockFlowUnits(
                 Arrays.asList(
                         RcaTestHelper.generateFlowUnitForHotShard(
                                 index.index_1.name(),
                                 shard.shard_1.name(),
                                 node.node_1.name(),
+                                0.01,
                                 7.0E5,
-                                ResourceUtil.HEAP_ALLOC_RATE,
+                                CriteriaEnum.HEAP_ALLOC_RATE_CRITERIA,
                                 Resources.State.UNHEALTHY),
                         RcaTestHelper.generateFlowUnitForHotShard(
                                 index.index_1.name(),
                                 shard.shard_2.name(),
                                 node.node_1.name(),
+                                0.01,
                                 6.2E6,
-                                ResourceUtil.HEAP_ALLOC_RATE,
+                                CriteriaEnum.HEAP_ALLOC_RATE_CRITERIA,
                                 Resources.State.UNHEALTHY),
                         RcaTestHelper.generateFlowUnitForHotShard(
                                 index.index_1.name(),
                                 shard.shard_1.name(),
                                 node.node_2.name(),
+                                0.01,
                                 6.0E5,
-                                ResourceUtil.HEAP_ALLOC_RATE,
+                                CriteriaEnum.HEAP_ALLOC_RATE_CRITERIA,
                                 Resources.State.UNHEALTHY),
                         RcaTestHelper.generateFlowUnitForHotShard(
                                 index.index_1.name(),
                                 shard.shard_2.name(),
                                 node.node_2.name(),
+                                0.01,
                                 8.9E5,
-                                ResourceUtil.HEAP_ALLOC_RATE,
+                                CriteriaEnum.HEAP_ALLOC_RATE_CRITERIA,
                                 Resources.State.UNHEALTHY),
                         RcaTestHelper.generateFlowUnitForHotShard(
                                 index.index_2.name(),
                                 shard.shard_1.name(),
                                 node.node_1.name(),
+                                0.01,
                                 1.0E7,
-                                ResourceUtil.HEAP_ALLOC_RATE,
+                                CriteriaEnum.HEAP_ALLOC_RATE_CRITERIA,
                                 Resources.State.UNHEALTHY),
                         RcaTestHelper.generateFlowUnitForHotShard(
                                 index.index_2.name(),
                                 shard.shard_2.name(),
                                 node.node_2.name(),
+                                0.01,
                                 8.1E5,
-                                ResourceUtil.HEAP_ALLOC_RATE,
+                                CriteriaEnum.HEAP_ALLOC_RATE_CRITERIA,
                                 Resources.State.UNHEALTHY)));
 
         ResourceFlowUnit flowUnit3 = hotShardClusterRca.operate();
@@ -294,7 +313,7 @@ public class HotShardClusterRcaTest {
         List<Object> hotShard3 = nodeSummary.getNestedSummaryList().get(0).getSqlValue();
         List<Object> hotShard4 = nodeSummary.getNestedSummaryList().get(1).getSqlValue();
 
-        // verify the resource type, Heap alloc rate, node ID, Index Name, shard ID
+        //         verify the resource type, Heap alloc rate, node ID, Index Name, shard ID
         Assert.assertEquals(ResourceUtil.HEAP_ALLOC_RATE.getResourceEnumValue(), hotShard3.get(0));
         Assert.assertEquals(ResourceUtil.HEAP_ALLOC_RATE.getResourceEnumValue(), hotShard4.get(0));
 
@@ -320,35 +339,40 @@ public class HotShardClusterRcaTest {
                                 shard.shard_1.name(),
                                 node.node_1.name(),
                                 0.2,
-                                ResourceUtil.CPU_USAGE,
+                                900000,
+                                CriteriaEnum.DOUBLE_CRITERIA,
                                 Resources.State.UNHEALTHY),
                         RcaTestHelper.generateFlowUnitForHotShard(
                                 index.index_1.name(),
                                 shard.shard_2.name(),
                                 node.node_1.name(),
                                 0.01,
-                                ResourceUtil.CPU_USAGE,
+                                800000,
+                                CriteriaEnum.DOUBLE_CRITERIA,
                                 Resources.State.UNHEALTHY),
                         RcaTestHelper.generateFlowUnitForHotShard(
                                 index.index_1.name(),
                                 shard.shard_1.name(),
                                 node.node_2.name(),
                                 0.012,
-                                ResourceUtil.CPU_USAGE,
+                                850000,
+                                CriteriaEnum.DOUBLE_CRITERIA,
                                 Resources.State.UNHEALTHY),
                         RcaTestHelper.generateFlowUnitForHotShard(
                                 index.index_2.name(),
                                 shard.shard_1.name(),
                                 node.node_1.name(),
+                                0.02,
                                 8.1E5,
-                                ResourceUtil.HEAP_ALLOC_RATE,
+                                CriteriaEnum.DOUBLE_CRITERIA,
                                 Resources.State.UNHEALTHY),
                         RcaTestHelper.generateFlowUnitForHotShard(
                                 index.index_2.name(),
                                 shard.shard_2.name(),
                                 node.node_2.name(),
+                                0.025,
                                 1.6E6,
-                                ResourceUtil.HEAP_ALLOC_RATE,
+                                CriteriaEnum.DOUBLE_CRITERIA,
                                 Resources.State.UNHEALTHY)));
 
         ResourceFlowUnit flowUnit4 = hotShardClusterRca.operate();
@@ -389,42 +413,48 @@ public class HotShardClusterRcaTest {
                                 shard.shard_1.name(),
                                 node.node_1.name(),
                                 0.3,
-                                ResourceUtil.CPU_USAGE,
+                                420000,
+                                CriteriaEnum.CPU_UTILIZATION_CRITERIA,
                                 Resources.State.UNHEALTHY),
                         RcaTestHelper.generateFlowUnitForHotShard(
                                 index.index_1.name(),
                                 shard.shard_2.name(),
                                 node.node_1.name(),
+                                0.28,
                                 9.0E6,
-                                ResourceUtil.HEAP_ALLOC_RATE,
+                                CriteriaEnum.HEAP_ALLOC_RATE_CRITERIA,
                                 Resources.State.UNHEALTHY),
                         RcaTestHelper.generateFlowUnitForHotShard(
                                 index.index_1.name(),
                                 shard.shard_1.name(),
                                 node.node_2.name(),
                                 0.01,
-                                ResourceUtil.CPU_USAGE,
+                                380000,
+                                CriteriaEnum.CPU_UTILIZATION_CRITERIA,
                                 Resources.State.UNHEALTHY),
                         RcaTestHelper.generateFlowUnitForHotShard(
                                 index.index_1.name(),
                                 shard.shard_1.name(),
                                 node.node_2.name(),
+                                0.25,
                                 1.2E6,
-                                ResourceUtil.HEAP_ALLOC_RATE,
+                                CriteriaEnum.HEAP_ALLOC_RATE_CRITERIA,
                                 Resources.State.UNHEALTHY),
                         RcaTestHelper.generateFlowUnitForHotShard(
                                 index.index_2.name(),
                                 shard.shard_1.name(),
                                 node.node_1.name(),
+                                0.28,
                                 1.5E6,
-                                ResourceUtil.HEAP_ALLOC_RATE,
+                                CriteriaEnum.HEAP_ALLOC_RATE_CRITERIA,
                                 Resources.State.UNHEALTHY),
                         RcaTestHelper.generateFlowUnitForHotShard(
                                 index.index_2.name(),
                                 shard.shard_2.name(),
                                 node.node_2.name(),
+                                0.32,
                                 1.6E6,
-                                ResourceUtil.HEAP_ALLOC_RATE,
+                                CriteriaEnum.HEAP_ALLOC_RATE_CRITERIA,
                                 Resources.State.UNHEALTHY)));
 
         ResourceFlowUnit flowUnit2 = hotShardClusterRca.operate();

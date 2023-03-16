@@ -502,9 +502,11 @@ public class OpenSearchAnalysisGraph extends AnalysisGraph {
         Metric heapAllocRate = new Heap_AllocRate(EVALUATION_INTERVAL_SECONDS);
 
         cpuUtilization.addTag(
-                RcaConsts.RcaTagConstants.TAG_LOCUS, RcaConsts.RcaTagConstants.LOCUS_DATA_NODE);
+                RcaConsts.RcaTagConstants.TAG_LOCUS,
+                RcaConsts.RcaTagConstants.LOCUS_DATA_CLUSTER_MANAGER_NODE);
         heapAllocRate.addTag(
-                RcaConsts.RcaTagConstants.TAG_LOCUS, RcaConsts.RcaTagConstants.LOCUS_DATA_NODE);
+                RcaConsts.RcaTagConstants.TAG_LOCUS,
+                RcaConsts.RcaTagConstants.LOCUS_DATA_CLUSTER_MANAGER_NODE);
 
         addLeaf(cpuUtilization);
         addLeaf(heapAllocRate);
@@ -514,7 +516,8 @@ public class OpenSearchAnalysisGraph extends AnalysisGraph {
                 new HotShardRca(
                         EVALUATION_INTERVAL_SECONDS, RCA_PERIOD, cpuUtilization, heapAllocRate);
         hotShardRca.addTag(
-                RcaConsts.RcaTagConstants.TAG_LOCUS, RcaConsts.RcaTagConstants.LOCUS_DATA_NODE);
+                RcaConsts.RcaTagConstants.TAG_LOCUS,
+                RcaConsts.RcaTagConstants.LOCUS_DATA_CLUSTER_MANAGER_NODE);
         hotShardRca.addAllUpstreams(Arrays.asList(cpuUtilization, heapAllocRate));
 
         // Hot Shard Cluster RCA which consumes the above

@@ -16,6 +16,7 @@ import java.util.Map;
 import java.util.Set;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.opensearch.performanceanalyzer.grpc.HotShardSummaryMessage.CriteriaEnum;
 import org.opensearch.performanceanalyzer.grpc.Resource;
 import org.opensearch.performanceanalyzer.rca.configs.HotShardClusterRcaConfig;
 import org.opensearch.performanceanalyzer.rca.framework.api.Rca;
@@ -34,8 +35,8 @@ import org.opensearch.performanceanalyzer.rca.scheduler.FlowUnitOperationArgWrap
 
 /**
  * This RCA is used to find hot shards per index in a cluster using the HotShardSummary sent from
- * each node via {@link HotShardRca}. If the resource utilization is (threshold)% higher than the median
- * resource utilization for the index, we declare the shard hot.
+ * each node via {@link HotShardRca}. If the resource utilization is (threshold)% higher than the
+ * median resource utilization for the index, we declare the shard hot.
  */
 public class HotShardClusterRca extends Rca<ResourceFlowUnit<HotClusterSummary>> {
 
@@ -92,17 +93,26 @@ public class HotShardClusterRca extends Rca<ResourceFlowUnit<HotClusterSummary>>
             if (summary instanceof HotShardSummary) {
                 HotShardSummary hotShardSummary = (HotShardSummary) summary;
                 String indexName = hotShardSummary.getIndexName();
+                CriteriaEnum criteria = hotShardSummary.getCriteria();
                 NodeShardKey nodeShardKey = new NodeShardKey(nodeId, hotShardSummary.getShardId());
-                // Incoming FlowUnits have to be triaged based on their resource and metric type
-                Table<String, NodeShardKey, Double> infoTableToPopulate = cpuUtilizationInfoTable;
-                if (ResourceUtil.HEAP_ALLOC_RATE.equals(hotShardSummary.getResource())) {
-                    infoTableToPopulate = heapAllocRateInfoTable;
+
+                // Incoming FlowUnits have to be triaged based on their comparison criteria type
+                if (CriteriaEnum.CPU_UTILIZATION_CRITERIA.equals(criteria)
+                        || CriteriaEnum.DOUBLE_CRITERIA.equals(criteria)) {
+                    populateResourceInfoTable(
+                            indexName,
+                            nodeShardKey,
+                            hotShardSummary.getCpuUtilization(),
+                            cpuUtilizationInfoTable);
                 }
-                populateResourceInfoTable(
-                        indexName,
-                        nodeShardKey,
-                        hotShardSummary.getResourceValue(),
-                        infoTableToPopulate);
+                if (CriteriaEnum.HEAP_ALLOC_RATE_CRITERIA.equals(criteria)
+                        || CriteriaEnum.DOUBLE_CRITERIA.equals(criteria)) {
+                    populateResourceInfoTable(
+                            indexName,
+                            nodeShardKey,
+                            hotShardSummary.getHeapAllocRate(),
+                            heapAllocRateInfoTable);
+                }
             }
         }
     }
