@@ -19,21 +19,20 @@ import org.jooq.exception.DataTypeException;
 import org.jooq.impl.DSL;
 import org.opensearch.performanceanalyzer.grpc.FlowUnitMessage;
 import org.opensearch.performanceanalyzer.grpc.HotShardSummaryMessage;
+import org.opensearch.performanceanalyzer.grpc.HotShardSummaryMessage.CriteriaEnum;
 import org.opensearch.performanceanalyzer.rca.framework.api.persist.JooqFieldValue;
 import org.opensearch.performanceanalyzer.rca.framework.core.GenericSummary;
 
 /**
  * HotShardSummary contains information such as the index_name, shard_id, node_id, cpu_utilization,
- * cpu_utilization_threshold io_throughput, io_throughput_threshold, io_sys_callrate,
- * io_sys_callrate_threshold and time_period.
+ * heap_alloc_rate, criteria and time_period.
  *
  * <p>The hot shard summary is created by node level and cluster level RCAs running on data nodes
- * and elected cluster_manager node resp. This object is persisted in SQLite table Table name :
+ * and elected cluster_manager node resp. This object is persisted in SQLite table. Table name :
  * HotClusterSummary
  *
  * <p>schema : | ID(primary key) | index_name | shard_id | node_id | cpu_utilization |
- * cpu_utilization_threshold | io_throughput | io_throughput_threshold | io_sys_callrate |
- * io_sys_callrate_threshold| ID in FlowUnit(foreign key)
+ * heap_alloc_rate| ID in FlowUnit(foreign key)
  */
 public class HotShardSummary extends GenericSummary {
 
@@ -42,11 +41,9 @@ public class HotShardSummary extends GenericSummary {
     private final String indexName;
     private final String shardId;
     private final String nodeId;
-    private double cpu_utilization;
-    private double cpu_utilization_threshold;
-    private double heap_alloc_rate;
-    private double heap_alloc_rate_threshold;
-
+    private CriteriaEnum criteria;
+    private double cpuUtilization;
+    private double heapAllocRate;
     private int timePeriodInSeconds;
 
     public HotShardSummary(String indexName, String shardId, String nodeId, int timePeriod) {
@@ -57,20 +54,16 @@ public class HotShardSummary extends GenericSummary {
         this.timePeriodInSeconds = timePeriod;
     }
 
-    public void setcpuUtilization(final double cpu_utilization) {
-        this.cpu_utilization = cpu_utilization;
+    public void setCpuUtilization(final double cpuUtilization) {
+        this.cpuUtilization = cpuUtilization;
     }
 
-    public void setCpuUtilizationThreshold(final double cpu_utilization_threshold) {
-        this.cpu_utilization_threshold = cpu_utilization_threshold;
+    public void setHeapAllocRate(final double heapAllocRate) {
+        this.heapAllocRate = heapAllocRate;
     }
 
-    public void setHeapAllocRate(final double heap_alloc_rate) {
-        this.heap_alloc_rate = heap_alloc_rate;
-    }
-
-    public void setHeapAllocRateThreshold(final double heap_alloc_rate_threshold) {
-        this.heap_alloc_rate_threshold = heap_alloc_rate_threshold;
+    public void setCriteria(final CriteriaEnum criteria) {
+        this.criteria = criteria;
     }
 
     public String getIndexName() {
@@ -86,11 +79,15 @@ public class HotShardSummary extends GenericSummary {
     }
 
     public double getCpuUtilization() {
-        return this.cpu_utilization;
+        return this.cpuUtilization;
     }
 
     public double getHeapAllocRate() {
-        return this.heap_alloc_rate;
+        return this.heapAllocRate;
+    }
+
+    public CriteriaEnum getCriteria() {
+        return this.criteria;
     }
 
     @Override
@@ -100,10 +97,9 @@ public class HotShardSummary extends GenericSummary {
         summaryMessageBuilder.setIndexName(this.indexName);
         summaryMessageBuilder.setShardId(this.shardId);
         summaryMessageBuilder.setNodeId(this.nodeId);
-        summaryMessageBuilder.setCpuUtilization(this.cpu_utilization);
-        summaryMessageBuilder.setCpuUtilizationThreshold(this.cpu_utilization_threshold);
-        summaryMessageBuilder.setHeapAllocRate(this.heap_alloc_rate);
-        summaryMessageBuilder.setHeapAllocRateThreshold(this.heap_alloc_rate_threshold);
+        summaryMessageBuilder.setCpuUtilization(this.cpuUtilization);
+        summaryMessageBuilder.setHeapAllocRate(this.heapAllocRate);
+        summaryMessageBuilder.setCriteria(this.criteria);
         summaryMessageBuilder.setTimePeriod(this.timePeriodInSeconds);
         return summaryMessageBuilder.build();
     }
@@ -120,10 +116,9 @@ public class HotShardSummary extends GenericSummary {
                         message.getShardId(),
                         message.getNodeId(),
                         message.getTimePeriod());
-        summary.setcpuUtilization(message.getCpuUtilization());
-        summary.setCpuUtilizationThreshold(message.getCpuUtilizationThreshold());
+        summary.setCpuUtilization(message.getCpuUtilization());
         summary.setHeapAllocRate(message.getHeapAllocRate());
-        summary.setHeapAllocRateThreshold(message.getHeapAllocRateThreshold());
+        summary.setCriteria(message.getCriteria());
         return summary;
     }
 
@@ -135,10 +130,9 @@ public class HotShardSummary extends GenericSummary {
                     this.indexName,
                     this.shardId,
                     this.nodeId,
-                    String.valueOf(this.cpu_utilization),
-                    String.valueOf(this.cpu_utilization_threshold),
-                    String.valueOf(this.heap_alloc_rate),
-                    String.valueOf(this.heap_alloc_rate_threshold),
+                    String.valueOf(this.cpuUtilization),
+                    String.valueOf(this.heapAllocRate),
+                    String.valueOf(this.criteria)
                 });
     }
 
@@ -154,9 +148,8 @@ public class HotShardSummary extends GenericSummary {
         schema.add(HotShardSummaryField.SHARD_ID_FIELD.getField());
         schema.add(HotShardSummaryField.NODE_ID_FIELD.getField());
         schema.add(HotShardSummaryField.CPU_UTILIZATION_FIELD.getField());
-        schema.add(HotShardSummaryField.CPU_UTILIZATION_THRESHOLD_FIELD.getField());
         schema.add(HotShardSummaryField.HEAP_ALLOC_RATE_FIELD.getField());
-        schema.add(HotShardSummaryField.HEAP_ALLOC_RATE_THRESHOLD_FIELD.getField());
+        schema.add(HotShardSummaryField.CRITERIA_FIELD.getField());
         schema.add(HotShardSummaryField.TIME_PERIOD_FIELD.getField());
         return schema;
     }
@@ -167,10 +160,9 @@ public class HotShardSummary extends GenericSummary {
         value.add(this.indexName);
         value.add(this.shardId);
         value.add(this.nodeId);
-        value.add(this.cpu_utilization);
-        value.add(this.cpu_utilization_threshold);
-        value.add(this.heap_alloc_rate);
-        value.add(this.heap_alloc_rate_threshold);
+        value.add(this.cpuUtilization);
+        value.add(this.heapAllocRate);
+        value.add(this.criteria.getNumber());
         value.add(Integer.valueOf(this.timePeriodInSeconds));
         return value;
     }
@@ -186,14 +178,9 @@ public class HotShardSummary extends GenericSummary {
         summaryObj.addProperty(SQL_SCHEMA_CONSTANTS.INDEX_NAME_COL_NAME, this.indexName);
         summaryObj.addProperty(SQL_SCHEMA_CONSTANTS.SHARD_ID_COL_NAME, this.shardId);
         summaryObj.addProperty(SQL_SCHEMA_CONSTANTS.NODE_ID_COL_NAME, this.nodeId);
-        summaryObj.addProperty(SQL_SCHEMA_CONSTANTS.CPU_UTILIZATION_COL_NAME, this.cpu_utilization);
-        summaryObj.addProperty(
-                SQL_SCHEMA_CONSTANTS.CPU_UTILIZATION_THRESHOLD_COL_NAME,
-                this.cpu_utilization_threshold);
-        summaryObj.addProperty(SQL_SCHEMA_CONSTANTS.HEAP_ALLOC_RATE_COL_NAME, this.heap_alloc_rate);
-        summaryObj.addProperty(
-                SQL_SCHEMA_CONSTANTS.HEAP_ALLOC_RATE_THRESHOLD_COL_NAME,
-                this.heap_alloc_rate_threshold);
+        summaryObj.addProperty(SQL_SCHEMA_CONSTANTS.CPU_UTILIZATION_COL_NAME, this.cpuUtilization);
+        summaryObj.addProperty(SQL_SCHEMA_CONSTANTS.HEAP_ALLOC_RATE_COL_NAME, this.heapAllocRate);
+        summaryObj.addProperty(SQL_SCHEMA_CONSTANTS.CRITERIA_COL_NAME, this.criteria.toString());
         summaryObj.addProperty(SQL_SCHEMA_CONSTANTS.TIME_PERIOD_COL_NAME, this.timePeriodInSeconds);
         return summaryObj;
     }
@@ -203,9 +190,8 @@ public class HotShardSummary extends GenericSummary {
         public static final String SHARD_ID_COL_NAME = "shard_id";
         public static final String NODE_ID_COL_NAME = "node_id";
         public static final String CPU_UTILIZATION_COL_NAME = "cpu_utilization";
-        public static final String CPU_UTILIZATION_THRESHOLD_COL_NAME = "cpu_utilization_threshold";
         public static final String HEAP_ALLOC_RATE_COL_NAME = "heap_alloc_rate";
-        public static final String HEAP_ALLOC_RATE_THRESHOLD_COL_NAME = "heap_alloc_rate_threshold";
+        public static final String CRITERIA_COL_NAME = "criteria";
         public static final String TIME_PERIOD_COL_NAME = "time_period";
     }
 
@@ -215,11 +201,8 @@ public class HotShardSummary extends GenericSummary {
         SHARD_ID_FIELD(SQL_SCHEMA_CONSTANTS.SHARD_ID_COL_NAME, String.class),
         NODE_ID_FIELD(SQL_SCHEMA_CONSTANTS.NODE_ID_COL_NAME, String.class),
         CPU_UTILIZATION_FIELD(SQL_SCHEMA_CONSTANTS.CPU_UTILIZATION_COL_NAME, Double.class),
-        CPU_UTILIZATION_THRESHOLD_FIELD(
-                SQL_SCHEMA_CONSTANTS.CPU_UTILIZATION_THRESHOLD_COL_NAME, Double.class),
         HEAP_ALLOC_RATE_FIELD(SQL_SCHEMA_CONSTANTS.HEAP_ALLOC_RATE_COL_NAME, Double.class),
-        HEAP_ALLOC_RATE_THRESHOLD_FIELD(
-                SQL_SCHEMA_CONSTANTS.HEAP_ALLOC_RATE_THRESHOLD_COL_NAME, Double.class),
+        CRITERIA_FIELD(SQL_SCHEMA_CONSTANTS.CRITERIA_COL_NAME, Integer.class),
         TIME_PERIOD_FIELD(SQL_SCHEMA_CONSTANTS.TIME_PERIOD_COL_NAME, Integer.class);
 
         private String name;
@@ -259,41 +242,32 @@ public class HotShardSummary extends GenericSummary {
             String shardId =
                     record.get(HotShardSummaryField.SHARD_ID_FIELD.getField(), String.class);
             String nodeId = record.get(HotShardSummaryField.NODE_ID_FIELD.getField(), String.class);
-            Double cpu_utilization =
+            Double cpuUtilization =
                     record.get(HotShardSummaryField.CPU_UTILIZATION_FIELD.getField(), Double.class);
-            Double cpu_utilization_threshold =
-                    record.get(
-                            HotShardSummaryField.CPU_UTILIZATION_THRESHOLD_FIELD.getField(),
-                            Double.class);
-            Double heap_alloc_rate =
+            Double heapAllocRate =
                     record.get(HotShardSummaryField.HEAP_ALLOC_RATE_FIELD.getField(), Double.class);
-            Double heap_alloc_rate_threshold =
-                    record.get(
-                            HotShardSummaryField.HEAP_ALLOC_RATE_THRESHOLD_FIELD.getField(),
-                            Double.class);
+            Integer criteria =
+                    record.get(HotShardSummaryField.CRITERIA_FIELD.getField(), Integer.class);
 
             Integer timePeriod =
                     record.get(HotShardSummaryField.TIME_PERIOD_FIELD.getField(), Integer.class);
             if (timePeriod == null
-                    || cpu_utilization == null
-                    || cpu_utilization_threshold == null
-                    || heap_alloc_rate == null
-                    || heap_alloc_rate_threshold == null) {
+                    || cpuUtilization == null
+                    || heapAllocRate == null
+                    || criteria == null) {
                 LOG.warn(
-                        "read null object from SQL, timePeriod: {},  cpu_utilization: {}, cpu_utilization_threshold: {},"
-                                + " heap_alloc_rate: {},  heap_alloc_rate_threshold: {}",
+                        "read null object from SQL, timePeriod: {},  cpuUtilization: {}, heapAllocRate: {},"
+                                + " criteria: {}",
                         timePeriod,
-                        cpu_utilization,
-                        cpu_utilization_threshold,
-                        heap_alloc_rate,
-                        heap_alloc_rate_threshold);
+                        cpuUtilization,
+                        heapAllocRate,
+                        criteria);
                 return null;
             }
             summary = new HotShardSummary(indexName, shardId, nodeId, timePeriod);
-            summary.setcpuUtilization(cpu_utilization);
-            summary.setCpuUtilizationThreshold(cpu_utilization_threshold);
-            summary.setHeapAllocRate(heap_alloc_rate);
-            summary.setHeapAllocRateThreshold(heap_alloc_rate_threshold);
+            summary.setCpuUtilization(cpuUtilization);
+            summary.setHeapAllocRate(heapAllocRate);
+            summary.setCriteria(CriteriaEnum.forNumber(criteria));
         } catch (IllegalArgumentException ie) {
             LOG.error("Some fields might not be found in record, cause : {}", ie.getMessage());
         } catch (DataTypeException de) {

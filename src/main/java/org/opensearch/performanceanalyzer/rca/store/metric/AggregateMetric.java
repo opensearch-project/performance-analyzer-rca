@@ -115,7 +115,8 @@ public class AggregateMetric extends Metric {
                             context, tableName, aggDimension, groupByFieldsList, selectFieldsList);
         } catch (Exception e) {
             // TODO: Emit log/stats that gathering failed.
-            LOG.error("RCA: Caught an exception while getting the DB {}", e.getMessage());
+             LOG.error("RCA: Caught an exception while getting the DB {}",
+             e.getMessage());
             return MetricFlowUnit.generic();
         }
         return new MetricFlowUnit(0, result);

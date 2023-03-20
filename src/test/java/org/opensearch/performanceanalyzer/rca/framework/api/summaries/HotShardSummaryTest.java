@@ -17,16 +17,16 @@ import org.junit.Test;
 import org.mockito.Mockito;
 import org.opensearch.performanceanalyzer.grpc.FlowUnitMessage;
 import org.opensearch.performanceanalyzer.grpc.HotShardSummaryMessage;
+import org.opensearch.performanceanalyzer.grpc.HotShardSummaryMessage.CriteriaEnum;
 import org.opensearch.performanceanalyzer.rca.framework.core.GenericSummary;
 
 public class HotShardSummaryTest {
     private final String INDEX_NAME = "index_1";
     private final String SHARD_ID = "shard_1";
     private final String NODE_ID = "node_1";
-    private final double CPU_UTILIZATION = 0.65;
-    private final double CPU_UTILIZATION_THRESHOLD = 0.10;
-    private final double HEAP_ALLOC_RATE = 500000;
-    private final double HEAP_ALLOC_RATE_THRESHOLD = 250000;
+    private final double CPU_UTILIZATION = 0.15;
+    private final double HEAP_ALLOC_RATE = 2.0E6;
+    private final CriteriaEnum CRITERIA = CriteriaEnum.DOUBLE_CRITERIA;
     private final int TIME_PERIOD = 2020;
 
     private HotShardSummary uut;
@@ -34,10 +34,9 @@ public class HotShardSummaryTest {
     @Before
     public void setup() {
         uut = new HotShardSummary(INDEX_NAME, SHARD_ID, NODE_ID, TIME_PERIOD);
-        uut.setcpuUtilization(CPU_UTILIZATION);
-        uut.setCpuUtilizationThreshold(CPU_UTILIZATION_THRESHOLD);
+        uut.setCpuUtilization(CPU_UTILIZATION);
         uut.setHeapAllocRate(HEAP_ALLOC_RATE);
-        uut.setHeapAllocRateThreshold(HEAP_ALLOC_RATE_THRESHOLD);
+        uut.setCriteria(CRITERIA);
     }
 
     @Test
@@ -47,9 +46,8 @@ public class HotShardSummaryTest {
         Assert.assertEquals(INDEX_NAME, msg.getIndexName());
         Assert.assertEquals(SHARD_ID, msg.getShardId());
         Assert.assertEquals(CPU_UTILIZATION, msg.getCpuUtilization(), 0);
-        Assert.assertEquals(CPU_UTILIZATION_THRESHOLD, msg.getCpuUtilizationThreshold(), 0);
         Assert.assertEquals(HEAP_ALLOC_RATE, msg.getHeapAllocRate(), 0);
-        Assert.assertEquals(HEAP_ALLOC_RATE_THRESHOLD, msg.getHeapAllocRateThreshold(), 0);
+        Assert.assertEquals(CRITERIA, msg.getCriteria());
         Assert.assertEquals(TIME_PERIOD, msg.getTimePeriod());
     }
 
@@ -71,9 +69,8 @@ public class HotShardSummaryTest {
                             SHARD_ID,
                             NODE_ID,
                             String.valueOf(CPU_UTILIZATION),
-                            String.valueOf(CPU_UTILIZATION_THRESHOLD),
                             String.valueOf(HEAP_ALLOC_RATE),
-                            String.valueOf(HEAP_ALLOC_RATE_THRESHOLD)
+                            String.valueOf(CRITERIA)
                         });
         Assert.assertEquals(expected, uut.toString());
     }
@@ -86,7 +83,7 @@ public class HotShardSummaryTest {
     @Test
     public void testGetSqlSchema() {
         List<Field<?>> schema = uut.getSqlSchema();
-        Assert.assertEquals(8, schema.size());
+        Assert.assertEquals(7, schema.size());
         Assert.assertEquals(
                 HotShardSummary.HotShardSummaryField.INDEX_NAME_FIELD.getField(), schema.get(0));
         Assert.assertEquals(
@@ -97,30 +94,25 @@ public class HotShardSummaryTest {
                 HotShardSummary.HotShardSummaryField.CPU_UTILIZATION_FIELD.getField(),
                 schema.get(3));
         Assert.assertEquals(
-                HotShardSummary.HotShardSummaryField.CPU_UTILIZATION_THRESHOLD_FIELD.getField(),
+                HotShardSummary.HotShardSummaryField.HEAP_ALLOC_RATE_FIELD.getField(),
                 schema.get(4));
         Assert.assertEquals(
-                HotShardSummary.HotShardSummaryField.HEAP_ALLOC_RATE_FIELD.getField(),
-                schema.get(5));
+                HotShardSummary.HotShardSummaryField.CRITERIA_FIELD.getField(), schema.get(5));
         Assert.assertEquals(
-                HotShardSummary.HotShardSummaryField.HEAP_ALLOC_RATE_THRESHOLD_FIELD.getField(),
-                schema.get(6));
-        Assert.assertEquals(
-                HotShardSummary.HotShardSummaryField.TIME_PERIOD_FIELD.getField(), schema.get(7));
+                HotShardSummary.HotShardSummaryField.TIME_PERIOD_FIELD.getField(), schema.get(6));
     }
 
     @Test
     public void testGetSqlValue() {
         List<Object> values = uut.getSqlValue();
-        Assert.assertEquals(8, values.size());
+        Assert.assertEquals(7, values.size());
         Assert.assertEquals(INDEX_NAME, values.get(0));
         Assert.assertEquals(SHARD_ID, values.get(1));
         Assert.assertEquals(NODE_ID, values.get(2));
         Assert.assertEquals(CPU_UTILIZATION, values.get(3));
-        Assert.assertEquals(CPU_UTILIZATION_THRESHOLD, values.get(4));
-        Assert.assertEquals(HEAP_ALLOC_RATE, values.get(5));
-        Assert.assertEquals(HEAP_ALLOC_RATE_THRESHOLD, values.get(6));
-        Assert.assertEquals(TIME_PERIOD, values.get(7));
+        Assert.assertEquals(HEAP_ALLOC_RATE, values.get(4));
+        Assert.assertEquals(CRITERIA.getNumber(), values.get(5));
+        Assert.assertEquals(TIME_PERIOD, values.get(6));
     }
 
     @Test
@@ -143,20 +135,13 @@ public class HotShardSummaryTest {
                         .getAsDouble(),
                 0);
         Assert.assertEquals(
-                CPU_UTILIZATION_THRESHOLD,
-                json.get(HotShardSummary.SQL_SCHEMA_CONSTANTS.CPU_UTILIZATION_THRESHOLD_COL_NAME)
-                        .getAsDouble(),
-                0);
-        Assert.assertEquals(
                 HEAP_ALLOC_RATE,
                 json.get(HotShardSummary.SQL_SCHEMA_CONSTANTS.HEAP_ALLOC_RATE_COL_NAME)
                         .getAsDouble(),
                 0);
         Assert.assertEquals(
-                HEAP_ALLOC_RATE_THRESHOLD,
-                json.get(HotShardSummary.SQL_SCHEMA_CONSTANTS.HEAP_ALLOC_RATE_THRESHOLD_COL_NAME)
-                        .getAsDouble(),
-                0);
+                CriteriaEnum.DOUBLE_CRITERIA.toString(),
+                json.get(HotShardSummary.SQL_SCHEMA_CONSTANTS.CRITERIA_COL_NAME).getAsString());
         Assert.assertEquals(
                 TIME_PERIOD,
                 json.get(HotShardSummary.SQL_SCHEMA_CONSTANTS.TIME_PERIOD_COL_NAME).getAsDouble(),
@@ -190,22 +175,15 @@ public class HotShardSummaryTest {
                 .thenReturn(CPU_UTILIZATION);
         Mockito.when(
                         testRecord.get(
-                                HotShardSummary.HotShardSummaryField.CPU_UTILIZATION_THRESHOLD_FIELD
-                                        .getField(),
-                                Double.class))
-                .thenReturn(CPU_UTILIZATION_THRESHOLD);
-        Mockito.when(
-                        testRecord.get(
                                 HotShardSummary.HotShardSummaryField.HEAP_ALLOC_RATE_FIELD
                                         .getField(),
                                 Double.class))
                 .thenReturn(HEAP_ALLOC_RATE);
         Mockito.when(
                         testRecord.get(
-                                HotShardSummary.HotShardSummaryField.HEAP_ALLOC_RATE_THRESHOLD_FIELD
-                                        .getField(),
-                                Double.class))
-                .thenReturn(HEAP_ALLOC_RATE_THRESHOLD);
+                                HotShardSummary.HotShardSummaryField.CRITERIA_FIELD.getField(),
+                                Integer.class))
+                .thenReturn(CRITERIA.getNumber());
         Mockito.when(
                         testRecord.get(
                                 HotShardSummary.HotShardSummaryField.TIME_PERIOD_FIELD.getField(),
@@ -214,14 +192,13 @@ public class HotShardSummaryTest {
         GenericSummary summary = HotShardSummary.buildSummary(testRecord);
         Assert.assertNotNull(summary);
         List<Object> values = summary.getSqlValue();
-        Assert.assertEquals(8, values.size());
+        Assert.assertEquals(7, values.size());
         Assert.assertEquals(INDEX_NAME, values.get(0));
         Assert.assertEquals(SHARD_ID, values.get(1));
         Assert.assertEquals(NODE_ID, values.get(2));
         Assert.assertEquals(CPU_UTILIZATION, values.get(3));
-        Assert.assertEquals(CPU_UTILIZATION_THRESHOLD, values.get(4));
-        Assert.assertEquals(HEAP_ALLOC_RATE, values.get(5));
-        Assert.assertEquals(HEAP_ALLOC_RATE_THRESHOLD, values.get(6));
-        Assert.assertEquals(TIME_PERIOD, values.get(7));
+        Assert.assertEquals(HEAP_ALLOC_RATE, values.get(4));
+        Assert.assertEquals(CRITERIA.getNumber(), values.get(5));
+        Assert.assertEquals(TIME_PERIOD, values.get(6));
     }
 }

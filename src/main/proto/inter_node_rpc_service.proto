@@ -147,14 +147,18 @@ message HotResourceSummaryMessage {
     string metaData = 9;
 }
 message HotShardSummaryMessage {
-    string indexName = 1;
-    string shardId = 2;
-    string nodeId = 3;
-    double cpu_utilization = 4;
-    double cpu_utilization_threshold = 5;
-    double heap_alloc_rate = 6;
-    double heap_alloc_rate_threshold = 7;
-    int32 timePeriod = 10;
+  enum CriteriaEnum {
+    HEAP_ALLOC_RATE_CRITERIA = 0;
+    CPU_UTILIZATION_CRITERIA = 1;
+    DOUBLE_CRITERIA = 2;
+  }
+  string indexName = 1;
+  string shardId = 2;
+  string nodeId = 3;
+  double cpuUtilization = 4;
+  double heapAllocRate = 5;
+  CriteriaEnum criteria = 6;
+  int32 timePeriod = 10;
 }
 message HotNodeSummaryMessage {
     string nodeID = 1;

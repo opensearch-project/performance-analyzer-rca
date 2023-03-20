@@ -16,6 +16,7 @@ import java.util.Map;
 import java.util.Set;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.opensearch.performanceanalyzer.grpc.HotShardSummaryMessage.CriteriaEnum;
 import org.opensearch.performanceanalyzer.grpc.Resource;
 import org.opensearch.performanceanalyzer.rca.configs.HotShardClusterRcaConfig;
 import org.opensearch.performanceanalyzer.rca.framework.api.Rca;
@@ -34,8 +35,8 @@ import org.opensearch.performanceanalyzer.rca.scheduler.FlowUnitOperationArgWrap
 
 /**
  * This RCA is used to find hot shards per index in a cluster using the HotShardSummary sent from
- * each node via 'HotShardRca'. If the resource utilization is (threshold)% higher than the mean
- * resource utilization for the index, we declare the shard hot.
+ * each node via {@link HotShardRca}. If the resource utilization is (threshold)% higher than the
+ * median resource utilization for the index, we declare the shard hot.
  */
 public class HotShardClusterRca extends Rca<ResourceFlowUnit<HotClusterSummary>> {
 
@@ -52,7 +53,8 @@ public class HotShardClusterRca extends Rca<ResourceFlowUnit<HotClusterSummary>>
     private Set<String> unhealthyNodes;
 
     // Guava Table with Row: 'Index_Name', Column: 'NodeShardKey', Cell Value: 'Value'
-    // TODO: Use the fact that we're getting at max topK*2 consumers from each node and perform further optimization.
+    // TODO: Use the fact that we're getting at max topK*2 consumers from each node and perform
+    // further optimization.
     private Table<String, NodeShardKey, Double> cpuUtilizationInfoTable;
     private Table<String, NodeShardKey, Double> heapAllocRateInfoTable;
 
@@ -91,18 +93,26 @@ public class HotShardClusterRca extends Rca<ResourceFlowUnit<HotClusterSummary>>
             if (summary instanceof HotShardSummary) {
                 HotShardSummary hotShardSummary = (HotShardSummary) summary;
                 String indexName = hotShardSummary.getIndexName();
+                CriteriaEnum criteria = hotShardSummary.getCriteria();
                 NodeShardKey nodeShardKey = new NodeShardKey(nodeId, hotShardSummary.getShardId());
 
-                populateResourceInfoTable(
-                        indexName,
-                        nodeShardKey,
-                        hotShardSummary.getCpuUtilization(),
-                        cpuUtilizationInfoTable);
-                populateResourceInfoTable(
-                        indexName,
-                        nodeShardKey,
-                        hotShardSummary.getHeapAllocRate(),
-                        heapAllocRateInfoTable);
+                // Incoming FlowUnits have to be triaged based on their comparison criteria type
+                if (CriteriaEnum.CPU_UTILIZATION_CRITERIA.equals(criteria)
+                        || CriteriaEnum.DOUBLE_CRITERIA.equals(criteria)) {
+                    populateResourceInfoTable(
+                            indexName,
+                            nodeShardKey,
+                            hotShardSummary.getCpuUtilization(),
+                            cpuUtilizationInfoTable);
+                }
+                if (CriteriaEnum.HEAP_ALLOC_RATE_CRITERIA.equals(criteria)
+                        || CriteriaEnum.DOUBLE_CRITERIA.equals(criteria)) {
+                    populateResourceInfoTable(
+                            indexName,
+                            nodeShardKey,
+                            hotShardSummary.getHeapAllocRate(),
+                            heapAllocRateInfoTable);
+                }
             }
         }
     }
@@ -181,7 +191,6 @@ public class HotShardClusterRca extends Rca<ResourceFlowUnit<HotClusterSummary>>
     @Override
     public ResourceFlowUnit<HotClusterSummary> operate() {
         counter++;
-
         // Populate the Table, compiling the information per index
         final List<ResourceFlowUnit<HotNodeSummary>> resourceFlowUnits = hotShardRca.getFlowUnits();
         for (final ResourceFlowUnit<HotNodeSummary> resourceFlowUnit : resourceFlowUnits) {
