@@ -10,6 +10,7 @@ import java.time.Clock;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import org.opensearch.performanceanalyzer.grpc.HotShardSummaryMessage.CriteriaEnum;
 import org.opensearch.performanceanalyzer.grpc.Resource;
 import org.opensearch.performanceanalyzer.rca.framework.api.contexts.ResourceContext;
 import org.opensearch.performanceanalyzer.rca.framework.api.flow_units.ResourceFlowUnit;
@@ -130,14 +131,14 @@ public class RcaTestHelper<T extends GenericSummary> extends Rca<ResourceFlowUni
             String indexName,
             String shardId,
             String nodeID,
-            double cpu_utilization,
-            double heap_alloc_rate,
+            double cpuUtilization,
+            double heapAllocRate,
+            CriteriaEnum criteria,
             Resources.State health) {
         HotShardSummary hotShardSummary = new HotShardSummary(indexName, shardId, nodeID, 60);
-        hotShardSummary.setcpuUtilization(cpu_utilization);
-        hotShardSummary.setCpuUtilizationThreshold(0.50);
-        hotShardSummary.setHeapAllocRate(heap_alloc_rate);
-        hotShardSummary.setHeapAllocRateThreshold(2500);
+        hotShardSummary.setCriteria(criteria);
+        hotShardSummary.setCpuUtilization(cpuUtilization);
+        hotShardSummary.setHeapAllocRate(heapAllocRate);
         HotNodeSummary nodeSummary =
                 new HotNodeSummary(
                         new InstanceDetails.Id(nodeID), new InstanceDetails.Ip("127.0.0.0"));
