@@ -4,7 +4,36 @@
  */
 
 buildscript {
+
+    ext {
+        opensearch_version = System.getProperty("opensearch.version", "3.0.0-SNAPSHOT")
+        isSnapshot = "true" == System.getProperty("build.snapshot", "true")
+        buildVersionQualifier = System.getProperty("build.version_qualifier", "")
+        buildDockerJdkVersion = System.getProperty("build.docker_jdk_ver", "11")
+
+        // 3.0.0-SNAPSHOT -> 3.0.0.0-SNAPSHOT
+        version_tokens = opensearch_version.tokenize('-')
+        opensearch_build = version_tokens[0] + '.0'
+        if (buildVersionQualifier) {
+            opensearch_build += "-${buildVersionQualifier}"
+        }
+        if (isSnapshot) {
+            opensearch_build += "-SNAPSHOT"
+        }
+        gitPaBranch = 'main'
+        gitPaRepo = "https://github.com/opensearch-project/performance-analyzer.git"
+        runGauntletTests = "true" == System.getProperty("run.gauntlet.tests", "false")
+    }
+
+    repositories {
+        mavenLocal()
+        maven { url "https://aws.oss.sonatype.org/content/repositories/snapshots" }
+        mavenCentral()
+        maven { url "https://plugins.gradle.org/m2/" }
+    }
+
     dependencies {
+        classpath "org.opensearch.gradle:build-tools:${opensearch_version}"
         classpath group: 'com.google.guava', name: 'guava', version: '30.1-jre'
         classpath 'org.ajoberstar:gradle-git:0.2.3'
     }
@@ -49,26 +78,6 @@ distributions {
             }
         }
     }
-}
-
-ext {
-    opensearch_version = System.getProperty("opensearch.version", "3.0.0-SNAPSHOT")
-    isSnapshot = "true" == System.getProperty("build.snapshot", "true")
-    buildVersionQualifier = System.getProperty("build.version_qualifier", "")
-    buildDockerJdkVersion = System.getProperty("build.docker_jdk_ver", "11")
-
-    // 3.0.0-SNAPSHOT -> 3.0.0.0-SNAPSHOT
-    version_tokens = opensearch_version.tokenize('-')
-    opensearch_build = version_tokens[0] + '.0'
-    if (buildVersionQualifier) {
-        opensearch_build += "-${buildVersionQualifier}"
-    }
-    if (isSnapshot) {
-        opensearch_build += "-SNAPSHOT"
-    }
-    gitPaBranch = 'main'
-    gitPaRepo = "https://github.com/opensearch-project/performance-analyzer.git"
-    runGauntletTests = "true" == System.getProperty("run.gauntlet.tests", "false")
 }
 
 spotless {
@@ -300,7 +309,6 @@ repositories {
     mavenCentral()
 }
 
-
 configurations {
     includeJars
 }
@@ -309,13 +317,18 @@ tasks.withType(JavaCompile) {
     options.warnings = false
 }
 
+import org.opensearch.gradle.VersionProperties
+
 dependencies {
     if (JavaVersion.current() <= JavaVersion.VERSION_1_8) {
         implementation files("${System.properties['java.home']}/../lib/tools.jar")
     }
 
-    def jacksonVersion = "2.14.1"
-    def jacksonDataBindVersion = "2.14.1"
+    def jacksonVersion = "${VersionProperties.versions.jackson}"
+    def jacksonDataBindVersion = "${VersionProperties.versions.jackson_databind}"
+    def nettyVersion = "${VersionProperties.versions.netty}"
+    def junitVersion = "${VersionProperties.versions.junit}"
+    def log4jVersion = "${VersionProperties.versions.log4j}"
 
     implementation 'org.jooq:jooq:3.10.8'
     implementation 'org.bouncycastle:bcprov-jdk15on:1.70'
