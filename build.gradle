@@ -4,7 +4,36 @@
  */
 
 buildscript {
+
+    ext {
+        opensearch_version = System.getProperty("opensearch.version", "3.0.0-SNAPSHOT")
+        isSnapshot = "true" == System.getProperty("build.snapshot", "true")
+        buildVersionQualifier = System.getProperty("build.version_qualifier", "")
+        buildDockerJdkVersion = System.getProperty("build.docker_jdk_ver", "11")
+
+        // 3.0.0-SNAPSHOT -> 3.0.0.0-SNAPSHOT
+        version_tokens = opensearch_version.tokenize('-')
+        opensearch_build = version_tokens[0] + '.0'
+        if (buildVersionQualifier) {
+            opensearch_build += "-${buildVersionQualifier}"
+        }
+        if (isSnapshot) {
+            opensearch_build += "-SNAPSHOT"
+        }
+        gitPaBranch = 'main'
+        gitPaRepo = "https://github.com/opensearch-project/performance-analyzer.git"
+        runGauntletTests = "true" == System.getProperty("run.gauntlet.tests", "false")
+    }
+
+    repositories {
+        mavenLocal()
+        maven { url "https://aws.oss.sonatype.org/content/repositories/snapshots" }
+        mavenCentral()
+        maven { url "https://plugins.gradle.org/m2/" }
+    }
+
     dependencies {
+        classpath "org.opensearch.gradle:build-tools:${opensearch_version}"
         classpath group: 'com.google.guava', name: 'guava', version: '30.1-jre'
         classpath 'org.ajoberstar:gradle-git:0.2.3'
     }
@@ -49,26 +78,6 @@ distributions {
             }
         }
     }
-}
-
-ext {
-    opensearch_version = System.getProperty("opensearch.version", "3.0.0-SNAPSHOT")
-    isSnapshot = "true" == System.getProperty("build.snapshot", "true")
-    buildVersionQualifier = System.getProperty("build.version_qualifier", "")
-    buildDockerJdkVersion = System.getProperty("build.docker_jdk_ver", "11")
-
-    // 3.0.0-SNAPSHOT -> 3.0.0.0-SNAPSHOT
-    version_tokens = opensearch_version.tokenize('-')
-    opensearch_build = version_tokens[0] + '.0'
-    if (buildVersionQualifier) {
-        opensearch_build += "-${buildVersionQualifier}"
-    }
-    if (isSnapshot) {
-        opensearch_build += "-SNAPSHOT"
-    }
-    gitPaBranch = 'main'
-    gitPaRepo = "https://github.com/opensearch-project/performance-analyzer.git"
-    runGauntletTests = "true" == System.getProperty("run.gauntlet.tests", "false")
 }
 
 spotless {
@@ -300,7 +309,6 @@ repositories {
     mavenCentral()
 }
 
-
 configurations {
     includeJars
 }
@@ -309,13 +317,19 @@ tasks.withType(JavaCompile) {
     options.warnings = false
 }
 
+import org.opensearch.gradle.VersionProperties
+
 dependencies {
     if (JavaVersion.current() <= JavaVersion.VERSION_1_8) {
         implementation files("${System.properties['java.home']}/../lib/tools.jar")
     }
+    def versions = VersionProperties.versions
 
-    def jacksonVersion = "2.14.1"
-    def jacksonDataBindVersion = "2.14.1"
+    def jacksonVersion = "${versions.jackson}"
+    def jacksonDataBindVersion = "${versions.jackson_databind}"
+    def nettyVersion = "${versions.netty}"
+    def junitVersion = "${versions.junit}"
+    def log4jVersion = "${versions.log4j}"
 
     implementation 'org.jooq:jooq:3.10.8'
     implementation 'org.bouncycastle:bcprov-jdk15on:1.70'
@@ -326,18 +340,18 @@ dependencies {
     implementation 'org.checkerframework:checker-qual:3.29.0'
     implementation "com.fasterxml.jackson.core:jackson-annotations:${jacksonVersion}"
     implementation "com.fasterxml.jackson.core:jackson-databind:${jacksonDataBindVersion}"
-    implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.17.1'
-    implementation group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.17.1'
+    implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: "${log4jVersion}"
+    implementation group: 'org.apache.logging.log4j', name: 'log4j-core', version: "${log4jVersion}"
     implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.9'
     implementation group: 'commons-io', name: 'commons-io', version: '2.7'
     implementation group: 'com.google.errorprone', name: 'error_prone_annotations', version: '2.9.0'
     implementation group: 'com.google.protobuf', name: 'protobuf-java', version: '3.21.12'
     implementation 'io.grpc:grpc-netty:1.52.1'
     implementation 'io.grpc:grpc-protobuf:1.52.1'
-    implementation('io.netty:netty-codec-http2:4.1.86.Final') {
+    implementation("io.netty:netty-codec-http2:${nettyVersion}") {
         force = 'true'
     }
-    implementation('io.netty:netty-handler-proxy:4.1.86.Final') {
+    implementation("io.netty:netty-handler-proxy:${nettyVersion}") {
         force = 'true'
     }
     implementation 'io.grpc:grpc-stub:1.52.1'
@@ -356,7 +370,7 @@ dependencies {
     testImplementation group: 'org.objenesis', name: 'objenesis', version: '3.0.1'
     testImplementation group: 'org.hamcrest', name: 'hamcrest-library', version: '2.1'
     testImplementation group: 'org.hamcrest', name: 'hamcrest', version: '2.1'
-    testImplementation group: 'junit', name: 'junit', version: '4.13.1'
+    testImplementation group: 'junit', name: 'junit', version: "${junitVersion}"
 }
 
 configurations.each {
