@@ -12,6 +12,7 @@ import org.opensearch.performanceanalyzer.rca.stats.eval.Statistics;
 import org.opensearch.performanceanalyzer.rca.stats.measurements.MeasurementSet;
 
 public enum ExceptionsAndErrors implements MeasurementSet {
+    PA_AGENT_STOPPED("PaAgentStopped"),
     RCA_FRAMEWORK_CRASH("RcaFrameworkCrash"),
 
     CONFIG_DIR_NOT_FOUND("ConfigDirectoryNotFound"),
@@ -48,14 +49,13 @@ public enum ExceptionsAndErrors implements MeasurementSet {
 
     ADMISSION_CONTROL_COLLECTOR_ERROR("AdmissionControlCollectorError"),
 
+    CIRCUIT_BREAKER_COLLECTOR_ERROR("CircuitBreakerCollectorError"),
+
     CLUSTER_MANAGER_THROTTLING_COLLECTOR_ERROR("ClusterManagerThrottlingMetricsCollectorError"),
 
     FAULT_DETECTION_COLLECTOR_ERROR("FaultDetectionMetricsCollectorError"),
 
     CLUSTER_APPLIER_SERVICE_STATS_COLLECTOR_ERROR("ClusterApplierServiceStatsCollectorError"),
-
-    CLUSTER_MANAGER_CLUSTER_UPDATE_STATS_COLLECTOR_ERROR(
-            "ClusterManagerClusterStateUpdateStatsCollectorError"),
 
     ELECTION_TERM_COLLECTOR_ERROR("ElectionTermCollectorError"),
 

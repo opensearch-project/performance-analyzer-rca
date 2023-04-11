@@ -84,6 +84,16 @@ public enum WriterMetrics implements MeasurementSet {
                     Statistics.COUNT,
                     Statistics.SUM)),
 
+    CIRCUIT_BREAKER_COLLECTOR_EXECUTION_TIME(
+            "CircuitBreakerCollectorExecutionTime",
+            "millis",
+            Arrays.asList(
+                    Statistics.MAX,
+                    Statistics.MIN,
+                    Statistics.MEAN,
+                    Statistics.COUNT,
+                    Statistics.SUM)),
+
     CLUSTER_MANAGER_THROTTLING_COLLECTOR_NOT_AVAILABLE(
             "ClusterManagerThrottlingCollectorNotAvailable",
             "count",
