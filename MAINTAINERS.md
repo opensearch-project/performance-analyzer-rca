@@ -8,10 +8,11 @@ This document contains a list of maintainers in this repo. See [opensearch-proje
 |------------------|-------------------------------------------------------| ----------- |
 | Praveen Sameneni | [praveensameneni](https://github.com/praveensameneni) | Amazon      |
 | Khushboo Rajput  | [khushbr](https://github.com/khushbr)                 | Amazon      |
-| Sagar            | [sgup432](https://github.com/sgup432)                 | Amazon      |
+| Chenyang Ji      | [ansjcy](https://github.com/ansjcy)                   | Amazon      |
+| Megha Goyal      | [goyamegh](https://github.com/goyamegh)               | Amazon      |
 | Saurabh Singh    | [getsaurabh02](https://github.com/getsaurabh02)       | Amazon      |
-| Nick Knize       | [nknize](https://github.com/nknize)                   | Amazon      |
-| CEHENKLE         | [CEHENKLE](https://github.com/CEHENKLE)               | Amazon      |
+| Subhobrata Dey   | [sbcd90](https://github.com/sbcd90)                   | Amazon      |
+| Sagar            | [sgup432](https://github.com/sgup432)                 | Amazon      |
 
 ## Previous Maintainers
 
