@@ -136,6 +136,8 @@ public class PerformanceAnalyzerApp {
             startWebServerThread(clientServers.getHttpServer(), THREAD_PROVIDER);
             startRcaTopLevelThread(clientServers, connectionManager, appContext, THREAD_PROVIDER);
         } else {
+            PerformanceAnalyzerApp.ERRORS_AND_EXCEPTIONS_AGGREGATOR.updateStat(
+                    ExceptionsAndErrors.PA_AGENT_STOPPED, "", 1);
             LOG.error("Performance analyzer app stopped due to invalid config status.");
         }
     }
@@ -188,6 +190,8 @@ public class PerformanceAnalyzerApp {
                                     final PAThreadException exception = errorQueue.take();
                                     handle(exception);
                                 } catch (InterruptedException e) {
+                                    PerformanceAnalyzerApp.READER_METRICS_AGGREGATOR.updateStat(
+                                            ReaderMetrics.ERROR_HANDLER_THREAD_STOPPED, "", 1);
                                     LOG.error(
                                             "Exception handling thread interrupted. Reason: {}",
                                             e.getMessage(),

@@ -993,6 +993,8 @@ public class ReaderMetricsProcessor implements Runnable {
                                     newValue);
                         }
                     } catch (IOException e) {
+                        PerformanceAnalyzerApp.READER_METRICS_AGGREGATOR.updateStat(
+                                ReaderMetrics.BATCH_METRICS_CONFIG_ERROR, "", 1);
                         LOG.error("Error reading file '{}': {}", filePath.toString(), e);
                         batchMetricsEnabled = defaultBatchMetricsEnabled;
                     }
