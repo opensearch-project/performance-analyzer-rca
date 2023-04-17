@@ -75,7 +75,7 @@ jobs:
     # Enable RCA for Integration Tests
     - name: Spin up Docker cluster for integ testing
       working-directory: ./tmp/performance-analyzer-rca
-      run: ./gradlew enableRca
+      run: ./gradlew enableRca -Dbuild.docker_jdk_ver=${{matrix.java}}
 
     # Run Integration Tests in PA
     - name: Run integration tests
