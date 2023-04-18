@@ -360,6 +360,9 @@ configurations.each {
             if (dependency.requested.group == 'org.apache.bcel') {
                 dependency.useTarget 'org.apache.bcel:bcel:6.6.1'
             }
+            if (dependency.requested.group == 'org.apache.commons' && dependency.requested.name == 'commons-text') {
+                dependency.useVersion '1.10.0'
+            }
         }
     }
 }
