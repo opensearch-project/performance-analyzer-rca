@@ -322,6 +322,9 @@ dependencies {
     implementation('io.netty:netty-transport-native-unix-common:4.1.84.Final') {
         force = 'true'
     }
+    implementation('org.apache.commons:commons-text:1.10.0') {
+        force = 'true'
+    }
 
     // JDK9+ has to run powermock 2+. https://github.com/powermock/powermock/issues/888
     testCompile group: 'org.powermock', name: 'powermock-api-mockito2', version: '2.0.0'
@@ -337,6 +340,16 @@ dependencies {
     testCompile group: 'org.hamcrest', name: 'hamcrest-library', version: '2.1'
     testCompile group: 'org.hamcrest', name: 'hamcrest', version: '2.1'
     testCompile group: 'junit', name: 'junit', version: '4.12'
+}
+
+configurations.each {
+    c -> c.resolutionStrategy.dependencySubstitution {
+        all { DependencySubstitution dependency ->
+            if (dependency.requested.group == 'org.apache.bcel') {
+                dependency.useTarget 'org.apache.bcel:bcel:6.6.1'
+            }
+        }
+    }
 }
 
 protobuf {
