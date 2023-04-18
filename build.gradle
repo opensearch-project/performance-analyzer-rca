@@ -117,6 +117,14 @@ spotbugsMain {
         xml.enabled = false
         html.enabled = true
     }
+
+
+    configurations.all {
+        resolutionStrategy {
+            force "org.apache.commons:commons-lang3:3.12.0"
+            force "org.apache.commons:commons-text:1.10.0"
+        }
+    }
 }
 
 spotbugsTest {
@@ -325,7 +333,7 @@ dependencies {
     compile "com.fasterxml.jackson.core:jackson-databind:${jacksonDataBindVersion}"
     compile group: 'org.apache.logging.log4j', name: 'log4j-api', version: "${log4jVersion}"
     compile group: 'org.apache.logging.log4j', name: 'log4j-core', version: "${log4jVersion}"
-    compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.9'
+    compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.12'
     compile group: 'commons-io', name: 'commons-io', version: '2.7'
     compile group: 'com.google.errorprone', name: 'error_prone_annotations', version: '2.9.0'
     compile group: 'com.google.protobuf', name: 'protobuf-java', version: '3.21.8'
@@ -352,6 +360,16 @@ dependencies {
     testCompile group: 'org.hamcrest', name: 'hamcrest-library', version: '2.1'
     testCompile group: 'org.hamcrest', name: 'hamcrest', version: '2.1'
     testCompile group: 'junit', name: 'junit', version: "${junitVersion}"
+}
+
+configurations.each {
+    c -> c.resolutionStrategy.dependencySubstitution {
+        all { DependencySubstitution dependency ->
+            if (dependency.requested.group == 'org.apache.bcel') {
+                dependency.useTarget 'org.apache.bcel:bcel:6.6.1'
+            }
+        }
+    }
 }
 
 protobuf {
