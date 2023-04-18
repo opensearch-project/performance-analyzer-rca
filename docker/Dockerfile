@@ -10,10 +10,22 @@
 ################################################################################
 
 FROM centos:7 AS prep_open_search_files
+ARG JDK_VER=11
 
 ENV PATH /usr/share/opensearch/bin:$PATH
-RUN curl -s https://download.java.net/java/GA/jdk11/13/GPL/openjdk-11.0.1_linux-x64_bin.tar.gz | tar -C /opt -zxf -
-ENV OPENSEARCH_JAVA_HOME /opt/jdk-11.0.1
+
+RUN if [[ "${JDK_VER}" = "17" ]] ; then \
+    curl -s https://download.java.net/java/GA/jdk17.0.2/dfd4a8d0985749f896bed50d7138ee7f/8/GPL/openjdk-17.0.2_linux-x64_bin.tar.gz | tar -C /opt -zxf -; \
+    mkdir /opt/jdk ; \
+    mv -v /opt/jdk-17.0.2/* /opt/jdk; \
+else \
+    curl -s https://download.java.net/java/GA/jdk11/13/GPL/openjdk-11.0.1_linux-x64_bin.tar.gz | tar -C /opt -zxf -; \
+    mkdir /opt/jdk ; \
+    mv -v /opt/jdk-11.0.1/* /opt/jdk; \
+fi
+
+
+ENV OPENSEARCH_JAVA_HOME /opt/jdk
 RUN yum install -y unzip
 RUN yum install -y lsof
 
@@ -54,6 +66,10 @@ RUN chown -R opensearch:0 . && \
 RUN unzip config/performance-analyzer-rca-2.7.0.0-SNAPSHOT.zip
 
 RUN chmod -R 755 /dev/shm
+
+RUN if [[ "${JDK_VER}" = "17" ]] ; then \
+    echo "--add-opens=jdk.attach/sun.tools.attach=ALL-UNNAMED" >> /usr/share/opensearch/config/jvm.options ; \
+fi
 ################################################################################
 # Build stage 1 (the actual OpenSearch image):
 # Copy OpenSearch from stage 0
@@ -86,13 +102,13 @@ RUN yum update -y && \
     yum install -y nc unzip wget which && \
     yum clean all
 COPY CENTOS_LICENSING.txt /root
-COPY --from=prep_open_search_files --chown=1000:0 /opt/jdk-11.0.1 /opt/jdk-11.0.1
-ENV OPENSEARCH_JAVA_HOME /opt/jdk-11.0.1
+COPY --from=prep_open_search_files --chown=1000:0 /opt/jdk /opt/jdk
+ENV OPENSEARCH_JAVA_HOME /opt/jdk
 ENV OPENSEARCH_PATH_CONF /usr/share/opensearch/config
 
 # Replace OpenJDK's built-in CA certificate keystore with the one from the OS
 # vendor. The latter is superior in several ways.
-RUN ln -sf /etc/pki/ca-trust/extracted/java/cacerts /opt/jdk-11.0.1/lib/security/cacerts
+RUN ln -sf /etc/pki/ca-trust/extracted/java/cacerts /opt/jdk/lib/security/cacerts
 
 ENV PATH $PATH:$OPENSEARCH_JAVA_HOME/bin
 

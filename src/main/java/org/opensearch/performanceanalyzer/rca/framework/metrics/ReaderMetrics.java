@@ -81,6 +81,8 @@ public enum ReaderMetrics implements MeasurementSet {
     /** Whether or not batch metrics is enabled (0 for enabled, 1 for disabled). */
     BATCH_METRICS_ENABLED("BatchMetricsEnabled", "count", Statistics.SAMPLE),
 
+    BATCH_METRICS_CONFIG_ERROR("BatchMetricsConfigError", "count", Statistics.SAMPLE),
+
     /** Number of http requests where the client gave a bad request. */
     BATCH_METRICS_HTTP_CLIENT_ERROR("BatchMetricsHttpClientError", "count", Statistics.COUNT),
 

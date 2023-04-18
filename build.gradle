@@ -9,6 +9,7 @@ buildscript {
         opensearch_version = System.getProperty("opensearch.version", "2.7.0-SNAPSHOT")
         isSnapshot = "true" == System.getProperty("build.snapshot", "true")
         buildVersionQualifier = System.getProperty("build.version_qualifier", "")
+        buildDockerJdkVersion = System.getProperty("build.docker_jdk_ver", "11")
 
         // 2.7.0-SNAPSHOT -> 2.7.0.0-SNAPSHOT
         version_tokens = opensearch_version.tokenize('-')
@@ -487,7 +488,7 @@ task buildDocker(type: Exec) {
     dependsOn(copyAllArtifacts)
 
     workingDir(dockerArtifactsDir)
-    commandLine 'docker', 'build', '-t', 'opensearch/pa-rca:2.7', '.'
+    commandLine 'docker', 'build', '-t', 'opensearch/pa-rca:2.7', '.', '--build-arg', "JDK_VER=${buildDockerJdkVersion}"
 }
 
 task runDocker(type: Exec) {

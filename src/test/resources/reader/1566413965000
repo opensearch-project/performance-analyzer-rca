@@ -9,7 +9,7 @@ $
 {"Election_Term":18}$
 ^cluster_manager_throttling_metrics
 {"current_time":1566413966544}
-{"Data_RetryingPendingTasksCount":0,"ClusterManager_ThrottledPendingTasksCount":33}
+{"Data_RetryingPendingTasksCount":0,"ClusterManager_ThrottledPendingTasksCount":33}$
 ^cluster_applier_service
 {"current_time":1566413966544}
 {"ClusterApplierService_Latency":23,"ClusterApplierService_Failure":3}$
