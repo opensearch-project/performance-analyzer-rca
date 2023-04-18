@@ -337,6 +337,9 @@ dependencies {
     implementation("io.netty:netty-transport-native-unix-common:${nettyVersion}") {
         force = 'true'
     }
+    implementation("org.apache.commons:commons-text:1.10.0") {
+        force = 'true'
+    }
 
     // JDK9+ has to run powermock 2+. https://github.com/powermock/powermock/issues/888
     testCompile group: 'org.powermock', name: 'powermock-api-mockito2', version: '2.0.0'
