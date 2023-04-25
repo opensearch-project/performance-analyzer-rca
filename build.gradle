@@ -330,12 +330,14 @@ dependencies {
     def nettyVersion = "${versions.netty}"
     def junitVersion = "${versions.junit}"
     def log4jVersion = "${versions.log4j}"
+    def protobufVersion = "${versions.protobuf}"
+    def guavaVersion = "${versions.guava}"
 
     implementation 'org.jooq:jooq:3.10.8'
     implementation 'org.bouncycastle:bcprov-jdk15on:1.70'
     implementation 'org.bouncycastle:bcpkix-jdk15on:1.70'
     implementation 'org.xerial:sqlite-jdbc:3.32.3.2'
-    implementation 'com.google.guava:guava:31.1-jre'
+    implementation "com.google.guava:guava:${guavaVersion}"
     implementation 'com.google.code.gson:gson:2.9.0'
     implementation 'org.checkerframework:checker-qual:3.29.0'
     implementation "com.fasterxml.jackson.core:jackson-annotations:${jacksonVersion}"
@@ -345,7 +347,7 @@ dependencies {
     implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.9'
     implementation group: 'commons-io', name: 'commons-io', version: '2.7'
     implementation group: 'com.google.errorprone', name: 'error_prone_annotations', version: '2.9.0'
-    implementation group: 'com.google.protobuf', name: 'protobuf-java', version: '3.21.12'
+    implementation group: 'com.google.protobuf', name: 'protobuf-java', version: "${protobufVersion}"
     implementation 'io.grpc:grpc-netty:1.52.1'
     implementation 'io.grpc:grpc-protobuf:1.52.1'
     implementation("io.netty:netty-codec-http2:${nettyVersion}") {
