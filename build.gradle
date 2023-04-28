@@ -377,15 +377,15 @@ dependencies {
     testImplementation group: 'junit', name: 'junit', version: "${junitVersion}"
 }
 
-//configurations.each {
-//    c -> c.resolutionStrategy.dependencySubstitution {
-//        all { DependencySubstitution dependency ->
-//            if (dependency.requested.group == 'org.apache.bcel') {
-//                dependency.useTarget 'org.apache.bcel:bcel:6.6.1'
-//            }
-//        }
-//    }
-//}
+configurations.each {
+    c -> c.resolutionStrategy.dependencySubstitution {
+        all { DependencySubstitution dependency ->
+            if (dependency.requested.group == 'org.apache.bcel') {
+                dependency.useTarget 'org.apache.bcel:bcel:6.6.1'
+            }
+        }
+    }
+}
 
 protobuf {
     protoc {
