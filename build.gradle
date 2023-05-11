@@ -414,65 +414,48 @@ idea {
 
 import groovy.json.JsonSlurper
 import java.nio.file.Paths
-import org.ajoberstar.gradle.git.tasks.GitClone
+import org.apache.tools.ant.taskdefs.condition.Os
 
 String paDir
 String dockerBuildDir
 String dockerArtifactsDir
 
-task clonePaGitRepo(type: GitClone) {
+String os_platform = "linux"
+String artifact_type = "tar"
+String file_ext = "zip"
+String version_no_qualifier = isSnapshot ? version - "-SNAPSHOT" : version
+
+task pullPAPlugin() {
     dockerBuildDir = Paths.get(getProject().getBuildDir().toString(), "docker-build").toString()
     mkdir dockerBuildDir
-    if (localPaDir != null && !localPaDir.empty) {
-        // If you already have the performance Analyzer sources checked out then update the
-        // localPaDir in gradle.properties with the path.
-        paDir = localPaDir
-    } else {
-        paDir = Paths.get(dockerBuildDir, "pa").toString()
-    }
-
-    def destination = file(paDir)
-    uri = gitPaRepo
-    branch = gitPaBranch
-    destinationPath = destination
-    bare = false
-    enabled = !destination.exists() //to clone only once
-}
-
-task removeLicenses(type: Delete) {
-    dependsOn(clonePaGitRepo)
-    def toDelete = Paths.get(paDir, 'licenses', "performanceanalyzer-rca-${version}.jar.sha1")
-    delete(toDelete)
-}
-
-task regenerateLicenses(type: Exec) {
-    dependsOn(removeLicenses)
-    workingDir(paDir)
-    commandLine './gradlew', 'updateShas'
-}
-
-task buildPa(type: Exec) {
-    dependsOn(assemble, publishToMavenLocal, regenerateLicenses)
-    workingDir paDir
-    println String.format('pa in dir: (%s) will be built.', paDir)
+    paDir = Paths.get(dockerBuildDir, "pa")
+    mkdir paDir
     println String.format('opensearch_version: (%s), plugin_version: (%s), snapshot: (%s), qualifier: (%s).', opensearch_version, version, isSnapshot, buildVersionQualifier)
-    if (buildVersionQualifier == null || buildVersionQualifier == '' || buildVersionQualifier == 'null') {
-        commandLine './gradlew', 'assemble', "-Dopensearch.version=${opensearch_version}", "-Dbuild.snapshot=${isSnapshot}"
+    String opensearch_version_no_qualifier = isSnapshot ? opensearch_version - "-SNAPSHOT" : opensearch_version
+
+    doLast {
+        ext {
+            srcUrl = "https://ci.opensearch.org/ci/dbc/distribution-build-opensearch/${opensearch_version_no_qualifier}/latest/${os_platform}/x64/${artifact_type}/builds/opensearch/plugins/opensearch-performance-analyzer-${version_no_qualifier}.${file_ext}"
+        }
+        ant.get(
+                src: srcUrl,
+                dest: paDir,
+                httpusecaches: false
+        )
+        println String.format('Pulled PA Plugin at: (%s), will be used for Docker Build', Paths.get(paDir, "opensearch-performance-analyzer-${version_no_qualifier}.${file_ext}"))
     }
-    else {
-        commandLine './gradlew', 'assemble', "-Dopensearch.version=${opensearch_version}", "-Dbuild.snapshot=${isSnapshot}", "-Dbuild.version_qualifier=${buildVersionQualifier}"
-    }
-    println "PA repo located at '" + paDir + "' will be used."
 }
 
 task copyAllArtifacts(type: Copy) {
-    dependsOn(buildPa)
+    dependsOn(assemble, publishToMavenLocal, pullPAPlugin)
     def projectPathStr = getProjectDir().toPath().toString()
     def dockerArtifacts = Paths.get(projectPathStr, 'docker').toString()
-    def rcaArtifacts = Paths.get(projectPathStr, 'build', 'distributions', "performance-analyzer-rca-${version}.zip")
-    def paArtifacts = Paths.get(paDir, 'build', 'distributions', "opensearch-performance-analyzer-${version}.zip")
+    def rcaArtifacts = Paths.get(projectPathStr, 'build', 'distributions', "performance-analyzer-rca-${version}.${file_ext}")
+    def paArtifacts = Paths.get(dockerBuildDir, 'pa', "opensearch-performance-analyzer-${version_no_qualifier}.${file_ext}")
 
     dockerArtifactsDir = Paths.get(dockerBuildDir, 'rca-docker')
+    mkdir dockerArtifactsDir
+
     from(dockerArtifacts)
     from(rcaArtifacts)
     from(paArtifacts)
@@ -480,9 +463,9 @@ task copyAllArtifacts(type: Copy) {
 }
 
 task copyReaderMetricsFiles(type: Copy) {
-    dependsOn(buildPa)
-    copy{
-        from ('src/test/resources/reader'){
+    dependsOn(pullPAPlugin)
+    copy {
+        from ('src/test/resources/reader') {
         }
         into 'build/private/test_resources'
     }

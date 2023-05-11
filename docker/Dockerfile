@@ -52,10 +52,10 @@ COPY --chown=1000:0 opensearch.yml log4j2.properties config/
 
 COPY --chown=1000:0 performance-analyzer-rca-3.0.0.0-SNAPSHOT.zip config/
 
-COPY --chown=1000:0 opensearch-performance-analyzer-3.0.0.0-SNAPSHOT.zip /tmp/
+COPY --chown=1000:0 opensearch-performance-analyzer-3.0.0.0.zip /tmp/
 
-RUN opensearch-plugin install --batch file:///tmp/opensearch-performance-analyzer-3.0.0.0-SNAPSHOT.zip; \
-        rm /tmp/opensearch-performance-analyzer-3.0.0.0-SNAPSHOT.zip
+RUN opensearch-plugin install --batch file:///tmp/opensearch-performance-analyzer-3.0.0.0.zip; \
+        rm /tmp/opensearch-performance-analyzer-3.0.0.0.zip
 
 USER 0
 
