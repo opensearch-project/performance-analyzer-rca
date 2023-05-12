@@ -39,5 +39,4 @@ public class PerformanceAnalyzerAppTest {
         errorHandlingThread.interrupt();
         Assert.assertTrue(RcaTestHelper.verify(ReaderMetrics.ERROR_HANDLER_THREAD_STOPPED));
     }
-
 }
