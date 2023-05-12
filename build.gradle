@@ -35,7 +35,6 @@ buildscript {
     dependencies {
         classpath "org.opensearch.gradle:build-tools:${opensearch_version}"
         classpath group: 'com.google.guava', name: 'guava', version: '31.1-jre'
-        classpath 'org.ajoberstar:gradle-git:0.2.3'
     }
 }
 
@@ -309,10 +308,12 @@ project.afterEvaluate {
 
 repositories {
     mavenCentral()
+    maven { url "https://aws.oss.sonatype.org/content/repositories/snapshots" }
 }
 
 configurations {
     includeJars
+    dockerBuild
 }
 
 tasks.withType(JavaCompile) {
@@ -375,6 +376,9 @@ dependencies {
     testImplementation group: 'org.hamcrest', name: 'hamcrest-library', version: '2.1'
     testImplementation group: 'org.hamcrest', name: 'hamcrest', version: '2.1'
     testImplementation group: 'junit', name: 'junit', version: "${junitVersion}"
+
+    // Required for Docker build
+    dockerBuild group: 'org.opensearch.plugin', name:'performance-analyzer', version: "${opensearch_build}"
 }
 
 configurations.each {
@@ -414,36 +418,22 @@ idea {
 
 import groovy.json.JsonSlurper
 import java.nio.file.Paths
-import org.apache.tools.ant.taskdefs.condition.Os
 
 String paDir
 String dockerBuildDir
 String dockerArtifactsDir
-
-String os_platform = "linux"
-String artifact_type = "tar"
 String file_ext = "zip"
-String version_no_qualifier = isSnapshot ? version - "-SNAPSHOT" : version
 
-task pullPAPlugin() {
+task pullPAPlugin(type: Copy) {
     dockerBuildDir = Paths.get(getProject().getBuildDir().toString(), "docker-build").toString()
     mkdir dockerBuildDir
     paDir = Paths.get(dockerBuildDir, "pa")
     mkdir paDir
-    println String.format('opensearch_version: (%s), plugin_version: (%s), snapshot: (%s), qualifier: (%s).', opensearch_version, version, isSnapshot, buildVersionQualifier)
-    String opensearch_version_no_qualifier = isSnapshot ? opensearch_version - "-SNAPSHOT" : opensearch_version
 
-    doLast {
-        ext {
-            srcUrl = "https://ci.opensearch.org/ci/dbc/distribution-build-opensearch/${opensearch_version_no_qualifier}/latest/${os_platform}/x64/${artifact_type}/builds/opensearch/plugins/opensearch-performance-analyzer-${version_no_qualifier}.${file_ext}"
-        }
-        ant.get(
-                src: srcUrl,
-                dest: paDir,
-                httpusecaches: false
-        )
-        println String.format('Pulled PA Plugin at: (%s), will be used for Docker Build', Paths.get(paDir, "opensearch-performance-analyzer-${version_no_qualifier}.${file_ext}"))
-    }
+    println String.format('opensearch_version: (%s), plugin_version: (%s), snapshot: (%s), qualifier: (%s).', opensearch_version, version, isSnapshot, buildVersionQualifier)
+    from(configurations.dockerBuild)
+    into(paDir)
+    println String.format('Pulled PA Plugin at: (%s), will be used for Docker Build', Paths.get(paDir, "performance-analyzer-${version}.${file_ext}"))
 }
 
 task copyAllArtifacts(type: Copy) {
@@ -451,7 +441,7 @@ task copyAllArtifacts(type: Copy) {
     def projectPathStr = getProjectDir().toPath().toString()
     def dockerArtifacts = Paths.get(projectPathStr, 'docker').toString()
     def rcaArtifacts = Paths.get(projectPathStr, 'build', 'distributions', "performance-analyzer-rca-${version}.${file_ext}")
-    def paArtifacts = Paths.get(dockerBuildDir, 'pa', "opensearch-performance-analyzer-${version_no_qualifier}.${file_ext}")
+    def paArtifacts = Paths.get(dockerBuildDir, 'pa', "performance-analyzer-${version}.${file_ext}")
 
     dockerArtifactsDir = Paths.get(dockerBuildDir, 'rca-docker')
     mkdir dockerArtifactsDir
@@ -473,7 +463,6 @@ task copyReaderMetricsFiles(type: Copy) {
 
 task buildDocker(type: Exec) {
     dependsOn(copyAllArtifacts)
-
     workingDir(dockerArtifactsDir)
     commandLine 'docker', 'build', '-t', 'opensearch/pa-rca:3.0', '.', '--build-arg', "JDK_VER=${buildDockerJdkVersion}"
 }

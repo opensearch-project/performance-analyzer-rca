@@ -52,11 +52,10 @@ COPY --chown=1000:0 opensearch.yml log4j2.properties config/
 
 COPY --chown=1000:0 performance-analyzer-rca-3.0.0.0-SNAPSHOT.zip config/
 
-COPY --chown=1000:0 opensearch-performance-analyzer-3.0.0.0.zip /tmp/
+COPY --chown=1000:0 performance-analyzer-3.0.0.0-SNAPSHOT.zip /tmp/
 
-RUN opensearch-plugin install --batch file:///tmp/opensearch-performance-analyzer-3.0.0.0.zip; \
-        rm /tmp/opensearch-performance-analyzer-3.0.0.0.zip
-
+RUN opensearch-plugin install --batch file:///tmp/performance-analyzer-3.0.0.0-SNAPSHOT.zip; \
+        rm /tmp/performance-analyzer-3.0.0.0-SNAPSHOT.zip
 USER 0
 
 # Set gid to 0 for opensearch and make group permission similar to that of user
