@@ -113,9 +113,9 @@ You can use the packaged Dockerfile and docker-compose.yml files [here](./docker
  1. Make sure you're in the `rca-infra` folder.
  
  2. Build and tag the Docker image with our RCA framework.
-    
+
     `docker build -t opensearch/pa-rca:2.7 .`
- 
+
  3. Spin up a two node cluster as follows:
  
     `DATA_VOLUME1=opensearchdata1 DATA_VOLUME2=opensearchdata2 docker-compose -f docker-compose.yml -f docker-compose.hostports.yml -f docker-compose.cluster.yml up opensearch1 opensearch2`
