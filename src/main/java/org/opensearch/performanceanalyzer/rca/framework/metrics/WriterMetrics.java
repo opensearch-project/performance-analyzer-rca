@@ -111,8 +111,8 @@ public enum WriterMetrics implements MeasurementSet {
             "ClusterApplierServiceStatsCollectorExecutionTime",
             "millis",
             Arrays.asList(Statistics.MAX, Statistics.MEAN, Statistics.SUM)),
-    ADMISSION_CONTROL_METRICS_COLLECTOR_EXECUTION_TIME(
-            "AdmissionControlMetricsCollectorExecutionTime",
+    ADMISSION_CONTROL_COLLECTOR_EXECUTION_TIME(
+            "AdmissionControlCollectorExecutionTime",
             "millis",
             Arrays.asList(Statistics.MAX, Statistics.MEAN, Statistics.SUM)),
     ELECTION_TERM_COLLECTOR_EXECUTION_TIME(
