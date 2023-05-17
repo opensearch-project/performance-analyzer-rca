@@ -15,9 +15,11 @@ public enum ExceptionsAndErrors implements MeasurementSet {
     INVALID_CONFIG_RCA_AGENT_STOPPED("InvalidConfigRCAAgentStopped"),
     RCA_FRAMEWORK_CRASH("RcaFrameworkCrash"),
     CONFIG_DIR_NOT_FOUND("ConfigDirectoryNotFound"),
+    CONFIG_OVERRIDES_SER_FAILED("ConfigOverridesSerFailed"),
     WRITE_UPDATED_RCA_CONF_ERROR("WriteUpdatedRcaConfError"),
     BATCH_METRICS_CONFIG_ERROR("BatchMetricsConfigError"),
     MUTE_ERROR("MuteError"),
+    JSON_PARSER_ERROR("JsonParserError", "namedCount", Statistics.NAMED_COUNTERS),
 
     /**
      * Aggregate metrics across RCA Graph nodes tracking failure in various staged of RCA Graph
@@ -54,15 +56,10 @@ public enum ExceptionsAndErrors implements MeasurementSet {
     /** Thread ID is no loner exists */
     JVM_THREAD_ID_NO_LONGER_EXISTS("JVMThreadIdNoLongerExists"),
 
-    /** This metric indicates failure in collecting ClusterManagerServiceEventMetrics */
-    CLUSTER_MANAGER_METRICS_ERROR("ClusterManagerMetricsError"),
-
-    /** This metric indicates cluster_manager is not up */
-    CLUSTER_MANAGER_NODE_NOT_UP("ClusterManagerNodeNotUp"),
-
     /** This metric indicates faiure in intercepting opensearch requests at transport channel */
     OPENSEARCH_REQUEST_INTERCEPTOR_ERROR("OpenSearchRequestInterceptorError"),
 
+    /** Metrics tracking RCA Agent level: 1. Errors 2. Exceptions */
     /** This metric indicates metric entry insertion to event log queue failed */
     METRICS_WRITE_ERROR("MetricsWriteError", "namedCount", Statistics.NAMED_COUNTERS),
 
@@ -85,6 +82,9 @@ public enum ExceptionsAndErrors implements MeasurementSet {
     /** This metric indicates that error occurred while closing metrics db. */
     METRICS_DB_CLOSURE_ERROR("MetricsDbClosureError", "namedCount", Statistics.NAMED_COUNTERS),
 
+    /** When the reader encounters errors accessing metricsdb files. */
+    READER_METRICSDB_ACCESS_ERRORS("ReaderMetricsdbAccessError"),
+
     /** This metric indicates that error occurred while closing database connection. */
     IN_MEMORY_DATABASE_CONN_CLOSURE_ERROR(
             "InMemoryDatabaseConnClosureError", "namedCount", Statistics.NAMED_COUNTERS),
@@ -94,11 +94,13 @@ public enum ExceptionsAndErrors implements MeasurementSet {
     BATCH_METRICS_HTTP_HOST_ERROR("BatchMetricsHttpHostError"),
     BATCH_METRICS_EXCEEDED_MAX_DATAPOINTS("ExceededBatchMetricsMaxDatapoints"),
 
-    /** When the reader encounters errors accessing metricsdb files. */
-    READER_METRICSDB_ACCESS_ERRORS("ReaderMetricsdbAccessError"),
+    /** Below track Collector specific Errors. */
+    THREADPOOL_METRICS_COLLECTOR_ERROR("ThreadPoolMetricsCollectorError"),
     SHARD_STATE_COLLECTOR_ERROR("ShardStateCollectorError"),
     ADMISSION_CONTROL_COLLECTOR_ERROR("AdmissionControlCollectorError"),
     CIRCUIT_BREAKER_COLLECTOR_ERROR("CircuitBreakerCollectorError"),
+    CLUSTER_MANAGER_METRICS_ERROR("ClusterManagerMetricsError"),
+    CLUSTER_MANAGER_NODE_NOT_UP("ClusterManagerNodeNotUp"),
     CLUSTER_MANAGER_THROTTLING_COLLECTOR_ERROR("ClusterManagerThrottlingMetricsCollectorError"),
     FAULT_DETECTION_COLLECTOR_ERROR("FaultDetectionMetricsCollectorError"),
     CLUSTER_APPLIER_SERVICE_STATS_COLLECTOR_ERROR("ClusterApplierServiceStatsCollectorError"),
