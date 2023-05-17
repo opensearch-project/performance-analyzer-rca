@@ -9,11 +9,13 @@ package org.opensearch.performanceanalyzer.collectors;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.Map;
 import java.util.function.Supplier;
+import org.opensearch.performanceanalyzer.PerformanceAnalyzerApp;
 import org.opensearch.performanceanalyzer.jvm.GarbageCollectorInfo;
 import org.opensearch.performanceanalyzer.metrics.AllMetrics.GCInfoDimension;
 import org.opensearch.performanceanalyzer.metrics.MetricsConfiguration;
 import org.opensearch.performanceanalyzer.metrics.MetricsProcessor;
 import org.opensearch.performanceanalyzer.metrics.PerformanceAnalyzerMetrics;
+import org.opensearch.performanceanalyzer.rca.framework.metrics.WriterMetrics;
 
 /**
  * A collector that collects info about the current garbage collectors for various regions in the
@@ -32,6 +34,7 @@ public class GCInfoCollector extends PerformanceAnalyzerMetricsCollector
 
     @Override
     void collectMetrics(long startTime) {
+        long mCurrT = System.currentTimeMillis();
         // Zero the string builder
         value.setLength(0);
 
@@ -46,6 +49,10 @@ public class GCInfoCollector extends PerformanceAnalyzerMetricsCollector
         }
 
         saveMetricValues(value.toString(), startTime);
+        PerformanceAnalyzerApp.WRITER_METRICS_AGGREGATOR.updateStat(
+                WriterMetrics.GC_INFO_COLLECTOR_EXECUTION_TIME,
+                "",
+                System.currentTimeMillis() - mCurrT);
     }
 
     @Override

@@ -13,6 +13,7 @@ import java.util.Map;
 import java.util.function.Supplier;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.opensearch.performanceanalyzer.PerformanceAnalyzerApp;
 import org.opensearch.performanceanalyzer.jvm.GCMetrics;
 import org.opensearch.performanceanalyzer.jvm.HeapMetrics;
 import org.opensearch.performanceanalyzer.metrics.AllMetrics.GCType;
@@ -21,6 +22,7 @@ import org.opensearch.performanceanalyzer.metrics.AllMetrics.HeapValue;
 import org.opensearch.performanceanalyzer.metrics.MetricsConfiguration;
 import org.opensearch.performanceanalyzer.metrics.MetricsProcessor;
 import org.opensearch.performanceanalyzer.metrics.PerformanceAnalyzerMetrics;
+import org.opensearch.performanceanalyzer.rca.framework.metrics.WriterMetrics;
 
 public class HeapMetricsCollector extends PerformanceAnalyzerMetricsCollector
         implements MetricsProcessor {
@@ -35,6 +37,7 @@ public class HeapMetricsCollector extends PerformanceAnalyzerMetricsCollector
 
     @Override
     public void collectMetrics(long startTime) {
+        long mCurrT = System.currentTimeMillis();
         GCMetrics.runGCMetrics();
 
         value.setLength(0);
@@ -72,6 +75,10 @@ public class HeapMetricsCollector extends PerformanceAnalyzerMetricsCollector
         }
 
         saveMetricValues(value.toString(), startTime);
+        PerformanceAnalyzerApp.WRITER_METRICS_AGGREGATOR.updateStat(
+                WriterMetrics.HEAP_METRICS_COLLECTOR_EXECUTION_TIME,
+                "",
+                System.currentTimeMillis() - mCurrT);
     }
 
     @Override

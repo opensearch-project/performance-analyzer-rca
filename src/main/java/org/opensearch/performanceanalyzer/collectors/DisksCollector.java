@@ -9,11 +9,13 @@ package org.opensearch.performanceanalyzer.collectors;
 import java.util.HashMap;
 import java.util.Map;
 import org.opensearch.performanceanalyzer.OSMetricsGeneratorFactory;
+import org.opensearch.performanceanalyzer.PerformanceAnalyzerApp;
 import org.opensearch.performanceanalyzer.metrics.MetricsConfiguration;
 import org.opensearch.performanceanalyzer.metrics.MetricsProcessor;
 import org.opensearch.performanceanalyzer.metrics.PerformanceAnalyzerMetrics;
 import org.opensearch.performanceanalyzer.metrics_generator.DiskMetricsGenerator;
 import org.opensearch.performanceanalyzer.metrics_generator.OSMetricsGenerator;
+import org.opensearch.performanceanalyzer.rca.framework.metrics.WriterMetrics;
 
 public class DisksCollector extends PerformanceAnalyzerMetricsCollector
         implements MetricsProcessor {
@@ -42,10 +44,15 @@ public class DisksCollector extends PerformanceAnalyzerMetricsCollector
         if (generator == null) {
             return;
         }
+        long mCurrT = System.currentTimeMillis();
         DiskMetricsGenerator diskMetricsGenerator = generator.getDiskMetricsGenerator();
         diskMetricsGenerator.addSample();
 
         saveMetricValues(getMetrics(diskMetricsGenerator), startTime);
+        PerformanceAnalyzerApp.WRITER_METRICS_AGGREGATOR.updateStat(
+                WriterMetrics.DISKS_COLLECTOR_EXECUTION_TIME,
+                "",
+                System.currentTimeMillis() - mCurrT);
     }
 
     private Map<String, DiskMetrics> getMetricsMap(DiskMetricsGenerator diskMetricsGenerator) {

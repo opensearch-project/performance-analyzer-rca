@@ -9,11 +9,13 @@ package org.opensearch.performanceanalyzer.collectors;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.opensearch.performanceanalyzer.OSMetricsGeneratorFactory;
+import org.opensearch.performanceanalyzer.PerformanceAnalyzerApp;
 import org.opensearch.performanceanalyzer.metrics.MetricsConfiguration;
 import org.opensearch.performanceanalyzer.metrics.MetricsProcessor;
 import org.opensearch.performanceanalyzer.metrics.PerformanceAnalyzerMetrics;
 import org.opensearch.performanceanalyzer.metrics_generator.IPMetricsGenerator;
 import org.opensearch.performanceanalyzer.metrics_generator.OSMetricsGenerator;
+import org.opensearch.performanceanalyzer.rca.framework.metrics.WriterMetrics;
 
 public class NetworkInterfaceCollector extends PerformanceAnalyzerMetricsCollector
         implements MetricsProcessor {
@@ -31,11 +33,17 @@ public class NetworkInterfaceCollector extends PerformanceAnalyzerMetricsCollect
         if (generator == null) {
             return;
         }
+
+        long mCurrT = System.currentTimeMillis();
         IPMetricsGenerator IPMetricsGenerator = generator.getIPMetricsGenerator();
         IPMetricsGenerator.addSample();
         saveMetricValues(
                 getMetrics(IPMetricsGenerator) + PerformanceAnalyzerMetrics.sMetricNewLineDelimitor,
                 startTime);
+        PerformanceAnalyzerApp.WRITER_METRICS_AGGREGATOR.updateStat(
+                WriterMetrics.NETWORK_INTERFACE_COLLECTOR_EXECUTION_TIME,
+                "",
+                System.currentTimeMillis() - mCurrT);
     }
 
     @Override

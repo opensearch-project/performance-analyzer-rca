@@ -33,6 +33,14 @@ public enum WriterMetrics implements MeasurementSet {
             "CollectorsMutedCount",
             "namedCount",
             Collections.singletonList(Statistics.NAMED_COUNTERS)),
+    COLLECTORS_SKIPPED(
+            "CollectorSkippedCount",
+            "namedCount",
+            Collections.singletonList(Statistics.NAMED_COUNTERS)),
+    COLLECTORS_SLOW(
+            "CollectorSlowCount",
+            "namedCount",
+            Collections.singletonList(Statistics.NAMED_COUNTERS)),
 
     /** Tracks time taken by respective collectors to collect event metrics. */
     THREADPOOL_METRICS_COLLECTOR_EXECUTION_TIME(
@@ -73,6 +81,10 @@ public enum WriterMetrics implements MeasurementSet {
             Arrays.asList(Statistics.MAX, Statistics.MEAN, Statistics.SUM)),
     CLUSTER_MANAGER_SERVICE_EVENTS_METRICS_COLLECTOR_EXECUTION_TIME(
             "ClusterManagerServiceEventsMetricsCollectorExecutionTime",
+            "millis",
+            Arrays.asList(Statistics.MAX, Statistics.MEAN, Statistics.SUM)),
+    DISKS_COLLECTOR_EXECUTION_TIME(
+            "DisksCollectorExecutionTime",
             "millis",
             Arrays.asList(Statistics.MAX, Statistics.MEAN, Statistics.SUM)),
     NETWORK_INTERFACE_COLLECTOR_EXECUTION_TIME(
