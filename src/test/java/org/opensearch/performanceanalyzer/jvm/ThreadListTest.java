@@ -12,7 +12,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.opensearch.performanceanalyzer.OSMetricsGeneratorFactory;
 import org.opensearch.performanceanalyzer.rca.RcaTestHelper;
-import org.opensearch.performanceanalyzer.rca.framework.metrics.WriterMetrics;
+import org.opensearch.performanceanalyzer.rca.framework.metrics.ExceptionsAndErrors;
 
 // This test only runs in linux systems as the some of the static members of the ThreadList
 // class are specific to Linux.
@@ -33,7 +33,7 @@ public class ThreadListTest {
         infos[0] = null;
 
         ThreadList.parseAllThreadInfos(infos);
-        Assert.assertTrue(RcaTestHelper.verify(WriterMetrics.JVM_THREAD_ID_NO_LONGER_EXISTS));
+        Assert.assertTrue(RcaTestHelper.verify(ExceptionsAndErrors.JVM_THREAD_ID_NO_LONGER_EXISTS));
         if (old_clk_tck != null) {
             System.setProperty(propertyName, old_clk_tck);
         }

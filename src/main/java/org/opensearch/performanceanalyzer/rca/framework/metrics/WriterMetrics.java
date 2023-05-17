@@ -22,31 +22,11 @@ public enum WriterMetrics implements MeasurementSet {
     EVENT_LOG_FILES_DELETED(
             "EventLogFilesDeleted", "count", Arrays.asList(Statistics.MAX, Statistics.SUM)),
 
-    /** Metrics tracking Plugin level: 1. Errors 2. Exceptions */
-
-    /** Tracks stale metrics - metrics to be collected is behind current bucket */
-    STALE_METRICS("StaleMetrics"),
-
-    /** Tracks the number of VM attach/dataDump or detach failures. */
-    JVM_ATTACH_ERROR("JvmAttachErrror"),
-
-    /** java_pid file is missing. */
-    JVM_ATTACH_ERROR_JAVA_PID_FILE_MISSING("JvmAttachErrorJavaPidFileMissing"),
-
-    /** Lock could not be acquired within the timeout. */
-    JVM_ATTACH_LOCK_ACQUISITION_FAILED("JvmAttachLockAcquisitionFailed"),
-
-    /** ThreadState could not be found for an OpenSearch thread in the critical OpenSearch path. */
-    NO_THREAD_STATE_INFO("NoThreadStateInfo"),
-
     /**
      * Successfully completed a thread-dump. An omission of indicate thread taking the dump got
      * stuck.
      */
     JVM_THREAD_DUMP_SUCCESSFUL("JvmThreadDumpSuccessful"),
-
-    /** Thread ID is no loner exists */
-    JVM_THREAD_ID_NO_LONGER_EXISTS("JVMThreadIdNoLongerExists"),
 
     /** Tracks the number of muted collectors */
     COLLECTORS_MUTED(
@@ -54,164 +34,99 @@ public enum WriterMetrics implements MeasurementSet {
             "namedCount",
             Collections.singletonList(Statistics.NAMED_COUNTERS)),
 
-    /** This metric indicates failure in collecting ClusterManagerServiceEventMetrics */
-    CLUSTER_MANAGER_METRICS_ERROR("ClusterManagerMetricsError"),
-
-    /** This metric indicates cluster_manager is not up */
-    CLUSTER_MANAGER_NODE_NOT_UP("ClusterManagerNodeNotUp"),
-
-    /** This metric indicates faiure in intercepting opensearch requests at transport channel */
-    OPENSEARCH_REQUEST_INTERCEPTOR_ERROR("OpenSearchRequestInterceptorError"),
-
-    /** Collector specific metrics */
-    SHARD_STATE_COLLECTOR_EXECUTION_TIME(
-            "ShardStateCollectorExecutionTime",
+    /** Tracks time taken by respective collectors to collect event metrics. */
+    THREADPOOL_METRICS_COLLECTOR_EXECUTION_TIME(
+            "ThreadPoolMetricsCollectorExecutionTime",
             "millis",
-            Arrays.asList(
-                    Statistics.MAX,
-                    Statistics.MIN,
-                    Statistics.MEAN,
-                    Statistics.COUNT,
-                    Statistics.SUM)),
-
-    CLUSTER_MANAGER_THROTTLING_COLLECTOR_EXECUTION_TIME(
-            "ClusterManagerThrottlingCollectorExecutionTime",
+            Arrays.asList(Statistics.MAX, Statistics.MEAN, Statistics.SUM)),
+    CACHE_CONFIG_METRICS_COLLECTOR_EXECUTION_TIME(
+            "CacheConfigMetricsCollectorExecutionTime",
             "millis",
-            Arrays.asList(
-                    Statistics.MAX,
-                    Statistics.MIN,
-                    Statistics.MEAN,
-                    Statistics.COUNT,
-                    Statistics.SUM)),
-
+            Arrays.asList(Statistics.MAX, Statistics.MEAN, Statistics.SUM)),
     CIRCUIT_BREAKER_COLLECTOR_EXECUTION_TIME(
             "CircuitBreakerCollectorExecutionTime",
             "millis",
-            Arrays.asList(
-                    Statistics.MAX,
-                    Statistics.MIN,
-                    Statistics.MEAN,
-                    Statistics.COUNT,
-                    Statistics.SUM)),
-
-    CLUSTER_MANAGER_THROTTLING_COLLECTOR_NOT_AVAILABLE(
-            "ClusterManagerThrottlingCollectorNotAvailable",
-            "count",
-            Arrays.asList(
-                    Statistics.MAX,
-                    Statistics.MIN,
-                    Statistics.MEAN,
-                    Statistics.COUNT,
-                    Statistics.SUM)),
-
-    ADMISSION_CONTROL_COLLECTOR_EXECUTION_TIME(
-            "AdmissionControlCollectorExecutionTime",
+            Arrays.asList(Statistics.MAX, Statistics.MEAN, Statistics.SUM)),
+    OS_METRICS_COLLECTOR_EXECUTION_TIME(
+            "OSMetricsCollectorExecutionTime",
             "millis",
-            Arrays.asList(
-                    Statistics.MAX,
-                    Statistics.MIN,
-                    Statistics.MEAN,
-                    Statistics.COUNT,
-                    Statistics.SUM)),
-
-    ADMISSION_CONTROL_COLLECTOR_NOT_AVAILABLE(
-            "AdmissionControlCollectorNotAvailable",
-            "count",
-            Arrays.asList(
-                    Statistics.MAX,
-                    Statistics.MIN,
-                    Statistics.MEAN,
-                    Statistics.COUNT,
-                    Statistics.SUM)),
-
+            Arrays.asList(Statistics.MAX, Statistics.MEAN, Statistics.SUM)),
+    HEAP_METRICS_COLLECTOR_EXECUTION_TIME(
+            "HeapMetricsCollectorExecutionTime",
+            "millis",
+            Arrays.asList(Statistics.MAX, Statistics.MEAN, Statistics.SUM)),
+    NODE_DETAILS_COLLECTOR_EXECUTION_TIME(
+            "NodeDetailsCollectorExecutionTime",
+            "millis",
+            Arrays.asList(Statistics.MAX, Statistics.MEAN, Statistics.SUM)),
+    NODE_STATS_ALL_SHARDS_METRICS_COLLECTOR_EXECUTION_TIME(
+            "NodeStatsAllShardsMetricsCollectorExecutionTime",
+            "millis",
+            Arrays.asList(Statistics.MAX, Statistics.MEAN, Statistics.SUM)),
+    NODE_STATS_FIXED_SHARDS_METRICS_COLLECTOR_EXECUTION_TIME(
+            "NodeStatsFixedShardsMetricsCollectorExecutionTime",
+            "millis",
+            Arrays.asList(Statistics.MAX, Statistics.MEAN, Statistics.SUM)),
+    CLUSTER_MANAGER_SERVICE_METRICS_COLLECTOR_EXECUTION_TIME(
+            "ClusterManagerServiceMetricsCollectorExecutionTime",
+            "millis",
+            Arrays.asList(Statistics.MAX, Statistics.MEAN, Statistics.SUM)),
+    CLUSTER_MANAGER_SERVICE_EVENTS_METRICS_COLLECTOR_EXECUTION_TIME(
+            "ClusterManagerServiceEventsMetricsCollectorExecutionTime",
+            "millis",
+            Arrays.asList(Statistics.MAX, Statistics.MEAN, Statistics.SUM)),
+    NETWORK_INTERFACE_COLLECTOR_EXECUTION_TIME(
+            "NetworkInterfaceCollectorExecutionTime",
+            "millis",
+            Arrays.asList(Statistics.MAX, Statistics.MEAN, Statistics.SUM)),
+    GC_INFO_COLLECTOR_EXECUTION_TIME(
+            "GCInfoCollectorExecutionTime",
+            "millis",
+            Arrays.asList(Statistics.MAX, Statistics.MEAN, Statistics.SUM)),
     FAULT_DETECTION_COLLECTOR_EXECUTION_TIME(
             "FaultDetectionCollectorExecutionTime",
             "millis",
-            Arrays.asList(
-                    Statistics.MAX,
-                    Statistics.MIN,
-                    Statistics.MEAN,
-                    Statistics.COUNT,
-                    Statistics.SUM)),
-
+            Arrays.asList(Statistics.MAX, Statistics.MEAN, Statistics.SUM)),
+    SHARD_STATE_COLLECTOR_EXECUTION_TIME(
+            "ShardStateCollectorExecutionTime",
+            "millis",
+            Arrays.asList(Statistics.MAX, Statistics.MEAN, Statistics.SUM)),
+    CLUSTER_MANAGER_THROTTLING_COLLECTOR_EXECUTION_TIME(
+            "ClusterManagerThrottlingCollectorExecutionTime",
+            "millis",
+            Arrays.asList(Statistics.MAX, Statistics.MEAN, Statistics.SUM)),
     CLUSTER_APPLIER_SERVICE_STATS_COLLECTOR_EXECUTION_TIME(
             "ClusterApplierServiceStatsCollectorExecutionTime",
             "millis",
-            Arrays.asList(
-                    Statistics.MAX,
-                    Statistics.MIN,
-                    Statistics.MEAN,
-                    Statistics.COUNT,
-                    Statistics.SUM)),
+            Arrays.asList(Statistics.MAX, Statistics.MEAN, Statistics.SUM)),
+    ADMISSION_CONTROL_METRICS_COLLECTOR_EXECUTION_TIME(
+            "AdmissionControlMetricsCollectorExecutionTime",
+            "millis",
+            Arrays.asList(Statistics.MAX, Statistics.MEAN, Statistics.SUM)),
+    ELECTION_TERM_COLLECTOR_EXECUTION_TIME(
+            "ElectionTermCollectorExecutionTime",
+            "millis",
+            Arrays.asList(Statistics.MAX, Statistics.MEAN, Statistics.SUM)),
+    SHARD_INDEXING_PRESSURE_COLLECTOR_EXECUTION_TIME(
+            "ShardIndexingPressureCollectorExecutionTime",
+            "millis",
+            Arrays.asList(Statistics.MAX, Statistics.MEAN, Statistics.SUM)),
+
+    /** Tracks collector specific metrics - available/enabled/disabled and other params */
+    ADMISSION_CONTROL_COLLECTOR_NOT_AVAILABLE(
+            "AdmissionControlCollectorNotAvailable",
+            "count",
+            Arrays.asList(Statistics.MAX, Statistics.MEAN, Statistics.SUM)),
 
     CLUSTER_MANAGER_CLUSTER_UPDATE_STATS_COLLECTOR_DISABLED(
             "ClusterManagerClusterUpdateStatsCollectorDisabled",
             "count",
-            Arrays.asList(
-                    Statistics.MAX,
-                    Statistics.MIN,
-                    Statistics.MEAN,
-                    Statistics.COUNT,
-                    Statistics.SUM)),
+            Arrays.asList(Statistics.MAX, Statistics.MEAN, Statistics.SUM)),
 
-    CLUSTER_MANAGER_CLUSTER_UPDATE_STATS_COLLECTOR_EXECUTION_TIME(
-            "ClusterManagerClusterUpdateStatsCollectorExecutionTime",
-            "millis",
-            Arrays.asList(
-                    Statistics.MAX,
-                    Statistics.MIN,
-                    Statistics.MEAN,
-                    Statistics.COUNT,
-                    Statistics.SUM)),
-
-    ELECTION_TERM_COLLECTOR_EXECUTION_TIME(
-            "ElectionTermCollectorExecutionTime",
-            "millis",
-            Arrays.asList(
-                    Statistics.MAX,
-                    Statistics.MIN,
-                    Statistics.MEAN,
-                    Statistics.COUNT,
-                    Statistics.SUM)),
-
-    SHARD_INDEXING_PRESSURE_COLLECTOR_EXECUTION_TIME(
-            "ShardIndexingPressureCollectorExecutionTime",
-            "millis",
-            Arrays.asList(
-                    Statistics.MAX,
-                    Statistics.MIN,
-                    Statistics.MEAN,
-                    Statistics.COUNT,
-                    Statistics.SUM)),
-
-    /** This metric indicates that the writer file creation was skipped. */
-    WRITER_FILE_CREATION_SKIPPED(
-            "WriterFileCreationSkipped", "count", Arrays.asList(Statistics.COUNT)),
-
-    /** This metric indicates metric entry insertion to event log queue failed */
-    METRICS_WRITE_ERROR(
-            "MetricsWriteError",
-            "namedCount",
-            Collections.singletonList(Statistics.NAMED_COUNTERS)),
-
-    /** This metric indicates faiure in cleaning up the event log files */
-    METRICS_REMOVE_ERROR("MetricsRemoveError", "count", Arrays.asList(Statistics.COUNT)),
-
-    /** This metric indicates faiure in cleaning up the event log files */
-    METRICS_REMOVE_FAILURE("MetricsRemoveFailure", "count", Arrays.asList(Statistics.COUNT)),
-
-    /** This metric indicates that error occurred while closing grpc channels. */
-    GRPC_CHANNEL_CLOSURE_ERROR("GrpcChannelClosureError", "count", Arrays.asList(Statistics.COUNT)),
-
-    /** This metric indicates that error occurred while closing grpc server. */
-    GRPC_SERVER_CLOSURE_ERROR("GrpcServerClosureError", "count", Arrays.asList(Statistics.COUNT)),
-
-    /** This metric indicates that error occurred while closing metrics db. */
-    METRICS_DB_CLOSURE_ERROR("MetricsDbClosureError", "count", Arrays.asList(Statistics.COUNT)),
-
-    /** This metric indicates that error occurred while closing database connection. */
-    IN_MEMORY_DATABASE_CONN_CLOSURE_ERROR(
-            "InMemoryDatabaseConnClosureError", "count", Arrays.asList(Statistics.COUNT));
+    CLUSTER_MANAGER_THROTTLING_COLLECTOR_NOT_AVAILABLE(
+            "ClusterManagerThrottlingCollectorNotAvailable",
+            "count",
+            Arrays.asList(Statistics.MAX, Statistics.MEAN, Statistics.SUM));
 
     /** What we want to appear as the metric name. */
     private String name;
