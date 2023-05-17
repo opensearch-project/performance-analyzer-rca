@@ -43,7 +43,6 @@ import org.opensearch.performanceanalyzer.rca.framework.core.Stats;
 import org.opensearch.performanceanalyzer.rca.framework.core.ThresholdMain;
 import org.opensearch.performanceanalyzer.rca.framework.metrics.ExceptionsAndErrors;
 import org.opensearch.performanceanalyzer.rca.framework.metrics.RcaRuntimeMetrics;
-import org.opensearch.performanceanalyzer.rca.framework.metrics.ReaderMetrics;
 import org.opensearch.performanceanalyzer.rca.framework.util.InstanceDetails;
 import org.opensearch.performanceanalyzer.rca.framework.util.RcaConsts;
 import org.opensearch.performanceanalyzer.rca.framework.util.RcaUtil;
@@ -283,8 +282,8 @@ public class RcaController {
     private void restart() {
         stop();
         start();
-        PerformanceAnalyzerApp.READER_METRICS_AGGREGATOR.updateStat(
-                ReaderMetrics.RCA_SCHEDULER_RESTART, "", 1);
+        PerformanceAnalyzerApp.RCA_RUNTIME_METRICS_AGGREGATOR.updateStat(
+                RcaRuntimeMetrics.RCA_SCHEDULER_RESTART, "", 1);
     }
 
     protected RcaConf getRcaConfForMyRole(AllMetrics.NodeRole role) {

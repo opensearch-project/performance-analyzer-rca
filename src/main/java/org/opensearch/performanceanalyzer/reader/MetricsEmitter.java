@@ -53,7 +53,6 @@ public class MetricsEmitter {
     private static final Pattern FLUSH_PATTERN = Pattern.compile(".*opensearch.*\\[flush\\].*");
     // Version 6.4 onwards uses write threadpool.
     private static final Pattern WRITE_PATTERN = Pattern.compile(".*opensearch.*\\[write\\].*");
-    // Pattern otherPattern = Pattern.compile(".*(opensearch).*");
     private static final Pattern HTTP_SERVER_PATTERN =
             Pattern.compile(".*opensearch.*\\[http_server_worker\\].*");
     private static final Pattern TRANS_WORKER_PATTERN =
@@ -292,6 +291,8 @@ public class MetricsEmitter {
         }
         mFinalT = System.currentTimeMillis();
         LOG.debug("Total time taken for writing resource metrics metricsdb: {}", mFinalT - mCurrT);
+        PerformanceAnalyzerApp.READER_METRICS_AGGREGATOR.updateStat(
+                ReaderMetrics.AGGREGATED_OS_METRICS_EMITTER_EXECUTION_TIME, "", mFinalT - mCurrT);
     }
 
     /**
@@ -459,6 +460,8 @@ public class MetricsEmitter {
         }
         long mFinalT = System.currentTimeMillis();
         LOG.debug("Total time taken for writing workload metrics metricsdb: {}", mFinalT - mCurrT);
+        PerformanceAnalyzerApp.READER_METRICS_AGGREGATOR.updateStat(
+                ReaderMetrics.WORKLOAD_METRICS_EMITTER_EXECUTION_TIME, "", mFinalT - mCurrT);
     }
 
     public static void emitThreadNameMetrics(
@@ -497,6 +500,8 @@ public class MetricsEmitter {
         long mFinalT = System.currentTimeMillis();
         LOG.debug(
                 "Total time taken for writing threadName metrics metricsdb: {}", mFinalT - mCurrT);
+        PerformanceAnalyzerApp.READER_METRICS_AGGREGATOR.updateStat(
+                ReaderMetrics.THREAD_NAME_METRICS_EMITTER_EXECUTION_TIME, "", mFinalT - mCurrT);
     }
 
     public static String categorizeThreadName(String threadName, Dimensions dimensions) {
@@ -693,6 +698,8 @@ public class MetricsEmitter {
 
         long mFinalT = System.currentTimeMillis();
         LOG.debug("Total time taken for writing http metrics metricsdb: {}", mFinalT - mCurrT);
+        PerformanceAnalyzerApp.READER_METRICS_AGGREGATOR.updateStat(
+                ReaderMetrics.HTTP_METRICS_EMITTER_EXECUTION_TIME, "", mFinalT - mCurrT);
     }
 
     public static void emitGarbageCollectionInfo(
@@ -738,12 +745,13 @@ public class MetricsEmitter {
         LOG.debug(
                 "Total time taken for writing garbage collection info into metricsDB: {}",
                 mFinalT - mCurrT);
+        PerformanceAnalyzerApp.READER_METRICS_AGGREGATOR.updateStat(
+                ReaderMetrics.GC_INFO_EMITTER_EXECUTION_TIME, "", mFinalT - mCurrT);
     }
 
     public static void emitAdmissionControlMetrics(
             MetricsDB metricsDB, AdmissionControlSnapshot snapshot) {
-
-        long startTime = System.currentTimeMillis();
+        long mCurrT = System.currentTimeMillis();
         Result<Record> records = snapshot.fetchAll();
 
         List<String> dims =
@@ -787,10 +795,14 @@ public class MetricsEmitter {
 
         handle.execute();
 
-        long endTime = System.currentTimeMillis();
+        long mFinalT = System.currentTimeMillis();
         LOG.debug(
                 "Total time taken for writing AdmissionControl into metricsDB: {}",
-                endTime - startTime);
+                mFinalT - mCurrT);
+        PerformanceAnalyzerApp.READER_METRICS_AGGREGATOR.updateStat(
+                ReaderMetrics.ADMISSION_CONTROL_METRICS_EMITTER_EXECUTION_TIME,
+                "",
+                mFinalT - mCurrT);
     }
 
     public static void emitClusterManagerEventMetrics(
@@ -829,8 +841,13 @@ public class MetricsEmitter {
         LOG.debug(
                 "Total time taken for writing cluster_manager event queue metrics metricsdb: {}",
                 mFinalT - mCurrT);
+        PerformanceAnalyzerApp.READER_METRICS_AGGREGATOR.updateStat(
+                ReaderMetrics.CLUSTER_MANAGER_EVENT_METRICS_EMITTER_EXECUTION_TIME,
+                "",
+                mFinalT - mCurrT);
     }
 
+    // TODO: Refactor and remove this out into metric-specific emitter
     private static void emitRuntimeMetric(
             MetricsDB metricsDB, Result<Record> res, List<String> dims) {
 
@@ -921,6 +938,7 @@ public class MetricsEmitter {
         handle.execute();
     }
 
+    // TODO: Refactor and remove this out into metric-specific emitter
     private static void emitQueueTimeMetric(
             MetricsDB metricsDB, Result<Record> res, List<String> dims) {
 
@@ -1071,6 +1089,8 @@ public class MetricsEmitter {
                     "Total time taken for writing {} metrics metricsdb: {}",
                     tableName,
                     mFinalT - mCurrT);
+            PerformanceAnalyzerApp.READER_METRICS_AGGREGATOR.updateStat(
+                    ReaderMetrics.NODE_METRICS_EMITTER_EXECUTION_TIME, "", mFinalT - mCurrT);
         }
     }
 
@@ -1218,11 +1238,11 @@ public class MetricsEmitter {
             }
         }
         long mFinalT = System.currentTimeMillis();
-        PerformanceAnalyzerApp.READER_METRICS_AGGREGATOR.updateStat(
-                ReaderMetrics.FAULT_DETECTION_METRICS_EMITTER_EXECUTION_TIME, "", mFinalT - mCurrT);
         LOG.debug(
                 "Total time taken for writing fault detection metrics to metricsdb: {}",
                 mFinalT - mCurrT);
+        PerformanceAnalyzerApp.READER_METRICS_AGGREGATOR.updateStat(
+                ReaderMetrics.FAULT_DETECTION_METRICS_EMITTER_EXECUTION_TIME, "", mFinalT - mCurrT);
     }
 
     public static void emitClusterManagerThrottledTaskMetric(
@@ -1246,6 +1266,7 @@ public class MetricsEmitter {
                 mFinalT - mCurrT);
     }
 
+    // TODO: Refactor and remove this out into metric-specific emitter
     public static void emitClusterManagerThrottlingCount(
             MetricsDB metricsDB, Result<Record> res, List<String> dims) {
         metricsDB.createMetric(
@@ -1317,6 +1338,7 @@ public class MetricsEmitter {
         handle.execute();
     }
 
+    // TODO: Refactor and remove this out into metric-specific emitter
     public static void emitDataThrottlingRetryingCount(
             MetricsDB metricsDB, Result<Record> res, List<String> dims) {
         metricsDB.createMetric(

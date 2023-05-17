@@ -42,7 +42,7 @@ import org.opensearch.performanceanalyzer.metrics.MetricsConfiguration;
 import org.opensearch.performanceanalyzer.metrics.PerformanceAnalyzerMetrics;
 import org.opensearch.performanceanalyzer.metricsdb.MetricsDB;
 import org.opensearch.performanceanalyzer.rca.RcaTestHelper;
-import org.opensearch.performanceanalyzer.rca.framework.metrics.ReaderMetrics;
+import org.opensearch.performanceanalyzer.rca.framework.metrics.ExceptionsAndErrors;
 
 public class ReaderMetricsProcessorTests extends AbstractReaderTests {
     public String rootLocation;
@@ -436,7 +436,7 @@ public class ReaderMetricsProcessorTests extends AbstractReaderTests {
         assertTrue(
                 mp.getBatchMetricsEnabled() == ReaderMetricsProcessor.defaultBatchMetricsEnabled);
 
-        assertTrue(RcaTestHelper.verify(ReaderMetrics.BATCH_METRICS_CONFIG_ERROR));
+        assertTrue(RcaTestHelper.verify(ExceptionsAndErrors.BATCH_METRICS_CONFIG_ERROR));
     }
 
     @Test
