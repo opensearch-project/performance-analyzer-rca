@@ -25,6 +25,7 @@ import org.apache.logging.log4j.Logger;
 import org.opensearch.performanceanalyzer.PerformanceAnalyzerApp;
 import org.opensearch.performanceanalyzer.core.Util;
 import org.opensearch.performanceanalyzer.metrics.PerformanceAnalyzerMetrics;
+import org.opensearch.performanceanalyzer.rca.framework.metrics.ExceptionsAndErrors;
 import org.opensearch.performanceanalyzer.rca.framework.metrics.WriterMetrics;
 import org.opensearch.performanceanalyzer.reader.EventDispatcher;
 
@@ -109,8 +110,8 @@ public class EventLogFileHandler {
                 LOG.error("Error moving file {} to {}.", tmpPath.toString(), path.toString(), e);
             }
         } else {
-            PerformanceAnalyzerApp.WRITER_METRICS_AGGREGATOR.updateStat(
-                    WriterMetrics.WRITER_FILE_CREATION_SKIPPED, "", 1);
+            PerformanceAnalyzerApp.ERRORS_AND_EXCEPTIONS_AGGREGATOR.updateStat(
+                    ExceptionsAndErrors.WRITER_FILE_CREATION_SKIPPED, "", 1);
         }
     }
 

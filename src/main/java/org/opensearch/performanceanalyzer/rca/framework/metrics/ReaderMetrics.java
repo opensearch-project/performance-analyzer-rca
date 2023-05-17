@@ -124,19 +124,13 @@ public enum ReaderMetrics implements MeasurementSet {
             "millis",
             Arrays.asList(Statistics.MAX, Statistics.MEAN, Statistics.SUM)),
 
-    /** Number of transport threads in BLOCKED state. */
-    BLOCKED_TRANSPORT_THREAD_COUNT("BlockedTransportThreadCount", "count", Statistics.MAX),
-
-    /** Number of transport threads in WAITING or TIMED-WAITING state. */
-    WAITED_TRANSPORT_THREAD_COUNT("WaitedTransportThreadCount", "count", Statistics.MAX),
-
-    /** Max amount of time a transport thread has been BLOCKED in the past 60 seconds. */
-    MAX_TRANSPORT_THREAD_BLOCKED_TIME("MaxTransportThreadBlockedTime", "seconds", Statistics.MAX),
-
     /**
-     * Max amount of time a transport thread has been in WAITING or TIMED-WAITING state in the past
-     * 60 seconds.
+     * Tracks transport thread state(WAITING, TIMED-WAITING, BLOCKED) and time. T The last 2 metrics
+     * track time for 60s moving window.
      */
+    BLOCKED_TRANSPORT_THREAD_COUNT("BlockedTransportThreadCount", "count", Statistics.MAX),
+    WAITED_TRANSPORT_THREAD_COUNT("WaitedTransportThreadCount", "count", Statistics.MAX),
+    MAX_TRANSPORT_THREAD_BLOCKED_TIME("MaxTransportThreadBlockedTime", "seconds", Statistics.MAX),
     MAX_TRANSPORT_THREAD_WAITED_TIME("MaxTransportThreadWaitedTime", "seconds", Statistics.MAX),
 
     /**

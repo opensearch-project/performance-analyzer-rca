@@ -8,6 +8,7 @@ package org.opensearch.performanceanalyzer.collectors;
 
 import java.util.Map;
 import org.opensearch.performanceanalyzer.OSMetricsGeneratorFactory;
+import org.opensearch.performanceanalyzer.PerformanceAnalyzerApp;
 import org.opensearch.performanceanalyzer.jvm.ThreadList;
 import org.opensearch.performanceanalyzer.metrics.AllMetrics.OSMetrics;
 import org.opensearch.performanceanalyzer.metrics.MetricsConfiguration;
@@ -17,6 +18,7 @@ import org.opensearch.performanceanalyzer.metrics_generator.CPUPagingActivityGen
 import org.opensearch.performanceanalyzer.metrics_generator.DiskIOMetricsGenerator;
 import org.opensearch.performanceanalyzer.metrics_generator.OSMetricsGenerator;
 import org.opensearch.performanceanalyzer.metrics_generator.SchedMetricsGenerator;
+import org.opensearch.performanceanalyzer.rca.framework.metrics.WriterMetrics;
 
 public class OSMetricsCollector extends PerformanceAnalyzerMetricsCollector
         implements MetricsProcessor {
@@ -38,6 +40,7 @@ public class OSMetricsCollector extends PerformanceAnalyzerMetricsCollector
 
     @Override
     public void collectMetrics(long startTime) {
+        long mCurrT = System.currentTimeMillis();
         CPUPagingActivityGenerator threadCPUPagingActivityGenerator =
                 osMetricsGenerator.getPagingActivityGenerator();
         threadCPUPagingActivityGenerator.addSample();
@@ -146,6 +149,10 @@ public class OSMetricsCollector extends PerformanceAnalyzerMetricsCollector
             }
 
             saveMetricValues(value.toString(), startTime, threadId);
+            PerformanceAnalyzerApp.WRITER_METRICS_AGGREGATOR.updateStat(
+                    WriterMetrics.OS_METRICS_COLLECTOR_EXECUTION_TIME,
+                    "",
+                    System.currentTimeMillis() - mCurrT);
         }
     }
 

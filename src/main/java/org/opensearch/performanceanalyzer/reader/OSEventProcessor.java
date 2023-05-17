@@ -102,7 +102,7 @@ public class OSEventProcessor implements EventProcessor {
 
     private boolean processOSEvent(String data, String threadID) {
         Map<String, Double> osMetrics = new HashMap<>();
-        // LOG.info("Processing OS Metrics data", osMetricsdata);
+        LOG.debug("Processing OS Metrics data", data);
 
         Map<String, String> processedData = extrackKeyValFromData(data);
 
@@ -127,7 +127,7 @@ public class OSEventProcessor implements EventProcessor {
         if (lastUpdateTimePerTid.containsKey(threadID)) {
             if (lastUpdateTimePerTid.get(threadID) == opFileLastModified) {
                 // TODO: Check why this is happening.
-                // LOG.info("Skipping OS metrics");
+                LOG.debug("Skipping OS metrics");
                 return false;
             }
             tidToDelete.add(threadID);
