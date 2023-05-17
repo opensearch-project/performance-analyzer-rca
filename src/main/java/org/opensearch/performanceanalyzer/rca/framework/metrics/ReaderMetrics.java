@@ -6,11 +6,12 @@
 package org.opensearch.performanceanalyzer.rca.framework.metrics;
 
 
+import org.opensearch.performanceanalyzer.rca.stats.eval.Statistics;
+import org.opensearch.performanceanalyzer.rca.stats.measurements.MeasurementSet;
+
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import org.opensearch.performanceanalyzer.rca.stats.eval.Statistics;
-import org.opensearch.performanceanalyzer.rca.stats.measurements.MeasurementSet;
 
 public enum ReaderMetrics implements MeasurementSet {
 
@@ -18,10 +19,12 @@ public enum ReaderMetrics implements MeasurementSet {
      * We start 6 threads within RCA Agent, details at {@link
      * org.opensearch.performanceanalyzer.PerformanceAnalyzerThreads}. Below metrics track count of
      * thread started and ended.
+     *
+     * <p>Note: The 'PA' in metricName is confusing, it is meant to imply threads started within RCA
+     * Agent.
      */
     NUM_PA_THREADS_STARTED(
             "NumberOfPAThreadsStarted", "namedCount", Collections.singletonList(Statistics.COUNT)),
-
     NUM_PA_THREADS_ENDED(
             "NumberOfPAThreadsEnded", "namedCount", Collections.singletonList(Statistics.COUNT)),
 
@@ -33,79 +36,127 @@ public enum ReaderMetrics implements MeasurementSet {
      */
     READER_THREAD_STOPPED(
             "ReaderThreadStopped", "count", Collections.singletonList(Statistics.COUNT)),
-
     ERROR_HANDLER_THREAD_STOPPED(
             "ErrorHandlerThreadStopped", "count", Collections.singletonList(Statistics.COUNT)),
-
     GRPC_SERVER_THREAD_STOPPED(
             "GRPCServerThreadStopped", "count", Collections.singletonList(Statistics.COUNT)),
-
     WEB_SERVER_THREAD_STOPPED(
             "WebServerThreadStopped", "count", Collections.singletonList(Statistics.COUNT)),
-
     RCA_CONTROLLER_THREAD_STOPPED(
             "RcaControllerThreadStopped", "count", Collections.singletonList(Statistics.COUNT)),
-
     RCA_SCHEDULER_THREAD_STOPPED(
             "RcaSchedulerThreadStopped", "count", Collections.singletonList(Statistics.COUNT)),
 
-    /** Tracks time taken by Reader thread to emit event metrics . */
-    READER_METRICS_EMIT_TIME(
-            "ReaderMetricsEmitTime",
-            "millis",
-            Arrays.asList(Statistics.MAX, Statistics.MEAN, Statistics.SUM)),
-
     /**
-     * Tracks scheduler restart issued at {@link
-     * org.opensearch.performanceanalyzer.rca.RcaController#restart}
+     * Tracks MetricDB related metrics, the size of below metricDB file is factor of events(shard +
+     * cluster traffic) and also the collector functioning.
      */
-    RCA_SCHEDULER_RESTART(
-            "RcaSchedulerRestart", "count", Collections.singletonList(Statistics.COUNT)),
-
-    /** Size of generated metricsdb files. */
     METRICSDB_FILE_SIZE(
             "MetricsdbFileSize", "bytes", Arrays.asList(Statistics.MAX, Statistics.MEAN)),
-
-    /** Number of compressed and uncompressed metricsdb files. */
     METRICSDB_NUM_FILES("MetricsdbNumFiles", "count", Statistics.SAMPLE),
-
-    /** Size of compressed and uncompressed metricsdb files. */
     METRICSDB_SIZE_FILES("MetricsdbSizeFiles", "bytes", Statistics.SAMPLE),
-
-    /** Number of uncompressed metricsdb files. */
     METRICSDB_NUM_UNCOMPRESSED_FILES("MetricsdbNumUncompressedFiles", "count", Statistics.SAMPLE),
-
-    /** Size of uncompressed metricsdb files. */
     METRICSDB_SIZE_UNCOMPRESSED_FILES("MetricsdbSizeUncompressedFiles", "bytes", Statistics.SAMPLE),
-
-    /** Whether or not batch metrics is enabled (0 for enabled, 1 for disabled). */
     BATCH_METRICS_ENABLED("BatchMetricsEnabled", "count", Statistics.SAMPLE),
-
-    BATCH_METRICS_CONFIG_ERROR("BatchMetricsConfigError", "count", Statistics.SAMPLE),
-
-    /** Number of http requests where the client gave a bad request. */
-    BATCH_METRICS_HTTP_CLIENT_ERROR("BatchMetricsHttpClientError", "count", Statistics.COUNT),
-
-    /** Number of http requests where the host could not generate a correct response. */
-    BATCH_METRICS_HTTP_HOST_ERROR("BatchMetricsHttpHostError", "count", Statistics.COUNT),
-
-    /** Number of successful queries. */
     BATCH_METRICS_HTTP_SUCCESS("BatchMetricsHttpSuccess", "count", Statistics.COUNT),
-
-    /**
-     * Number of times a query for batch metrics exceeded the maximum number of requestable
-     * datapoints.
-     */
-    BATCH_METRICS_EXCEEDED_MAX_DATAPOINTS(
-            "ExceededBatchMetricsMaxDatapoints", "count", Statistics.COUNT),
-
-    /** Amount of time required to process valid batch metrics requests. */
     BATCH_METRICS_QUERY_PROCESSING_TIME(
             "BatchMetricsQueryProcessingTime",
             "millis",
             Arrays.asList(Statistics.MAX, Statistics.MEAN, Statistics.SUM)),
 
-    /** Amount of time taken to emit Shard State metrics. */
+    /**
+     * Tracks time taken by respective emitters and the total time to process and emit event
+     * metrics.
+     */
+    READER_METRICS_EMIT_TIME(
+            "ReaderMetricsEmitTime",
+            "millis",
+            Arrays.asList(Statistics.MAX, Statistics.MEAN, Statistics.SUM)),
+    READER_METRICS_PROCESS_TIME(
+            "ReaderMetricsProcessTime",
+            "millis",
+            Arrays.asList(Statistics.MAX, Statistics.MEAN, Statistics.SUM)),
+    GC_INFO_EMITTER_EXECUTION_TIME(
+            "GCInfoEmitterExecutionTime",
+            "millis",
+            Arrays.asList(
+                    Statistics.MAX,
+                    Statistics.MIN,
+                    Statistics.MEAN,
+                    Statistics.COUNT,
+                    Statistics.SUM)),
+    WORKLOAD_METRICS_EMITTER_EXECUTION_TIME(
+            "WorkloadMetricsEmitterExecutionTime",
+            "millis",
+            Arrays.asList(
+                    Statistics.MAX,
+                    Statistics.MIN,
+                    Statistics.MEAN,
+                    Statistics.COUNT,
+                    Statistics.SUM)),
+    THREAD_NAME_METRICS_EMITTER_EXECUTION_TIME(
+            "ThreadNameMetricsEmitterExecutionTime",
+            "millis",
+            Arrays.asList(
+                    Statistics.MAX,
+                    Statistics.MIN,
+                    Statistics.MEAN,
+                    Statistics.COUNT,
+                    Statistics.SUM)),
+    AGGREGATED_OS_METRICS_EMITTER_EXECUTION_TIME(
+            "AggregatedOSMetricsEmitterExecutionTime",
+            "millis",
+            Arrays.asList(
+                    Statistics.MAX,
+                    Statistics.MIN,
+                    Statistics.MEAN,
+                    Statistics.COUNT,
+                    Statistics.SUM)),
+    SHARD_REQUEST_METRICS_EMITTER_EXECUTION_TIME(
+            "ShardRequestMetricsEmitterExecutionTime",
+            "millis",
+            Arrays.asList(
+                    Statistics.MAX,
+                    Statistics.MIN,
+                    Statistics.MEAN,
+                    Statistics.COUNT,
+                    Statistics.SUM)),
+    HTTP_METRICS_EMITTER_EXECUTION_TIME(
+            "HTTPMetricsEmitterExecutionTime",
+            "millis",
+            Arrays.asList(
+                    Statistics.MAX,
+                    Statistics.MIN,
+                    Statistics.MEAN,
+                    Statistics.COUNT,
+                    Statistics.SUM)),
+    ADMISSION_CONTROL_METRICS_EMITTER_EXECUTION_TIME(
+            "AdmissionControlMetricsEmitterExecutionTime",
+            "millis",
+            Arrays.asList(
+                    Statistics.MAX,
+                    Statistics.MIN,
+                    Statistics.MEAN,
+                    Statistics.COUNT,
+                    Statistics.SUM)),
+    CLUSTER_MANAGER_EVENT_METRICS_EMITTER_EXECUTION_TIME(
+            "ClusterManagerEventMetricsEmitterExecutionTime",
+            "millis",
+            Arrays.asList(
+                    Statistics.MAX,
+                    Statistics.MIN,
+                    Statistics.MEAN,
+                    Statistics.COUNT,
+                    Statistics.SUM)),
+    NODE_METRICS_EMITTER_EXECUTION_TIME(
+            "NodeMetricsEmitterExecutionTime",
+            "millis",
+            Arrays.asList(
+                    Statistics.MAX,
+                    Statistics.MIN,
+                    Statistics.MEAN,
+                    Statistics.COUNT,
+                    Statistics.SUM)),
     SHARD_STATE_EMITTER_EXECUTION_TIME(
             "ShardStateEmitterExecutionTime",
             "millis",
@@ -115,8 +166,6 @@ public enum ReaderMetrics implements MeasurementSet {
                     Statistics.MEAN,
                     Statistics.COUNT,
                     Statistics.SUM)),
-
-    /** Amount of time taken to emit ClusterManager throttling metrics. */
     CLUSTER_MANAGER_THROTTLING_EMITTER_EXECUTION_TIME(
             "ClusterManagerThrottlingEmitterExecutionTime",
             "millis",
@@ -126,7 +175,6 @@ public enum ReaderMetrics implements MeasurementSet {
                     Statistics.MEAN,
                     Statistics.COUNT,
                     Statistics.SUM)),
-
     FAULT_DETECTION_METRICS_EMITTER_EXECUTION_TIME(
             "FaultDetectionMetricsEmitterExecutionTime",
             "millis",
