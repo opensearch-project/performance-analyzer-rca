@@ -13,13 +13,13 @@ import org.opensearch.performanceanalyzer.rca.stats.eval.Statistics;
 public enum MeasurementSetTestHelper implements MeasurementSet {
     TEST_MEASUREMENT1(
             "TestMeasurement1",
-            "micros",
+            "millis",
             Arrays.asList(Statistics.MAX, Statistics.MEAN, Statistics.MIN)),
-    TEST_MEASUREMENT2("TestMeasurement2", "micros", Arrays.asList(Statistics.COUNT)),
-    TEST_MEASUREMENT3("TestMeasurement3", "micros", Arrays.asList(Statistics.COUNT)),
-    TEST_MEASUREMENT4("TestMeasurement4", "micros", Arrays.asList(Statistics.SAMPLE)),
-    TEST_MEASUREMENT5("TestMeasurement5", "micros", Arrays.asList(Statistics.SUM)),
-    TEST_MEASUREMENT6("TestMeasurement6", "micros", Arrays.asList(Statistics.NAMED_COUNTERS)),
+    TEST_MEASUREMENT2("TestMeasurement2", "millis", Arrays.asList(Statistics.COUNT)),
+    TEST_MEASUREMENT3("TestMeasurement3", "millis", Arrays.asList(Statistics.COUNT)),
+    TEST_MEASUREMENT4("TestMeasurement4", "millis", Arrays.asList(Statistics.SAMPLE)),
+    TEST_MEASUREMENT5("TestMeasurement5", "millis", Arrays.asList(Statistics.SUM)),
+    TEST_MEASUREMENT6("TestMeasurement6", "millis", Arrays.asList(Statistics.NAMED_COUNTERS)),
     JVM_FREE_MEM_SAMPLER("jvmFreeMemorySampler", "bytes", Arrays.asList(Statistics.SAMPLE));
 
     private String name;

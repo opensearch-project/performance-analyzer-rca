@@ -42,6 +42,21 @@ public enum ExceptionsAndErrors implements MeasurementSet {
      */
     EXCEPTION_IN_PERSIST("ExceptionInPersist", "namedCount", Statistics.NAMED_COUNTERS),
 
+    BATCH_METRICS_CONFIG_ERROR("BatchMetricsConfigError", "count", Statistics.SAMPLE),
+
+    /** Number of http requests where the client gave a bad request. */
+    BATCH_METRICS_HTTP_CLIENT_ERROR("BatchMetricsHttpClientError", "count", Statistics.COUNT),
+
+    /** Number of http requests where the host could not generate a correct response. */
+    BATCH_METRICS_HTTP_HOST_ERROR("BatchMetricsHttpHostError", "count", Statistics.COUNT),
+
+    /**
+     * Number of times a query for batch metrics exceeded the maximum number of requestable
+     * datapoints.
+     */
+    BATCH_METRICS_EXCEEDED_MAX_DATAPOINTS(
+            "ExceededBatchMetricsMaxDatapoints", "count", Statistics.COUNT),
+
     /** When the reader encounters errors accessing metricsdb files. */
     READER_METRICSDB_ACCESS_ERRORS("ReaderMetricsdbAccessError"),
 
