@@ -5,7 +5,7 @@
 
 package org.opensearch.performanceanalyzer.net;
 
-import static org.opensearch.performanceanalyzer.rca.framework.metrics.WriterMetrics.GRPC_CHANNEL_CLOSURE_ERROR;
+import static org.opensearch.performanceanalyzer.rca.framework.metrics.ExceptionsAndErrors.GRPC_CHANNEL_CLOSURE_ERROR;
 
 import com.google.common.annotations.VisibleForTesting;
 import io.grpc.ManagedChannel;

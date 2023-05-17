@@ -18,7 +18,7 @@ import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.message.ParameterizedMessage;
 import org.opensearch.performanceanalyzer.PerformanceAnalyzerApp;
 import org.opensearch.performanceanalyzer.config.PluginSettings;
-import org.opensearch.performanceanalyzer.rca.framework.metrics.WriterMetrics;
+import org.opensearch.performanceanalyzer.rca.framework.metrics.ExceptionsAndErrors;
 import org.opensearch.performanceanalyzer.reader_writer_shared.Event;
 
 @SuppressWarnings("checkstyle:constantname")
@@ -119,8 +119,8 @@ public class PerformanceAnalyzerMetrics {
 
     private static void emitMetric(BlockingQueue<Event> q, Event entry) {
         if (!q.offer(entry)) {
-            PerformanceAnalyzerApp.WRITER_METRICS_AGGREGATOR.updateStat(
-                    WriterMetrics.METRICS_WRITE_ERROR, "", 1);
+            PerformanceAnalyzerApp.ERRORS_AND_EXCEPTIONS_AGGREGATOR.updateStat(
+                    ExceptionsAndErrors.METRICS_WRITE_ERROR, "", 1);
             LOG.debug("Could not enter metric {}", entry);
         }
     }
@@ -176,13 +176,13 @@ public class PerformanceAnalyzerMetrics {
         }
         try {
             if (!keyPathFile.delete()) {
-                PerformanceAnalyzerApp.WRITER_METRICS_AGGREGATOR.updateStat(
-                        WriterMetrics.METRICS_REMOVE_ERROR, "", 1);
+                PerformanceAnalyzerApp.ERRORS_AND_EXCEPTIONS_AGGREGATOR.updateStat(
+                        ExceptionsAndErrors.METRICS_REMOVE_ERROR, "", 1);
                 LOG.debug("Purge Could not delete file {}", keyPathFile);
             }
         } catch (Exception ex) {
-            PerformanceAnalyzerApp.WRITER_METRICS_AGGREGATOR.updateStat(
-                    WriterMetrics.METRICS_REMOVE_ERROR, "", 1);
+            PerformanceAnalyzerApp.ERRORS_AND_EXCEPTIONS_AGGREGATOR.updateStat(
+                    ExceptionsAndErrors.METRICS_REMOVE_ERROR, "", 1);
             LOG.debug(
                     (Supplier<?>)
                             () ->
@@ -190,7 +190,7 @@ public class PerformanceAnalyzerMetrics {
                                             "Error in deleting file: {} for keyPath:{} with ExceptionCode: {}",
                                             ex.toString(),
                                             keyPathFile.getAbsolutePath(),
-                                            WriterMetrics.METRICS_REMOVE_ERROR.toString()),
+                                            ExceptionsAndErrors.METRICS_REMOVE_ERROR.toString()),
                     ex);
         }
     }

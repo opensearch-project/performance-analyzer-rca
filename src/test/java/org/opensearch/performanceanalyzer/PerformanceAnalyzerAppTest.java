@@ -27,7 +27,8 @@ public class PerformanceAnalyzerAppTest {
     public void testInvalidConfigStatusMain() throws InterruptedException {
         ConfigStatus.INSTANCE.setConfigurationInvalid();
         PerformanceAnalyzerApp.main(new String[0]);
-        Assert.assertTrue(RcaTestHelper.verify(ExceptionsAndErrors.PA_AGENT_STOPPED));
+        Assert.assertTrue(
+                RcaTestHelper.verify(ExceptionsAndErrors.INVALID_CONFIG_RCA_AGENT_STOPPED));
     }
 
     @Test

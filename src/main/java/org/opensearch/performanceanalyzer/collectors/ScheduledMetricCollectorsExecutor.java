@@ -134,13 +134,17 @@ public class ScheduledMetricCollectorsExecutor extends Thread {
                                     .getCollectorName()
                                     .equals(StatsCollector.COLLECTOR_NAME)) {
                                 LOG.info(
-                                        " {} is still in progress; skipping.",
+                                        " {} is still in progress; StatsCollector is critical for framework service metrics",
                                         StatsCollector.COLLECTOR_NAME);
                                 return;
                             }
                             if (collector.getState()
                                     == PerformanceAnalyzerMetricsCollector.State.HEALTHY) {
                                 collector.setState(PerformanceAnalyzerMetricsCollector.State.SLOW);
+                                PerformanceAnalyzerApp.WRITER_METRICS_AGGREGATOR.updateStat(
+                                        WriterMetrics.COLLECTORS_SLOW,
+                                        collector.getCollectorName(),
+                                        1);
                             } else if (collector.getState()
                                     == PerformanceAnalyzerMetricsCollector.State.SLOW) {
                                 collector.setState(PerformanceAnalyzerMetricsCollector.State.MUTED);
@@ -148,6 +152,10 @@ public class ScheduledMetricCollectorsExecutor extends Thread {
                             LOG.info(
                                     "Collector {} is still in progress, so skipping this Interval",
                                     collector.getCollectorName());
+                            PerformanceAnalyzerApp.WRITER_METRICS_AGGREGATOR.updateStat(
+                                    WriterMetrics.COLLECTORS_SKIPPED,
+                                    collector.getCollectorName(),
+                                    1);
                         }
                     }
                 }
