@@ -29,6 +29,7 @@ import org.opensearch.performanceanalyzer.PerformanceAnalyzerApp;
 import org.opensearch.performanceanalyzer.collectors.ScheduledMetricCollectorsExecutor;
 import org.opensearch.performanceanalyzer.core.Util;
 import org.opensearch.performanceanalyzer.metrics.MetricsConfiguration;
+import org.opensearch.performanceanalyzer.rca.framework.metrics.ExceptionsAndErrors;
 import org.opensearch.performanceanalyzer.rca.framework.metrics.WriterMetrics;
 import sun.tools.attach.HotSpotVirtualMachine;
 
@@ -135,8 +136,8 @@ public class ThreadList {
                 vmAttachLock.unlock();
             }
         } else {
-            PerformanceAnalyzerApp.WRITER_METRICS_AGGREGATOR.updateStat(
-                    WriterMetrics.JVM_ATTACH_LOCK_ACQUISITION_FAILED, "", 1);
+            PerformanceAnalyzerApp.ERRORS_AND_EXCEPTIONS_AGGREGATOR.updateStat(
+                    ExceptionsAndErrors.JVM_ATTACH_LOCK_ACQUISITION_FAILED, "", 1);
         }
 
         // - sending a copy so that if runThreadDump next iteration clears it; caller still has the
@@ -161,8 +162,8 @@ public class ThreadList {
     public static ThreadState getThreadState(long threadId) {
         ThreadState retVal = jTidMap.get(threadId);
         if (retVal == null) {
-            PerformanceAnalyzerApp.WRITER_METRICS_AGGREGATOR.updateStat(
-                    WriterMetrics.NO_THREAD_STATE_INFO, "", 1);
+            PerformanceAnalyzerApp.ERRORS_AND_EXCEPTIONS_AGGREGATOR.updateStat(
+                    ExceptionsAndErrors.NO_THREAD_STATE_INFO, "", 1);
         }
         return retVal;
     }
@@ -175,11 +176,11 @@ public class ThreadList {
             vm = VirtualMachine.attach(pid);
         } catch (Exception ex) {
             if (ex.getMessage().contains("java_pid")) {
-                PerformanceAnalyzerApp.WRITER_METRICS_AGGREGATOR.updateStat(
-                        WriterMetrics.JVM_ATTACH_ERROR_JAVA_PID_FILE_MISSING, "", 1);
+                PerformanceAnalyzerApp.ERRORS_AND_EXCEPTIONS_AGGREGATOR.updateStat(
+                        ExceptionsAndErrors.JVM_ATTACH_ERROR_JAVA_PID_FILE_MISSING, "", 1);
             } else {
-                PerformanceAnalyzerApp.WRITER_METRICS_AGGREGATOR.updateStat(
-                        WriterMetrics.JVM_ATTACH_ERROR, "", 1);
+                PerformanceAnalyzerApp.ERRORS_AND_EXCEPTIONS_AGGREGATOR.updateStat(
+                        ExceptionsAndErrors.JVM_ATTACH_ERROR, "", 1);
             }
             // If the thread dump failed then we clean up the old map. So, next time when the
             // collection
@@ -191,8 +192,8 @@ public class ThreadList {
         try (InputStream in = ((HotSpotVirtualMachine) vm).remoteDataDump(args); ) {
             createMap(in);
         } catch (Exception ex) {
-            PerformanceAnalyzerApp.WRITER_METRICS_AGGREGATOR.updateStat(
-                    WriterMetrics.JVM_ATTACH_ERROR, "", 1);
+            PerformanceAnalyzerApp.ERRORS_AND_EXCEPTIONS_AGGREGATOR.updateStat(
+                    ExceptionsAndErrors.JVM_ATTACH_ERROR, "", 1);
             oldNativeTidMap.clear();
         }
 
@@ -201,8 +202,8 @@ public class ThreadList {
             PerformanceAnalyzerApp.WRITER_METRICS_AGGREGATOR.updateStat(
                     WriterMetrics.JVM_THREAD_DUMP_SUCCESSFUL, "", 1);
         } catch (Exception ex) {
-            PerformanceAnalyzerApp.WRITER_METRICS_AGGREGATOR.updateStat(
-                    WriterMetrics.JVM_ATTACH_ERROR, "", 1);
+            PerformanceAnalyzerApp.ERRORS_AND_EXCEPTIONS_AGGREGATOR.updateStat(
+                    ExceptionsAndErrors.JVM_ATTACH_ERROR, "", 1);
         }
     }
 
@@ -214,8 +215,8 @@ public class ThreadList {
                 // If the ids provided to the getThreadInfo() call are not valid ids or the threads
                 // no
                 // longer exists, then the corresponding info object will contain null.
-                PerformanceAnalyzerApp.WRITER_METRICS_AGGREGATOR.updateStat(
-                        WriterMetrics.JVM_THREAD_ID_NO_LONGER_EXISTS, "", 1);
+                PerformanceAnalyzerApp.ERRORS_AND_EXCEPTIONS_AGGREGATOR.updateStat(
+                        ExceptionsAndErrors.JVM_THREAD_ID_NO_LONGER_EXISTS, "", 1);
             }
         }
     }

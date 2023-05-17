@@ -136,9 +136,9 @@ public class PerformanceAnalyzerApp {
             startWebServerThread(clientServers.getHttpServer(), THREAD_PROVIDER);
             startRcaTopLevelThread(clientServers, connectionManager, appContext, THREAD_PROVIDER);
         } else {
-            PerformanceAnalyzerApp.ERRORS_AND_EXCEPTIONS_AGGREGATOR.updateStat(
-                    ExceptionsAndErrors.PA_AGENT_STOPPED, "", 1);
             LOG.error("Performance analyzer app stopped due to invalid config status.");
+            PerformanceAnalyzerApp.ERRORS_AND_EXCEPTIONS_AGGREGATOR.updateStat(
+                    ExceptionsAndErrors.INVALID_CONFIG_RCA_AGENT_STOPPED, "", 1);
         }
     }
 

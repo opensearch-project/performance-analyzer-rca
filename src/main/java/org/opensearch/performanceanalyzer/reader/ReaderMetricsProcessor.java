@@ -5,8 +5,8 @@
 
 package org.opensearch.performanceanalyzer.reader;
 
-import static org.opensearch.performanceanalyzer.rca.framework.metrics.WriterMetrics.IN_MEMORY_DATABASE_CONN_CLOSURE_ERROR;
-import static org.opensearch.performanceanalyzer.rca.framework.metrics.WriterMetrics.METRICS_DB_CLOSURE_ERROR;
+import static org.opensearch.performanceanalyzer.rca.framework.metrics.ExceptionsAndErrors.IN_MEMORY_DATABASE_CONN_CLOSURE_ERROR;
+import static org.opensearch.performanceanalyzer.rca.framework.metrics.ExceptionsAndErrors.METRICS_DB_CLOSURE_ERROR;
 
 import com.google.common.annotations.VisibleForTesting;
 import java.io.File;
@@ -215,7 +215,7 @@ public class ReaderMetricsProcessor implements Runnable {
                 conn.close();
             }
         } catch (Exception e) {
-            PerformanceAnalyzerApp.WRITER_METRICS_AGGREGATOR.updateStat(
+            PerformanceAnalyzerApp.ERRORS_AND_EXCEPTIONS_AGGREGATOR.updateStat(
                     IN_MEMORY_DATABASE_CONN_CLOSURE_ERROR, "", 1);
             LOG.error("Unable to close inmemory database connection.", e);
         }
