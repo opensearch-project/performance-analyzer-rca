@@ -12,6 +12,13 @@ import org.opensearch.performanceanalyzer.rca.stats.eval.Statistics;
 import org.opensearch.performanceanalyzer.rca.stats.measurements.MeasurementSet;
 
 public enum RcaRuntimeMetrics implements MeasurementSet {
+    /**
+     * Tracks scheduler restart issued at {@link
+     * org.opensearch.performanceanalyzer.rca.RcaController#restart}
+     */
+    RCA_SCHEDULER_RESTART(
+            "RcaSchedulerRestart", "count", Collections.singletonList(Statistics.COUNT)),
+
     /** The number of times the framework was stopped by the operator. */
     RCA_STOPPED_BY_OPERATOR(
             "RcaStoppedByOperator", "count", Collections.singletonList(Statistics.COUNT)),

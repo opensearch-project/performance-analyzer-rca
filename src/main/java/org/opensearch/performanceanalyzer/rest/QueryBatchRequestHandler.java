@@ -212,30 +212,30 @@ public class QueryBatchRequestHandler extends MetricsHandler implements HttpHand
             LOG.error(
                     "QueryException {} ExceptionCode: {}.",
                     e,
-                    ReaderMetrics.BATCH_METRICS_HTTP_HOST_ERROR,
+                    ExceptionsAndErrors.BATCH_METRICS_HTTP_HOST_ERROR,
                     e);
-            PerformanceAnalyzerApp.READER_METRICS_AGGREGATOR.updateStat(
-                    ReaderMetrics.BATCH_METRICS_HTTP_HOST_ERROR, "", 1);
+            PerformanceAnalyzerApp.ERRORS_AND_EXCEPTIONS_AGGREGATOR.updateStat(
+                    ExceptionsAndErrors.BATCH_METRICS_HTTP_HOST_ERROR, "", 1);
             String response = "{\"error\":\"" + e.toString() + "\"}";
             sendResponse(exchange, response, HttpURLConnection.HTTP_INTERNAL_ERROR);
         } catch (InvalidParameterException e) {
             LOG.error(
                     "QueryException {} ExceptionCode: {}.",
                     e,
-                    ReaderMetrics.BATCH_METRICS_HTTP_CLIENT_ERROR,
+                    ExceptionsAndErrors.BATCH_METRICS_HTTP_CLIENT_ERROR,
                     e);
-            PerformanceAnalyzerApp.READER_METRICS_AGGREGATOR.updateStat(
-                    ReaderMetrics.BATCH_METRICS_HTTP_CLIENT_ERROR, "", 1);
+            PerformanceAnalyzerApp.ERRORS_AND_EXCEPTIONS_AGGREGATOR.updateStat(
+                    ExceptionsAndErrors.BATCH_METRICS_HTTP_CLIENT_ERROR, "", 1);
             String response = "{\"error\":\"" + e.getMessage() + ".\"}";
             sendResponse(exchange, response, HttpURLConnection.HTTP_BAD_REQUEST);
         } catch (Exception e) {
             LOG.error(
                     "QueryException {} ExceptionCode: {}.",
                     e,
-                    ReaderMetrics.BATCH_METRICS_HTTP_HOST_ERROR,
+                    ExceptionsAndErrors.BATCH_METRICS_HTTP_HOST_ERROR,
                     e);
-            PerformanceAnalyzerApp.READER_METRICS_AGGREGATOR.updateStat(
-                    ReaderMetrics.BATCH_METRICS_HTTP_HOST_ERROR, "", 1);
+            PerformanceAnalyzerApp.ERRORS_AND_EXCEPTIONS_AGGREGATOR.updateStat(
+                    ExceptionsAndErrors.BATCH_METRICS_HTTP_HOST_ERROR, "", 1);
             String response = "{\"error\":\"" + e.toString() + "\"}";
             sendResponse(exchange, response, HttpURLConnection.HTTP_INTERNAL_ERROR);
         }
@@ -261,8 +261,8 @@ public class QueryBatchRequestHandler extends MetricsHandler implements HttpHand
             if (results != null) {
                 maxDatapoints -= results.size();
                 if (maxDatapoints <= 0) {
-                    PerformanceAnalyzerApp.READER_METRICS_AGGREGATOR.updateStat(
-                            ReaderMetrics.BATCH_METRICS_EXCEEDED_MAX_DATAPOINTS, "", 1);
+                    PerformanceAnalyzerApp.ERRORS_AND_EXCEPTIONS_AGGREGATOR.updateStat(
+                            ExceptionsAndErrors.BATCH_METRICS_EXCEEDED_MAX_DATAPOINTS, "", 1);
                     throw new InvalidParameterException(
                             String.format(
                                     "requested data exceeds the %d datapoints limit",
@@ -282,8 +282,10 @@ public class QueryBatchRequestHandler extends MetricsHandler implements HttpHand
                     if (results != null) {
                         maxDatapoints -= results.size();
                         if (maxDatapoints <= 0) {
-                            PerformanceAnalyzerApp.READER_METRICS_AGGREGATOR.updateStat(
-                                    ReaderMetrics.BATCH_METRICS_EXCEEDED_MAX_DATAPOINTS, "", 1);
+                            PerformanceAnalyzerApp.ERRORS_AND_EXCEPTIONS_AGGREGATOR.updateStat(
+                                    ExceptionsAndErrors.BATCH_METRICS_EXCEEDED_MAX_DATAPOINTS,
+                                    "",
+                                    1);
                             throw new InvalidParameterException(
                                     String.format(
                                             "requested data exceeds the %d datapoints limit",

@@ -43,6 +43,7 @@ import org.opensearch.performanceanalyzer.metrics.AllMetrics;
 import org.opensearch.performanceanalyzer.metrics.MetricsConfiguration;
 import org.opensearch.performanceanalyzer.metrics.PerformanceAnalyzerMetrics;
 import org.opensearch.performanceanalyzer.metricsdb.MetricsDB;
+import org.opensearch.performanceanalyzer.rca.framework.metrics.ExceptionsAndErrors;
 import org.opensearch.performanceanalyzer.rca.framework.metrics.ReaderMetrics;
 import org.opensearch.performanceanalyzer.reader_writer_shared.EventLog;
 import org.opensearch.performanceanalyzer.reader_writer_shared.EventLogFileHandler;
@@ -380,19 +381,22 @@ public class ReaderMetricsProcessor implements Runnable {
 
         long mFinalT = System.currentTimeMillis();
         LOG.debug("Total time taken for aligning OS Metrics: {}", mFinalT - mCurrT);
+        PerformanceAnalyzerApp.READER_METRICS_AGGREGATOR.updateStat(
+                ReaderMetrics.READER_METRICS_EMIT_TIME, "", (double) (mFinalT - mCurrT));
 
         mCurrT = System.currentTimeMillis();
         MetricsDB metricsDB = createMetricsDB(prevWindowStartTime);
 
+        // Newly added metrics go at the bottom, do not change the ordering
         emitGarbageCollectionInfo(prevWindowStartTime, metricsDB);
-        emitAdmissionControlMetrics(prevWindowStartTime, metricsDB);
-        emitClusterManagerMetrics(prevWindowStartTime, metricsDB);
         emitShardRequestMetrics(prevWindowStartTime, alignedOSSnapHolder, osAlignedSnap, metricsDB);
         emitHttpRequestMetrics(prevWindowStartTime, metricsDB);
         emitNodeMetrics(currWindowStartTime, metricsDB);
-        emitFaultDetectionMetrics(prevWindowStartTime, metricsDB);
-        emitClusterManagerThrottlingMetrics(prevWindowStartTime, metricsDB);
         emitShardStateMetrics(prevWindowStartTime, metricsDB);
+        emitFaultDetectionMetrics(prevWindowStartTime, metricsDB);
+        emitAdmissionControlMetrics(prevWindowStartTime, metricsDB);
+        emitClusterManagerMetrics(prevWindowStartTime, metricsDB);
+        emitClusterManagerThrottlingMetrics(prevWindowStartTime, metricsDB);
 
         metricsDB.commit();
         metricsDBMap.put(prevWindowStartTime, metricsDB);
@@ -404,32 +408,9 @@ public class ReaderMetricsProcessor implements Runnable {
             batchMetricsDBSet.add(prevWindowStartTime);
         }
         mFinalT = System.currentTimeMillis();
+        LOG.debug("Total time taken for emitting Metrics: {}", mFinalT - mCurrT);
         PerformanceAnalyzerApp.READER_METRICS_AGGREGATOR.updateStat(
                 ReaderMetrics.READER_METRICS_EMIT_TIME, "", (double) (mFinalT - mCurrT));
-        LOG.debug("Total time taken for emitting Metrics: {}", mFinalT - mCurrT);
-    }
-
-    private void emitFaultDetectionMetrics(long prevWindowStartTime, MetricsDB metricsDB) {
-        if (faultDetectionMetricsMap.containsKey(prevWindowStartTime)) {
-
-            FaultDetectionMetricsSnapshot prevFaultDetectionSnap =
-                    faultDetectionMetricsMap.get(prevWindowStartTime);
-            MetricsEmitter.emitFaultDetectionMetrics(metricsDB, prevFaultDetectionSnap);
-        } else {
-            LOG.debug(
-                    "Fault Detection snapshot for the previous window does not exist. Not emitting metrics.");
-        }
-    }
-
-    private void emitShardStateMetrics(long prevWindowStartTime, MetricsDB metricsDB) {
-        if (shardStateMetricsMap.containsKey(prevWindowStartTime)) {
-            ShardStateMetricsSnapshot prevShardsStateMetricsSnapshot =
-                    shardStateMetricsMap.get(prevWindowStartTime);
-            MetricsEmitter.emitShardStateMetric(metricsDB, prevShardsStateMetricsSnapshot);
-        } else {
-            LOG.debug(
-                    "Shard State snapshot for the previous window does not exist. Not emitting metrics.");
-        }
     }
 
     private void emitGarbageCollectionInfo(long prevWindowStartTime, MetricsDB metricsDB)
@@ -444,28 +425,42 @@ public class ReaderMetricsProcessor implements Runnable {
         }
     }
 
-    private void emitAdmissionControlMetrics(long prevWindowStartTime, MetricsDB metricsDB)
+    private void emitShardRequestMetrics(
+            long prevWindowStartTime,
+            OSMetricsSnapshot alignedOSSnapHolder,
+            OSMetricsSnapshot osAlignedSnap,
+            MetricsDB metricsDB)
             throws Exception {
-        if (admissionControlMetricsMap.containsKey(prevWindowStartTime)) {
-            AdmissionControlSnapshot previousSnapshot =
-                    admissionControlMetricsMap.get(prevWindowStartTime);
-            MetricsEmitter.emitAdmissionControlMetrics(metricsDB, previousSnapshot);
-        } else {
-            LOG.debug(
-                    "Admission control snapshot does not exist for the previous window. Not emitting metrics.");
-        }
-    }
 
-    private void emitClusterManagerThrottlingMetrics(
-            long prevWindowStartTime, MetricsDB metricsDB) {
-        if (clusterManagerThrottlingMetricsMap.containsKey(prevWindowStartTime)) {
-            ClusterManagerThrottlingMetricsSnapshot prevShardsStateMetricsSnapshot =
-                    clusterManagerThrottlingMetricsMap.get(prevWindowStartTime);
-            MetricsEmitter.emitClusterManagerThrottledTaskMetric(
-                    metricsDB, prevShardsStateMetricsSnapshot);
+        if (shardRqMetricsMap.containsKey(prevWindowStartTime)) {
+            long mCurrT = System.currentTimeMillis();
+            ShardRequestMetricsSnapshot preShardRequestMetricsSnapshot =
+                    shardRqMetricsMap.get(prevWindowStartTime);
+            LOG.debug(
+                    "shard emit time {}, {}",
+                    prevWindowStartTime,
+                    preShardRequestMetricsSnapshot.windowStartTime);
+            MetricsEmitter.emitWorkloadMetrics(
+                    create, metricsDB, preShardRequestMetricsSnapshot); // calculate latency
+            if (osAlignedSnap != null) {
+                MetricsEmitter.emitAggregatedOSMetrics(
+                        create,
+                        metricsDB,
+                        osAlignedSnap,
+                        preShardRequestMetricsSnapshot); // table join
+                MetricsEmitter.emitThreadNameMetrics(
+                        create, metricsDB, osAlignedSnap); // threads other than bulk and query
+            } else {
+                LOG.debug("OS METRICS NULL");
+            }
+            alignedOSSnapHolder.remove();
+            PerformanceAnalyzerApp.READER_METRICS_AGGREGATOR.updateStat(
+                    ReaderMetrics.SHARD_REQUEST_METRICS_EMITTER_EXECUTION_TIME,
+                    "",
+                    System.currentTimeMillis() - mCurrT);
         } else {
             LOG.debug(
-                    "ClusterManager Throttling snapshot for the previous window does not exist. Not emitting metrics.");
+                    "Shard request snapshot for the previous window does not exist. Not emitting metrics.");
         }
     }
 
@@ -482,40 +477,96 @@ public class ReaderMetricsProcessor implements Runnable {
         }
     }
 
-    private void emitShardRequestMetrics(
-            long prevWindowStartTime,
-            OSMetricsSnapshot alignedOSSnapHolder,
-            OSMetricsSnapshot osAlignedSnap,
-            MetricsDB metricsDB)
-            throws Exception {
+    /**
+     * Enrich event data with node metrics and calculate aggregated metrics on dimensions like
+     * (shard, index, operation, role). The aggregated metrics are then written to a metricsDB.
+     *
+     * @param currWindowStartTime the start time of current sampling period. The bound of the period
+     *     where that value is measured is MetricsConfiguration.SAMPLING_INTERVAL.
+     * @param metricsDB on-disk database to which we want to emit metrics
+     * @throws Exception if we have issues emitting or aligning metrics
+     */
+    public void emitNodeMetrics(long currWindowStartTime, MetricsDB metricsDB) throws Exception {
+        long prevWindowStartTime = currWindowStartTime - MetricsConfiguration.SAMPLING_INTERVAL;
 
-        if (shardRqMetricsMap.containsKey(prevWindowStartTime)) {
+        for (Map.Entry<AllMetrics.MetricName, NavigableMap<Long, MemoryDBSnapshot>> entry :
+                nodeMetricsMap.entrySet()) {
 
-            ShardRequestMetricsSnapshot preShardRequestMetricsSnapshot =
-                    shardRqMetricsMap.get(prevWindowStartTime);
-            LOG.debug(
-                    "shard emit time {}, {}",
-                    prevWindowStartTime,
-                    preShardRequestMetricsSnapshot.windowStartTime);
-            MetricsEmitter.emitWorkloadMetrics(
-                    create, metricsDB, preShardRequestMetricsSnapshot); // calculate latency
-            if (osAlignedSnap != null) {
-                // LOG.info(osAlignedSnap.fetchAll());
-                // LOG.info(preShardRequestMetricsSnapshot.fetchAll());
-                MetricsEmitter.emitAggregatedOSMetrics(
-                        create,
-                        metricsDB,
-                        osAlignedSnap,
-                        preShardRequestMetricsSnapshot); // table join
-                MetricsEmitter.emitThreadNameMetrics(
-                        create, metricsDB, osAlignedSnap); // threads other than bulk and query
-            } else {
-                LOG.debug("OS METRICS NULL");
+            AllMetrics.MetricName metricName = entry.getKey();
+
+            NavigableMap<Long, MemoryDBSnapshot> metricMap = entry.getValue();
+
+            long mCurrT = System.currentTimeMillis();
+
+            // This is object holds a reference to the temporary memory db
+            // snapshot. It is used to delete tables at the end of this
+            // reader cycle.
+
+            MemoryDBSnapshot alignedSnapshotHolder =
+                    new MemoryDBSnapshot(getConnection(), metricName, currWindowStartTime, true);
+            MemoryDBSnapshot alignedSnapshot =
+                    alignNodeMetrics(
+                            metricName,
+                            metricMap,
+                            prevWindowStartTime,
+                            currWindowStartTime,
+                            alignedSnapshotHolder);
+
+            long mFinalT = System.currentTimeMillis();
+            LOG.debug("Total time taken for aligning {} Metrics: {}", metricName, mFinalT - mCurrT);
+
+            if (alignedSnapshot == null) {
+                alignedSnapshotHolder.remove();
+                LOG.debug(
+                        "{} snapshot for the previous window does not exist. Not emitting metrics.",
+                        metricName);
+                continue;
             }
-            alignedOSSnapHolder.remove();
+
+            mCurrT = System.currentTimeMillis();
+            MetricsEmitter.emitNodeMetrics(create, metricsDB, alignedSnapshot);
+
+            // alignedSnapshotHolder cannot be the left or right window we are
+            // trying to align, so we can safely remove.
+            alignedSnapshotHolder.remove();
+
+            mFinalT = System.currentTimeMillis();
+            LOG.debug("Total time taken for emitting node metrics: {}", mFinalT - mCurrT);
+        }
+    }
+
+    private void emitShardStateMetrics(long prevWindowStartTime, MetricsDB metricsDB) {
+        if (shardStateMetricsMap.containsKey(prevWindowStartTime)) {
+            ShardStateMetricsSnapshot prevShardsStateMetricsSnapshot =
+                    shardStateMetricsMap.get(prevWindowStartTime);
+            MetricsEmitter.emitShardStateMetric(metricsDB, prevShardsStateMetricsSnapshot);
         } else {
             LOG.debug(
-                    "Shard request snapshot for the previous window does not exist. Not emitting metrics.");
+                    "Shard State snapshot for the previous window does not exist. Not emitting metrics.");
+        }
+    }
+
+    private void emitFaultDetectionMetrics(long prevWindowStartTime, MetricsDB metricsDB) {
+        if (faultDetectionMetricsMap.containsKey(prevWindowStartTime)) {
+
+            FaultDetectionMetricsSnapshot prevFaultDetectionSnap =
+                    faultDetectionMetricsMap.get(prevWindowStartTime);
+            MetricsEmitter.emitFaultDetectionMetrics(metricsDB, prevFaultDetectionSnap);
+        } else {
+            LOG.debug(
+                    "Fault Detection snapshot for the previous window does not exist. Not emitting metrics.");
+        }
+    }
+
+    private void emitAdmissionControlMetrics(long prevWindowStartTime, MetricsDB metricsDB)
+            throws Exception {
+        if (admissionControlMetricsMap.containsKey(prevWindowStartTime)) {
+            AdmissionControlSnapshot previousSnapshot =
+                    admissionControlMetricsMap.get(prevWindowStartTime);
+            MetricsEmitter.emitAdmissionControlMetrics(metricsDB, previousSnapshot);
+        } else {
+            LOG.debug(
+                    "Admission control snapshot does not exist for the previous window. Not emitting metrics.");
         }
     }
 
@@ -533,25 +584,23 @@ public class ReaderMetricsProcessor implements Runnable {
         }
     }
 
+    private void emitClusterManagerThrottlingMetrics(
+            long prevWindowStartTime, MetricsDB metricsDB) {
+        if (clusterManagerThrottlingMetricsMap.containsKey(prevWindowStartTime)) {
+            ClusterManagerThrottlingMetricsSnapshot prevShardsStateMetricsSnapshot =
+                    clusterManagerThrottlingMetricsMap.get(prevWindowStartTime);
+            MetricsEmitter.emitClusterManagerThrottledTaskMetric(
+                    metricsDB, prevShardsStateMetricsSnapshot);
+        } else {
+            LOG.debug(
+                    "ClusterManager Throttling snapshot for the previous window does not exist. Not emitting metrics.");
+        }
+    }
+
     /**
      * OS, Request, Http and cluster_manager first aligns the currentTimeStamp with a 5 second
-     * interval but while looking for the actual file on the disk, they do a further aligning with
-     * the 30 second bucket. The node metrics doesn't do the initial 5 second aligning but does a
-     * direct 30 second aligning of the given time, before reading files on the disk. OS metrics can
-     * do (in some cases) and the Node metrics definitely reads a file from the previous 30 second
-     * aligned timestamp.
-     *
-     * <p>Note that previously, the collectors would sample metrics every 5 seconds but write it to
-     * a 30 second aligned bucket. So, the files in the current bucket gets overwritten on every
-     * write until we hit the 30 second boundary after which a new directory is created and that is
-     * used the same way for the next 30 seconds. So any time we are reading from the last bucket,
-     * we are reading the last file before the bucket got rotated. So, at the first 5 seconds of the
-     * current bucket, if you read the last bucket you are actually reading the file written in last
-     * 5 second. If you are reading from the previous bucket in the second 5 second window, then you
-     * are actually reading the file written in the last 10 seconds.
-     *
-     * <p>In the new format, a file (not a directory) is written every 5 seconds. So we can actually
-     * read the last 5 second of the data.
+     * interval. In the current format, a file (previously a directory) is written every 5 seconds.
+     * So we actually read the last 5 second of the data.
      *
      * @param rootLocation Where to read the files from
      * @param currTimestamp The timestamp of the file that will be picked.
@@ -590,7 +639,7 @@ public class ReaderMetricsProcessor implements Runnable {
             20.01. So race condition occurs. We have to add one additional window
             on reader to avoid this.
         */
-
+        long mCurrT = System.currentTimeMillis();
         // Step 2 from above.
         long currWindowStartTime =
                 PerformanceAnalyzerMetrics.getTimeInterval(
@@ -674,6 +723,10 @@ public class ReaderMetricsProcessor implements Runnable {
         if (appContext != null && !clusterDetailsEventsProcessor.getNodesDetails().isEmpty()) {
             appContext.setClusterDetailsEventProcessor(clusterDetailsEventsProcessor);
         }
+        long mFinalT = System.currentTimeMillis();
+        LOG.debug("Total time taken for processing Metrics: {}", mFinalT - mCurrT);
+        PerformanceAnalyzerApp.READER_METRICS_AGGREGATOR.updateStat(
+                ReaderMetrics.READER_METRICS_PROCESS_TIME, "", (double) (mFinalT - mCurrT));
     }
 
     /**
@@ -918,64 +971,6 @@ public class ReaderMetricsProcessor implements Runnable {
         return null;
     }
 
-    /**
-     * Enrich event data with node metrics and calculate aggregated metrics on dimensions like
-     * (shard, index, operation, role). The aggregated metrics are then written to a metricsDB.
-     *
-     * @param currWindowStartTime the start time of current sampling period. The bound of the period
-     *     where that value is measured is MetricsConfiguration.SAMPLING_INTERVAL.
-     * @param metricsDB on-disk database to which we want to emit metrics
-     * @throws Exception if we have issues emitting or aligning metrics
-     */
-    public void emitNodeMetrics(long currWindowStartTime, MetricsDB metricsDB) throws Exception {
-        long prevWindowStartTime = currWindowStartTime - MetricsConfiguration.SAMPLING_INTERVAL;
-
-        for (Map.Entry<AllMetrics.MetricName, NavigableMap<Long, MemoryDBSnapshot>> entry :
-                nodeMetricsMap.entrySet()) {
-
-            AllMetrics.MetricName metricName = entry.getKey();
-
-            NavigableMap<Long, MemoryDBSnapshot> metricMap = entry.getValue();
-
-            long mCurrT = System.currentTimeMillis();
-
-            // This is object holds a reference to the temporary memory db
-            // snapshot. It is used to delete tables at the end of this
-            // reader cycle.
-
-            MemoryDBSnapshot alignedSnapshotHolder =
-                    new MemoryDBSnapshot(getConnection(), metricName, currWindowStartTime, true);
-            MemoryDBSnapshot alignedSnapshot =
-                    alignNodeMetrics(
-                            metricName,
-                            metricMap,
-                            prevWindowStartTime,
-                            currWindowStartTime,
-                            alignedSnapshotHolder);
-
-            long mFinalT = System.currentTimeMillis();
-            LOG.debug("Total time taken for aligning {} Metrics: {}", metricName, mFinalT - mCurrT);
-
-            if (alignedSnapshot == null) {
-                alignedSnapshotHolder.remove();
-                LOG.debug(
-                        "{} snapshot for the previous window does not exist. Not emitting metrics.",
-                        metricName);
-                continue;
-            }
-
-            mCurrT = System.currentTimeMillis();
-            MetricsEmitter.emitNodeMetrics(create, metricsDB, alignedSnapshot);
-
-            // alignedSnapshotHolder cannot be the left or right window we are
-            // trying to align, so we can safely remove.
-            alignedSnapshotHolder.remove();
-
-            mFinalT = System.currentTimeMillis();
-            LOG.debug("Total time taken for emitting node metrics: {}", mFinalT - mCurrT);
-        }
-    }
-
     private void readBatchMetricsEnabledFromConf() {
         Path filePath = Paths.get(Util.DATA_DIR, BATCH_METRICS_ENABLED_CONF_FILE);
 
@@ -993,8 +988,8 @@ public class ReaderMetricsProcessor implements Runnable {
                                     newValue);
                         }
                     } catch (IOException e) {
-                        PerformanceAnalyzerApp.READER_METRICS_AGGREGATOR.updateStat(
-                                ReaderMetrics.BATCH_METRICS_CONFIG_ERROR, "", 1);
+                        PerformanceAnalyzerApp.ERRORS_AND_EXCEPTIONS_AGGREGATOR.updateStat(
+                                ExceptionsAndErrors.BATCH_METRICS_CONFIG_ERROR, "", 1);
                         LOG.error("Error reading file '{}': {}", filePath.toString(), e);
                         batchMetricsEnabled = defaultBatchMetricsEnabled;
                     }

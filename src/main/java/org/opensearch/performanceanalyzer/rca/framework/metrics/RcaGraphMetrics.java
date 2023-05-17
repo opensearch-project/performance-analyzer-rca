@@ -17,12 +17,7 @@ public enum RcaGraphMetrics implements MeasurementSet {
     GRAPH_EXECUTION_TIME(
             "RcaGraphExecution",
             "millis",
-            Arrays.asList(
-                    Statistics.MAX,
-                    Statistics.MIN,
-                    Statistics.MEAN,
-                    Statistics.COUNT,
-                    Statistics.SUM)),
+            Arrays.asList(Statistics.MAX, Statistics.MEAN, Statistics.SUM)),
 
     /** Measures the time spent in the operate() method of a graph node. */
     GRAPH_NODE_OPERATE_CALL(
@@ -66,7 +61,7 @@ public enum RcaGraphMetrics implements MeasurementSet {
     /** Measures the time spent in the persistence layer. */
     RCA_PERSIST_CALL(
             "RcaPersistCall",
-            "micros",
+            "millis",
             Arrays.asList(Statistics.MAX, Statistics.MEAN, Statistics.SUM)),
 
     /** Number of nodes that are currently publishing flow units to downstream nodes. */
