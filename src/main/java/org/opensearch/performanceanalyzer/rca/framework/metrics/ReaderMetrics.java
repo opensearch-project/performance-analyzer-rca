@@ -6,12 +6,11 @@
 package org.opensearch.performanceanalyzer.rca.framework.metrics;
 
 
-import org.opensearch.performanceanalyzer.rca.stats.eval.Statistics;
-import org.opensearch.performanceanalyzer.rca.stats.measurements.MeasurementSet;
-
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import org.opensearch.performanceanalyzer.rca.stats.eval.Statistics;
+import org.opensearch.performanceanalyzer.rca.stats.measurements.MeasurementSet;
 
 public enum ReaderMetrics implements MeasurementSet {
 
@@ -79,111 +78,51 @@ public enum ReaderMetrics implements MeasurementSet {
     GC_INFO_EMITTER_EXECUTION_TIME(
             "GCInfoEmitterExecutionTime",
             "millis",
-            Arrays.asList(
-                    Statistics.MAX,
-                    Statistics.MIN,
-                    Statistics.MEAN,
-                    Statistics.COUNT,
-                    Statistics.SUM)),
+            Arrays.asList(Statistics.MAX, Statistics.MEAN, Statistics.SUM)),
     WORKLOAD_METRICS_EMITTER_EXECUTION_TIME(
             "WorkloadMetricsEmitterExecutionTime",
             "millis",
-            Arrays.asList(
-                    Statistics.MAX,
-                    Statistics.MIN,
-                    Statistics.MEAN,
-                    Statistics.COUNT,
-                    Statistics.SUM)),
+            Arrays.asList(Statistics.MAX, Statistics.MEAN, Statistics.SUM)),
     THREAD_NAME_METRICS_EMITTER_EXECUTION_TIME(
             "ThreadNameMetricsEmitterExecutionTime",
             "millis",
-            Arrays.asList(
-                    Statistics.MAX,
-                    Statistics.MIN,
-                    Statistics.MEAN,
-                    Statistics.COUNT,
-                    Statistics.SUM)),
+            Arrays.asList(Statistics.MAX, Statistics.MEAN, Statistics.SUM)),
     AGGREGATED_OS_METRICS_EMITTER_EXECUTION_TIME(
             "AggregatedOSMetricsEmitterExecutionTime",
             "millis",
-            Arrays.asList(
-                    Statistics.MAX,
-                    Statistics.MIN,
-                    Statistics.MEAN,
-                    Statistics.COUNT,
-                    Statistics.SUM)),
+            Arrays.asList(Statistics.MAX, Statistics.MEAN, Statistics.SUM)),
     SHARD_REQUEST_METRICS_EMITTER_EXECUTION_TIME(
             "ShardRequestMetricsEmitterExecutionTime",
             "millis",
-            Arrays.asList(
-                    Statistics.MAX,
-                    Statistics.MIN,
-                    Statistics.MEAN,
-                    Statistics.COUNT,
-                    Statistics.SUM)),
+            Arrays.asList(Statistics.MAX, Statistics.MEAN, Statistics.SUM)),
     HTTP_METRICS_EMITTER_EXECUTION_TIME(
             "HTTPMetricsEmitterExecutionTime",
             "millis",
-            Arrays.asList(
-                    Statistics.MAX,
-                    Statistics.MIN,
-                    Statistics.MEAN,
-                    Statistics.COUNT,
-                    Statistics.SUM)),
+            Arrays.asList(Statistics.MAX, Statistics.MEAN, Statistics.SUM)),
     ADMISSION_CONTROL_METRICS_EMITTER_EXECUTION_TIME(
             "AdmissionControlMetricsEmitterExecutionTime",
             "millis",
-            Arrays.asList(
-                    Statistics.MAX,
-                    Statistics.MIN,
-                    Statistics.MEAN,
-                    Statistics.COUNT,
-                    Statistics.SUM)),
+            Arrays.asList(Statistics.MAX, Statistics.MEAN, Statistics.SUM)),
     CLUSTER_MANAGER_EVENT_METRICS_EMITTER_EXECUTION_TIME(
             "ClusterManagerEventMetricsEmitterExecutionTime",
             "millis",
-            Arrays.asList(
-                    Statistics.MAX,
-                    Statistics.MIN,
-                    Statistics.MEAN,
-                    Statistics.COUNT,
-                    Statistics.SUM)),
+            Arrays.asList(Statistics.MAX, Statistics.MEAN, Statistics.SUM)),
     NODE_METRICS_EMITTER_EXECUTION_TIME(
             "NodeMetricsEmitterExecutionTime",
             "millis",
-            Arrays.asList(
-                    Statistics.MAX,
-                    Statistics.MIN,
-                    Statistics.MEAN,
-                    Statistics.COUNT,
-                    Statistics.SUM)),
+            Arrays.asList(Statistics.MAX, Statistics.MEAN, Statistics.SUM)),
     SHARD_STATE_EMITTER_EXECUTION_TIME(
             "ShardStateEmitterExecutionTime",
             "millis",
-            Arrays.asList(
-                    Statistics.MAX,
-                    Statistics.MIN,
-                    Statistics.MEAN,
-                    Statistics.COUNT,
-                    Statistics.SUM)),
+            Arrays.asList(Statistics.MAX, Statistics.MEAN, Statistics.SUM)),
     CLUSTER_MANAGER_THROTTLING_EMITTER_EXECUTION_TIME(
             "ClusterManagerThrottlingEmitterExecutionTime",
             "millis",
-            Arrays.asList(
-                    Statistics.MAX,
-                    Statistics.MIN,
-                    Statistics.MEAN,
-                    Statistics.COUNT,
-                    Statistics.SUM)),
+            Arrays.asList(Statistics.MAX, Statistics.MEAN, Statistics.SUM)),
     FAULT_DETECTION_METRICS_EMITTER_EXECUTION_TIME(
             "FaultDetectionMetricsEmitterExecutionTime",
             "millis",
-            Arrays.asList(
-                    Statistics.MAX,
-                    Statistics.MIN,
-                    Statistics.MEAN,
-                    Statistics.COUNT,
-                    Statistics.SUM)),
+            Arrays.asList(Statistics.MAX, Statistics.MEAN, Statistics.SUM)),
 
     /** Number of transport threads in BLOCKED state. */
     BLOCKED_TRANSPORT_THREAD_COUNT("BlockedTransportThreadCount", "count", Statistics.MAX),
