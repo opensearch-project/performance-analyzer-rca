@@ -16,10 +16,12 @@ import java.util.NavigableMap;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jooq.BatchBindStep;
+import org.opensearch.performanceanalyzer.PerformanceAnalyzerApp;
 import org.opensearch.performanceanalyzer.collectors.StatExceptionCode;
 import org.opensearch.performanceanalyzer.collectors.StatsCollector;
 import org.opensearch.performanceanalyzer.metrics.AllMetrics;
 import org.opensearch.performanceanalyzer.metrics.PerformanceAnalyzerMetrics;
+import org.opensearch.performanceanalyzer.rca.framework.metrics.ExceptionsAndErrors;
 import org.opensearch.performanceanalyzer.reader_writer_shared.Event;
 import org.opensearch.performanceanalyzer.util.JsonConverter;
 import org.opensearch.performanceanalyzer.util.JsonPathNotFoundException;
@@ -157,7 +159,8 @@ public class NodeMetricsEventProcessor implements EventProcessor {
                             "Malformed json (%s) ExceptionCode: %s",
                             lines[0], StatExceptionCode.JSON_PARSER_ERROR.toString()),
                     ex);
-            StatsCollector.instance().logException(StatExceptionCode.JSON_PARSER_ERROR);
+            PerformanceAnalyzerApp.ERRORS_AND_EXCEPTIONS_AGGREGATOR.updateStat(
+                    ExceptionsAndErrors.JSON_PARSER_ERROR, this.getClass().getSimpleName(), 1);
             return false;
         } catch (IOException ex) {
             LOG.warn(
