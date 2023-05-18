@@ -11,7 +11,7 @@ buildscript {
         buildVersionQualifier = System.getProperty("build.version_qualifier", "")
         buildDockerJdkVersion = System.getProperty("build.docker_jdk_ver", "11")
 
-        // 2.7.0-SNAPSHOT -> 2.7.0.0-SNAPSHOT
+        // 2.8.0-SNAPSHOT -> 2.8.0.0-SNAPSHOT
         version_tokens = opensearch_version.tokenize('-')
         opensearch_build = version_tokens[0] + '.0'
         if (buildVersionQualifier) {
@@ -464,7 +464,7 @@ task copyReaderMetricsFiles(type: Copy) {
 task buildDocker(type: Exec) {
     dependsOn(copyAllArtifacts)
     workingDir(dockerArtifactsDir)
-    commandLine 'docker', 'build', '-t', 'opensearch/pa-rca:2.7', '.', '--build-arg', "JDK_VER=${buildDockerJdkVersion}"
+    commandLine 'docker', 'build', '-t', 'opensearch/pa-rca:2.8', '.', '--build-arg', "JDK_VER=${buildDockerJdkVersion}"
 }
 
 task runDocker(type: Exec) {
