@@ -11,6 +11,7 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
+import org.opensearch.performanceanalyzer.commons.metrics.PerformanceAnalyzerMetrics;
 import org.opensearch.performanceanalyzer.config.PluginSettings;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
@@ -34,25 +35,6 @@ public class PerformanceAnalyzerMetricsTests {
     }
 
     // @Test
-    public void testBasicMetric() {
-        System.setProperty("performanceanalyzer.metrics.log.enabled", "False");
-        PerformanceAnalyzerMetrics.emitMetric(
-                System.currentTimeMillis(),
-                PluginSettings.instance().getMetricsLocation() + "/dir1/test1",
-                "value1");
-        assertEquals(
-                "value1",
-                PerformanceAnalyzerMetrics.getMetric(
-                        PluginSettings.instance().getMetricsLocation() + "/dir1/test1"));
-
-        assertEquals(
-                "",
-                PerformanceAnalyzerMetrics.getMetric(
-                        PluginSettings.instance().getMetricsLocation() + "/dir1/test2"));
-
-        PerformanceAnalyzerMetrics.removeMetrics(
-                PluginSettings.instance().getMetricsLocation() + "/dir1");
-    }
 
     // TODO: Turn it on later
     @Ignore

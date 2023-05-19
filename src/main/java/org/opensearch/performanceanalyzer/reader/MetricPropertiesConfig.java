@@ -14,6 +14,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import org.opensearch.performanceanalyzer.commons.metrics.PerformanceAnalyzerMetrics;
 import org.opensearch.performanceanalyzer.metrics.AllMetrics;
 import org.opensearch.performanceanalyzer.metrics.AllMetrics.AdmissionControlDimension;
 import org.opensearch.performanceanalyzer.metrics.AllMetrics.AdmissionControlValue;
@@ -39,7 +40,6 @@ import org.opensearch.performanceanalyzer.metrics.AllMetrics.TCPDimension;
 import org.opensearch.performanceanalyzer.metrics.AllMetrics.TCPValue;
 import org.opensearch.performanceanalyzer.metrics.AllMetrics.ThreadPoolDimension;
 import org.opensearch.performanceanalyzer.metrics.AllMetrics.ThreadPoolValue;
-import org.opensearch.performanceanalyzer.metrics.PerformanceAnalyzerMetrics;
 import org.opensearch.performanceanalyzer.reader_writer_shared.Event;
 
 public final class MetricPropertiesConfig {

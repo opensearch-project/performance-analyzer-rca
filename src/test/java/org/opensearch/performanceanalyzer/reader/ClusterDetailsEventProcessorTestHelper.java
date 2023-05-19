@@ -9,9 +9,9 @@ package org.opensearch.performanceanalyzer.reader;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import org.opensearch.performanceanalyzer.commons.metrics.PerformanceAnalyzerMetrics;
 import org.opensearch.performanceanalyzer.config.overrides.ConfigOverrides;
 import org.opensearch.performanceanalyzer.metrics.AllMetrics;
-import org.opensearch.performanceanalyzer.metrics.PerformanceAnalyzerMetrics;
 import org.opensearch.performanceanalyzer.reader_writer_shared.Event;
 import org.opensearch.performanceanalyzer.util.JsonConverter;
 

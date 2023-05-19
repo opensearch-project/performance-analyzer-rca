@@ -10,7 +10,15 @@ import com.google.common.annotations.VisibleForTesting;
 import java.util.concurrent.atomic.AtomicBoolean;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.opensearch.performanceanalyzer.commons.metrics.MetricsConfiguration;
 import org.opensearch.performanceanalyzer.core.Util;
+import org.opensearch.performanceanalyzer.jvm.GCMetrics;
+import org.opensearch.performanceanalyzer.jvm.HeapMetrics;
+import org.opensearch.performanceanalyzer.jvm.ThreadList;
+import org.opensearch.performanceanalyzer.os.OSGlobals;
+import org.opensearch.performanceanalyzer.os.ThreadCPU;
+import org.opensearch.performanceanalyzer.os.ThreadDiskIO;
+import org.opensearch.performanceanalyzer.os.ThreadSched;
 
 public abstract class PerformanceAnalyzerMetricsCollector implements Runnable {
     enum State {
@@ -34,6 +42,30 @@ public abstract class PerformanceAnalyzerMetricsCollector implements Runnable {
     protected StringBuilder value;
     protected State state;
     private boolean threadContentionMonitoringEnabled;
+
+    static {
+        MetricsConfiguration.CONFIG_MAP.put(ThreadCPU.class, MetricsConfiguration.cdefault);
+        MetricsConfiguration.CONFIG_MAP.put(ThreadDiskIO.class, MetricsConfiguration.cdefault);
+        MetricsConfiguration.CONFIG_MAP.put(ThreadSched.class, MetricsConfiguration.cdefault);
+        MetricsConfiguration.CONFIG_MAP.put(ThreadList.class, MetricsConfiguration.cdefault);
+        MetricsConfiguration.CONFIG_MAP.put(GCMetrics.class, MetricsConfiguration.cdefault);
+        MetricsConfiguration.CONFIG_MAP.put(HeapMetrics.class, MetricsConfiguration.cdefault);
+        MetricsConfiguration.CONFIG_MAP.put(
+                NetworkE2ECollector.class, MetricsConfiguration.cdefault);
+        MetricsConfiguration.CONFIG_MAP.put(
+                NetworkInterfaceCollector.class, MetricsConfiguration.cdefault);
+        MetricsConfiguration.CONFIG_MAP.put(OSGlobals.class, MetricsConfiguration.cdefault);
+        MetricsConfiguration.CONFIG_MAP.put(
+                StatsCollector.class,
+                new MetricsConfiguration.MetricConfig(
+                        MetricsConfiguration.STATS_ROTATION_INTERVAL, 0));
+        MetricsConfiguration.CONFIG_MAP.put(DisksCollector.class, MetricsConfiguration.cdefault);
+        MetricsConfiguration.CONFIG_MAP.put(
+                HeapMetricsCollector.class, MetricsConfiguration.cdefault);
+        MetricsConfiguration.CONFIG_MAP.put(GCInfoCollector.class, MetricsConfiguration.cdefault);
+        MetricsConfiguration.CONFIG_MAP.put(
+                MountedPartitionMetricsCollector.class, MetricsConfiguration.cdefault);
+    }
 
     protected PerformanceAnalyzerMetricsCollector(int timeInterval, String collectorName) {
         this.timeInterval = timeInterval;

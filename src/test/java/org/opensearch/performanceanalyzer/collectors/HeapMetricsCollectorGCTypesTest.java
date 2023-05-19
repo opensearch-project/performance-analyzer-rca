@@ -13,8 +13,8 @@ import java.util.HashSet;
 import java.util.Set;
 import org.junit.Assert;
 import org.junit.Test;
+import org.opensearch.performanceanalyzer.commons.metrics.PerformanceAnalyzerMetrics;
 import org.opensearch.performanceanalyzer.metrics.AllMetrics;
-import org.opensearch.performanceanalyzer.metrics.PerformanceAnalyzerMetrics;
 
 public class HeapMetricsCollectorGCTypesTest {
     private static final ObjectMapper mapper = new ObjectMapper();
