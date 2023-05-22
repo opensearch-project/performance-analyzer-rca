@@ -36,6 +36,10 @@ import org.jooq.SQLDialect;
 import org.jooq.impl.DSL;
 import org.opensearch.performanceanalyzer.AppContext;
 import org.opensearch.performanceanalyzer.PerformanceAnalyzerApp;
+import org.opensearch.performanceanalyzer.commons.event_process.EventDispatcher;
+import org.opensearch.performanceanalyzer.commons.event_process.EventLog;
+import org.opensearch.performanceanalyzer.commons.event_process.EventLogFileHandler;
+import org.opensearch.performanceanalyzer.commons.event_process.EventProcessor;
 import org.opensearch.performanceanalyzer.commons.metrics.MetricsConfiguration;
 import org.opensearch.performanceanalyzer.commons.metrics.PerformanceAnalyzerMetrics;
 import org.opensearch.performanceanalyzer.config.PluginSettings;
@@ -45,8 +49,6 @@ import org.opensearch.performanceanalyzer.metrics.AllMetrics;
 import org.opensearch.performanceanalyzer.metricsdb.MetricsDB;
 import org.opensearch.performanceanalyzer.rca.framework.metrics.ExceptionsAndErrors;
 import org.opensearch.performanceanalyzer.rca.framework.metrics.ReaderMetrics;
-import org.opensearch.performanceanalyzer.reader_writer_shared.EventLog;
-import org.opensearch.performanceanalyzer.reader_writer_shared.EventLogFileHandler;
 
 public class ReaderMetricsProcessor implements Runnable {
     private static final Logger LOG = LogManager.getLogger(ReaderMetricsProcessor.class);

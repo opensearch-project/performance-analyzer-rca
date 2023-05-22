@@ -15,9 +15,10 @@ import org.apache.logging.log4j.Logger;
 import org.jooq.BatchBindStep;
 import org.opensearch.performanceanalyzer.collectors.StatExceptionCode;
 import org.opensearch.performanceanalyzer.collectors.StatsCollector;
+import org.opensearch.performanceanalyzer.commons.event_process.Event;
+import org.opensearch.performanceanalyzer.commons.event_process.EventProcessor;
 import org.opensearch.performanceanalyzer.commons.metrics.PerformanceAnalyzerMetrics;
 import org.opensearch.performanceanalyzer.metrics.AllMetrics;
-import org.opensearch.performanceanalyzer.reader_writer_shared.Event;
 
 public class HttpRequestEventProcessor implements EventProcessor {
 

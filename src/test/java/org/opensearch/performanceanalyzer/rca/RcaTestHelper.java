@@ -30,12 +30,12 @@ import org.apache.logging.log4j.core.appender.FileAppender;
 import org.jooq.tools.json.JSONObject;
 import org.opensearch.performanceanalyzer.AppContext;
 import org.opensearch.performanceanalyzer.PerformanceAnalyzerApp;
+import org.opensearch.performanceanalyzer.commons.event_process.Event;
 import org.opensearch.performanceanalyzer.metrics.AllMetrics;
 import org.opensearch.performanceanalyzer.rca.framework.core.ConnectedComponent;
 import org.opensearch.performanceanalyzer.rca.framework.core.Node;
 import org.opensearch.performanceanalyzer.rca.stats.measurements.MeasurementSet;
 import org.opensearch.performanceanalyzer.reader.ClusterDetailsEventProcessor;
-import org.opensearch.performanceanalyzer.reader_writer_shared.Event;
 
 public class RcaTestHelper {
     public static List<String> getAllLinesFromStatsLog() {

@@ -36,6 +36,7 @@ import org.opensearch.performanceanalyzer.AppContext;
 import org.opensearch.performanceanalyzer.ClientServers;
 import org.opensearch.performanceanalyzer.PerformanceAnalyzerApp;
 import org.opensearch.performanceanalyzer.PerformanceAnalyzerThreads;
+import org.opensearch.performanceanalyzer.commons.event_process.Event;
 import org.opensearch.performanceanalyzer.config.PluginSettings;
 import org.opensearch.performanceanalyzer.metrics.AllMetrics;
 import org.opensearch.performanceanalyzer.net.GRPCConnectionManager;
@@ -48,7 +49,6 @@ import org.opensearch.performanceanalyzer.rca.scheduler.RCAScheduler;
 import org.opensearch.performanceanalyzer.rca.scheduler.RcaSchedulerState;
 import org.opensearch.performanceanalyzer.rca.spec.MetricsDBProviderTestHelper;
 import org.opensearch.performanceanalyzer.reader.ClusterDetailsEventProcessor;
-import org.opensearch.performanceanalyzer.reader_writer_shared.Event;
 import org.opensearch.performanceanalyzer.threads.ThreadProvider;
 import org.opensearch.performanceanalyzer.util.WaitFor;
 

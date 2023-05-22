@@ -59,7 +59,7 @@
         <Bug pattern="RCN_REDUNDANT_NULLCHECK_WOULD_HAVE_BEEN_A_NPE"/>
     </Match>
     <Match>
-        <Class name="org.opensearch.performanceanalyzer.reader_writer_shared.EventLogFileHandler"/>
+        <Class name="org.opensearch.performanceanalyzer.commons.event_process.EventLogFileHandler"/>
         <Bug pattern="RCN_REDUNDANT_NULLCHECK_WOULD_HAVE_BEEN_A_NPE"/>
     </Match>
     <Match>
