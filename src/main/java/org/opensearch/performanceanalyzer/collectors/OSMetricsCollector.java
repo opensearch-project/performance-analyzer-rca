@@ -8,12 +8,13 @@ package org.opensearch.performanceanalyzer.collectors;
 
 import java.util.Map;
 import org.opensearch.performanceanalyzer.OSMetricsGeneratorFactory;
-import org.opensearch.performanceanalyzer.PerformanceAnalyzerApp;
+import org.opensearch.performanceanalyzer.commons.collectors.PerformanceAnalyzerMetricsCollector;
+import org.opensearch.performanceanalyzer.commons.metrics.AllMetrics.OSMetrics;
 import org.opensearch.performanceanalyzer.commons.metrics.MetricsConfiguration;
 import org.opensearch.performanceanalyzer.commons.metrics.MetricsProcessor;
 import org.opensearch.performanceanalyzer.commons.metrics.PerformanceAnalyzerMetrics;
+import org.opensearch.performanceanalyzer.commons.stats.CommonStats;
 import org.opensearch.performanceanalyzer.jvm.ThreadList;
-import org.opensearch.performanceanalyzer.metrics.AllMetrics.OSMetrics;
 import org.opensearch.performanceanalyzer.metrics_generator.CPUPagingActivityGenerator;
 import org.opensearch.performanceanalyzer.metrics_generator.DiskIOMetricsGenerator;
 import org.opensearch.performanceanalyzer.metrics_generator.OSMetricsGenerator;
@@ -149,7 +150,7 @@ public class OSMetricsCollector extends PerformanceAnalyzerMetricsCollector
             }
 
             saveMetricValues(value.toString(), startTime, threadId);
-            PerformanceAnalyzerApp.WRITER_METRICS_AGGREGATOR.updateStat(
+            CommonStats.WRITER_METRICS_AGGREGATOR.updateStat(
                     WriterMetrics.OS_METRICS_COLLECTOR_EXECUTION_TIME,
                     "",
                     System.currentTimeMillis() - mCurrT);

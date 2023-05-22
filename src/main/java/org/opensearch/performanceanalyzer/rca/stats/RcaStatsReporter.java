@@ -8,14 +8,14 @@ package org.opensearch.performanceanalyzer.rca.stats;
 
 import com.google.common.annotations.VisibleForTesting;
 import java.util.List;
-import org.opensearch.performanceanalyzer.rca.stats.collectors.SampleAggregator;
-import org.opensearch.performanceanalyzer.rca.stats.format.Formatter;
-import org.opensearch.performanceanalyzer.rca.stats.measurements.MeasurementSet;
+import org.opensearch.performanceanalyzer.commons.formatter.Formatter;
+import org.opensearch.performanceanalyzer.commons.metrics.MeasurementSet;
+import org.opensearch.performanceanalyzer.commons.stats.SampleAggregator;
 
 /**
  * This is meant to be the registry for all the stats that are collected by the Rca framework and
  * needs to be reported periodically by the {@link
- * org.opensearch.performanceanalyzer.collectors.StatsCollector#collectMetrics}
+ * org.opensearch.performanceanalyzer.commons.collectors.StatsCollector#collectMetrics}
  */
 public class RcaStatsReporter {
     /** The list of collectors for which a report can be generated. */

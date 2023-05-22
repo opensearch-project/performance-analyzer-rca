@@ -6,7 +6,7 @@
 package org.opensearch.performanceanalyzer.rca.framework.api.metrics;
 
 
-import org.opensearch.performanceanalyzer.metrics.AllMetrics;
+import org.opensearch.performanceanalyzer.commons.metrics.AllMetrics;
 import org.opensearch.performanceanalyzer.rca.framework.api.Metric;
 
 public class Refresh_Time extends Metric {

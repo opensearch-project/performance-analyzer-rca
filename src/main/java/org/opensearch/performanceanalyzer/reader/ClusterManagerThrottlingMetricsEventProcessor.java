@@ -18,8 +18,8 @@ import org.apache.logging.log4j.Logger;
 import org.jooq.BatchBindStep;
 import org.opensearch.performanceanalyzer.commons.event_process.Event;
 import org.opensearch.performanceanalyzer.commons.event_process.EventProcessor;
+import org.opensearch.performanceanalyzer.commons.metrics.AllMetrics;
 import org.opensearch.performanceanalyzer.commons.metrics.PerformanceAnalyzerMetrics;
-import org.opensearch.performanceanalyzer.metrics.AllMetrics;
 
 public class ClusterManagerThrottlingMetricsEventProcessor implements EventProcessor {
     private static final Logger LOG =

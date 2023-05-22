@@ -9,6 +9,7 @@ package org.opensearch.performanceanalyzer.collectors;
 import java.util.HashMap;
 import java.util.Map;
 import org.opensearch.performanceanalyzer.OSMetricsGeneratorFactory;
+import org.opensearch.performanceanalyzer.commons.collectors.PerformanceAnalyzerMetricsCollector;
 import org.opensearch.performanceanalyzer.commons.metrics.MetricsConfiguration;
 import org.opensearch.performanceanalyzer.commons.metrics.MetricsProcessor;
 import org.opensearch.performanceanalyzer.commons.metrics.PerformanceAnalyzerMetrics;

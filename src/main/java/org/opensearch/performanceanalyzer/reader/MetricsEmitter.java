@@ -24,10 +24,10 @@ import org.jooq.SelectField;
 import org.jooq.SelectHavingStep;
 import org.jooq.impl.DSL;
 import org.opensearch.performanceanalyzer.DBUtils;
-import org.opensearch.performanceanalyzer.PerformanceAnalyzerApp;
+import org.opensearch.performanceanalyzer.commons.metrics.AllMetrics;
 import org.opensearch.performanceanalyzer.commons.metrics.PerformanceAnalyzerMetrics;
+import org.opensearch.performanceanalyzer.commons.stats.CommonStats;
 import org.opensearch.performanceanalyzer.config.TroubleshootingConfig;
-import org.opensearch.performanceanalyzer.metrics.AllMetrics;
 import org.opensearch.performanceanalyzer.metricsdb.Dimensions;
 import org.opensearch.performanceanalyzer.metricsdb.Metric;
 import org.opensearch.performanceanalyzer.metricsdb.MetricsDB;
@@ -291,7 +291,7 @@ public class MetricsEmitter {
         }
         mFinalT = System.currentTimeMillis();
         LOG.debug("Total time taken for writing resource metrics metricsdb: {}", mFinalT - mCurrT);
-        PerformanceAnalyzerApp.READER_METRICS_AGGREGATOR.updateStat(
+        CommonStats.RCA_RUNTIME_METRICS_AGGREGATOR.updateStat(
                 ReaderMetrics.AGGREGATED_OS_METRICS_EMITTER_EXECUTION_TIME, "", mFinalT - mCurrT);
     }
 
@@ -460,7 +460,7 @@ public class MetricsEmitter {
         }
         long mFinalT = System.currentTimeMillis();
         LOG.debug("Total time taken for writing workload metrics metricsdb: {}", mFinalT - mCurrT);
-        PerformanceAnalyzerApp.READER_METRICS_AGGREGATOR.updateStat(
+        CommonStats.RCA_RUNTIME_METRICS_AGGREGATOR.updateStat(
                 ReaderMetrics.WORKLOAD_METRICS_EMITTER_EXECUTION_TIME, "", mFinalT - mCurrT);
     }
 
@@ -500,7 +500,7 @@ public class MetricsEmitter {
         long mFinalT = System.currentTimeMillis();
         LOG.debug(
                 "Total time taken for writing threadName metrics metricsdb: {}", mFinalT - mCurrT);
-        PerformanceAnalyzerApp.READER_METRICS_AGGREGATOR.updateStat(
+        CommonStats.RCA_RUNTIME_METRICS_AGGREGATOR.updateStat(
                 ReaderMetrics.THREAD_NAME_METRICS_EMITTER_EXECUTION_TIME, "", mFinalT - mCurrT);
     }
 
@@ -698,7 +698,7 @@ public class MetricsEmitter {
 
         long mFinalT = System.currentTimeMillis();
         LOG.debug("Total time taken for writing http metrics metricsdb: {}", mFinalT - mCurrT);
-        PerformanceAnalyzerApp.READER_METRICS_AGGREGATOR.updateStat(
+        CommonStats.RCA_RUNTIME_METRICS_AGGREGATOR.updateStat(
                 ReaderMetrics.HTTP_METRICS_EMITTER_EXECUTION_TIME, "", mFinalT - mCurrT);
     }
 
@@ -745,7 +745,7 @@ public class MetricsEmitter {
         LOG.debug(
                 "Total time taken for writing garbage collection info into metricsDB: {}",
                 mFinalT - mCurrT);
-        PerformanceAnalyzerApp.READER_METRICS_AGGREGATOR.updateStat(
+        CommonStats.RCA_RUNTIME_METRICS_AGGREGATOR.updateStat(
                 ReaderMetrics.GC_INFO_EMITTER_EXECUTION_TIME, "", mFinalT - mCurrT);
     }
 
@@ -799,7 +799,7 @@ public class MetricsEmitter {
         LOG.debug(
                 "Total time taken for writing AdmissionControl into metricsDB: {}",
                 mFinalT - mCurrT);
-        PerformanceAnalyzerApp.READER_METRICS_AGGREGATOR.updateStat(
+        CommonStats.RCA_RUNTIME_METRICS_AGGREGATOR.updateStat(
                 ReaderMetrics.ADMISSION_CONTROL_METRICS_EMITTER_EXECUTION_TIME,
                 "",
                 mFinalT - mCurrT);
@@ -841,7 +841,7 @@ public class MetricsEmitter {
         LOG.debug(
                 "Total time taken for writing cluster_manager event queue metrics metricsdb: {}",
                 mFinalT - mCurrT);
-        PerformanceAnalyzerApp.READER_METRICS_AGGREGATOR.updateStat(
+        CommonStats.RCA_RUNTIME_METRICS_AGGREGATOR.updateStat(
                 ReaderMetrics.CLUSTER_MANAGER_EVENT_METRICS_EMITTER_EXECUTION_TIME,
                 "",
                 mFinalT - mCurrT);
@@ -1089,7 +1089,7 @@ public class MetricsEmitter {
                     "Total time taken for writing {} metrics metricsdb: {}",
                     tableName,
                     mFinalT - mCurrT);
-            PerformanceAnalyzerApp.READER_METRICS_AGGREGATOR.updateStat(
+            CommonStats.RCA_RUNTIME_METRICS_AGGREGATOR.updateStat(
                     ReaderMetrics.NODE_METRICS_EMITTER_EXECUTION_TIME, "", mFinalT - mCurrT);
         }
     }
@@ -1241,7 +1241,7 @@ public class MetricsEmitter {
         LOG.debug(
                 "Total time taken for writing fault detection metrics to metricsdb: {}",
                 mFinalT - mCurrT);
-        PerformanceAnalyzerApp.READER_METRICS_AGGREGATOR.updateStat(
+        CommonStats.RCA_RUNTIME_METRICS_AGGREGATOR.updateStat(
                 ReaderMetrics.FAULT_DETECTION_METRICS_EMITTER_EXECUTION_TIME, "", mFinalT - mCurrT);
     }
 
@@ -1260,7 +1260,7 @@ public class MetricsEmitter {
         LOG.debug(
                 "Total time taken for writing cluster_manager throttling metrics metricsdb: {}",
                 mFinalT - mCurrT);
-        PerformanceAnalyzerApp.READER_METRICS_AGGREGATOR.updateStat(
+        CommonStats.RCA_RUNTIME_METRICS_AGGREGATOR.updateStat(
                 ReaderMetrics.CLUSTER_MANAGER_THROTTLING_EMITTER_EXECUTION_TIME,
                 "",
                 mFinalT - mCurrT);
@@ -1437,7 +1437,7 @@ public class MetricsEmitter {
         LOG.debug(
                 "Total time taken for writing shard state event queue metrics metricsdb: {}",
                 mFinalT - mCurrT);
-        PerformanceAnalyzerApp.READER_METRICS_AGGREGATOR.updateStat(
+        CommonStats.RCA_RUNTIME_METRICS_AGGREGATOR.updateStat(
                 ReaderMetrics.SHARD_STATE_EMITTER_EXECUTION_TIME, "", mFinalT - mCurrT);
     }
 }

@@ -24,9 +24,9 @@ import org.opensearch.performanceanalyzer.AbstractTests;
 import org.opensearch.performanceanalyzer.collectors.DiskMetrics;
 import org.opensearch.performanceanalyzer.collectors.HeapMetricsCollector;
 import org.opensearch.performanceanalyzer.collectors.MetricStatus;
+import org.opensearch.performanceanalyzer.commons.metrics.AllMetrics;
+import org.opensearch.performanceanalyzer.commons.metrics.MetricDimension;
 import org.opensearch.performanceanalyzer.commons.metrics.PerformanceAnalyzerMetrics;
-import org.opensearch.performanceanalyzer.metrics.AllMetrics;
-import org.opensearch.performanceanalyzer.metrics.MetricDimension;
 
 // import
 // org.opensearch.performanceanalyzer.collectors.ClusterManagerServiceMetrics.ClusterManagerPendingStatus;

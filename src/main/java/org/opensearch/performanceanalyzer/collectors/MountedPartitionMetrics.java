@@ -7,8 +7,8 @@ package org.opensearch.performanceanalyzer.collectors;
 
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import org.opensearch.performanceanalyzer.metrics.AllMetrics.DevicePartitionDimension;
-import org.opensearch.performanceanalyzer.metrics.AllMetrics.DevicePartitionValue;
+import org.opensearch.performanceanalyzer.commons.metrics.AllMetrics.DevicePartitionDimension;
+import org.opensearch.performanceanalyzer.commons.metrics.AllMetrics.DevicePartitionValue;
 
 public class MountedPartitionMetrics extends MetricStatus {
     private String mountPoint;

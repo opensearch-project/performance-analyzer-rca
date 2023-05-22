@@ -8,6 +8,7 @@ package org.opensearch.performanceanalyzer.collectors;
 
 import java.util.Set;
 import org.opensearch.performanceanalyzer.OSMetricsGeneratorFactory;
+import org.opensearch.performanceanalyzer.commons.collectors.PerformanceAnalyzerMetricsCollector;
 import org.opensearch.performanceanalyzer.commons.metrics.MetricsConfiguration;
 import org.opensearch.performanceanalyzer.commons.metrics.MetricsProcessor;
 import org.opensearch.performanceanalyzer.commons.metrics.PerformanceAnalyzerMetrics;
@@ -27,7 +28,7 @@ public class MountedPartitionMetricsCollector extends PerformanceAnalyzerMetrics
     }
 
     @Override
-    void collectMetrics(long startTime) {
+    public void collectMetrics(long startTime) {
         OSMetricsGenerator generator = OSMetricsGeneratorFactory.getInstance();
         if (generator == null) {
             return;

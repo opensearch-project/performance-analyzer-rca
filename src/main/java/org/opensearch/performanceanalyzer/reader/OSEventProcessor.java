@@ -20,8 +20,8 @@ import org.jooq.BatchBindStep;
 import org.opensearch.performanceanalyzer.collectors.OSMetricsCollector;
 import org.opensearch.performanceanalyzer.commons.event_process.Event;
 import org.opensearch.performanceanalyzer.commons.event_process.EventProcessor;
+import org.opensearch.performanceanalyzer.commons.metrics.AllMetrics;
 import org.opensearch.performanceanalyzer.commons.metrics.PerformanceAnalyzerMetrics;
-import org.opensearch.performanceanalyzer.metrics.AllMetrics;
 
 public class OSEventProcessor implements EventProcessor {
 

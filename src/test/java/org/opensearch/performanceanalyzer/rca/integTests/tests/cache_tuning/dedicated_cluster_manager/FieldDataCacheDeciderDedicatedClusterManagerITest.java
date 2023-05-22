@@ -12,7 +12,7 @@ import static org.opensearch.performanceanalyzer.rca.integTests.tests.cache_tuni
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
-import org.opensearch.performanceanalyzer.metrics.AllMetrics;
+import org.opensearch.performanceanalyzer.commons.metrics.AllMetrics;
 import org.opensearch.performanceanalyzer.rca.framework.api.metrics.Cache_FieldData_Eviction;
 import org.opensearch.performanceanalyzer.rca.framework.api.metrics.Cache_FieldData_Size;
 import org.opensearch.performanceanalyzer.rca.framework.api.metrics.Cache_Max_Size;

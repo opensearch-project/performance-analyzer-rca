@@ -11,8 +11,8 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.opensearch.performanceanalyzer.OSMetricsGeneratorFactory;
+import org.opensearch.performanceanalyzer.commons.metrics.ExceptionsAndErrors;
 import org.opensearch.performanceanalyzer.rca.RcaTestHelper;
-import org.opensearch.performanceanalyzer.rca.framework.metrics.ExceptionsAndErrors;
 
 // This test only runs in linux systems as the some of the static members of the ThreadList
 // class are specific to Linux.

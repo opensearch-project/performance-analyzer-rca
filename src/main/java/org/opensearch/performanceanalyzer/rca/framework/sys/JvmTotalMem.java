@@ -6,8 +6,8 @@
 package org.opensearch.performanceanalyzer.rca.framework.sys;
 
 
+import org.opensearch.performanceanalyzer.commons.stats.SampleAggregator;
 import org.opensearch.performanceanalyzer.rca.framework.metrics.JvmMetrics;
-import org.opensearch.performanceanalyzer.rca.stats.collectors.SampleAggregator;
 import org.opensearch.performanceanalyzer.rca.stats.emitters.ISampler;
 
 public class JvmTotalMem implements ISampler {

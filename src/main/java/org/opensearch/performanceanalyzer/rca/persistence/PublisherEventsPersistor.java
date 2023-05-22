@@ -11,9 +11,9 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.opensearch.performanceanalyzer.PerformanceAnalyzerApp;
+import org.opensearch.performanceanalyzer.commons.metrics.ExceptionsAndErrors;
+import org.opensearch.performanceanalyzer.commons.stats.CommonStats;
 import org.opensearch.performanceanalyzer.decisionmaker.actions.Action;
-import org.opensearch.performanceanalyzer.rca.framework.metrics.ExceptionsAndErrors;
 import org.opensearch.performanceanalyzer.rca.framework.metrics.RcaRuntimeMetrics;
 import org.opensearch.performanceanalyzer.rca.persistence.actions.PersistedAction;
 
@@ -32,7 +32,7 @@ public class PublisherEventsPersistor {
     public void persistAction(final List<Action> actionsPublished, long timestamp) {
         for (Action action : actionsPublished) {
             LOG.debug("Action: [{}] published to persistor publisher.", action.name());
-            PerformanceAnalyzerApp.RCA_RUNTIME_METRICS_AGGREGATOR.updateStat(
+            CommonStats.RCA_RUNTIME_METRICS_AGGREGATOR.updateStat(
                     RcaRuntimeMetrics.ACTIONS_PUBLISHED, action.name(), 1);
             if (action.impactedNodes() != null) {
                 final String nodeIds =
@@ -56,7 +56,7 @@ public class PublisherEventsPersistor {
                     persistable.write(actionsSummary);
                 } catch (Exception e) {
                     LOG.error("Unable to write publisher events to sqlite", e);
-                    PerformanceAnalyzerApp.ERRORS_AND_EXCEPTIONS_AGGREGATOR.updateStat(
+                    CommonStats.ERRORS_AND_EXCEPTIONS_AGGREGATOR.updateStat(
                             ExceptionsAndErrors.EXCEPTION_IN_PERSIST, action.name(), 1);
                 }
             }

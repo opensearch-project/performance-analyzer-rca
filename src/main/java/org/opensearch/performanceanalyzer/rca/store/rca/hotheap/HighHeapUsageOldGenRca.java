@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.opensearch.performanceanalyzer.PerformanceAnalyzerApp;
+import org.opensearch.performanceanalyzer.commons.stats.CommonStats;
 import org.opensearch.performanceanalyzer.rca.configs.HighHeapUsageOldGenRcaConfig;
 import org.opensearch.performanceanalyzer.rca.framework.api.Metric;
 import org.opensearch.performanceanalyzer.rca.framework.api.Resources;
@@ -146,7 +146,7 @@ public class HighHeapUsageOldGenRca extends OldGenRca<ResourceFlowUnit<HotResour
                         gcEventSlidingWindow.readSum(),
                         currentMinOldGenUsage / maxTotalHeapSize);
                 context = new ResourceContext(Resources.State.UNHEALTHY);
-                PerformanceAnalyzerApp.RCA_VERTICES_METRICS_AGGREGATOR.updateStat(
+                CommonStats.RCA_VERTICES_METRICS_AGGREGATOR.updateStat(
                         RcaVerticesMetrics.NUM_OLD_GEN_RCA_TRIGGERED, "", 1);
             } else {
                 context = new ResourceContext(Resources.State.HEALTHY);

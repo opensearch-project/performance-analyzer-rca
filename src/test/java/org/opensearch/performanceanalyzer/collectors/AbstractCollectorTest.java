@@ -11,6 +11,7 @@ import java.time.Instant;
 import org.junit.Before;
 import org.junit.Test;
 import org.opensearch.performanceanalyzer.PerformanceAnalyzerApp;
+import org.opensearch.performanceanalyzer.commons.collectors.PerformanceAnalyzerMetricsCollector;
 import org.opensearch.performanceanalyzer.commons.metrics.PerformanceAnalyzerMetrics;
 
 /** A base class that others can extend to validate their Metrics Collectors behavior */

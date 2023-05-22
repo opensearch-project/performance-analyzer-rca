@@ -12,8 +12,8 @@ import static org.opensearch.performanceanalyzer.rca.integTests.tests.jvm.old_ge
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
+import org.opensearch.performanceanalyzer.commons.metrics.AllMetrics;
 import org.opensearch.performanceanalyzer.decisionmaker.actions.configs.QueueActionConfig;
-import org.opensearch.performanceanalyzer.metrics.AllMetrics;
 import org.opensearch.performanceanalyzer.rca.framework.api.metrics.Cache_Max_Size;
 import org.opensearch.performanceanalyzer.rca.framework.api.metrics.GC_Collection_Event;
 import org.opensearch.performanceanalyzer.rca.framework.api.metrics.Heap_Max;

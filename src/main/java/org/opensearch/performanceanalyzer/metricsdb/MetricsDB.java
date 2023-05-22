@@ -38,9 +38,9 @@ import org.jooq.TableLike;
 import org.jooq.exception.DataAccessException;
 import org.jooq.impl.DSL;
 import org.opensearch.performanceanalyzer.DBUtils;
-import org.opensearch.performanceanalyzer.PerformanceAnalyzerApp;
+import org.opensearch.performanceanalyzer.commons.metrics.ExceptionsAndErrors;
+import org.opensearch.performanceanalyzer.commons.stats.CommonStats;
 import org.opensearch.performanceanalyzer.config.PluginSettings;
-import org.opensearch.performanceanalyzer.rca.framework.metrics.ExceptionsAndErrors;
 import org.opensearch.performanceanalyzer.reader.Removable;
 
 /**
@@ -92,7 +92,7 @@ public class MetricsDB implements Removable {
             conn = DriverManager.getConnection(url);
             conn.setAutoCommit(false);
         } catch (Exception e) {
-            PerformanceAnalyzerApp.ERRORS_AND_EXCEPTIONS_AGGREGATOR.updateStat(
+            CommonStats.ERRORS_AND_EXCEPTIONS_AGGREGATOR.updateStat(
                     ExceptionsAndErrors.READER_METRICSDB_ACCESS_ERRORS, "", 1);
             throw e;
         }
@@ -109,7 +109,7 @@ public class MetricsDB implements Removable {
     public static MetricsDB fetchExisting(long windowStartTime) throws Exception {
         String filePath = getDBFilePath(windowStartTime);
         if (!(new File(filePath)).exists()) {
-            PerformanceAnalyzerApp.ERRORS_AND_EXCEPTIONS_AGGREGATOR.updateStat(
+            CommonStats.ERRORS_AND_EXCEPTIONS_AGGREGATOR.updateStat(
                     ExceptionsAndErrors.READER_METRICSDB_ACCESS_ERRORS, "", 1);
             throw new FileNotFoundException(
                     String.format("MetricsDB file %s could not be found.", filePath));
@@ -349,7 +349,7 @@ public class MetricsDB implements Removable {
                     dbFilePath,
                     ExceptionsAndErrors.READER_METRICSDB_ACCESS_ERRORS,
                     e);
-            PerformanceAnalyzerApp.ERRORS_AND_EXCEPTIONS_AGGREGATOR.updateStat(
+            CommonStats.ERRORS_AND_EXCEPTIONS_AGGREGATOR.updateStat(
                     ExceptionsAndErrors.READER_METRICSDB_ACCESS_ERRORS, "", 1);
         }
     }
@@ -384,7 +384,7 @@ public class MetricsDB implements Removable {
                     parentPath,
                     ExceptionsAndErrors.READER_METRICSDB_ACCESS_ERRORS,
                     e);
-            PerformanceAnalyzerApp.ERRORS_AND_EXCEPTIONS_AGGREGATOR.updateStat(
+            CommonStats.ERRORS_AND_EXCEPTIONS_AGGREGATOR.updateStat(
                     ExceptionsAndErrors.READER_METRICSDB_ACCESS_ERRORS, "", 1);
         }
         return found;

@@ -9,10 +9,13 @@ package org.opensearch.performanceanalyzer.collectors;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.opensearch.performanceanalyzer.OSMetricsGeneratorFactory;
-import org.opensearch.performanceanalyzer.PerformanceAnalyzerApp;
+import org.opensearch.performanceanalyzer.commons.collectors.PerformanceAnalyzerMetricsCollector;
+import org.opensearch.performanceanalyzer.commons.collectors.StatExceptionCode;
+import org.opensearch.performanceanalyzer.commons.collectors.StatsCollector;
 import org.opensearch.performanceanalyzer.commons.metrics.MetricsConfiguration;
 import org.opensearch.performanceanalyzer.commons.metrics.MetricsProcessor;
 import org.opensearch.performanceanalyzer.commons.metrics.PerformanceAnalyzerMetrics;
+import org.opensearch.performanceanalyzer.commons.stats.CommonStats;
 import org.opensearch.performanceanalyzer.metrics_generator.IPMetricsGenerator;
 import org.opensearch.performanceanalyzer.metrics_generator.OSMetricsGenerator;
 import org.opensearch.performanceanalyzer.rca.framework.metrics.WriterMetrics;
@@ -40,7 +43,7 @@ public class NetworkInterfaceCollector extends PerformanceAnalyzerMetricsCollect
         saveMetricValues(
                 getMetrics(IPMetricsGenerator) + PerformanceAnalyzerMetrics.sMetricNewLineDelimitor,
                 startTime);
-        PerformanceAnalyzerApp.WRITER_METRICS_AGGREGATOR.updateStat(
+        CommonStats.WRITER_METRICS_AGGREGATOR.updateStat(
                 WriterMetrics.NETWORK_INTERFACE_COLLECTOR_EXECUTION_TIME,
                 "",
                 System.currentTimeMillis() - mCurrT);

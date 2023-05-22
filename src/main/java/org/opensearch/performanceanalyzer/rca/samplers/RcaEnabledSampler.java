@@ -9,9 +9,9 @@ package org.opensearch.performanceanalyzer.rca.samplers;
 import java.util.Objects;
 import org.opensearch.performanceanalyzer.AppContext;
 import org.opensearch.performanceanalyzer.PerformanceAnalyzerApp;
+import org.opensearch.performanceanalyzer.commons.stats.SampleAggregator;
 import org.opensearch.performanceanalyzer.rca.framework.metrics.RcaRuntimeMetrics;
 import org.opensearch.performanceanalyzer.rca.framework.util.InstanceDetails;
-import org.opensearch.performanceanalyzer.rca.stats.collectors.SampleAggregator;
 import org.opensearch.performanceanalyzer.rca.stats.emitters.ISampler;
 
 public class RcaEnabledSampler implements ISampler {

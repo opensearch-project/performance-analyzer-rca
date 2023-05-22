@@ -13,15 +13,16 @@ import java.util.Map;
 import java.util.function.Supplier;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.opensearch.performanceanalyzer.PerformanceAnalyzerApp;
+import org.opensearch.performanceanalyzer.commons.collectors.PerformanceAnalyzerMetricsCollector;
+import org.opensearch.performanceanalyzer.commons.metrics.AllMetrics.GCType;
+import org.opensearch.performanceanalyzer.commons.metrics.AllMetrics.HeapDimension;
+import org.opensearch.performanceanalyzer.commons.metrics.AllMetrics.HeapValue;
 import org.opensearch.performanceanalyzer.commons.metrics.MetricsConfiguration;
 import org.opensearch.performanceanalyzer.commons.metrics.MetricsProcessor;
 import org.opensearch.performanceanalyzer.commons.metrics.PerformanceAnalyzerMetrics;
+import org.opensearch.performanceanalyzer.commons.stats.CommonStats;
 import org.opensearch.performanceanalyzer.jvm.GCMetrics;
 import org.opensearch.performanceanalyzer.jvm.HeapMetrics;
-import org.opensearch.performanceanalyzer.metrics.AllMetrics.GCType;
-import org.opensearch.performanceanalyzer.metrics.AllMetrics.HeapDimension;
-import org.opensearch.performanceanalyzer.metrics.AllMetrics.HeapValue;
 import org.opensearch.performanceanalyzer.rca.framework.metrics.WriterMetrics;
 
 public class HeapMetricsCollector extends PerformanceAnalyzerMetricsCollector
@@ -75,7 +76,7 @@ public class HeapMetricsCollector extends PerformanceAnalyzerMetricsCollector
         }
 
         saveMetricValues(value.toString(), startTime);
-        PerformanceAnalyzerApp.WRITER_METRICS_AGGREGATOR.updateStat(
+        CommonStats.WRITER_METRICS_AGGREGATOR.updateStat(
                 WriterMetrics.HEAP_METRICS_COLLECTOR_EXECUTION_TIME,
                 "",
                 System.currentTimeMillis() - mCurrT);
