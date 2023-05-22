@@ -27,6 +27,8 @@ import org.opensearch.performanceanalyzer.commons.metrics.ExceptionsAndErrors;
 import org.opensearch.performanceanalyzer.commons.metrics.MeasurementSet;
 import org.opensearch.performanceanalyzer.commons.metrics.MetricsConfiguration;
 import org.opensearch.performanceanalyzer.commons.stats.CommonStats;
+import org.opensearch.performanceanalyzer.commons.stats.IListener;
+import org.opensearch.performanceanalyzer.commons.stats.SampleAggregator;
 import org.opensearch.performanceanalyzer.config.PluginSettings;
 import org.opensearch.performanceanalyzer.config.TroubleshootingConfig;
 import org.opensearch.performanceanalyzer.core.Util;
@@ -44,11 +46,10 @@ import org.opensearch.performanceanalyzer.os.ThreadDiskIO;
 import org.opensearch.performanceanalyzer.os.ThreadSched;
 import org.opensearch.performanceanalyzer.rca.RcaController;
 import org.opensearch.performanceanalyzer.rca.framework.core.MetricsDBProvider;
-import org.opensearch.performanceanalyzer.rca.framework.metrics.JvmMetrics;
-import org.opensearch.performanceanalyzer.rca.framework.metrics.RcaRuntimeMetrics;
-import org.opensearch.performanceanalyzer.rca.framework.metrics.ReaderMetrics;
+import org.opensearch.performanceanalyzer.rca.framework.metrics.*;
 import org.opensearch.performanceanalyzer.rca.framework.sys.AllJvmSamplers;
 import org.opensearch.performanceanalyzer.rca.framework.util.RcaConsts;
+import org.opensearch.performanceanalyzer.rca.listener.MisbehavingGraphOperateMethodListener;
 import org.opensearch.performanceanalyzer.rca.samplers.BatchMetricsEnabledSampler;
 import org.opensearch.performanceanalyzer.rca.samplers.MetricsDBFileSampler;
 import org.opensearch.performanceanalyzer.rca.samplers.RcaStateSamplers;
@@ -73,40 +74,33 @@ public class PerformanceAnalyzerApp {
     private static RcaController rcaController = null;
     private static final ThreadProvider THREAD_PROVIDER = new ThreadProvider();
 
+    public static IListener MISBEHAVING_NODES_LISTENER =
+            new MisbehavingGraphOperateMethodListener();
+
+    public static void initAggregators() {
+        if (CommonStats.RCA_STATS_REPORTER != null) {
+            return;
+        }
+        CommonStats.RCA_GRAPH_METRICS_AGGREGATOR = new SampleAggregator(RcaGraphMetrics.values());
+        CommonStats.RCA_RUNTIME_METRICS_AGGREGATOR =
+                new SampleAggregator(RcaRuntimeMetrics.values());
+        CommonStats.RCA_VERTICES_METRICS_AGGREGATOR =
+                new SampleAggregator(RcaVerticesMetrics.values());
+        CommonStats.READER_METRICS_AGGREGATOR = new SampleAggregator(ReaderMetrics.values());
+
+        CommonStats.ERRORS_AND_EXCEPTIONS_AGGREGATOR =
+                new SampleAggregator(
+                        MISBEHAVING_NODES_LISTENER.getMeasurementsListenedTo(),
+                        MISBEHAVING_NODES_LISTENER,
+                        ExceptionsAndErrors.values());
+
+        CommonStats.PERIODIC_SAMPLE_AGGREGATOR = new SampleAggregator(getPeriodicMeasurementSets());
+
+        CommonStats.initStatsReporter();
+    }
+
     static {
-        System.out.println("start");
-        //        CommonStats.RCA_GRAPH_METRICS_AGGREGATOR =
-        //                new SampleAggregator(RcaGraphMetrics.values());
-        //        CommonStats.RCA_RUNTIME_METRICS_AGGREGATOR =
-        //                new SampleAggregator(RcaRuntimeMetrics.values());
-        //        CommonStats.RCA_VERTICES_METRICS_AGGREGATOR =
-        //                new SampleAggregator(RcaVerticesMetrics.values());
-        //        CommonStats.READER_METRICS_AGGREGATOR =
-        //                new SampleAggregator(ReaderMetrics.values());
-        //        CommonStats.WRITER_METRICS_AGGREGATOR =
-        //                new SampleAggregator(WriterMetrics.values());
-        //
-        //        CommonStats.MISBEHAVING_NODES_LISTENER =
-        //                new MisbehavingGraphOperateMethodListener();
-        //        CommonStats.ERRORS_AND_EXCEPTIONS_AGGREGATOR =
-        //                new SampleAggregator(
-        //                        MISBEHAVING_NODES_LISTENER.getMeasurementsListenedTo(),
-        //                        MISBEHAVING_NODES_LISTENER,
-        //                        ExceptionsAndErrors.values());
-        //
-        //        CommonStats.PERIODIC_SAMPLE_AGGREGATOR =
-        //                new SampleAggregator(getPeriodicMeasurementSets());
-        //
-        //        CommonStats.RCA_STATS_REPORTER =
-        //                new RcaStatsReporter(
-        //                        Arrays.asList(
-        //                                RCA_GRAPH_METRICS_AGGREGATOR,
-        //                                RCA_RUNTIME_METRICS_AGGREGATOR,
-        //                                RCA_VERTICES_METRICS_AGGREGATOR,
-        //                                READER_METRICS_AGGREGATOR,
-        //                                WRITER_METRICS_AGGREGATOR,
-        //                                ERRORS_AND_EXCEPTIONS_AGGREGATOR,
-        //                                PERIODIC_SAMPLE_AGGREGATOR));
+        initAggregators();
     }
 
     public static PeriodicSamplers PERIODIC_SAMPLERS;
