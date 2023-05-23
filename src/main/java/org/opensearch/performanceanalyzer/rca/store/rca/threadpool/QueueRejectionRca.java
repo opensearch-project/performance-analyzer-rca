@@ -15,10 +15,10 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.opensearch.performanceanalyzer.PerformanceAnalyzerApp;
+import org.opensearch.performanceanalyzer.commons.metrics.AllMetrics;
+import org.opensearch.performanceanalyzer.commons.stats.CommonStats;
 import org.opensearch.performanceanalyzer.grpc.FlowUnitMessage;
 import org.opensearch.performanceanalyzer.grpc.Resource;
-import org.opensearch.performanceanalyzer.metrics.AllMetrics;
 import org.opensearch.performanceanalyzer.metricsdb.MetricsDB;
 import org.opensearch.performanceanalyzer.rca.configs.QueueRejectionRcaConfig;
 import org.opensearch.performanceanalyzer.rca.framework.api.Metric;
@@ -180,7 +180,7 @@ public class QueueRejectionRca extends Rca<ResourceFlowUnit<HotNodeSummary>> {
                                 this.getClass().getSimpleName(),
                                 consecutivePeriodsToClear);
                     }
-                    PerformanceAnalyzerApp.RCA_GRAPH_METRICS_AGGREGATOR.updateStat(
+                    CommonStats.RCA_GRAPH_METRICS_AGGREGATOR.updateStat(
                             RcaGraphMetrics.RCA_RX_EMPTY_FU, this.getClass().getSimpleName(), 1);
                     continue;
                 }

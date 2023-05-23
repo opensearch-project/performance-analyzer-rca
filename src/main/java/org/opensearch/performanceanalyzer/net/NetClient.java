@@ -14,9 +14,9 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicReference;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.opensearch.performanceanalyzer.PerformanceAnalyzerApp;
-import org.opensearch.performanceanalyzer.collectors.StatExceptionCode;
-import org.opensearch.performanceanalyzer.collectors.StatsCollector;
+import org.opensearch.performanceanalyzer.commons.collectors.StatExceptionCode;
+import org.opensearch.performanceanalyzer.commons.collectors.StatsCollector;
+import org.opensearch.performanceanalyzer.commons.stats.CommonStats;
 import org.opensearch.performanceanalyzer.grpc.FlowUnitMessage;
 import org.opensearch.performanceanalyzer.grpc.InterNodeRpcServiceGrpc;
 import org.opensearch.performanceanalyzer.grpc.MetricsRequest;
@@ -77,7 +77,7 @@ public class NetClient {
             connectionManager
                     .getClientStubForHost(remoteHost)
                     .subscribe(subscribeMessage, serverResponseStream);
-            PerformanceAnalyzerApp.RCA_GRAPH_METRICS_AGGREGATOR.updateStat(
+            CommonStats.RCA_GRAPH_METRICS_AGGREGATOR.updateStat(
                     RcaGraphMetrics.NET_BYTES_OUT,
                     subscribeMessage.getRequesterGraphNode(),
                     subscribeMessage.getSerializedSize());
@@ -106,7 +106,7 @@ public class NetClient {
                     getDataStreamForHost(
                             remoteHost, flowUnitMessage.getGraphNode(), serverResponseStream);
             stream.onNext(flowUnitMessage);
-            PerformanceAnalyzerApp.RCA_GRAPH_METRICS_AGGREGATOR.updateStat(
+            CommonStats.RCA_GRAPH_METRICS_AGGREGATOR.updateStat(
                     RcaGraphMetrics.NET_BYTES_OUT,
                     flowUnitMessage.getGraphNode(),
                     flowUnitMessage.getSerializedSize());

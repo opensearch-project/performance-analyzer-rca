@@ -10,8 +10,9 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.opensearch.performanceanalyzer.PerformanceAnalyzerApp;
 import org.opensearch.performanceanalyzer.PerformanceAnalyzerThreads;
+import org.opensearch.performanceanalyzer.commons.metrics.MeasurementSet;
+import org.opensearch.performanceanalyzer.commons.stats.CommonStats;
 import org.opensearch.performanceanalyzer.rca.framework.metrics.ReaderMetrics;
-import org.opensearch.performanceanalyzer.rca.stats.measurements.MeasurementSet;
 import org.opensearch.performanceanalyzer.threads.exceptions.PAThreadException;
 
 /** Class that wraps a given runnable in a thread with exception handling capabilities. */
@@ -49,7 +50,7 @@ public class ThreadProvider {
                                     PerformanceAnalyzerApp.exceptionQueue.put(
                                             new PAThreadException(paThread, innerThrowable));
                                 } catch (InterruptedException e) {
-                                    PerformanceAnalyzerApp.READER_METRICS_AGGREGATOR.updateStat(
+                                    CommonStats.RCA_RUNTIME_METRICS_AGGREGATOR.updateStat(
                                             metric, "", 1);
                                     LOG.error(
                                             "Thread was interrupted while waiting to put an exception into the queue. "
@@ -58,7 +59,7 @@ public class ThreadProvider {
                                             e);
                                 }
                             }
-                            PerformanceAnalyzerApp.READER_METRICS_AGGREGATOR.updateStat(
+                            CommonStats.RCA_RUNTIME_METRICS_AGGREGATOR.updateStat(
                                     ReaderMetrics.NUM_PA_THREADS_ENDED,
                                     ReaderMetrics.NUM_PA_THREADS_ENDED.toString(),
                                     1);
@@ -66,7 +67,7 @@ public class ThreadProvider {
                         },
                         threadNameStr);
 
-        PerformanceAnalyzerApp.READER_METRICS_AGGREGATOR.updateStat(
+        CommonStats.RCA_RUNTIME_METRICS_AGGREGATOR.updateStat(
                 ReaderMetrics.NUM_PA_THREADS_STARTED,
                 ReaderMetrics.NUM_PA_THREADS_STARTED.toString(),
                 1);

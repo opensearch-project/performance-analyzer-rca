@@ -7,7 +7,7 @@ package org.opensearch.performanceanalyzer.rca.store.rca.jvmsizing;
 
 
 import java.util.concurrent.TimeUnit;
-import org.opensearch.performanceanalyzer.PerformanceAnalyzerApp;
+import org.opensearch.performanceanalyzer.commons.stats.CommonStats;
 import org.opensearch.performanceanalyzer.rca.framework.api.Metric;
 import org.opensearch.performanceanalyzer.rca.framework.api.Resources;
 import org.opensearch.performanceanalyzer.rca.framework.api.aggregators.SlidingWindow;
@@ -105,7 +105,7 @@ public class OldGenReclamationRca extends OldGenRca<ResourceFlowUnit<HotResource
                                     minOldGenSlidingWindow.readMin(),
                                     rcaEvaluationIntervalInS);
                     context = new ResourceContext(Resources.State.UNHEALTHY);
-                    PerformanceAnalyzerApp.RCA_VERTICES_METRICS_AGGREGATOR.updateStat(
+                    CommonStats.RCA_VERTICES_METRICS_AGGREGATOR.updateStat(
                             RcaVerticesMetrics.OLD_GEN_RECLAMATION_INEFFECTIVE, "", 1);
                     prevSummary = summary;
                     prevContext = context;

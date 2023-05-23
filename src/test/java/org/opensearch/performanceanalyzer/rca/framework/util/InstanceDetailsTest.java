@@ -8,7 +8,7 @@ package org.opensearch.performanceanalyzer.rca.framework.util;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.opensearch.performanceanalyzer.metrics.AllMetrics;
+import org.opensearch.performanceanalyzer.commons.metrics.AllMetrics;
 import org.opensearch.performanceanalyzer.reader.ClusterDetailsEventProcessor;
 
 public class InstanceDetailsTest {

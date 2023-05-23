@@ -11,7 +11,7 @@ import java.util.Set;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.opensearch.performanceanalyzer.AppContext;
-import org.opensearch.performanceanalyzer.PerformanceAnalyzerApp;
+import org.opensearch.performanceanalyzer.commons.stats.CommonStats;
 import org.opensearch.performanceanalyzer.grpc.SubscribeMessage;
 import org.opensearch.performanceanalyzer.net.NetClient;
 import org.opensearch.performanceanalyzer.rca.framework.metrics.RcaGraphMetrics;
@@ -73,7 +73,7 @@ public abstract class SubscriptionTxTask implements Runnable {
                 subscribeMessage,
                 new SubscribeResponseHandler(
                         subscriptionManager, nodeStateManager, remoteHost, destinationVertex));
-        PerformanceAnalyzerApp.RCA_GRAPH_METRICS_AGGREGATOR.updateStat(
+        CommonStats.RCA_GRAPH_METRICS_AGGREGATOR.updateStat(
                 RcaGraphMetrics.RCA_NODES_SUB_REQ_COUNT,
                 requesterVertex + ":" + destinationVertex,
                 1);

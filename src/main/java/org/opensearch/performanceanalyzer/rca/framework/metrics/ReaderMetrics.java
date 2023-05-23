@@ -9,8 +9,8 @@ package org.opensearch.performanceanalyzer.rca.framework.metrics;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import org.opensearch.performanceanalyzer.rca.stats.eval.Statistics;
-import org.opensearch.performanceanalyzer.rca.stats.measurements.MeasurementSet;
+import org.opensearch.performanceanalyzer.commons.metrics.MeasurementSet;
+import org.opensearch.performanceanalyzer.commons.stats.Statistics;
 
 public enum ReaderMetrics implements MeasurementSet {
 

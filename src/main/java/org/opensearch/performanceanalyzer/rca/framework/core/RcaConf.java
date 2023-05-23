@@ -34,6 +34,8 @@ import java.util.function.Predicate;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.opensearch.performanceanalyzer.PerformanceAnalyzerApp;
+import org.opensearch.performanceanalyzer.commons.metrics.ExceptionsAndErrors;
+import org.opensearch.performanceanalyzer.commons.stats.CommonStats;
 import org.opensearch.performanceanalyzer.decisionmaker.actions.configs.CacheActionConfig;
 import org.opensearch.performanceanalyzer.decisionmaker.actions.configs.QueueActionConfig;
 import org.opensearch.performanceanalyzer.decisionmaker.deciders.configs.DeciderConfig;
@@ -53,7 +55,6 @@ import org.opensearch.performanceanalyzer.rca.configs.ShardRequestCacheRcaConfig
 import org.opensearch.performanceanalyzer.rca.framework.api.summaries.bucket.BasicBucketCalculator;
 import org.opensearch.performanceanalyzer.rca.framework.api.summaries.bucket.BucketCalculator;
 import org.opensearch.performanceanalyzer.rca.framework.api.summaries.bucket.UsageBucket;
-import org.opensearch.performanceanalyzer.rca.framework.metrics.ExceptionsAndErrors;
 
 public class RcaConf {
 
@@ -275,7 +276,7 @@ public class RcaConf {
         for (String confFilePath : rcaConfFiles) {
             updateStatus = updateRcaConf(confFilePath, mutedRcas, mutedDeciders, mutedActions);
             if (!updateStatus) {
-                PerformanceAnalyzerApp.ERRORS_AND_EXCEPTIONS_AGGREGATOR.updateStat(
+                CommonStats.ERRORS_AND_EXCEPTIONS_AGGREGATOR.updateStat(
                         ExceptionsAndErrors.WRITE_UPDATED_RCA_CONF_ERROR, "", 1);
                 LOG.error("Failed to update the conf file at path: {}", confFilePath);
                 break;
