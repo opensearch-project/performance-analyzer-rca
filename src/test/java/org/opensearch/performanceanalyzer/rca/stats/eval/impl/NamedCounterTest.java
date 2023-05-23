@@ -3,12 +3,12 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-package org.opensearch.performanceanalyzer.rca.stats.eval.impl;
+package org.opensearch.performanceanalyzer.commons.stats.impl;
 
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.opensearch.performanceanalyzer.rca.stats.eval.impl.vals.NamedAggregateValue;
+import org.opensearch.performanceanalyzer.commons.stats.vals.NamedAggregateValue;
 
 public class NamedCounterTest {
 

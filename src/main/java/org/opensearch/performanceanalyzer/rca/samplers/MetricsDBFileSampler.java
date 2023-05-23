@@ -17,9 +17,9 @@ import java.util.Objects;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.opensearch.performanceanalyzer.AppContext;
+import org.opensearch.performanceanalyzer.commons.stats.SampleAggregator;
 import org.opensearch.performanceanalyzer.metricsdb.MetricsDB;
 import org.opensearch.performanceanalyzer.rca.framework.metrics.ReaderMetrics;
-import org.opensearch.performanceanalyzer.rca.stats.collectors.SampleAggregator;
 import org.opensearch.performanceanalyzer.rca.stats.emitters.ISampler;
 
 public class MetricsDBFileSampler implements ISampler {

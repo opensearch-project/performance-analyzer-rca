@@ -19,7 +19,7 @@ import org.jooq.Result;
 import org.jooq.impl.DSL;
 import org.junit.Assert;
 import org.junit.Test;
-import org.opensearch.performanceanalyzer.metrics.AllMetrics;
+import org.opensearch.performanceanalyzer.commons.metrics.AllMetrics;
 
 public class MemoryDBSnapshotTests extends AbstractReaderTests {
 

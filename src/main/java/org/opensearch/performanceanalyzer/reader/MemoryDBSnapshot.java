@@ -27,7 +27,7 @@ import org.jooq.SelectHavingStep;
 import org.jooq.SelectJoinStep;
 import org.jooq.impl.DSL;
 import org.opensearch.performanceanalyzer.DBUtils;
-import org.opensearch.performanceanalyzer.metrics.AllMetrics;
+import org.opensearch.performanceanalyzer.commons.metrics.AllMetrics;
 
 public class MemoryDBSnapshot implements Removable {
     private static final Logger LOG = LogManager.getLogger(MemoryDBSnapshot.class);

@@ -18,7 +18,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.opensearch.performanceanalyzer.PerformanceAnalyzerApp;
+import org.opensearch.performanceanalyzer.commons.stats.CommonStats;
 import org.opensearch.performanceanalyzer.grpc.ResourceEnum;
 import org.opensearch.performanceanalyzer.rca.framework.api.Rca;
 import org.opensearch.performanceanalyzer.rca.framework.api.Resources;
@@ -157,7 +157,7 @@ public class HighHeapUsageClusterRca extends Rca<ResourceFlowUnit<HotClusterSumm
                 for (HotNodeSummary unhealthyNodeSummary : unhealthyNodeList) {
                     summary.appendNestedSummary(unhealthyNodeSummary);
                 }
-                PerformanceAnalyzerApp.RCA_VERTICES_METRICS_AGGREGATOR.updateStat(
+                CommonStats.RCA_VERTICES_METRICS_AGGREGATOR.updateStat(
                         RcaVerticesMetrics.NUM_HIGH_HEAP_CLUSTER_RCA_TRIGGERED, "", 1);
             } else {
                 context = new ResourceContext(Resources.State.HEALTHY);

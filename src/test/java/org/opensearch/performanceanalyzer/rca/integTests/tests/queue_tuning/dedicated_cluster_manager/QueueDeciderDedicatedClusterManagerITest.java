@@ -10,7 +10,7 @@ import static org.opensearch.performanceanalyzer.rca.integTests.tests.queue_tuni
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
-import org.opensearch.performanceanalyzer.metrics.AllMetrics;
+import org.opensearch.performanceanalyzer.commons.metrics.AllMetrics;
 import org.opensearch.performanceanalyzer.rca.framework.api.metrics.GC_Collection_Event;
 import org.opensearch.performanceanalyzer.rca.framework.api.metrics.Heap_Max;
 import org.opensearch.performanceanalyzer.rca.framework.api.metrics.Heap_Used;

@@ -17,11 +17,11 @@ import java.util.concurrent.TimeUnit;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jooq.Record;
-import org.opensearch.performanceanalyzer.PerformanceAnalyzerApp;
+import org.opensearch.performanceanalyzer.commons.metrics.AllMetrics;
+import org.opensearch.performanceanalyzer.commons.metrics.AllMetrics.OSMetrics;
+import org.opensearch.performanceanalyzer.commons.stats.CommonStats;
 import org.opensearch.performanceanalyzer.grpc.FlowUnitMessage;
 import org.opensearch.performanceanalyzer.grpc.HotShardSummaryMessage.CriteriaEnum;
-import org.opensearch.performanceanalyzer.metrics.AllMetrics;
-import org.opensearch.performanceanalyzer.metrics.AllMetrics.OSMetrics;
 import org.opensearch.performanceanalyzer.metricsdb.MetricsDB;
 import org.opensearch.performanceanalyzer.rca.configs.HotShardRcaConfig;
 import org.opensearch.performanceanalyzer.rca.framework.api.Metric;
@@ -105,7 +105,7 @@ public class HotShardRca extends Rca<ResourceFlowUnit<HotNodeSummary>> {
                     usageWindow.next(metricType, usage, this.clock.millis());
                 }
             } catch (Exception e) {
-                PerformanceAnalyzerApp.RCA_VERTICES_METRICS_AGGREGATOR.updateStat(
+                CommonStats.RCA_VERTICES_METRICS_AGGREGATOR.updateStat(
                         RcaVerticesMetrics.HOT_SHARD_RCA_ERROR, "", 1);
                 LOG.error(
                         "Failed to parse metric in FlowUnit: {} from {}",

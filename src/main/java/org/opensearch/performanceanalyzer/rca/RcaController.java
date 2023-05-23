@@ -27,11 +27,12 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.opensearch.performanceanalyzer.AppContext;
 import org.opensearch.performanceanalyzer.ClientServers;
-import org.opensearch.performanceanalyzer.PerformanceAnalyzerApp;
 import org.opensearch.performanceanalyzer.PerformanceAnalyzerThreads;
+import org.opensearch.performanceanalyzer.commons.metrics.AllMetrics;
+import org.opensearch.performanceanalyzer.commons.metrics.ExceptionsAndErrors;
+import org.opensearch.performanceanalyzer.commons.stats.CommonStats;
 import org.opensearch.performanceanalyzer.config.PluginSettings;
 import org.opensearch.performanceanalyzer.core.Util;
-import org.opensearch.performanceanalyzer.metrics.AllMetrics;
 import org.opensearch.performanceanalyzer.net.GRPCConnectionManager;
 import org.opensearch.performanceanalyzer.net.NetClient;
 import org.opensearch.performanceanalyzer.net.NetServer;
@@ -41,7 +42,6 @@ import org.opensearch.performanceanalyzer.rca.framework.core.Queryable;
 import org.opensearch.performanceanalyzer.rca.framework.core.RcaConf;
 import org.opensearch.performanceanalyzer.rca.framework.core.Stats;
 import org.opensearch.performanceanalyzer.rca.framework.core.ThresholdMain;
-import org.opensearch.performanceanalyzer.rca.framework.metrics.ExceptionsAndErrors;
 import org.opensearch.performanceanalyzer.rca.framework.metrics.RcaRuntimeMetrics;
 import org.opensearch.performanceanalyzer.rca.framework.util.InstanceDetails;
 import org.opensearch.performanceanalyzer.rca.framework.util.RcaConsts;
@@ -282,7 +282,7 @@ public class RcaController {
     private void restart() {
         stop();
         start();
-        PerformanceAnalyzerApp.RCA_RUNTIME_METRICS_AGGREGATOR.updateStat(
+        CommonStats.RCA_RUNTIME_METRICS_AGGREGATOR.updateStat(
                 RcaRuntimeMetrics.RCA_SCHEDULER_RESTART, "", 1);
     }
 
@@ -318,7 +318,7 @@ public class RcaController {
                     Thread.sleep(rcaStateCheckIntervalMillis - duration);
                 }
             } catch (InterruptedException ie) {
-                PerformanceAnalyzerApp.ERRORS_AND_EXCEPTIONS_AGGREGATOR.updateStat(
+                CommonStats.ERRORS_AND_EXCEPTIONS_AGGREGATOR.updateStat(
                         ExceptionsAndErrors.RCA_FRAMEWORK_CRASH, "", 1);
                 if (deliberateInterrupt) {
                     // This should only happen in case of tests. So, its okay for this log level to
@@ -426,7 +426,7 @@ public class RcaController {
                 rcaScheduler.updateAppContextWithMutedActions(actionsForMute);
             }
         } catch (Exception e) {
-            PerformanceAnalyzerApp.ERRORS_AND_EXCEPTIONS_AGGREGATOR.updateStat(
+            CommonStats.ERRORS_AND_EXCEPTIONS_AGGREGATOR.updateStat(
                     ExceptionsAndErrors.MUTE_ERROR, "", 1);
             LOG.error("Couldn't read/update the muted RCAs", e);
             return false;
@@ -464,12 +464,12 @@ public class RcaController {
             if (!rcaEnabled) {
                 // Need to shutdown the rca scheduler
                 stop();
-                PerformanceAnalyzerApp.RCA_RUNTIME_METRICS_AGGREGATOR.updateStat(
+                CommonStats.RCA_RUNTIME_METRICS_AGGREGATOR.updateStat(
                         RcaRuntimeMetrics.RCA_STOPPED_BY_OPERATOR, "", 1);
             } else {
                 if (rcaScheduler.getRole() != currentRole) {
                     restart();
-                    PerformanceAnalyzerApp.RCA_RUNTIME_METRICS_AGGREGATOR.updateStat(
+                    CommonStats.RCA_RUNTIME_METRICS_AGGREGATOR.updateStat(
                             RcaRuntimeMetrics.RCA_RESTARTED_BY_OPERATOR, "", 1);
                 }
             }

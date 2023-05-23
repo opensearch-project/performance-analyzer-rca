@@ -13,14 +13,14 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.opensearch.performanceanalyzer.PerformanceAnalyzerApp;
+import org.opensearch.performanceanalyzer.commons.metrics.ExceptionsAndErrors;
+import org.opensearch.performanceanalyzer.commons.stats.CommonStats;
 import org.opensearch.performanceanalyzer.decisionmaker.actions.Action;
 import org.opensearch.performanceanalyzer.decisionmaker.actions.ActionListener;
 import org.opensearch.performanceanalyzer.decisionmaker.actions.FlipFlopDetector;
 import org.opensearch.performanceanalyzer.decisionmaker.actions.TimedFlipFlopDetector;
 import org.opensearch.performanceanalyzer.decisionmaker.deciders.collator.Collator;
 import org.opensearch.performanceanalyzer.rca.framework.core.NonLeafNode;
-import org.opensearch.performanceanalyzer.rca.framework.metrics.ExceptionsAndErrors;
 import org.opensearch.performanceanalyzer.rca.framework.metrics.RcaGraphMetrics;
 import org.opensearch.performanceanalyzer.rca.persistence.PublisherEventsPersistor;
 import org.opensearch.performanceanalyzer.rca.scheduler.FlowUnitOperationArgWrapper;
@@ -77,12 +77,12 @@ public class Publisher extends NonLeafNode<EmptyFlowUnit> {
             this.compute(args);
         } catch (Exception ex) {
             LOG.error("Publisher: Exception in compute", ex);
-            PerformanceAnalyzerApp.ERRORS_AND_EXCEPTIONS_AGGREGATOR.updateStat(
+            CommonStats.ERRORS_AND_EXCEPTIONS_AGGREGATOR.updateStat(
                     ExceptionsAndErrors.EXCEPTION_IN_COMPUTE, name(), 1);
         }
         long duration = System.currentTimeMillis() - startTime;
 
-        PerformanceAnalyzerApp.RCA_GRAPH_METRICS_AGGREGATOR.updateStat(
+        CommonStats.RCA_GRAPH_METRICS_AGGREGATOR.updateStat(
                 RcaGraphMetrics.GRAPH_NODE_OPERATE_CALL, this.name(), duration);
     }
 

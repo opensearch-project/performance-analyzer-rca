@@ -17,6 +17,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.opensearch.performanceanalyzer.AppContext;
+import org.opensearch.performanceanalyzer.PerformanceAnalyzerApp;
 import org.opensearch.performanceanalyzer.rca.framework.api.Resources;
 import org.opensearch.performanceanalyzer.rca.framework.api.contexts.ResourceContext;
 import org.opensearch.performanceanalyzer.rca.framework.api.flow_units.ResourceFlowUnit;
@@ -57,6 +58,7 @@ public class OldGenContendedRcaTest {
     @Before
     public void setup() throws Exception {
         initMocks(this);
+        PerformanceAnalyzerApp.initAggregators();
         PowerMockito.mockStatic(MemInfoParser.class);
         when(mockAppContext.getMyInstanceDetails()).thenReturn(currentInstance);
         when(MemInfoParser.getTotalMemory()).thenReturn(GB_201_IN_BYTES);

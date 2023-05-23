@@ -7,8 +7,8 @@ package org.opensearch.performanceanalyzer.collectors;
 
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import org.opensearch.performanceanalyzer.metrics.AllMetrics.IPDimension;
-import org.opensearch.performanceanalyzer.metrics.AllMetrics.IPValue;
+import org.opensearch.performanceanalyzer.commons.metrics.AllMetrics.IPDimension;
+import org.opensearch.performanceanalyzer.commons.metrics.AllMetrics.IPValue;
 
 // all metrics are per-time-unit
 public class NetInterfaceSummary extends MetricStatus {

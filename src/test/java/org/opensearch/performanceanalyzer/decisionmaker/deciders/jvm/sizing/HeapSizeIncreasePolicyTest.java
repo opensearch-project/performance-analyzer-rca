@@ -21,6 +21,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.opensearch.performanceanalyzer.AppContext;
+import org.opensearch.performanceanalyzer.PerformanceAnalyzerApp;
 import org.opensearch.performanceanalyzer.decisionmaker.actions.Action;
 import org.opensearch.performanceanalyzer.decisionmaker.actions.HeapSizeIncreaseAction;
 import org.opensearch.performanceanalyzer.rca.configs.HeapSizeIncreasePolicyConfig;
@@ -78,6 +79,7 @@ public class HeapSizeIncreasePolicyTest {
         setupDataNodes();
         setupMockAppContext();
         setupMockRcaConf();
+        PerformanceAnalyzerApp.initAggregators();
         testPolicy = new HeapSizeIncreasePolicy(mockLargeHeapClusterRca);
         testPolicy.setAppContext(mockAppContext);
         testPolicy.setRcaConf(mockRcaConf);

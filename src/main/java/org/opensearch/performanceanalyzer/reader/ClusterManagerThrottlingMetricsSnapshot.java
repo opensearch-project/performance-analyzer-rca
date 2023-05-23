@@ -21,7 +21,7 @@ import org.jooq.SQLDialect;
 import org.jooq.SelectField;
 import org.jooq.impl.DSL;
 import org.opensearch.performanceanalyzer.DBUtils;
-import org.opensearch.performanceanalyzer.metrics.AllMetrics;
+import org.opensearch.performanceanalyzer.commons.metrics.AllMetrics;
 import org.opensearch.performanceanalyzer.metricsdb.MetricsDB;
 
 public class ClusterManagerThrottlingMetricsSnapshot implements Removable {
