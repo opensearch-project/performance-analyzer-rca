@@ -29,7 +29,7 @@ import org.opensearch.performanceanalyzer.collectors.ScheduledMetricCollectorsEx
 import org.opensearch.performanceanalyzer.commons.metrics.ExceptionsAndErrors;
 import org.opensearch.performanceanalyzer.commons.metrics.MetricsConfiguration;
 import org.opensearch.performanceanalyzer.commons.stats.CommonStats;
-import org.opensearch.performanceanalyzer.core.Util;
+import org.opensearch.performanceanalyzer.commons.util.Util;
 import org.opensearch.performanceanalyzer.rca.framework.metrics.WriterMetrics;
 import sun.tools.attach.HotSpotVirtualMachine;
 

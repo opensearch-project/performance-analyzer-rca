@@ -8,7 +8,7 @@ package org.opensearch.performanceanalyzer.rca.framework.util;
 
 import java.nio.file.Paths;
 import java.util.concurrent.TimeUnit;
-import org.opensearch.performanceanalyzer.core.Util;
+import org.opensearch.performanceanalyzer.commons.util.Util;
 
 public class RcaConsts {
 
