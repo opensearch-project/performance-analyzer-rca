@@ -14,9 +14,9 @@ import org.opensearch.performanceanalyzer.commons.metrics.AllMetrics.GCInfoDimen
 import org.opensearch.performanceanalyzer.commons.metrics.MetricsConfiguration;
 import org.opensearch.performanceanalyzer.commons.metrics.MetricsProcessor;
 import org.opensearch.performanceanalyzer.commons.metrics.PerformanceAnalyzerMetrics;
+import org.opensearch.performanceanalyzer.commons.metrics.WriterMetrics;
 import org.opensearch.performanceanalyzer.commons.stats.CommonStats;
 import org.opensearch.performanceanalyzer.jvm.GarbageCollectorInfo;
-import org.opensearch.performanceanalyzer.rca.framework.metrics.WriterMetrics;
 
 /**
  * A collector that collects info about the current garbage collectors for various regions in the
