@@ -8,7 +8,7 @@ package org.opensearch.performanceanalyzer.rca.spec.helpers;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.opensearch.performanceanalyzer.metrics.AllMetrics;
+import org.opensearch.performanceanalyzer.commons.metrics.AllMetrics;
 import org.opensearch.performanceanalyzer.metricsdb.Dimensions;
 import org.opensearch.performanceanalyzer.metricsdb.Metric;
 import org.opensearch.performanceanalyzer.metricsdb.MetricsDB;

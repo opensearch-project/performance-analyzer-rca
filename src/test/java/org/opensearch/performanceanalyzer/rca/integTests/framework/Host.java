@@ -39,7 +39,7 @@ import org.junit.Assert;
 import org.opensearch.performanceanalyzer.AppContext;
 import org.opensearch.performanceanalyzer.ClientServers;
 import org.opensearch.performanceanalyzer.PerformanceAnalyzerApp;
-import org.opensearch.performanceanalyzer.metrics.AllMetrics;
+import org.opensearch.performanceanalyzer.commons.metrics.AllMetrics;
 import org.opensearch.performanceanalyzer.net.GRPCConnectionManager;
 import org.opensearch.performanceanalyzer.rca.RcaController;
 import org.opensearch.performanceanalyzer.rca.integTests.framework.annotations.AMetric;

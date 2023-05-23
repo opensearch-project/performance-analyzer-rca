@@ -21,7 +21,7 @@ import org.jooq.Record;
 import org.jooq.Result;
 import org.jooq.SQLDialect;
 import org.jooq.impl.DSL;
-import org.opensearch.performanceanalyzer.metrics.AllMetrics;
+import org.opensearch.performanceanalyzer.commons.metrics.AllMetrics;
 
 public class ShardStateMetricsSnapshot implements Removable {
     private static final Logger LOG = LogManager.getLogger(ShardStateMetricsSnapshot.class);

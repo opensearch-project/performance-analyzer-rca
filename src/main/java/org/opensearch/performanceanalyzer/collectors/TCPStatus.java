@@ -7,8 +7,8 @@ package org.opensearch.performanceanalyzer.collectors;
 
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import org.opensearch.performanceanalyzer.metrics.AllMetrics.TCPDimension;
-import org.opensearch.performanceanalyzer.metrics.AllMetrics.TCPValue;
+import org.opensearch.performanceanalyzer.commons.metrics.AllMetrics.TCPDimension;
+import org.opensearch.performanceanalyzer.commons.metrics.AllMetrics.TCPValue;
 
 public class TCPStatus extends MetricStatus {
 

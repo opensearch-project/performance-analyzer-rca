@@ -15,7 +15,7 @@ import org.jooq.BatchBindStep;
 import org.jooq.Record;
 import org.jooq.Result;
 import org.junit.Test;
-import org.opensearch.performanceanalyzer.metrics.AllMetrics;
+import org.opensearch.performanceanalyzer.commons.metrics.AllMetrics;
 
 @SuppressWarnings("serial")
 public class OSMetricsSnapshotTests {

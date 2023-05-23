@@ -7,7 +7,7 @@ package org.opensearch.performanceanalyzer.threads.exceptions;
 
 
 import org.opensearch.performanceanalyzer.PerformanceAnalyzerThreads;
-import org.opensearch.performanceanalyzer.rca.stats.measurements.MeasurementSet;
+import org.opensearch.performanceanalyzer.commons.metrics.MeasurementSet;
 
 /** Exception that is thrown when one of the PA threads run into an unhandled exception. */
 public class PAThreadException extends Exception {

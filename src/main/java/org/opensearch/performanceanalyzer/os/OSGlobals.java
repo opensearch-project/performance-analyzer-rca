@@ -14,7 +14,7 @@ import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.message.ParameterizedMessage;
 import org.apache.logging.log4j.util.Supplier;
 import org.opensearch.performanceanalyzer.ConfigStatus;
-import org.opensearch.performanceanalyzer.metrics.MetricsConfiguration;
+import org.opensearch.performanceanalyzer.commons.metrics.MetricsConfiguration;
 
 public class OSGlobals {
     private static long scClkTck;

@@ -20,10 +20,11 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.opensearch.performanceanalyzer.PerformanceAnalyzerApp;
+import org.opensearch.performanceanalyzer.commons.metrics.AllMetrics;
 import org.opensearch.performanceanalyzer.grpc.FlowUnitMessage;
 import org.opensearch.performanceanalyzer.grpc.InterNodeRpcServiceGrpc;
 import org.opensearch.performanceanalyzer.grpc.PublishResponse;
-import org.opensearch.performanceanalyzer.metrics.AllMetrics;
 import org.opensearch.performanceanalyzer.rca.framework.util.InstanceDetails;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
@@ -47,6 +48,7 @@ public class NetClientTest {
     @Before
     public void setup() {
         initMocks(this);
+        PerformanceAnalyzerApp.initAggregators();
         this.stub =
                 PowerMockito.mock(
                         InterNodeRpcServiceGrpc.InterNodeRpcServiceStub

@@ -7,8 +7,8 @@ package org.opensearch.performanceanalyzer.collectors;
 
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import org.opensearch.performanceanalyzer.metrics.AllMetrics.DiskDimension;
-import org.opensearch.performanceanalyzer.metrics.AllMetrics.DiskValue;
+import org.opensearch.performanceanalyzer.commons.metrics.AllMetrics.DiskDimension;
+import org.opensearch.performanceanalyzer.commons.metrics.AllMetrics.DiskValue;
 
 public class DiskMetrics extends MetricStatus {
     public String name;

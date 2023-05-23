@@ -16,7 +16,7 @@ import java.util.Set;
 import org.jooq.Condition;
 import org.jooq.Field;
 import org.junit.Test;
-import org.opensearch.performanceanalyzer.metrics.AllMetrics;
+import org.opensearch.performanceanalyzer.commons.metrics.AllMetrics;
 
 public class MetricPropertiesConfigTests extends AbstractReaderTests {
 

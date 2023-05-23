@@ -6,7 +6,7 @@
 package org.opensearch.performanceanalyzer.rca.stats.emitters;
 
 
-import org.opensearch.performanceanalyzer.rca.stats.collectors.SampleAggregator;
+import org.opensearch.performanceanalyzer.commons.stats.SampleAggregator;
 
 public interface ISampler {
     void sample(SampleAggregator sampleCollector);

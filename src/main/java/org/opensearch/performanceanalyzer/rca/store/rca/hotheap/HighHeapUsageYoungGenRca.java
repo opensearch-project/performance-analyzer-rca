@@ -14,8 +14,8 @@ import org.apache.logging.log4j.Logger;
 import org.jooq.Field;
 import org.jooq.Record;
 import org.jooq.Result;
-import org.opensearch.performanceanalyzer.PerformanceAnalyzerApp;
-import org.opensearch.performanceanalyzer.metrics.AllMetrics;
+import org.opensearch.performanceanalyzer.commons.metrics.AllMetrics;
+import org.opensearch.performanceanalyzer.commons.stats.CommonStats;
 import org.opensearch.performanceanalyzer.metricsdb.MetricsDB;
 import org.opensearch.performanceanalyzer.rca.configs.HighHeapUsageYoungGenRcaConfig;
 import org.opensearch.performanceanalyzer.rca.framework.api.Metric;
@@ -207,7 +207,7 @@ public class HighHeapUsageYoungGenRca extends Rca<ResourceFlowUnit<HotResourceSu
                             getFollowerCheckTimeoutMs(),
                             avgFullGCTime,
                             PROMOTION_RATE_SLIDING_WINDOW_IN_MINS * 60);
-            PerformanceAnalyzerApp.RCA_VERTICES_METRICS_AGGREGATOR.updateStat(
+            CommonStats.RCA_VERTICES_METRICS_AGGREGATOR.updateStat(
                     RcaVerticesMetrics.YOUNG_GEN_RCA_NAMED_COUNT, FULL_GC_TIME_TOO_HIGH, 1);
         } else if (promotionRateTooHigh(avgPromotionRate, this.lowerBoundThreshold)) {
             // check to see if the value is above lower bound thres
@@ -217,7 +217,7 @@ public class HighHeapUsageYoungGenRca extends Rca<ResourceFlowUnit<HotResourceSu
                             promotionRateThreshold * this.lowerBoundThreshold,
                             avgPromotionRate,
                             PROMOTION_RATE_SLIDING_WINDOW_IN_MINS * 60);
-            PerformanceAnalyzerApp.RCA_VERTICES_METRICS_AGGREGATOR.updateStat(
+            CommonStats.RCA_VERTICES_METRICS_AGGREGATOR.updateStat(
                     RcaVerticesMetrics.YOUNG_GEN_RCA_NAMED_COUNT, PROMOTION_RATE_TOO_HIGH, 1);
         } else if (youngGcTimeTooHigh(avgYoungGCTime)) {
             summary =
@@ -226,7 +226,7 @@ public class HighHeapUsageYoungGenRca extends Rca<ResourceFlowUnit<HotResourceSu
                             youngGenGcTimeThreshold,
                             avgYoungGCTime,
                             PROMOTION_RATE_SLIDING_WINDOW_IN_MINS * 60);
-            PerformanceAnalyzerApp.RCA_VERTICES_METRICS_AGGREGATOR.updateStat(
+            CommonStats.RCA_VERTICES_METRICS_AGGREGATOR.updateStat(
                     RcaVerticesMetrics.YOUNG_GEN_RCA_NAMED_COUNT, YOUNG_GC_TIME_TOO_HIGH, 1);
         } else if (prematurePromotionTooHigh(avgGarbagePromoted)) {
             summary =
@@ -235,7 +235,7 @@ public class HighHeapUsageYoungGenRca extends Rca<ResourceFlowUnit<HotResourceSu
                             garbagePromotionPctThreshold,
                             avgGarbagePromoted,
                             PROMOTION_RATE_SLIDING_WINDOW_IN_MINS * 60);
-            PerformanceAnalyzerApp.RCA_VERTICES_METRICS_AGGREGATOR.updateStat(
+            CommonStats.RCA_VERTICES_METRICS_AGGREGATOR.updateStat(
                     RcaVerticesMetrics.YOUNG_GEN_RCA_NAMED_COUNT, PREMATURE_PROMOTION_TOO_HIGH, 1);
         } else {
             unhealthy = false;
@@ -249,7 +249,7 @@ public class HighHeapUsageYoungGenRca extends Rca<ResourceFlowUnit<HotResourceSu
                     avgYoungGCTime,
                     avgGarbagePromoted,
                     avgFullGCTime);
-            PerformanceAnalyzerApp.RCA_VERTICES_METRICS_AGGREGATOR.updateStat(
+            CommonStats.RCA_VERTICES_METRICS_AGGREGATOR.updateStat(
                     RcaVerticesMetrics.NUM_YOUNG_GEN_RCA_TRIGGERED, "", 1);
         }
 

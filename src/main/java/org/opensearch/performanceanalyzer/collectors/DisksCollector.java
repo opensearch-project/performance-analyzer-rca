@@ -9,10 +9,11 @@ package org.opensearch.performanceanalyzer.collectors;
 import java.util.HashMap;
 import java.util.Map;
 import org.opensearch.performanceanalyzer.OSMetricsGeneratorFactory;
-import org.opensearch.performanceanalyzer.PerformanceAnalyzerApp;
-import org.opensearch.performanceanalyzer.metrics.MetricsConfiguration;
-import org.opensearch.performanceanalyzer.metrics.MetricsProcessor;
-import org.opensearch.performanceanalyzer.metrics.PerformanceAnalyzerMetrics;
+import org.opensearch.performanceanalyzer.commons.collectors.PerformanceAnalyzerMetricsCollector;
+import org.opensearch.performanceanalyzer.commons.metrics.MetricsConfiguration;
+import org.opensearch.performanceanalyzer.commons.metrics.MetricsProcessor;
+import org.opensearch.performanceanalyzer.commons.metrics.PerformanceAnalyzerMetrics;
+import org.opensearch.performanceanalyzer.commons.stats.CommonStats;
 import org.opensearch.performanceanalyzer.metrics_generator.DiskMetricsGenerator;
 import org.opensearch.performanceanalyzer.metrics_generator.OSMetricsGenerator;
 import org.opensearch.performanceanalyzer.rca.framework.metrics.WriterMetrics;
@@ -49,7 +50,7 @@ public class DisksCollector extends PerformanceAnalyzerMetricsCollector
         diskMetricsGenerator.addSample();
 
         saveMetricValues(getMetrics(diskMetricsGenerator), startTime);
-        PerformanceAnalyzerApp.WRITER_METRICS_AGGREGATOR.updateStat(
+        CommonStats.WRITER_METRICS_AGGREGATOR.updateStat(
                 WriterMetrics.DISKS_COLLECTOR_EXECUTION_TIME,
                 "",
                 System.currentTimeMillis() - mCurrT);

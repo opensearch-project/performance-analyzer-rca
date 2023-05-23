@@ -11,7 +11,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import org.opensearch.performanceanalyzer.metrics.AllMetrics.ShardStatsValue;
+import org.opensearch.performanceanalyzer.commons.metrics.AllMetrics.ShardStatsValue;
 
 class CachedStats {
     private static final Set<String> CACHABLE_VALUES =

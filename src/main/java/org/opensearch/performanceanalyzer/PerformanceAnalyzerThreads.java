@@ -6,8 +6,8 @@
 package org.opensearch.performanceanalyzer;
 
 
+import org.opensearch.performanceanalyzer.commons.metrics.MeasurementSet;
 import org.opensearch.performanceanalyzer.rca.framework.metrics.ReaderMetrics;
-import org.opensearch.performanceanalyzer.rca.stats.measurements.MeasurementSet;
 
 /**
  * Enum of threads that are spawned by Performance Analyzer agent. Each enum value encapsulates two
