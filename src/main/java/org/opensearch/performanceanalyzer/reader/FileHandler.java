@@ -14,8 +14,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.opensearch.performanceanalyzer.commons.config.PluginSettings;
 import org.opensearch.performanceanalyzer.commons.event_process.Event;
-import org.opensearch.performanceanalyzer.config.PluginSettings;
 
 public abstract class FileHandler {
     private static final String[] EMPTY_STRING_ARRAY = new String[0];
