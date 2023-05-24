@@ -19,7 +19,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.opensearch.performanceanalyzer.CertificateUtils;
-import org.opensearch.performanceanalyzer.config.PluginSettings;
+import org.opensearch.performanceanalyzer.commons.config.PluginSettings;
 import org.opensearch.performanceanalyzer.grpc.MetricsRequest;
 import org.opensearch.performanceanalyzer.grpc.MetricsResponse;
 import org.opensearch.performanceanalyzer.rca.GradleTaskForRca;

@@ -28,7 +28,7 @@ import org.jooq.Result;
 import org.opensearch.performanceanalyzer.AppContext;
 import org.opensearch.performanceanalyzer.commons.collectors.StatExceptionCode;
 import org.opensearch.performanceanalyzer.commons.collectors.StatsCollector;
-import org.opensearch.performanceanalyzer.core.Util;
+import org.opensearch.performanceanalyzer.commons.util.Util;
 import org.opensearch.performanceanalyzer.grpc.MetricsRequest;
 import org.opensearch.performanceanalyzer.grpc.MetricsResponse;
 import org.opensearch.performanceanalyzer.metrics.MetricsRestUtil;
