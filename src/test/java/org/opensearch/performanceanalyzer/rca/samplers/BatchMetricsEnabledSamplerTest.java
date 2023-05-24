@@ -22,7 +22,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.opensearch.performanceanalyzer.AppContext;
 import org.opensearch.performanceanalyzer.commons.stats.SampleAggregator;
-import org.opensearch.performanceanalyzer.core.Util;
+import org.opensearch.performanceanalyzer.commons.util.Util;
 import org.opensearch.performanceanalyzer.rca.framework.metrics.ReaderMetrics;
 import org.opensearch.performanceanalyzer.reader.ClusterDetailsEventProcessor;
 import org.opensearch.performanceanalyzer.reader.ClusterDetailsEventProcessorTestHelper;
