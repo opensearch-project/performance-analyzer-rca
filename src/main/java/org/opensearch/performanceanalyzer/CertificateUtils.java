@@ -23,7 +23,7 @@ import org.bouncycastle.cert.X509CertificateHolder;
 import org.bouncycastle.cert.jcajce.JcaX509CertificateConverter;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.openssl.PEMParser;
-import org.opensearch.performanceanalyzer.config.PluginSettings;
+import org.opensearch.performanceanalyzer.commons.config.PluginSettings;
 
 public class CertificateUtils {
 

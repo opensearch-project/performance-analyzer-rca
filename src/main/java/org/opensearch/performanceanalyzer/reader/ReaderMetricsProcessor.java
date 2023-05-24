@@ -35,6 +35,7 @@ import org.jooq.DSLContext;
 import org.jooq.SQLDialect;
 import org.jooq.impl.DSL;
 import org.opensearch.performanceanalyzer.AppContext;
+import org.opensearch.performanceanalyzer.commons.config.PluginSettings;
 import org.opensearch.performanceanalyzer.commons.event_process.EventDispatcher;
 import org.opensearch.performanceanalyzer.commons.event_process.EventLog;
 import org.opensearch.performanceanalyzer.commons.event_process.EventLogFileHandler;
@@ -44,9 +45,8 @@ import org.opensearch.performanceanalyzer.commons.metrics.ExceptionsAndErrors;
 import org.opensearch.performanceanalyzer.commons.metrics.MetricsConfiguration;
 import org.opensearch.performanceanalyzer.commons.metrics.PerformanceAnalyzerMetrics;
 import org.opensearch.performanceanalyzer.commons.stats.CommonStats;
-import org.opensearch.performanceanalyzer.config.PluginSettings;
+import org.opensearch.performanceanalyzer.commons.util.Util;
 import org.opensearch.performanceanalyzer.config.overrides.ConfigOverridesApplier;
-import org.opensearch.performanceanalyzer.core.Util;
 import org.opensearch.performanceanalyzer.metricsdb.MetricsDB;
 import org.opensearch.performanceanalyzer.rca.framework.metrics.ReaderMetrics;
 

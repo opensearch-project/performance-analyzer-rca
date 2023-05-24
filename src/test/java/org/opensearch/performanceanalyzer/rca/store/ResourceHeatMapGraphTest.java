@@ -34,7 +34,7 @@ import org.opensearch.performanceanalyzer.AppContext;
 import org.opensearch.performanceanalyzer.ClientServers;
 import org.opensearch.performanceanalyzer.PerformanceAnalyzerApp;
 import org.opensearch.performanceanalyzer.commons.metrics.AllMetrics;
-import org.opensearch.performanceanalyzer.core.Util;
+import org.opensearch.performanceanalyzer.commons.util.Util;
 import org.opensearch.performanceanalyzer.net.GRPCConnectionManager;
 import org.opensearch.performanceanalyzer.rca.RcaTestHelper;
 import org.opensearch.performanceanalyzer.rca.framework.api.AnalysisGraph;

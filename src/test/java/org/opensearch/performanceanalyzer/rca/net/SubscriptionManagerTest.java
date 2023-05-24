@@ -14,7 +14,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.opensearch.performanceanalyzer.CertificateUtils;
-import org.opensearch.performanceanalyzer.config.PluginSettings;
+import org.opensearch.performanceanalyzer.commons.config.PluginSettings;
 import org.opensearch.performanceanalyzer.grpc.SubscribeResponse;
 import org.opensearch.performanceanalyzer.net.GRPCConnectionManager;
 import org.opensearch.performanceanalyzer.rca.framework.util.InstanceDetails;

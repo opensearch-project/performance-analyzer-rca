@@ -12,7 +12,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.opensearch.performanceanalyzer.CertificateUtils;
-import org.opensearch.performanceanalyzer.config.PluginSettings;
+import org.opensearch.performanceanalyzer.commons.config.PluginSettings;
 import org.opensearch.performanceanalyzer.grpc.MetricsRequest;
 import org.opensearch.performanceanalyzer.grpc.MetricsResponse;
 

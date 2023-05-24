@@ -17,8 +17,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.opensearch.performanceanalyzer.commons.collectors.PerformanceAnalyzerMetricsCollector;
 import org.opensearch.performanceanalyzer.commons.collectors.StatsCollector;
+import org.opensearch.performanceanalyzer.commons.metrics.WriterMetrics;
 import org.opensearch.performanceanalyzer.commons.stats.CommonStats;
-import org.opensearch.performanceanalyzer.rca.framework.metrics.WriterMetrics;
 
 public class ScheduledMetricCollectorsExecutor extends Thread {
     private static final Logger LOG = LogManager.getLogger(ScheduledMetricCollectorsExecutor.class);

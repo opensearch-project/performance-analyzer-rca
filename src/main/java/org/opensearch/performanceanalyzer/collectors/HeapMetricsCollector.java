@@ -20,10 +20,10 @@ import org.opensearch.performanceanalyzer.commons.metrics.AllMetrics.HeapValue;
 import org.opensearch.performanceanalyzer.commons.metrics.MetricsConfiguration;
 import org.opensearch.performanceanalyzer.commons.metrics.MetricsProcessor;
 import org.opensearch.performanceanalyzer.commons.metrics.PerformanceAnalyzerMetrics;
+import org.opensearch.performanceanalyzer.commons.metrics.WriterMetrics;
 import org.opensearch.performanceanalyzer.commons.stats.CommonStats;
 import org.opensearch.performanceanalyzer.jvm.GCMetrics;
 import org.opensearch.performanceanalyzer.jvm.HeapMetrics;
-import org.opensearch.performanceanalyzer.rca.framework.metrics.WriterMetrics;
 
 public class HeapMetricsCollector extends PerformanceAnalyzerMetricsCollector
         implements MetricsProcessor {
