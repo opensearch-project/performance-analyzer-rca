@@ -10,13 +10,12 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.opensearch.performanceanalyzer.OSMetricsGeneratorFactory;
 import org.opensearch.performanceanalyzer.commons.collectors.PerformanceAnalyzerMetricsCollector;
-import org.opensearch.performanceanalyzer.commons.collectors.StatExceptionCode;
 import org.opensearch.performanceanalyzer.commons.collectors.StatsCollector;
 import org.opensearch.performanceanalyzer.commons.metrics.MetricsConfiguration;
 import org.opensearch.performanceanalyzer.commons.metrics.MetricsProcessor;
 import org.opensearch.performanceanalyzer.commons.metrics.PerformanceAnalyzerMetrics;
-import org.opensearch.performanceanalyzer.commons.metrics.WriterMetrics;
-import org.opensearch.performanceanalyzer.commons.stats.CommonStats;
+import org.opensearch.performanceanalyzer.commons.stats.metrics.StatExceptionCode;
+import org.opensearch.performanceanalyzer.commons.stats.metrics.WriterMetrics;
 import org.opensearch.performanceanalyzer.metrics_generator.IPMetricsGenerator;
 import org.opensearch.performanceanalyzer.metrics_generator.OSMetricsGenerator;
 
@@ -27,7 +26,11 @@ public class NetworkInterfaceCollector extends PerformanceAnalyzerMetricsCollect
     private static final Logger LOG = LogManager.getLogger(NetworkInterfaceCollector.class);
 
     public NetworkInterfaceCollector() {
-        super(sTimeInterval, "NetworkInterfaceCollector");
+        super(
+                sTimeInterval,
+                "NetworkInterfaceCollector",
+                WriterMetrics.NETWORK_INTERFACE_COLLECTOR_EXECUTION_TIME,
+                StatExceptionCode.NETWORK_COLLECTION_ERROR);
     }
 
     @Override
@@ -37,16 +40,11 @@ public class NetworkInterfaceCollector extends PerformanceAnalyzerMetricsCollect
             return;
         }
 
-        long mCurrT = System.currentTimeMillis();
         IPMetricsGenerator IPMetricsGenerator = generator.getIPMetricsGenerator();
         IPMetricsGenerator.addSample();
         saveMetricValues(
                 getMetrics(IPMetricsGenerator) + PerformanceAnalyzerMetrics.sMetricNewLineDelimitor,
                 startTime);
-        CommonStats.WRITER_METRICS_AGGREGATOR.updateStat(
-                WriterMetrics.NETWORK_INTERFACE_COLLECTOR_EXECUTION_TIME,
-                "",
-                System.currentTimeMillis() - mCurrT);
     }
 
     @Override

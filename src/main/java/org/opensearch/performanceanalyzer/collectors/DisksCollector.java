@@ -13,8 +13,8 @@ import org.opensearch.performanceanalyzer.commons.collectors.PerformanceAnalyzer
 import org.opensearch.performanceanalyzer.commons.metrics.MetricsConfiguration;
 import org.opensearch.performanceanalyzer.commons.metrics.MetricsProcessor;
 import org.opensearch.performanceanalyzer.commons.metrics.PerformanceAnalyzerMetrics;
-import org.opensearch.performanceanalyzer.commons.metrics.WriterMetrics;
-import org.opensearch.performanceanalyzer.commons.stats.CommonStats;
+import org.opensearch.performanceanalyzer.commons.stats.metrics.StatExceptionCode;
+import org.opensearch.performanceanalyzer.commons.stats.metrics.WriterMetrics;
 import org.opensearch.performanceanalyzer.metrics_generator.DiskMetricsGenerator;
 import org.opensearch.performanceanalyzer.metrics_generator.OSMetricsGenerator;
 
@@ -25,7 +25,11 @@ public class DisksCollector extends PerformanceAnalyzerMetricsCollector
             MetricsConfiguration.CONFIG_MAP.get(DisksCollector.class).samplingInterval;
 
     public DisksCollector() {
-        super(sTimeInterval, "DisksCollector");
+        super(
+                sTimeInterval,
+                "DisksCollector",
+                WriterMetrics.DISKS_COLLECTOR_EXECUTION_TIME,
+                StatExceptionCode.DISK_METRICS_COLLECTOR_ERROR);
     }
 
     @Override
@@ -45,15 +49,10 @@ public class DisksCollector extends PerformanceAnalyzerMetricsCollector
         if (generator == null) {
             return;
         }
-        long mCurrT = System.currentTimeMillis();
         DiskMetricsGenerator diskMetricsGenerator = generator.getDiskMetricsGenerator();
         diskMetricsGenerator.addSample();
 
         saveMetricValues(getMetrics(diskMetricsGenerator), startTime);
-        CommonStats.WRITER_METRICS_AGGREGATOR.updateStat(
-                WriterMetrics.DISKS_COLLECTOR_EXECUTION_TIME,
-                "",
-                System.currentTimeMillis() - mCurrT);
     }
 
     private Map<String, DiskMetrics> getMetricsMap(DiskMetricsGenerator diskMetricsGenerator) {

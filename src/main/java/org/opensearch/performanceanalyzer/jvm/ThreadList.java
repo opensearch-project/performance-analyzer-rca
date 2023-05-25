@@ -26,11 +26,12 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.opensearch.performanceanalyzer.OSMetricsGeneratorFactory;
 import org.opensearch.performanceanalyzer.collectors.ScheduledMetricCollectorsExecutor;
-import org.opensearch.performanceanalyzer.commons.metrics.ExceptionsAndErrors;
+import org.opensearch.performanceanalyzer.commons.collectors.StatsCollector;
 import org.opensearch.performanceanalyzer.commons.metrics.MetricsConfiguration;
-import org.opensearch.performanceanalyzer.commons.metrics.WriterMetrics;
 import org.opensearch.performanceanalyzer.commons.stats.CommonStats;
-import org.opensearch.performanceanalyzer.commons.util.Util;
+import org.opensearch.performanceanalyzer.commons.stats.metrics.StatExceptionCode;
+import org.opensearch.performanceanalyzer.commons.stats.metrics.WriterMetrics;
+import org.opensearch.performanceanalyzer.core.Util;
 import sun.tools.attach.HotSpotVirtualMachine;
 
 /** Traverses and prints the stack traces for all Java threads in the remote VM */
@@ -136,8 +137,8 @@ public class ThreadList {
                 vmAttachLock.unlock();
             }
         } else {
-            CommonStats.ERRORS_AND_EXCEPTIONS_AGGREGATOR.updateStat(
-                    ExceptionsAndErrors.JVM_ATTACH_LOCK_ACQUISITION_FAILED, "", 1);
+            StatsCollector.instance()
+                    .logException(StatExceptionCode.JVM_ATTACH_LOCK_ACQUISITION_FAILED);
         }
 
         // - sending a copy so that if runThreadDump next iteration clears it; caller still has the
@@ -162,8 +163,7 @@ public class ThreadList {
     public static ThreadState getThreadState(long threadId) {
         ThreadState retVal = jTidMap.get(threadId);
         if (retVal == null) {
-            CommonStats.ERRORS_AND_EXCEPTIONS_AGGREGATOR.updateStat(
-                    ExceptionsAndErrors.NO_THREAD_STATE_INFO, "", 1);
+            StatsCollector.instance().logException(StatExceptionCode.NO_THREAD_STATE_INFO);
         }
         return retVal;
     }
@@ -176,11 +176,10 @@ public class ThreadList {
             vm = VirtualMachine.attach(pid);
         } catch (Exception ex) {
             if (ex.getMessage().contains("java_pid")) {
-                CommonStats.ERRORS_AND_EXCEPTIONS_AGGREGATOR.updateStat(
-                        ExceptionsAndErrors.JVM_ATTACH_ERROR_JAVA_PID_FILE_MISSING, "", 1);
+                StatsCollector.instance()
+                        .logException(StatExceptionCode.JVM_ATTACH_ERROR_JAVA_PID_FILE_MISSING);
             } else {
-                CommonStats.ERRORS_AND_EXCEPTIONS_AGGREGATOR.updateStat(
-                        ExceptionsAndErrors.JVM_ATTACH_ERROR, "", 1);
+                StatsCollector.instance().logException(StatExceptionCode.JVM_ATTACH_ERROR);
             }
             // If the thread dump failed then we clean up the old map. So, next time when the
             // collection
@@ -192,18 +191,16 @@ public class ThreadList {
         try (InputStream in = ((HotSpotVirtualMachine) vm).remoteDataDump(args); ) {
             createMap(in);
         } catch (Exception ex) {
-            CommonStats.ERRORS_AND_EXCEPTIONS_AGGREGATOR.updateStat(
-                    ExceptionsAndErrors.JVM_ATTACH_ERROR, "", 1);
+            StatsCollector.instance().logException(StatExceptionCode.JVM_ATTACH_ERROR);
             oldNativeTidMap.clear();
         }
 
         try {
             vm.detach();
             CommonStats.WRITER_METRICS_AGGREGATOR.updateStat(
-                    WriterMetrics.JVM_THREAD_DUMP_SUCCESSFUL, "", 1);
+                    WriterMetrics.JVM_THREAD_DUMP_SUCCESSFUL, 1);
         } catch (Exception ex) {
-            CommonStats.ERRORS_AND_EXCEPTIONS_AGGREGATOR.updateStat(
-                    ExceptionsAndErrors.JVM_ATTACH_ERROR, "", 1);
+            StatsCollector.instance().logException(StatExceptionCode.JVM_ATTACH_ERROR);
         }
     }
 
@@ -215,8 +212,8 @@ public class ThreadList {
                 // If the ids provided to the getThreadInfo() call are not valid ids or the threads
                 // no
                 // longer exists, then the corresponding info object will contain null.
-                CommonStats.ERRORS_AND_EXCEPTIONS_AGGREGATOR.updateStat(
-                        ExceptionsAndErrors.JVM_THREAD_ID_NO_LONGER_EXISTS, "", 1);
+                StatsCollector.instance()
+                        .logException(StatExceptionCode.JVM_THREAD_ID_NO_LONGER_EXISTS);
             }
         }
     }

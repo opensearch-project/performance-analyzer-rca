@@ -8,8 +8,8 @@ package org.opensearch.performanceanalyzer.rca.framework.api;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.opensearch.performanceanalyzer.commons.metrics.ExceptionsAndErrors;
 import org.opensearch.performanceanalyzer.commons.stats.CommonStats;
+import org.opensearch.performanceanalyzer.commons.stats.metrics.ExceptionsAndErrors;
 import org.opensearch.performanceanalyzer.rca.framework.api.flow_units.ResourceFlowUnit;
 import org.opensearch.performanceanalyzer.rca.framework.core.NonLeafNode;
 import org.opensearch.performanceanalyzer.rca.framework.metrics.RcaGraphMetrics;

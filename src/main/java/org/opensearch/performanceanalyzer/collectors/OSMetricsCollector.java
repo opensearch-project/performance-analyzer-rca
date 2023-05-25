@@ -13,8 +13,8 @@ import org.opensearch.performanceanalyzer.commons.metrics.AllMetrics.OSMetrics;
 import org.opensearch.performanceanalyzer.commons.metrics.MetricsConfiguration;
 import org.opensearch.performanceanalyzer.commons.metrics.MetricsProcessor;
 import org.opensearch.performanceanalyzer.commons.metrics.PerformanceAnalyzerMetrics;
-import org.opensearch.performanceanalyzer.commons.metrics.WriterMetrics;
-import org.opensearch.performanceanalyzer.commons.stats.CommonStats;
+import org.opensearch.performanceanalyzer.commons.stats.metrics.StatExceptionCode;
+import org.opensearch.performanceanalyzer.commons.stats.metrics.WriterMetrics;
 import org.opensearch.performanceanalyzer.jvm.ThreadList;
 import org.opensearch.performanceanalyzer.metrics_generator.CPUPagingActivityGenerator;
 import org.opensearch.performanceanalyzer.metrics_generator.DiskIOMetricsGenerator;
@@ -34,14 +34,17 @@ public class OSMetricsCollector extends PerformanceAnalyzerMetricsCollector
     }
 
     public OSMetricsCollector() {
-        super(SAMPLING_TIME_INTERVAL, "OSMetrics");
+        super(
+                SAMPLING_TIME_INTERVAL,
+                "OSMetrics",
+                WriterMetrics.OS_METRICS_COLLECTOR_EXECUTION_TIME,
+                StatExceptionCode.OS_METRICS_COLLECTOR_ERROR);
         value = new StringBuilder();
         osMetricsGenerator = OSMetricsGeneratorFactory.getInstance();
     }
 
     @Override
     public void collectMetrics(long startTime) {
-        long mCurrT = System.currentTimeMillis();
         CPUPagingActivityGenerator threadCPUPagingActivityGenerator =
                 osMetricsGenerator.getPagingActivityGenerator();
         threadCPUPagingActivityGenerator.addSample();
@@ -150,10 +153,6 @@ public class OSMetricsCollector extends PerformanceAnalyzerMetricsCollector
             }
 
             saveMetricValues(value.toString(), startTime, threadId);
-            CommonStats.WRITER_METRICS_AGGREGATOR.updateStat(
-                    WriterMetrics.OS_METRICS_COLLECTOR_EXECUTION_TIME,
-                    "",
-                    System.currentTimeMillis() - mCurrT);
         }
     }
 

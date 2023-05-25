@@ -13,6 +13,8 @@ import org.opensearch.performanceanalyzer.commons.collectors.PerformanceAnalyzer
 import org.opensearch.performanceanalyzer.commons.metrics.MetricsConfiguration;
 import org.opensearch.performanceanalyzer.commons.metrics.MetricsProcessor;
 import org.opensearch.performanceanalyzer.commons.metrics.PerformanceAnalyzerMetrics;
+import org.opensearch.performanceanalyzer.commons.stats.metrics.StatExceptionCode;
+import org.opensearch.performanceanalyzer.commons.stats.metrics.WriterMetrics;
 import org.opensearch.performanceanalyzer.metrics_generator.OSMetricsGenerator;
 import org.opensearch.performanceanalyzer.metrics_generator.TCPMetricsGenerator;
 
@@ -22,7 +24,11 @@ public class NetworkE2ECollector extends PerformanceAnalyzerMetricsCollector
             MetricsConfiguration.CONFIG_MAP.get(NetworkE2ECollector.class).samplingInterval;
 
     public NetworkE2ECollector() {
-        super(sTimeInterval, "NetworkE2ECollector");
+        super(
+                sTimeInterval,
+                "NetworkE2ECollector",
+                WriterMetrics.NETWORK_E2E_COLLECTOR_EXECUTION_TIME,
+                StatExceptionCode.NETWORK_COLLECTION_ERROR);
     }
 
     @Override

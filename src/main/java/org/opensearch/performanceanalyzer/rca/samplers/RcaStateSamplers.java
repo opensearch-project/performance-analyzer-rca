@@ -7,7 +7,7 @@ package org.opensearch.performanceanalyzer.rca.samplers;
 
 
 import org.opensearch.performanceanalyzer.AppContext;
-import org.opensearch.performanceanalyzer.rca.stats.emitters.ISampler;
+import org.opensearch.performanceanalyzer.commons.stats.emitters.ISampler;
 
 public class RcaStateSamplers {
 
