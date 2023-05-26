@@ -20,6 +20,7 @@ import java.util.Map;
 import org.junit.Before;
 import org.junit.Test;
 import org.opensearch.performanceanalyzer.AppContext;
+import org.opensearch.performanceanalyzer.PerformanceAnalyzerApp;
 import org.opensearch.performanceanalyzer.commons.metrics.AllMetrics;
 import org.opensearch.performanceanalyzer.decisionmaker.actions.Action;
 import org.opensearch.performanceanalyzer.grpc.ResourceEnum;
@@ -43,6 +44,7 @@ public class CacheHealthDeciderTest {
 
     @Before
     public void setupCluster() throws SQLException, ClassNotFoundException {
+        PerformanceAnalyzerApp.initAggregators();
         final long heapMaxSizeInBytes = 12000 * 1_000_000L;
         final long fieldDataCacheMaxSizeInBytes = 12000;
         final long shardRequestCacheMaxSizeInBytes = 12000;

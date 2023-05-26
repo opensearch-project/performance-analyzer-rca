@@ -21,7 +21,7 @@ import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.opensearch.performanceanalyzer.AppContext;
-import org.opensearch.performanceanalyzer.commons.stats.SampleAggregator;
+import org.opensearch.performanceanalyzer.commons.stats.collectors.SampleAggregator;
 import org.opensearch.performanceanalyzer.metricsdb.MetricsDB;
 import org.opensearch.performanceanalyzer.rca.framework.metrics.ReaderMetrics;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
@@ -111,21 +111,17 @@ public class MetricsDBFileSamplerTest {
         verify(sampleAggregator, times(1))
                 .updateStat(
                         ReaderMetrics.METRICSDB_NUM_FILES,
-                        "",
                         metricsdbFiles.length + metricsdbTarFiles.length);
         verify(sampleAggregator, times(1))
                 .updateStat(
                         ReaderMetrics.METRICSDB_SIZE_FILES,
-                        "",
                         metricsdbFiles.length * metricsdbFileSize
                                 + metricsdbTarFiles.length * metricsdbTarFileSize);
         verify(sampleAggregator, times(1))
-                .updateStat(
-                        ReaderMetrics.METRICSDB_NUM_UNCOMPRESSED_FILES, "", metricsdbFiles.length);
+                .updateStat(ReaderMetrics.METRICSDB_NUM_UNCOMPRESSED_FILES, metricsdbFiles.length);
         verify(sampleAggregator, times(1))
                 .updateStat(
                         ReaderMetrics.METRICSDB_SIZE_UNCOMPRESSED_FILES,
-                        "",
                         metricsdbFiles.length * metricsdbFileSize);
     }
 }

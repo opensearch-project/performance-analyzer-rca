@@ -9,10 +9,10 @@ package org.opensearch.performanceanalyzer.rca.framework.api;
 import java.util.Collections;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.opensearch.performanceanalyzer.commons.metrics.ExceptionsAndErrors;
-import org.opensearch.performanceanalyzer.commons.stats.CommonStats;
+import org.opensearch.performanceanalyzer.commons.stats.ServiceMetrics;
 import org.opensearch.performanceanalyzer.rca.framework.api.flow_units.SymptomFlowUnit;
 import org.opensearch.performanceanalyzer.rca.framework.core.NonLeafNode;
+import org.opensearch.performanceanalyzer.rca.framework.metrics.ExceptionsAndErrors;
 import org.opensearch.performanceanalyzer.rca.framework.metrics.RcaGraphMetrics;
 import org.opensearch.performanceanalyzer.rca.scheduler.FlowUnitOperationArgWrapper;
 
@@ -31,15 +31,16 @@ public abstract class Symptom extends NonLeafNode<SymptomFlowUnit> {
         try {
             result = this.operate();
         } catch (Exception ex) {
-            CommonStats.ERRORS_AND_EXCEPTIONS_AGGREGATOR.updateStat(
-                    ExceptionsAndErrors.EXCEPTION_IN_OPERATE, name(), 1);
+            LOG.error("[MOCHI]: Key Value is: {}", this.name());
+            ServiceMetrics.ERRORS_AND_EXCEPTIONS_AGGREGATOR.updateStat(
+                    ExceptionsAndErrors.EXCEPTION_IN_OPERATE, this.name(), 1);
             LOG.error("Exception caught during operate", ex);
             result = SymptomFlowUnit.generic();
         }
         long endTime = System.currentTimeMillis();
         long durationMillis = endTime - startTime;
 
-        CommonStats.RCA_GRAPH_METRICS_AGGREGATOR.updateStat(
+        ServiceMetrics.RCA_GRAPH_METRICS_AGGREGATOR.updateStat(
                 RcaGraphMetrics.GRAPH_NODE_OPERATE_CALL, this.name(), durationMillis);
 
         setFlowUnits(Collections.singletonList(result));

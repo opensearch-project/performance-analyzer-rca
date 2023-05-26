@@ -19,7 +19,7 @@ import org.apache.logging.log4j.Logger;
 import org.jooq.Record;
 import org.opensearch.performanceanalyzer.commons.metrics.AllMetrics;
 import org.opensearch.performanceanalyzer.commons.metrics.AllMetrics.OSMetrics;
-import org.opensearch.performanceanalyzer.commons.stats.CommonStats;
+import org.opensearch.performanceanalyzer.commons.stats.ServiceMetrics;
 import org.opensearch.performanceanalyzer.grpc.FlowUnitMessage;
 import org.opensearch.performanceanalyzer.grpc.HotShardSummaryMessage.CriteriaEnum;
 import org.opensearch.performanceanalyzer.metricsdb.MetricsDB;
@@ -105,8 +105,8 @@ public class HotShardRca extends Rca<ResourceFlowUnit<HotNodeSummary>> {
                     usageWindow.next(metricType, usage, this.clock.millis());
                 }
             } catch (Exception e) {
-                CommonStats.RCA_VERTICES_METRICS_AGGREGATOR.updateStat(
-                        RcaVerticesMetrics.HOT_SHARD_RCA_ERROR, "", 1);
+                ServiceMetrics.RCA_VERTICES_METRICS_AGGREGATOR.updateStat(
+                        RcaVerticesMetrics.HOT_SHARD_RCA_ERROR, 1);
                 LOG.error(
                         "Failed to parse metric in FlowUnit: {} from {}",
                         record,
