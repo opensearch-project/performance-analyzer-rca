@@ -21,27 +21,27 @@ import org.jooq.Condition;
 import org.jooq.impl.DSL;
 import org.junit.Ignore;
 import org.opensearch.performanceanalyzer.AbstractTests;
-import org.opensearch.performanceanalyzer.collectors.DiskMetrics;
-import org.opensearch.performanceanalyzer.collectors.HeapMetricsCollector;
-import org.opensearch.performanceanalyzer.collectors.MetricStatus;
+import org.opensearch.performanceanalyzer.commons.collectors.DiskMetrics;
+import org.opensearch.performanceanalyzer.commons.collectors.HeapMetricsCollector;
+import org.opensearch.performanceanalyzer.commons.collectors.MetricStatus;
 import org.opensearch.performanceanalyzer.commons.metrics.AllMetrics;
 import org.opensearch.performanceanalyzer.commons.metrics.MetricDimension;
 import org.opensearch.performanceanalyzer.commons.metrics.PerformanceAnalyzerMetrics;
 
 // import
-// org.opensearch.performanceanalyzer.collectors.ClusterManagerServiceMetrics.ClusterManagerPendingStatus;
+// org.opensearch.performanceanalyzer.commons.collectors.ClusterManagerServiceMetrics.ClusterManagerPendingStatus;
 // import
-// org.opensearch.performanceanalyzer.collectors.NodeDetailsCollector.NodeDetailsStatus;
+// org.opensearch.performanceanalyzer.commons.collectors.NodeDetailsCollector.NodeDetailsStatus;
 // import
-// org.opensearch.performanceanalyzer.collectors.NodeStatsMetricsCollector;
+// org.opensearch.performanceanalyzer.commons.collectors.NodeStatsMetricsCollector;
 // import
 // org.opensearch.performanceanalyzer.reader.MetricPropertiesTests.FailureCondition;
 // import
-// org.opensearch.performanceanalyzer.collectors.ClusterManagerServiceMetrics.ClusterManagerPendingStatus;
+// org.opensearch.performanceanalyzer.commons.collectors.ClusterManagerServiceMetrics.ClusterManagerPendingStatus;
 // import
-// org.opensearch.performanceanalyzer.collectors.NodeDetailsCollector.NodeDetailsStatus;
+// org.opensearch.performanceanalyzer.commons.collectors.NodeDetailsCollector.NodeDetailsStatus;
 // import
-// org.opensearch.performanceanalyzer.collectors.NodeStatsMetricsCollector;
+// org.opensearch.performanceanalyzer.commons.collectors.NodeStatsMetricsCollector;
 
 @Ignore
 public class AbstractReaderTests extends AbstractTests {

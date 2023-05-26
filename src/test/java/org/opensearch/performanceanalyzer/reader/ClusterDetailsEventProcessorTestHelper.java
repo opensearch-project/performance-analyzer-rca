@@ -12,8 +12,8 @@ import java.util.List;
 import org.opensearch.performanceanalyzer.commons.event_process.Event;
 import org.opensearch.performanceanalyzer.commons.metrics.AllMetrics;
 import org.opensearch.performanceanalyzer.commons.metrics.PerformanceAnalyzerMetrics;
+import org.opensearch.performanceanalyzer.commons.util.JsonConverter;
 import org.opensearch.performanceanalyzer.config.overrides.ConfigOverrides;
-import org.opensearch.performanceanalyzer.util.JsonConverter;
 
 public class ClusterDetailsEventProcessorTestHelper extends AbstractReaderTests {
 
