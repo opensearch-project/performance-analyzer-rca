@@ -22,8 +22,8 @@ import org.opensearch.performanceanalyzer.commons.event_process.EventProcessor;
 import org.opensearch.performanceanalyzer.commons.metrics.AllMetrics;
 import org.opensearch.performanceanalyzer.commons.metrics.PerformanceAnalyzerMetrics;
 import org.opensearch.performanceanalyzer.commons.stats.metrics.StatExceptionCode;
-import org.opensearch.performanceanalyzer.util.JsonConverter;
-import org.opensearch.performanceanalyzer.util.JsonPathNotFoundException;
+import org.opensearch.performanceanalyzer.commons.util.JsonConverter;
+import org.opensearch.performanceanalyzer.commons.util.JsonPathNotFoundException;
 
 public class NodeMetricsEventProcessor implements EventProcessor {
     private static final Logger LOG = LogManager.getLogger(NodeMetricsEventProcessor.class);

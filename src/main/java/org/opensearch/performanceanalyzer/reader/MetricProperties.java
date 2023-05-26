@@ -33,8 +33,8 @@ import org.opensearch.performanceanalyzer.commons.metrics.MetricValue;
 import org.opensearch.performanceanalyzer.commons.metrics.MetricsConfiguration;
 import org.opensearch.performanceanalyzer.commons.metrics.PerformanceAnalyzerMetrics;
 import org.opensearch.performanceanalyzer.commons.stats.metrics.StatExceptionCode;
-import org.opensearch.performanceanalyzer.util.JsonConverter;
-import org.opensearch.performanceanalyzer.util.JsonPathNotFoundException;
+import org.opensearch.performanceanalyzer.commons.util.JsonConverter;
+import org.opensearch.performanceanalyzer.commons.util.JsonPathNotFoundException;
 
 public class MetricProperties {
     private static final Logger LOG = LogManager.getLogger(MetricProperties.class);
