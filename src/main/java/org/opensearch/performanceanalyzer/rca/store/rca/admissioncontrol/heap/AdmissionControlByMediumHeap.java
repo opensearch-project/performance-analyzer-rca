@@ -13,7 +13,7 @@ import static org.opensearch.performanceanalyzer.rca.framework.metrics.RcaVertic
 import java.util.Objects;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.opensearch.performanceanalyzer.commons.stats.CommonStats;
+import org.opensearch.performanceanalyzer.commons.stats.ServiceMetrics;
 import org.opensearch.performanceanalyzer.rca.framework.api.contexts.ResourceContext;
 import org.opensearch.performanceanalyzer.rca.framework.api.flow_units.ResourceFlowUnit;
 import org.opensearch.performanceanalyzer.rca.framework.api.summaries.HotNodeSummary;
@@ -75,7 +75,7 @@ public class AdmissionControlByMediumHeap implements AdmissionControlByHeap {
                     new HotResourceSummary(HEAP_MAX_SIZE, currentThreshold, previousThreshold, 0);
             nodeSummary.appendNestedSummary(resourceSummary);
 
-            CommonStats.RCA_VERTICES_METRICS_AGGREGATOR.updateStat(
+            ServiceMetrics.RCA_VERTICES_METRICS_AGGREGATOR.updateStat(
                     ADMISSION_CONTROL_RCA_TRIGGERED, instanceDetails.getInstanceId().toString(), 1);
 
             return new ResourceFlowUnit<>(

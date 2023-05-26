@@ -28,20 +28,17 @@ import org.apache.logging.log4j.Logger;
 import org.opensearch.performanceanalyzer.AppContext;
 import org.opensearch.performanceanalyzer.ClientServers;
 import org.opensearch.performanceanalyzer.PerformanceAnalyzerThreads;
+import org.opensearch.performanceanalyzer.commons.collectors.StatsCollector;
 import org.opensearch.performanceanalyzer.commons.config.PluginSettings;
 import org.opensearch.performanceanalyzer.commons.metrics.AllMetrics;
-import org.opensearch.performanceanalyzer.commons.metrics.ExceptionsAndErrors;
-import org.opensearch.performanceanalyzer.commons.stats.CommonStats;
-import org.opensearch.performanceanalyzer.commons.util.Util;
+import org.opensearch.performanceanalyzer.commons.stats.ServiceMetrics;
+import org.opensearch.performanceanalyzer.commons.stats.metrics.StatExceptionCode;
+import org.opensearch.performanceanalyzer.core.Util;
 import org.opensearch.performanceanalyzer.net.GRPCConnectionManager;
 import org.opensearch.performanceanalyzer.net.NetClient;
 import org.opensearch.performanceanalyzer.net.NetServer;
 import org.opensearch.performanceanalyzer.rca.exceptions.MalformedConfig;
-import org.opensearch.performanceanalyzer.rca.framework.core.ConnectedComponent;
-import org.opensearch.performanceanalyzer.rca.framework.core.Queryable;
-import org.opensearch.performanceanalyzer.rca.framework.core.RcaConf;
-import org.opensearch.performanceanalyzer.rca.framework.core.Stats;
-import org.opensearch.performanceanalyzer.rca.framework.core.ThresholdMain;
+import org.opensearch.performanceanalyzer.rca.framework.core.*;
 import org.opensearch.performanceanalyzer.rca.framework.metrics.RcaRuntimeMetrics;
 import org.opensearch.performanceanalyzer.rca.framework.util.InstanceDetails;
 import org.opensearch.performanceanalyzer.rca.framework.util.RcaConsts;
@@ -282,8 +279,8 @@ public class RcaController {
     private void restart() {
         stop();
         start();
-        CommonStats.RCA_RUNTIME_METRICS_AGGREGATOR.updateStat(
-                RcaRuntimeMetrics.RCA_SCHEDULER_RESTART, "", 1);
+        ServiceMetrics.RCA_RUNTIME_METRICS_AGGREGATOR.updateStat(
+                RcaRuntimeMetrics.RCA_SCHEDULER_RESTART, 1);
     }
 
     protected RcaConf getRcaConfForMyRole(AllMetrics.NodeRole role) {
@@ -318,8 +315,6 @@ public class RcaController {
                     Thread.sleep(rcaStateCheckIntervalMillis - duration);
                 }
             } catch (InterruptedException ie) {
-                CommonStats.ERRORS_AND_EXCEPTIONS_AGGREGATOR.updateStat(
-                        ExceptionsAndErrors.RCA_FRAMEWORK_CRASH, "", 1);
                 if (deliberateInterrupt) {
                     // This should only happen in case of tests. So, its okay for this log level to
                     // be info.
@@ -327,6 +322,7 @@ public class RcaController {
                 } else {
                     LOG.error("RCA controller thread was interrupted.", ie);
                 }
+                StatsCollector.instance().logException(StatExceptionCode.RCA_FRAMEWORK_CRASH);
                 break;
             }
             tick++;
@@ -426,9 +422,8 @@ public class RcaController {
                 rcaScheduler.updateAppContextWithMutedActions(actionsForMute);
             }
         } catch (Exception e) {
-            CommonStats.ERRORS_AND_EXCEPTIONS_AGGREGATOR.updateStat(
-                    ExceptionsAndErrors.MUTE_ERROR, "", 1);
             LOG.error("Couldn't read/update the muted RCAs", e);
+            StatsCollector.instance().logException(StatExceptionCode.MUTE_ERROR);
             return false;
         }
 
@@ -464,13 +459,13 @@ public class RcaController {
             if (!rcaEnabled) {
                 // Need to shutdown the rca scheduler
                 stop();
-                CommonStats.RCA_RUNTIME_METRICS_AGGREGATOR.updateStat(
-                        RcaRuntimeMetrics.RCA_STOPPED_BY_OPERATOR, "", 1);
+                ServiceMetrics.RCA_RUNTIME_METRICS_AGGREGATOR.updateStat(
+                        RcaRuntimeMetrics.RCA_STOPPED_BY_OPERATOR, 1);
             } else {
                 if (rcaScheduler.getRole() != currentRole) {
                     restart();
-                    CommonStats.RCA_RUNTIME_METRICS_AGGREGATOR.updateStat(
-                            RcaRuntimeMetrics.RCA_RESTARTED_BY_OPERATOR, "", 1);
+                    ServiceMetrics.RCA_RUNTIME_METRICS_AGGREGATOR.updateStat(
+                            RcaRuntimeMetrics.RCA_RESTARTED_BY_OPERATOR, 1);
                 }
             }
         } else {

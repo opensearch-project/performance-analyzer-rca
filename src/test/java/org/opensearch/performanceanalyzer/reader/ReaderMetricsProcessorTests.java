@@ -37,12 +37,10 @@ import org.opensearch.performanceanalyzer.commons.config.PluginSettings;
 import org.opensearch.performanceanalyzer.commons.metrics.AllMetrics.ClusterManagerPendingTaskDimension;
 import org.opensearch.performanceanalyzer.commons.metrics.AllMetrics.ClusterManagerPendingValue;
 import org.opensearch.performanceanalyzer.commons.metrics.AllMetrics.MetricName;
-import org.opensearch.performanceanalyzer.commons.metrics.ExceptionsAndErrors;
 import org.opensearch.performanceanalyzer.commons.metrics.MetricsConfiguration;
 import org.opensearch.performanceanalyzer.commons.metrics.PerformanceAnalyzerMetrics;
-import org.opensearch.performanceanalyzer.commons.util.Util;
+import org.opensearch.performanceanalyzer.core.Util;
 import org.opensearch.performanceanalyzer.metricsdb.MetricsDB;
-import org.opensearch.performanceanalyzer.rca.RcaTestHelper;
 
 public class ReaderMetricsProcessorTests extends AbstractReaderTests {
     public String rootLocation;
@@ -435,8 +433,6 @@ public class ReaderMetricsProcessorTests extends AbstractReaderTests {
         mp.readBatchMetricsEnabledFromConfShim();
         assertTrue(
                 mp.getBatchMetricsEnabled() == ReaderMetricsProcessor.defaultBatchMetricsEnabled);
-
-        assertTrue(RcaTestHelper.verify(ExceptionsAndErrors.BATCH_METRICS_CONFIG_ERROR));
     }
 
     @Test

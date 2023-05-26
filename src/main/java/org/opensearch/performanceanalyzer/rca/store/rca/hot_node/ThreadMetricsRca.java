@@ -18,7 +18,7 @@ import org.apache.logging.log4j.Logger;
 import org.jooq.Record;
 import org.jooq.Result;
 import org.opensearch.performanceanalyzer.commons.metrics.AllMetrics;
-import org.opensearch.performanceanalyzer.commons.stats.CommonStats;
+import org.opensearch.performanceanalyzer.commons.stats.ServiceMetrics;
 import org.opensearch.performanceanalyzer.grpc.FlowUnitMessage;
 import org.opensearch.performanceanalyzer.metricsdb.MetricsDB;
 import org.opensearch.performanceanalyzer.rca.framework.api.Metric;
@@ -116,28 +116,24 @@ public class ThreadMetricsRca extends Rca<ResourceFlowUnit<HotNodeSummary>> {
     private void publishStats() {
         threadAnalyses.forEach(
                 analysis -> {
-                    CommonStats.RCA_RUNTIME_METRICS_AGGREGATOR.updateStat(
+                    ServiceMetrics.RCA_RUNTIME_METRICS_AGGREGATOR.updateStat(
                             analysis.getBlockedThreadCountMetric(),
-                            "",
                             analysis.getBlockedTimeWindow()
                                     .getCountExceedingThreshold(
                                             HIGH_BLOCKED_TIME_THRESHOLD_IN_SECONDS));
 
-                    CommonStats.RCA_RUNTIME_METRICS_AGGREGATOR.updateStat(
+                    ServiceMetrics.RCA_RUNTIME_METRICS_AGGREGATOR.updateStat(
                             analysis.getMaxBlockedTimeMetric(),
-                            "",
                             analysis.getBlockedTimeWindow().getMaxSum());
 
-                    CommonStats.RCA_RUNTIME_METRICS_AGGREGATOR.updateStat(
+                    ServiceMetrics.RCA_RUNTIME_METRICS_AGGREGATOR.updateStat(
                             analysis.getWaitedThreadCountMetric(),
-                            "",
                             analysis.getWaitedTimeWindow()
                                     .getCountExceedingThreshold(
                                             HIGH_BLOCKED_TIME_THRESHOLD_IN_SECONDS));
 
-                    CommonStats.RCA_RUNTIME_METRICS_AGGREGATOR.updateStat(
+                    ServiceMetrics.RCA_RUNTIME_METRICS_AGGREGATOR.updateStat(
                             analysis.getMaxWaitedTimeMetric(),
-                            "",
                             analysis.getWaitedTimeWindow().getMaxSum());
                 });
     }

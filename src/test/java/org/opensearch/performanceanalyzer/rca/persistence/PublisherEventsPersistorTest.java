@@ -19,6 +19,7 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.opensearch.performanceanalyzer.PerformanceAnalyzerApp;
 import org.opensearch.performanceanalyzer.decisionmaker.actions.Action;
 import org.opensearch.performanceanalyzer.decisionmaker.actions.ImpactVector;
 import org.opensearch.performanceanalyzer.rca.framework.util.InstanceDetails;
@@ -35,6 +36,8 @@ public class PublisherEventsPersistorTest {
 
     @Before
     public void init() throws Exception {
+        PerformanceAnalyzerApp.initAggregators();
+
         String cwd = System.getProperty("user.dir");
         testLocation = Paths.get(cwd, "src", "test", "resources", "tmp", "file_rotate");
         Files.createDirectories(testLocation);
