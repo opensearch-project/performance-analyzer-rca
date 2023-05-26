@@ -42,7 +42,7 @@ import org.opensearch.performanceanalyzer.commons.event_process.EventProcessor;
 import org.opensearch.performanceanalyzer.commons.metrics.AllMetrics;
 import org.opensearch.performanceanalyzer.commons.metrics.MetricsConfiguration;
 import org.opensearch.performanceanalyzer.commons.metrics.PerformanceAnalyzerMetrics;
-import org.opensearch.performanceanalyzer.commons.stats.CommonStats;
+import org.opensearch.performanceanalyzer.commons.stats.ServiceMetrics;
 import org.opensearch.performanceanalyzer.commons.stats.metrics.StatExceptionCode;
 import org.opensearch.performanceanalyzer.config.overrides.ConfigOverridesApplier;
 import org.opensearch.performanceanalyzer.core.Util;
@@ -381,7 +381,7 @@ public class ReaderMetricsProcessor implements Runnable {
 
         long mFinalT = System.currentTimeMillis();
         LOG.debug("Total time taken for aligning OS Metrics: {}", mFinalT - mCurrT);
-        CommonStats.READER_METRICS_AGGREGATOR.updateStat(
+        ServiceMetrics.READER_METRICS_AGGREGATOR.updateStat(
                 ReaderMetrics.READER_OS_METRICS_EMIT_TIME, (double) (mFinalT - mCurrT));
 
         mCurrT = System.currentTimeMillis();
@@ -400,14 +400,14 @@ public class ReaderMetricsProcessor implements Runnable {
 
         metricsDB.commit();
         metricsDBMap.put(prevWindowStartTime, metricsDB);
-        CommonStats.READER_METRICS_AGGREGATOR.updateStat(
+        ServiceMetrics.READER_METRICS_AGGREGATOR.updateStat(
                 ReaderMetrics.METRICSDB_FILE_SIZE, new File(metricsDB.getDBFilePath()).length());
         if (batchMetricsEnabled) {
             batchMetricsDBSet.add(prevWindowStartTime);
         }
         mFinalT = System.currentTimeMillis();
         LOG.debug("Total time taken for emitting Metrics: {}", mFinalT - mCurrT);
-        CommonStats.READER_METRICS_AGGREGATOR.updateStat(
+        ServiceMetrics.READER_METRICS_AGGREGATOR.updateStat(
                 ReaderMetrics.READER_METRICS_EMIT_TIME, (double) (mFinalT - mCurrT));
     }
 
@@ -452,7 +452,7 @@ public class ReaderMetricsProcessor implements Runnable {
                 LOG.debug("OS METRICS NULL");
             }
             alignedOSSnapHolder.remove();
-            CommonStats.READER_METRICS_AGGREGATOR.updateStat(
+            ServiceMetrics.READER_METRICS_AGGREGATOR.updateStat(
                     ReaderMetrics.SHARD_REQUEST_METRICS_EMITTER_EXECUTION_TIME,
                     System.currentTimeMillis() - mCurrT);
         } else {
@@ -722,7 +722,7 @@ public class ReaderMetricsProcessor implements Runnable {
         }
         long mFinalT = System.currentTimeMillis();
         LOG.debug("Total time taken for processing Metrics: {}", mFinalT - mCurrT);
-        CommonStats.READER_METRICS_AGGREGATOR.updateStat(
+        ServiceMetrics.READER_METRICS_AGGREGATOR.updateStat(
                 ReaderMetrics.READER_METRICS_PROCESS_TIME, (double) (mFinalT - mCurrT));
     }
 

@@ -14,6 +14,6 @@ public class JvmTotalMem implements ISampler {
     @Override
     public void sample(SampleAggregator sampleCollector) {
         sampleCollector.updateStat(
-                JvmMetrics.JVM_TOTAL_MEM_SAMPLER, "", Runtime.getRuntime().totalMemory());
+                JvmMetrics.JVM_TOTAL_MEM_SAMPLER, Runtime.getRuntime().totalMemory());
     }
 }

@@ -25,7 +25,7 @@ public class BatchMetricsEnabledSampler implements ISampler {
     @Override
     public void sample(SampleAggregator sampleCollector) {
         sampleCollector.updateStat(
-                ReaderMetrics.BATCH_METRICS_ENABLED, "", isBatchMetricsEnabled() ? 1 : 0);
+                ReaderMetrics.BATCH_METRICS_ENABLED, isBatchMetricsEnabled() ? 1 : 0);
     }
 
     boolean isBatchMetricsEnabled() {

@@ -27,7 +27,7 @@ import org.jooq.Result;
 import org.jooq.exception.DataAccessException;
 import org.opensearch.performanceanalyzer.commons.collectors.StatsCollector;
 import org.opensearch.performanceanalyzer.commons.config.PluginSettings;
-import org.opensearch.performanceanalyzer.commons.stats.CommonStats;
+import org.opensearch.performanceanalyzer.commons.stats.ServiceMetrics;
 import org.opensearch.performanceanalyzer.commons.stats.metrics.StatExceptionCode;
 import org.opensearch.performanceanalyzer.metrics.MetricsRestUtil;
 import org.opensearch.performanceanalyzer.metricsdb.MetricsDB;
@@ -200,10 +200,10 @@ public class QueryBatchRequestHandler extends MetricsHandler implements HttpHand
                             endTime,
                             samplingPeriod,
                             DEFAULT_MAX_DATAPOINTS);
-            CommonStats.READER_METRICS_AGGREGATOR.updateStat(
+            ServiceMetrics.READER_METRICS_AGGREGATOR.updateStat(
                     ReaderMetrics.BATCH_METRICS_QUERY_PROCESSING_TIME,
                     System.currentTimeMillis() - processingStartTime);
-            CommonStats.READER_METRICS_AGGREGATOR.updateStat(
+            ServiceMetrics.READER_METRICS_AGGREGATOR.updateStat(
                     ReaderMetrics.BATCH_METRICS_HTTP_SUCCESS, 1);
             sendResponse(exchange, queryResponse, HttpURLConnection.HTTP_OK);
         } catch (DataAccessException e) {

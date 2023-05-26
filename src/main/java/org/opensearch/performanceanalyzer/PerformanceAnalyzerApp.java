@@ -5,20 +5,12 @@
 
 package org.opensearch.performanceanalyzer;
 
-import static org.opensearch.performanceanalyzer.commons.stats.CommonStats.PERIODIC_SAMPLE_AGGREGATOR;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.sun.net.httpserver.HttpServer;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
+import java.util.*;
+import java.util.concurrent.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.opensearch.performanceanalyzer.collectors.*;
@@ -26,13 +18,12 @@ import org.opensearch.performanceanalyzer.commons.collectors.StatsCollector;
 import org.opensearch.performanceanalyzer.commons.config.ConfigStatus;
 import org.opensearch.performanceanalyzer.commons.config.PluginSettings;
 import org.opensearch.performanceanalyzer.commons.metrics.MetricsConfiguration;
-import org.opensearch.performanceanalyzer.commons.stats.CommonStats;
+import org.opensearch.performanceanalyzer.commons.stats.ServiceMetrics;
 import org.opensearch.performanceanalyzer.commons.stats.collectors.SampleAggregator;
 import org.opensearch.performanceanalyzer.commons.stats.emitters.ISampler;
 import org.opensearch.performanceanalyzer.commons.stats.emitters.PeriodicSamplers;
 import org.opensearch.performanceanalyzer.commons.stats.listeners.IListener;
 import org.opensearch.performanceanalyzer.commons.stats.measurements.MeasurementSet;
-import org.opensearch.performanceanalyzer.commons.stats.metrics.ExceptionsAndErrors;
 import org.opensearch.performanceanalyzer.commons.stats.metrics.StatExceptionCode;
 import org.opensearch.performanceanalyzer.config.TroubleshootingConfig;
 import org.opensearch.performanceanalyzer.core.Util;
@@ -50,11 +41,7 @@ import org.opensearch.performanceanalyzer.os.ThreadDiskIO;
 import org.opensearch.performanceanalyzer.os.ThreadSched;
 import org.opensearch.performanceanalyzer.rca.RcaController;
 import org.opensearch.performanceanalyzer.rca.framework.core.MetricsDBProvider;
-import org.opensearch.performanceanalyzer.rca.framework.metrics.JvmMetrics;
-import org.opensearch.performanceanalyzer.rca.framework.metrics.RcaGraphMetrics;
-import org.opensearch.performanceanalyzer.rca.framework.metrics.RcaRuntimeMetrics;
-import org.opensearch.performanceanalyzer.rca.framework.metrics.RcaVerticesMetrics;
-import org.opensearch.performanceanalyzer.rca.framework.metrics.ReaderMetrics;
+import org.opensearch.performanceanalyzer.rca.framework.metrics.*;
 import org.opensearch.performanceanalyzer.rca.framework.sys.AllJvmSamplers;
 import org.opensearch.performanceanalyzer.rca.framework.util.RcaConsts;
 import org.opensearch.performanceanalyzer.rca.listener.MisbehavingGraphOperateMethodListener;
@@ -69,8 +56,9 @@ import org.opensearch.performanceanalyzer.threads.exceptions.PAThreadException;
 
 public class PerformanceAnalyzerApp {
 
-    private static final int EXCEPTION_QUEUE_LENGTH = 1;
     private static final Logger LOG = LogManager.getLogger(PerformanceAnalyzerApp.class);
+
+    private static final int EXCEPTION_QUEUE_LENGTH = 1;
     private static final ScheduledMetricCollectorsExecutor METRIC_COLLECTOR_EXECUTOR =
             new ScheduledMetricCollectorsExecutor(1, false);
     private static final ScheduledExecutorService netOperationsExecutor =
@@ -80,33 +68,29 @@ public class PerformanceAnalyzerApp {
     private static RcaController rcaController = null;
     private static final ThreadProvider THREAD_PROVIDER = new ThreadProvider();
 
-    public static IListener MISBEHAVING_NODES_LISTENER =
-            new MisbehavingGraphOperateMethodListener();
-
     public static void initAggregators() {
-        if (CommonStats.RCA_STATS_REPORTER != null) {
-            return;
-        }
-        CommonStats.RCA_GRAPH_METRICS_AGGREGATOR = new SampleAggregator(RcaGraphMetrics.values());
-        CommonStats.RCA_RUNTIME_METRICS_AGGREGATOR =
+        ServiceMetrics.READER_METRICS_AGGREGATOR = new SampleAggregator(ReaderMetrics.values());
+        ServiceMetrics.RCA_GRAPH_METRICS_AGGREGATOR =
+                new SampleAggregator(RcaGraphMetrics.values());
+        ServiceMetrics.RCA_RUNTIME_METRICS_AGGREGATOR =
                 new SampleAggregator(RcaRuntimeMetrics.values());
-        CommonStats.RCA_VERTICES_METRICS_AGGREGATOR =
+        ServiceMetrics.RCA_VERTICES_METRICS_AGGREGATOR =
                 new SampleAggregator(RcaVerticesMetrics.values());
-        CommonStats.READER_METRICS_AGGREGATOR = new SampleAggregator(ReaderMetrics.values());
-
-        CommonStats.ERRORS_AND_EXCEPTIONS_AGGREGATOR =
+        final IListener MISBEHAVING_NODES_LISTENER = new MisbehavingGraphOperateMethodListener();
+        ServiceMetrics.ERRORS_AND_EXCEPTIONS_AGGREGATOR =
                 new SampleAggregator(
                         MISBEHAVING_NODES_LISTENER.getMeasurementsListenedTo(),
                         MISBEHAVING_NODES_LISTENER,
                         ExceptionsAndErrors.values());
-
-        PERIODIC_SAMPLE_AGGREGATOR = new SampleAggregator(getPeriodicMeasurementSets());
-
-        CommonStats.initStatsReporter();
+        ServiceMetrics.PERIODIC_SAMPLE_AGGREGATOR =
+                new SampleAggregator(getPeriodicMeasurementSets());
+        ServiceMetrics.initStatsReporter();
     }
 
     static {
         initAggregators();
+        Objects.requireNonNull(
+                ServiceMetrics.STATS_REPORTER, "Service Metrics(Stat) Reporter should not be null");
     }
 
     public static PeriodicSamplers PERIODIC_SAMPLERS;
@@ -148,7 +132,7 @@ public class PerformanceAnalyzerApp {
             AppContext appContext = new AppContext();
             PERIODIC_SAMPLERS =
                     new PeriodicSamplers(
-                            CommonStats.PERIODIC_SAMPLE_AGGREGATOR,
+                            ServiceMetrics.PERIODIC_SAMPLE_AGGREGATOR,
                             getAllSamplers(appContext),
                             (MetricsConfiguration.CONFIG_MAP.get(StatsCollector.class)
                                             .samplingInterval)

@@ -10,11 +10,11 @@ import java.util.ArrayList;
 import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.opensearch.performanceanalyzer.commons.stats.CommonStats;
-import org.opensearch.performanceanalyzer.commons.stats.metrics.ExceptionsAndErrors;
+import org.opensearch.performanceanalyzer.commons.stats.ServiceMetrics;
 import org.opensearch.performanceanalyzer.grpc.FlowUnitMessage;
 import org.opensearch.performanceanalyzer.rca.framework.api.flow_units.NodeConfigFlowUnit;
 import org.opensearch.performanceanalyzer.rca.framework.core.NonLeafNode;
+import org.opensearch.performanceanalyzer.rca.framework.metrics.ExceptionsAndErrors;
 import org.opensearch.performanceanalyzer.rca.framework.metrics.RcaGraphMetrics;
 import org.opensearch.performanceanalyzer.rca.scheduler.FlowUnitOperationArgWrapper;
 
@@ -43,14 +43,14 @@ public abstract class OpenSearchConfigNode extends NonLeafNode<NodeConfigFlowUni
             result = this.operate();
         } catch (Exception ex) {
             LOG.error("Exception in operate.", ex);
-            CommonStats.ERRORS_AND_EXCEPTIONS_AGGREGATOR.updateStat(
+            ServiceMetrics.ERRORS_AND_EXCEPTIONS_AGGREGATOR.updateStat(
                     ExceptionsAndErrors.EXCEPTION_IN_OPERATE, name(), 1);
             result = new NodeConfigFlowUnit(System.currentTimeMillis());
         }
         long endTime = System.currentTimeMillis();
         long duration = endTime - startTime;
 
-        CommonStats.RCA_GRAPH_METRICS_AGGREGATOR.updateStat(
+        ServiceMetrics.RCA_GRAPH_METRICS_AGGREGATOR.updateStat(
                 RcaGraphMetrics.GRAPH_NODE_OPERATE_CALL, this.name(), duration);
 
         setLocalFlowUnit(result);

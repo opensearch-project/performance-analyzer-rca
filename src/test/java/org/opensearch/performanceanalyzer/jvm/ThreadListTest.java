@@ -11,14 +11,15 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.opensearch.performanceanalyzer.OSMetricsGeneratorFactory;
-import org.opensearch.performanceanalyzer.commons.metrics.ExceptionsAndErrors;
+import org.opensearch.performanceanalyzer.commons.stats.metrics.StatExceptionCode;
 import org.opensearch.performanceanalyzer.rca.RcaTestHelper;
 
-// This test only runs in linux systems as the some of the static members of the ThreadList
+// This test only runs in linux systems as the some static members of the ThreadList
 // class are specific to Linux.
 public class ThreadListTest {
     @Before
     public void before() {
+        System.setProperty("performanceanalyzer.metrics.log.enabled", "False");
         org.junit.Assume.assumeNotNull(OSMetricsGeneratorFactory.getInstance());
     }
 
@@ -33,7 +34,9 @@ public class ThreadListTest {
         infos[0] = null;
 
         ThreadList.parseAllThreadInfos(infos);
-        Assert.assertTrue(RcaTestHelper.verify(ExceptionsAndErrors.JVM_THREAD_ID_NO_LONGER_EXISTS));
+        Assert.assertTrue(
+                RcaTestHelper.verifyStatException(
+                        StatExceptionCode.JVM_THREAD_ID_NO_LONGER_EXISTS.toString()));
         if (old_clk_tck != null) {
             System.setProperty(propertyName, old_clk_tck);
         }

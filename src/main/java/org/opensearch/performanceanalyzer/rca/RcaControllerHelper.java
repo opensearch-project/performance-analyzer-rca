@@ -23,7 +23,7 @@ import java.util.concurrent.TimeUnit;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.opensearch.performanceanalyzer.commons.metrics.AllMetrics;
-import org.opensearch.performanceanalyzer.commons.stats.CommonStats;
+import org.opensearch.performanceanalyzer.commons.stats.ServiceMetrics;
 import org.opensearch.performanceanalyzer.rca.framework.core.RcaConf;
 import org.opensearch.performanceanalyzer.rca.framework.metrics.RcaRuntimeMetrics;
 import org.opensearch.performanceanalyzer.rca.framework.util.RcaConsts;
@@ -73,7 +73,7 @@ public class RcaControllerHelper {
     public static String getElectedClusterManagerHostAddress() {
         try {
             LOG.info("Making _cat/cluster_manager call");
-            CommonStats.RCA_RUNTIME_METRICS_AGGREGATOR.updateStat(
+            ServiceMetrics.RCA_RUNTIME_METRICS_AGGREGATOR.updateStat(
                     RcaRuntimeMetrics.OPEN_SEARCH_APIS_CALLED, "catClusterManager", 1);
 
             final URL url = new URL(CAT_CLUSTER_MANAGER_URL);

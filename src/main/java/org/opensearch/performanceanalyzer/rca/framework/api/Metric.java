@@ -13,12 +13,12 @@ import org.jooq.Record;
 import org.jooq.Result;
 import org.jooq.exception.DataAccessException;
 import org.opensearch.performanceanalyzer.commons.metrics.AllMetrics;
-import org.opensearch.performanceanalyzer.commons.stats.CommonStats;
-import org.opensearch.performanceanalyzer.commons.stats.metrics.ExceptionsAndErrors;
+import org.opensearch.performanceanalyzer.commons.stats.ServiceMetrics;
 import org.opensearch.performanceanalyzer.metricsdb.MetricsDB;
 import org.opensearch.performanceanalyzer.rca.framework.api.flow_units.MetricFlowUnit;
 import org.opensearch.performanceanalyzer.rca.framework.core.LeafNode;
 import org.opensearch.performanceanalyzer.rca.framework.core.Queryable;
+import org.opensearch.performanceanalyzer.rca.framework.metrics.ExceptionsAndErrors;
 import org.opensearch.performanceanalyzer.rca.framework.metrics.RcaGraphMetrics;
 import org.opensearch.performanceanalyzer.rca.scheduler.FlowUnitOperationArgWrapper;
 
@@ -52,7 +52,7 @@ public abstract class Metric extends LeafNode<MetricFlowUnit> {
         try {
             db = queryable.getMetricsDB();
         } catch (Exception e) {
-            CommonStats.ERRORS_AND_EXCEPTIONS_AGGREGATOR.updateStat(
+            ServiceMetrics.ERRORS_AND_EXCEPTIONS_AGGREGATOR.updateStat(
                     ExceptionsAndErrors.EXCEPTION_IN_GATHER, name(), 1);
             // TODO: Emit log/stats that gathering failed.
             LOG.error("RCA: Caught an exception while getting the DB", e);
@@ -70,7 +70,7 @@ public abstract class Metric extends LeafNode<MetricFlowUnit> {
             // if RCA is trying to read node stats which are not enabled yet.
             LOG.warn("Looking for metric {}, when it does not exist.", name);
         } catch (Exception e) {
-            CommonStats.ERRORS_AND_EXCEPTIONS_AGGREGATOR.updateStat(
+            ServiceMetrics.ERRORS_AND_EXCEPTIONS_AGGREGATOR.updateStat(
                     ExceptionsAndErrors.EXCEPTION_IN_GATHER, name(), 1);
             LOG.error("Metric exception:", e);
         }
@@ -83,7 +83,7 @@ public abstract class Metric extends LeafNode<MetricFlowUnit> {
         long endTime = System.currentTimeMillis();
         long duration = endTime - startTime;
 
-        CommonStats.RCA_GRAPH_METRICS_AGGREGATOR.updateStat(
+        ServiceMetrics.RCA_GRAPH_METRICS_AGGREGATOR.updateStat(
                 RcaGraphMetrics.METRIC_GATHER_CALL, this.name(), duration);
         setFlowUnits(Collections.singletonList(mfu));
     }

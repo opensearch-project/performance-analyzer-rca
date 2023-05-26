@@ -13,7 +13,7 @@ import org.opensearch.performanceanalyzer.commons.metrics.MetricsConfiguration;
 import org.opensearch.performanceanalyzer.commons.metrics.MetricsProcessor;
 import org.opensearch.performanceanalyzer.commons.metrics.PerformanceAnalyzerMetrics;
 import org.opensearch.performanceanalyzer.commons.stats.metrics.StatExceptionCode;
-import org.opensearch.performanceanalyzer.commons.stats.metrics.WriterMetrics;
+import org.opensearch.performanceanalyzer.commons.stats.metrics.StatMetrics;
 import org.opensearch.performanceanalyzer.metrics_generator.MountedPartitionMetricsGenerator;
 import org.opensearch.performanceanalyzer.metrics_generator.OSMetricsGenerator;
 
@@ -29,7 +29,7 @@ public class MountedPartitionMetricsCollector extends PerformanceAnalyzerMetrics
         super(
                 SAMPLING_TIME_INTERVAL,
                 "MountedPartition",
-                WriterMetrics.MOUNTED_PARTITION_METRICS_COLLECTOR_EXECUTION_TIME,
+                StatMetrics.MOUNTED_PARTITION_METRICS_COLLECTOR_EXECUTION_TIME,
                 StatExceptionCode.MOUNTED_PARTITION_METRICS_COLLECTOR_ERROR);
     }
 

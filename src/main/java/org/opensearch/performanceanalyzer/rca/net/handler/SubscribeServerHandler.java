@@ -13,7 +13,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.opensearch.performanceanalyzer.commons.collectors.StatsCollector;
-import org.opensearch.performanceanalyzer.commons.stats.CommonStats;
+import org.opensearch.performanceanalyzer.commons.stats.ServiceMetrics;
 import org.opensearch.performanceanalyzer.commons.stats.metrics.StatExceptionCode;
 import org.opensearch.performanceanalyzer.grpc.SubscribeMessage;
 import org.opensearch.performanceanalyzer.grpc.SubscribeResponse;
@@ -46,7 +46,7 @@ public class SubscribeServerHandler {
             try {
                 executorService.execute(
                         new SubscriptionRxTask(subscriptionManager, subscribeRequest));
-                CommonStats.RCA_GRAPH_METRICS_AGGREGATOR.updateStat(
+                ServiceMetrics.RCA_GRAPH_METRICS_AGGREGATOR.updateStat(
                         RcaGraphMetrics.NET_BYTES_IN,
                         subscribeRequest.getSubscribeMessage().getRequesterGraphNode(),
                         subscribeRequest.getSubscribeMessage().getSerializedSize());

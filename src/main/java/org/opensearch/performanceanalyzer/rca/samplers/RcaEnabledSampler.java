@@ -24,7 +24,7 @@ public class RcaEnabledSampler implements ISampler {
 
     @Override
     public void sample(SampleAggregator sampleCollector) {
-        sampleCollector.updateStat(RcaRuntimeMetrics.RCA_ENABLED, "", isRcaEnabled() ? 1 : 0);
+        sampleCollector.updateStat(RcaRuntimeMetrics.RCA_ENABLED, isRcaEnabled() ? 1 : 0);
     }
 
     boolean isRcaEnabled() {

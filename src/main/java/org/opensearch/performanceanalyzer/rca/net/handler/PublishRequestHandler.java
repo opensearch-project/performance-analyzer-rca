@@ -16,7 +16,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.opensearch.performanceanalyzer.commons.collectors.StatsCollector;
-import org.opensearch.performanceanalyzer.commons.stats.CommonStats;
+import org.opensearch.performanceanalyzer.commons.stats.ServiceMetrics;
 import org.opensearch.performanceanalyzer.commons.stats.metrics.StatExceptionCode;
 import org.opensearch.performanceanalyzer.grpc.FlowUnitMessage;
 import org.opensearch.performanceanalyzer.grpc.PublishResponse;
@@ -103,7 +103,7 @@ public class PublishRequestHandler {
                     executorService.execute(
                             new FlowUnitRxTask(
                                     nodeStateManager, receivedFlowUnitStore, flowUnitMessage));
-                    CommonStats.RCA_GRAPH_METRICS_AGGREGATOR.updateStat(
+                    ServiceMetrics.RCA_GRAPH_METRICS_AGGREGATOR.updateStat(
                             RcaGraphMetrics.NET_BYTES_IN,
                             flowUnitMessage.getGraphNode(),
                             flowUnitMessage.getSerializedSize());

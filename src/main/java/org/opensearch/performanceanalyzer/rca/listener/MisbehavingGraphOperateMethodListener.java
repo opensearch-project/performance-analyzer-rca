@@ -16,8 +16,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.opensearch.performanceanalyzer.commons.stats.listeners.IListener;
 import org.opensearch.performanceanalyzer.commons.stats.measurements.MeasurementSet;
-import org.opensearch.performanceanalyzer.commons.stats.metrics.ExceptionsAndErrors;
 import org.opensearch.performanceanalyzer.rca.framework.core.Stats;
+import org.opensearch.performanceanalyzer.rca.framework.metrics.ExceptionsAndErrors;
 
 public class MisbehavingGraphOperateMethodListener implements IListener {
     private static final Logger LOG =

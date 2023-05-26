@@ -14,7 +14,7 @@ import org.opensearch.performanceanalyzer.commons.metrics.MetricsConfiguration;
 import org.opensearch.performanceanalyzer.commons.metrics.MetricsProcessor;
 import org.opensearch.performanceanalyzer.commons.metrics.PerformanceAnalyzerMetrics;
 import org.opensearch.performanceanalyzer.commons.stats.metrics.StatExceptionCode;
-import org.opensearch.performanceanalyzer.commons.stats.metrics.WriterMetrics;
+import org.opensearch.performanceanalyzer.commons.stats.metrics.StatMetrics;
 import org.opensearch.performanceanalyzer.jvm.ThreadList;
 import org.opensearch.performanceanalyzer.metrics_generator.CPUPagingActivityGenerator;
 import org.opensearch.performanceanalyzer.metrics_generator.DiskIOMetricsGenerator;
@@ -37,7 +37,7 @@ public class OSMetricsCollector extends PerformanceAnalyzerMetricsCollector
         super(
                 SAMPLING_TIME_INTERVAL,
                 "OSMetrics",
-                WriterMetrics.OS_METRICS_COLLECTOR_EXECUTION_TIME,
+                StatMetrics.OS_METRICS_COLLECTOR_EXECUTION_TIME,
                 StatExceptionCode.OS_METRICS_COLLECTOR_ERROR);
         value = new StringBuilder();
         osMetricsGenerator = OSMetricsGeneratorFactory.getInstance();

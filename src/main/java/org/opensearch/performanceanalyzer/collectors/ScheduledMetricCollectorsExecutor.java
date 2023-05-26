@@ -17,8 +17,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.opensearch.performanceanalyzer.commons.collectors.PerformanceAnalyzerMetricsCollector;
 import org.opensearch.performanceanalyzer.commons.collectors.StatsCollector;
-import org.opensearch.performanceanalyzer.commons.stats.CommonStats;
-import org.opensearch.performanceanalyzer.commons.stats.metrics.WriterMetrics;
+import org.opensearch.performanceanalyzer.commons.stats.ServiceMetrics;
+import org.opensearch.performanceanalyzer.commons.stats.metrics.StatMetrics;
 
 public class ScheduledMetricCollectorsExecutor extends Thread {
     private static final Logger LOG = LogManager.getLogger(ScheduledMetricCollectorsExecutor.class);
@@ -116,10 +116,8 @@ public class ScheduledMetricCollectorsExecutor extends Thread {
                         PerformanceAnalyzerMetricsCollector collector = entry.getKey();
                         if (collector.getState()
                                 == PerformanceAnalyzerMetricsCollector.State.MUTED) {
-                            CommonStats.WRITER_METRICS_AGGREGATOR.updateStat(
-                                    WriterMetrics.COLLECTORS_MUTED,
-                                    collector.getCollectorName(),
-                                    1);
+                            ServiceMetrics.COMMONS_STAT_METRICS_AGGREGATOR.updateStat(
+                                    StatMetrics.COLLECTORS_MUTED, collector.getCollectorName(), 1);
                             continue;
                         }
                         metricsCollectors.put(
@@ -143,8 +141,8 @@ public class ScheduledMetricCollectorsExecutor extends Thread {
                             if (collector.getState()
                                     == PerformanceAnalyzerMetricsCollector.State.HEALTHY) {
                                 collector.setState(PerformanceAnalyzerMetricsCollector.State.SLOW);
-                                CommonStats.WRITER_METRICS_AGGREGATOR.updateStat(
-                                        WriterMetrics.COLLECTORS_SLOW,
+                                ServiceMetrics.COMMONS_STAT_METRICS_AGGREGATOR.updateStat(
+                                        StatMetrics.COLLECTORS_SLOW,
                                         collector.getCollectorName(),
                                         1);
                             } else if (collector.getState()
@@ -154,8 +152,8 @@ public class ScheduledMetricCollectorsExecutor extends Thread {
                             LOG.info(
                                     "Collector {} is still in progress, so skipping this Interval",
                                     collector.getCollectorName());
-                            CommonStats.WRITER_METRICS_AGGREGATOR.updateStat(
-                                    WriterMetrics.COLLECTORS_SKIPPED,
+                            ServiceMetrics.COMMONS_STAT_METRICS_AGGREGATOR.updateStat(
+                                    StatMetrics.COLLECTORS_SKIPPED,
                                     collector.getCollectorName(),
                                     1);
                         }

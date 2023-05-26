@@ -31,7 +31,7 @@ import org.opensearch.performanceanalyzer.PerformanceAnalyzerThreads;
 import org.opensearch.performanceanalyzer.commons.collectors.StatsCollector;
 import org.opensearch.performanceanalyzer.commons.config.PluginSettings;
 import org.opensearch.performanceanalyzer.commons.metrics.AllMetrics;
-import org.opensearch.performanceanalyzer.commons.stats.CommonStats;
+import org.opensearch.performanceanalyzer.commons.stats.ServiceMetrics;
 import org.opensearch.performanceanalyzer.commons.stats.metrics.StatExceptionCode;
 import org.opensearch.performanceanalyzer.core.Util;
 import org.opensearch.performanceanalyzer.net.GRPCConnectionManager;
@@ -279,7 +279,7 @@ public class RcaController {
     private void restart() {
         stop();
         start();
-        CommonStats.RCA_RUNTIME_METRICS_AGGREGATOR.updateStat(
+        ServiceMetrics.RCA_RUNTIME_METRICS_AGGREGATOR.updateStat(
                 RcaRuntimeMetrics.RCA_SCHEDULER_RESTART, 1);
     }
 
@@ -459,12 +459,12 @@ public class RcaController {
             if (!rcaEnabled) {
                 // Need to shutdown the rca scheduler
                 stop();
-                CommonStats.RCA_RUNTIME_METRICS_AGGREGATOR.updateStat(
+                ServiceMetrics.RCA_RUNTIME_METRICS_AGGREGATOR.updateStat(
                         RcaRuntimeMetrics.RCA_STOPPED_BY_OPERATOR, 1);
             } else {
                 if (rcaScheduler.getRole() != currentRole) {
                     restart();
-                    CommonStats.RCA_RUNTIME_METRICS_AGGREGATOR.updateStat(
+                    ServiceMetrics.RCA_RUNTIME_METRICS_AGGREGATOR.updateStat(
                             RcaRuntimeMetrics.RCA_RESTARTED_BY_OPERATOR, 1);
                 }
             }

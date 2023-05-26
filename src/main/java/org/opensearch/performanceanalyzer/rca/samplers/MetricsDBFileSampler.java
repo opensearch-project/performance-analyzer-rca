@@ -84,13 +84,11 @@ public class MetricsDBFileSampler implements ISampler {
         numMetricsdbFiles += numUncompressedMetricsdbFiles;
         sizeMetricsdbFiles += sizeUncompressedMetricsdbFiles;
 
-        sampleCollector.updateStat(ReaderMetrics.METRICSDB_NUM_FILES, "", numMetricsdbFiles);
-        sampleCollector.updateStat(ReaderMetrics.METRICSDB_SIZE_FILES, "", sizeMetricsdbFiles);
+        sampleCollector.updateStat(ReaderMetrics.METRICSDB_NUM_FILES, numMetricsdbFiles);
+        sampleCollector.updateStat(ReaderMetrics.METRICSDB_SIZE_FILES, sizeMetricsdbFiles);
         sampleCollector.updateStat(
-                ReaderMetrics.METRICSDB_NUM_UNCOMPRESSED_FILES, "", numUncompressedMetricsdbFiles);
+                ReaderMetrics.METRICSDB_NUM_UNCOMPRESSED_FILES, numUncompressedMetricsdbFiles);
         sampleCollector.updateStat(
-                ReaderMetrics.METRICSDB_SIZE_UNCOMPRESSED_FILES,
-                "",
-                sizeUncompressedMetricsdbFiles);
+                ReaderMetrics.METRICSDB_SIZE_UNCOMPRESSED_FILES, sizeUncompressedMetricsdbFiles);
     }
 }

@@ -8,7 +8,7 @@ package org.opensearch.performanceanalyzer.rca.scheduler;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.opensearch.performanceanalyzer.commons.stats.CommonStats;
+import org.opensearch.performanceanalyzer.commons.stats.ServiceMetrics;
 import org.opensearch.performanceanalyzer.rca.framework.core.Stats;
 import org.opensearch.performanceanalyzer.rca.framework.metrics.RcaGraphMetrics;
 
@@ -22,15 +22,15 @@ public class GraphNodeOperations {
         }
         args.getNode().generateFlowUnitListFromLocal(args);
         args.getNode().persistFlowUnit(args);
-        CommonStats.RCA_GRAPH_METRICS_AGGREGATOR.updateStat(
-                RcaGraphMetrics.NUM_NODES_EXECUTED_LOCALLY, "", 1);
+        ServiceMetrics.RCA_GRAPH_METRICS_AGGREGATOR.updateStat(
+                RcaGraphMetrics.NUM_NODES_EXECUTED_LOCALLY, 1);
     }
 
     // This is the abstraction for when the data arrives on the wire from a remote dependency.
     static void readFromWire(FlowUnitOperationArgWrapper args) {
         // flowUnits.forEach(i -> LOG.info("rca: Read from wire: {}", i));
         args.getNode().generateFlowUnitListFromWire(args);
-        CommonStats.RCA_GRAPH_METRICS_AGGREGATOR.updateStat(
-                RcaGraphMetrics.NUM_NODES_EXECUTED_REMOTELY, "", 1);
+        ServiceMetrics.RCA_GRAPH_METRICS_AGGREGATOR.updateStat(
+                RcaGraphMetrics.NUM_NODES_EXECUTED_REMOTELY, 1);
     }
 }

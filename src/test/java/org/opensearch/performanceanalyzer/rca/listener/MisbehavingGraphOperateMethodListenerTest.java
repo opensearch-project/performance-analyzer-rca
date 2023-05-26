@@ -16,7 +16,6 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.opensearch.performanceanalyzer.AppContext;
 import org.opensearch.performanceanalyzer.commons.collectors.StatsCollector;
-import org.opensearch.performanceanalyzer.commons.metrics.ExceptionsAndErrors;
 import org.opensearch.performanceanalyzer.rca.RcaTestHelper;
 import org.opensearch.performanceanalyzer.rca.framework.api.AnalysisGraph;
 import org.opensearch.performanceanalyzer.rca.framework.api.Metric;
@@ -29,6 +28,7 @@ import org.opensearch.performanceanalyzer.rca.framework.api.metrics.Sched_Waitti
 import org.opensearch.performanceanalyzer.rca.framework.core.ConnectedComponent;
 import org.opensearch.performanceanalyzer.rca.framework.core.RcaConf;
 import org.opensearch.performanceanalyzer.rca.framework.core.Stats;
+import org.opensearch.performanceanalyzer.rca.framework.metrics.ExceptionsAndErrors;
 import org.opensearch.performanceanalyzer.rca.framework.util.RcaConsts;
 import org.opensearch.performanceanalyzer.rca.framework.util.RcaUtil;
 import org.opensearch.performanceanalyzer.rca.scheduler.RCASchedulerTask;

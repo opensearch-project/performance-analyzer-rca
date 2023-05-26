@@ -39,7 +39,7 @@ import org.opensearch.performanceanalyzer.PerformanceAnalyzerThreads;
 import org.opensearch.performanceanalyzer.commons.config.PluginSettings;
 import org.opensearch.performanceanalyzer.commons.event_process.Event;
 import org.opensearch.performanceanalyzer.commons.metrics.AllMetrics;
-import org.opensearch.performanceanalyzer.commons.metrics.ExceptionsAndErrors;
+import org.opensearch.performanceanalyzer.commons.stats.metrics.StatExceptionCode;
 import org.opensearch.performanceanalyzer.net.GRPCConnectionManager;
 import org.opensearch.performanceanalyzer.rca.framework.core.ConnectedComponent;
 import org.opensearch.performanceanalyzer.rca.framework.core.RcaConf;
@@ -68,6 +68,8 @@ public class RcaControllerTest {
 
     @Before
     public void setUp() throws Exception {
+        System.setProperty("performanceanalyzer.metrics.log.enabled", "False");
+
         threadProvider = new ThreadProvider();
         String cwd = System.getProperty("user.dir");
         rcaEnabledFileLoc = Paths.get(cwd, "src", "test", "resources", "rca");
@@ -187,7 +189,9 @@ public class RcaControllerTest {
     @Test
     public void rcaFrameworkCrash() throws InterruptedException {
         controllerThread.interrupt();
-        Assert.assertTrue(RcaTestHelper.verify(ExceptionsAndErrors.RCA_FRAMEWORK_CRASH));
+        Assert.assertTrue(
+                RcaTestHelper.verifyStatException(
+                        StatExceptionCode.RCA_FRAMEWORK_CRASH.toString()));
     }
 
     @Test

@@ -21,7 +21,7 @@ import org.opensearch.performanceanalyzer.commons.metrics.MetricsConfiguration;
 import org.opensearch.performanceanalyzer.commons.metrics.MetricsProcessor;
 import org.opensearch.performanceanalyzer.commons.metrics.PerformanceAnalyzerMetrics;
 import org.opensearch.performanceanalyzer.commons.stats.metrics.StatExceptionCode;
-import org.opensearch.performanceanalyzer.commons.stats.metrics.WriterMetrics;
+import org.opensearch.performanceanalyzer.commons.stats.metrics.StatMetrics;
 import org.opensearch.performanceanalyzer.jvm.GCMetrics;
 import org.opensearch.performanceanalyzer.jvm.HeapMetrics;
 
@@ -36,7 +36,7 @@ public class HeapMetricsCollector extends PerformanceAnalyzerMetricsCollector
         super(
                 SAMPLING_TIME_INTERVAL,
                 "HeapMetrics",
-                WriterMetrics.HEAP_METRICS_COLLECTOR_EXECUTION_TIME,
+                StatMetrics.HEAP_METRICS_COLLECTOR_EXECUTION_TIME,
                 StatExceptionCode.HEAP_METRICS_COLLECTOR_ERROR);
     }
 

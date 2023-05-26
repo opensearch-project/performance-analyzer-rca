@@ -14,7 +14,7 @@ import org.opensearch.performanceanalyzer.commons.metrics.MetricsConfiguration;
 import org.opensearch.performanceanalyzer.commons.metrics.MetricsProcessor;
 import org.opensearch.performanceanalyzer.commons.metrics.PerformanceAnalyzerMetrics;
 import org.opensearch.performanceanalyzer.commons.stats.metrics.StatExceptionCode;
-import org.opensearch.performanceanalyzer.commons.stats.metrics.WriterMetrics;
+import org.opensearch.performanceanalyzer.commons.stats.metrics.StatMetrics;
 import org.opensearch.performanceanalyzer.metrics_generator.DiskMetricsGenerator;
 import org.opensearch.performanceanalyzer.metrics_generator.OSMetricsGenerator;
 
@@ -28,7 +28,7 @@ public class DisksCollector extends PerformanceAnalyzerMetricsCollector
         super(
                 sTimeInterval,
                 "DisksCollector",
-                WriterMetrics.DISKS_COLLECTOR_EXECUTION_TIME,
+                StatMetrics.DISKS_COLLECTOR_EXECUTION_TIME,
                 StatExceptionCode.DISK_METRICS_COLLECTOR_ERROR);
     }
 

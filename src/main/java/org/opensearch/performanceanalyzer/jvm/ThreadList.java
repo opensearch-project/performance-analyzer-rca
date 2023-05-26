@@ -28,9 +28,9 @@ import org.opensearch.performanceanalyzer.OSMetricsGeneratorFactory;
 import org.opensearch.performanceanalyzer.collectors.ScheduledMetricCollectorsExecutor;
 import org.opensearch.performanceanalyzer.commons.collectors.StatsCollector;
 import org.opensearch.performanceanalyzer.commons.metrics.MetricsConfiguration;
-import org.opensearch.performanceanalyzer.commons.stats.CommonStats;
+import org.opensearch.performanceanalyzer.commons.stats.ServiceMetrics;
 import org.opensearch.performanceanalyzer.commons.stats.metrics.StatExceptionCode;
-import org.opensearch.performanceanalyzer.commons.stats.metrics.WriterMetrics;
+import org.opensearch.performanceanalyzer.commons.stats.metrics.StatMetrics;
 import org.opensearch.performanceanalyzer.core.Util;
 import sun.tools.attach.HotSpotVirtualMachine;
 
@@ -197,8 +197,8 @@ public class ThreadList {
 
         try {
             vm.detach();
-            CommonStats.WRITER_METRICS_AGGREGATOR.updateStat(
-                    WriterMetrics.JVM_THREAD_DUMP_SUCCESSFUL, 1);
+            ServiceMetrics.COMMONS_STAT_METRICS_AGGREGATOR.updateStat(
+                    StatMetrics.JVM_THREAD_DUMP_SUCCESSFUL, 1);
         } catch (Exception ex) {
             StatsCollector.instance().logException(StatExceptionCode.JVM_ATTACH_ERROR);
         }

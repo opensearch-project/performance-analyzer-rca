@@ -8,10 +8,10 @@ package org.opensearch.performanceanalyzer.decisionmaker.deciders;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.opensearch.performanceanalyzer.commons.stats.CommonStats;
-import org.opensearch.performanceanalyzer.commons.stats.metrics.ExceptionsAndErrors;
+import org.opensearch.performanceanalyzer.commons.stats.ServiceMetrics;
 import org.opensearch.performanceanalyzer.rca.framework.core.NonLeafNode;
 import org.opensearch.performanceanalyzer.rca.framework.core.RcaConf;
+import org.opensearch.performanceanalyzer.rca.framework.metrics.ExceptionsAndErrors;
 import org.opensearch.performanceanalyzer.rca.framework.metrics.RcaGraphMetrics;
 import org.opensearch.performanceanalyzer.rca.scheduler.FlowUnitOperationArgWrapper;
 
@@ -54,13 +54,13 @@ public abstract class Decider extends NonLeafNode<Decision> {
             decision = this.operate();
         } catch (Exception ex) {
             LOG.error("decider: Exception in operate", ex);
-            CommonStats.ERRORS_AND_EXCEPTIONS_AGGREGATOR.updateStat(
+            ServiceMetrics.ERRORS_AND_EXCEPTIONS_AGGREGATOR.updateStat(
                     ExceptionsAndErrors.EXCEPTION_IN_OPERATE, name(), 1);
             decision = new Decision(System.currentTimeMillis(), this.name());
         }
         long duration = System.currentTimeMillis() - startTime;
 
-        CommonStats.RCA_GRAPH_METRICS_AGGREGATOR.updateStat(
+        ServiceMetrics.RCA_GRAPH_METRICS_AGGREGATOR.updateStat(
                 RcaGraphMetrics.GRAPH_NODE_OPERATE_CALL, this.name(), duration);
 
         setLocalFlowUnit(decision);

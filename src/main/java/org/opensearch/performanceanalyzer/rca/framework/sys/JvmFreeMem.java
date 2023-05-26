@@ -14,6 +14,6 @@ public class JvmFreeMem implements ISampler {
     @Override
     public void sample(SampleAggregator sampleCollector) {
         sampleCollector.updateStat(
-                JvmMetrics.JVM_FREE_MEM_SAMPLER, "", Runtime.getRuntime().freeMemory());
+                JvmMetrics.JVM_FREE_MEM_SAMPLER, Runtime.getRuntime().freeMemory());
     }
 }

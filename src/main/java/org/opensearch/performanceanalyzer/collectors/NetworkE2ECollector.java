@@ -14,7 +14,7 @@ import org.opensearch.performanceanalyzer.commons.metrics.MetricsConfiguration;
 import org.opensearch.performanceanalyzer.commons.metrics.MetricsProcessor;
 import org.opensearch.performanceanalyzer.commons.metrics.PerformanceAnalyzerMetrics;
 import org.opensearch.performanceanalyzer.commons.stats.metrics.StatExceptionCode;
-import org.opensearch.performanceanalyzer.commons.stats.metrics.WriterMetrics;
+import org.opensearch.performanceanalyzer.commons.stats.metrics.StatMetrics;
 import org.opensearch.performanceanalyzer.metrics_generator.OSMetricsGenerator;
 import org.opensearch.performanceanalyzer.metrics_generator.TCPMetricsGenerator;
 
@@ -27,7 +27,7 @@ public class NetworkE2ECollector extends PerformanceAnalyzerMetricsCollector
         super(
                 sTimeInterval,
                 "NetworkE2ECollector",
-                WriterMetrics.NETWORK_E2E_COLLECTOR_EXECUTION_TIME,
+                StatMetrics.NETWORK_E2E_COLLECTOR_EXECUTION_TIME,
                 StatExceptionCode.NETWORK_COLLECTION_ERROR);
     }
 
