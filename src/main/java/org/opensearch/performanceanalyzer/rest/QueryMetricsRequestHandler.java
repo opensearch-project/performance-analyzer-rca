@@ -28,6 +28,7 @@ import org.jooq.Result;
 import org.opensearch.performanceanalyzer.AppContext;
 import org.opensearch.performanceanalyzer.commons.collectors.StatsCollector;
 import org.opensearch.performanceanalyzer.commons.stats.metrics.StatExceptionCode;
+import org.opensearch.performanceanalyzer.commons.util.JsonConverter;
 import org.opensearch.performanceanalyzer.commons.util.Util;
 import org.opensearch.performanceanalyzer.grpc.MetricsRequest;
 import org.opensearch.performanceanalyzer.grpc.MetricsResponse;
@@ -38,7 +39,6 @@ import org.opensearch.performanceanalyzer.model.MetricsModel;
 import org.opensearch.performanceanalyzer.net.NetClient;
 import org.opensearch.performanceanalyzer.rca.framework.util.InstanceDetails;
 import org.opensearch.performanceanalyzer.reader.ReaderMetricsProcessor;
-import org.opensearch.performanceanalyzer.util.JsonConverter;
 
 /**
  * Request handler that supports querying MetricsDB on every EC2 instance. Example query –
