@@ -19,6 +19,7 @@ import java.util.Map;
 import org.junit.Before;
 import org.junit.Test;
 import org.opensearch.performanceanalyzer.AppContext;
+import org.opensearch.performanceanalyzer.PerformanceAnalyzerApp;
 import org.opensearch.performanceanalyzer.commons.metrics.AllMetrics;
 import org.opensearch.performanceanalyzer.decisionmaker.actions.Action;
 import org.opensearch.performanceanalyzer.grpc.ResourceEnum;
@@ -41,6 +42,8 @@ public class QueueHealthDeciderTest {
 
     @Before
     public void setupCluster() {
+        PerformanceAnalyzerApp.initAggregators();
+
         ClusterDetailsEventProcessor clusterDetailsEventProcessor =
                 new ClusterDetailsEventProcessor();
         ClusterDetailsEventProcessor.NodeDetails node1 =

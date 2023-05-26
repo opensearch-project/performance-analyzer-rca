@@ -14,16 +14,16 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.opensearch.performanceanalyzer.commons.metrics.ExceptionsAndErrors;
-import org.opensearch.performanceanalyzer.commons.metrics.MeasurementSet;
-import org.opensearch.performanceanalyzer.commons.stats.IListener;
+import org.opensearch.performanceanalyzer.commons.stats.listeners.IListener;
+import org.opensearch.performanceanalyzer.commons.stats.measurements.MeasurementSet;
 import org.opensearch.performanceanalyzer.rca.framework.core.Stats;
+import org.opensearch.performanceanalyzer.rca.framework.metrics.ExceptionsAndErrors;
 
 public class MisbehavingGraphOperateMethodListener implements IListener {
     private static final Logger LOG =
             LogManager.getLogger(MisbehavingGraphOperateMethodListener.class);
     /**
-     * A map to keep track of the graohNodeName and the number of times it threw an exception in the
+     * A map to keep track of the graphNodeName and the number of times it threw an exception in the
      * {@code operate()} method.
      */
     Map<String, AtomicInteger> map;

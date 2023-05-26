@@ -38,9 +38,9 @@ import org.jooq.TableLike;
 import org.jooq.exception.DataAccessException;
 import org.jooq.impl.DSL;
 import org.opensearch.performanceanalyzer.DBUtils;
+import org.opensearch.performanceanalyzer.commons.collectors.StatsCollector;
 import org.opensearch.performanceanalyzer.commons.config.PluginSettings;
-import org.opensearch.performanceanalyzer.commons.metrics.ExceptionsAndErrors;
-import org.opensearch.performanceanalyzer.commons.stats.CommonStats;
+import org.opensearch.performanceanalyzer.commons.stats.metrics.StatExceptionCode;
 import org.opensearch.performanceanalyzer.reader.Removable;
 
 /**
@@ -92,8 +92,8 @@ public class MetricsDB implements Removable {
             conn = DriverManager.getConnection(url);
             conn.setAutoCommit(false);
         } catch (Exception e) {
-            CommonStats.ERRORS_AND_EXCEPTIONS_AGGREGATOR.updateStat(
-                    ExceptionsAndErrors.READER_METRICSDB_ACCESS_ERRORS, "", 1);
+            StatsCollector.instance()
+                    .logException(StatExceptionCode.READER_METRICSDB_ACCESS_ERRORS);
             throw e;
         }
         create = DSL.using(conn, SQLDialect.SQLITE);
@@ -109,8 +109,8 @@ public class MetricsDB implements Removable {
     public static MetricsDB fetchExisting(long windowStartTime) throws Exception {
         String filePath = getDBFilePath(windowStartTime);
         if (!(new File(filePath)).exists()) {
-            CommonStats.ERRORS_AND_EXCEPTIONS_AGGREGATOR.updateStat(
-                    ExceptionsAndErrors.READER_METRICSDB_ACCESS_ERRORS, "", 1);
+            StatsCollector.instance()
+                    .logException(StatExceptionCode.READER_METRICSDB_ACCESS_ERRORS);
             throw new FileNotFoundException(
                     String.format("MetricsDB file %s could not be found.", filePath));
         }
@@ -347,10 +347,10 @@ public class MetricsDB implements Removable {
             LOG.error(
                     "Failed to delete File - {} with ExceptionCode: {}",
                     dbFilePath,
-                    ExceptionsAndErrors.READER_METRICSDB_ACCESS_ERRORS,
+                    StatExceptionCode.READER_METRICSDB_ACCESS_ERRORS,
                     e);
-            CommonStats.ERRORS_AND_EXCEPTIONS_AGGREGATOR.updateStat(
-                    ExceptionsAndErrors.READER_METRICSDB_ACCESS_ERRORS, "", 1);
+            StatsCollector.instance()
+                    .logException(StatExceptionCode.READER_METRICSDB_ACCESS_ERRORS);
         }
     }
 
@@ -382,10 +382,10 @@ public class MetricsDB implements Removable {
             LOG.error(
                     "Failed to access metricsdb directory - {} with ExceptionCode: {}",
                     parentPath,
-                    ExceptionsAndErrors.READER_METRICSDB_ACCESS_ERRORS,
+                    StatExceptionCode.READER_METRICSDB_ACCESS_ERRORS,
                     e);
-            CommonStats.ERRORS_AND_EXCEPTIONS_AGGREGATOR.updateStat(
-                    ExceptionsAndErrors.READER_METRICSDB_ACCESS_ERRORS, "", 1);
+            StatsCollector.instance()
+                    .logException(StatExceptionCode.READER_METRICSDB_ACCESS_ERRORS);
         }
         return found;
     }

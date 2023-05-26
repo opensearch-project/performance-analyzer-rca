@@ -17,7 +17,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.opensearch.performanceanalyzer.AppContext;
 import org.opensearch.performanceanalyzer.PerformanceAnalyzerApp;
-import org.opensearch.performanceanalyzer.commons.stats.SampleAggregator;
+import org.opensearch.performanceanalyzer.commons.stats.collectors.SampleAggregator;
 import org.opensearch.performanceanalyzer.rca.RcaController;
 import org.opensearch.performanceanalyzer.rca.framework.metrics.RcaRuntimeMetrics;
 import org.opensearch.performanceanalyzer.reader.ClusterDetailsEventProcessor;
@@ -65,7 +65,6 @@ public class RcaEnabledSamplerTest {
         verify(sampleAggregator, times(1))
                 .updateStat(
                         RcaRuntimeMetrics.RCA_ENABLED,
-                        "",
                         PerformanceAnalyzerApp.getRcaController().isRcaEnabled() ? 1 : 0);
     }
 }

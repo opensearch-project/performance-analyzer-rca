@@ -7,7 +7,7 @@ package org.opensearch.performanceanalyzer.threads.exceptions;
 
 
 import org.opensearch.performanceanalyzer.PerformanceAnalyzerThreads;
-import org.opensearch.performanceanalyzer.commons.metrics.MeasurementSet;
+import org.opensearch.performanceanalyzer.commons.stats.metrics.StatExceptionCode;
 
 /** Exception that is thrown when one of the PA threads run into an unhandled exception. */
 public class PAThreadException extends Exception {
@@ -33,9 +33,9 @@ public class PAThreadException extends Exception {
     /**
      * Gets the counter against which we need to record an error metric.
      *
-     * @return The {@link MeasurementSet} enum value that represents the error metric name.
+     * @return The {@link StatExceptionCode} value that represents the error metric name.
      */
-    public MeasurementSet getExceptionCode() {
+    public StatExceptionCode getExceptionCode() {
         return paThread.getThreadExceptionCode();
     }
 
