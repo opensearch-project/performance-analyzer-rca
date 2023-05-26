@@ -43,7 +43,7 @@
         <Bug pattern="EI_EXPOSE_REP2"/>
     </Match>
     <Match>
-        <Class name="org.opensearch.performanceanalyzer.jvm.ThreadList"/>
+        <Class name="org.opensearch.performanceanalyzer.commons.jvm.ThreadList"/>
         <Bug pattern="RCN_REDUNDANT_NULLCHECK_WOULD_HAVE_BEEN_A_NPE"/>
     </Match>
     <Match>

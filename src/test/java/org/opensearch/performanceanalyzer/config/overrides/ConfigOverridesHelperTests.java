@@ -12,7 +12,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import org.junit.Before;
 import org.junit.Test;
-import org.opensearch.performanceanalyzer.util.JsonConverter;
+import org.opensearch.performanceanalyzer.commons.util.JsonConverter;
 
 public class ConfigOverridesHelperTests {
     private ConfigOverridesWrapper testConfigOverridesWrapper;
