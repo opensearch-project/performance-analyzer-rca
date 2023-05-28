@@ -26,6 +26,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.opensearch.performanceanalyzer.PerformanceAnalyzerApp;
+import org.opensearch.performanceanalyzer.commons.config.overrides.ConfigOverrides;
 import org.opensearch.performanceanalyzer.rca.RcaController;
 import org.opensearch.performanceanalyzer.rca.framework.core.RcaConf;
 

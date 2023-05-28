@@ -20,8 +20,8 @@ import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
+import org.opensearch.performanceanalyzer.commons.config.overrides.ConfigOverrides;
 import org.opensearch.performanceanalyzer.commons.event_process.Event;
-import org.opensearch.performanceanalyzer.config.overrides.ConfigOverrides;
 import org.opensearch.performanceanalyzer.config.overrides.ConfigOverridesApplier;
 
 public class ClusterDetailsEventProcessorTests {
