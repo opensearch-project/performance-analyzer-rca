@@ -17,7 +17,7 @@ import java.util.Map;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.opensearch.performanceanalyzer.AppContext;
-import org.opensearch.performanceanalyzer.decisionmaker.DecisionMakerConsts;
+import org.opensearch.performanceanalyzer.commons.stats.decisionmaker.DecisionMakerConsts;
 import org.opensearch.performanceanalyzer.decisionmaker.actions.configs.QueueActionConfig;
 import org.opensearch.performanceanalyzer.grpc.ResourceEnum;
 import org.opensearch.performanceanalyzer.rca.framework.core.RcaConf;
