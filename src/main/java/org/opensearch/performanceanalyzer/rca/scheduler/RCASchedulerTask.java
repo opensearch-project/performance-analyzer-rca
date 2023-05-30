@@ -377,7 +377,6 @@ public class RCASchedulerTask implements Runnable {
         long runStartTime = System.currentTimeMillis();
 
         SampleAggregator test = ServiceMetrics.RCA_GRAPH_METRICS_AGGREGATOR;
-        LOG.error("MOCHI: {} ", test);
         test.updateStat(RcaGraphMetrics.NUM_GRAPH_NODES, Stats.getInstance().getTotalNodesCount());
 
         changeDbForTasklets();
