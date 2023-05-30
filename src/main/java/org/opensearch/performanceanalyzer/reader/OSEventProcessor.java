@@ -17,7 +17,7 @@ import java.util.NavigableMap;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jooq.BatchBindStep;
-import org.opensearch.performanceanalyzer.collectors.OSMetricsCollector;
+import org.opensearch.performanceanalyzer.commons.collectors.OSMetricsCollector;
 import org.opensearch.performanceanalyzer.commons.event_process.Event;
 import org.opensearch.performanceanalyzer.commons.event_process.EventProcessor;
 import org.opensearch.performanceanalyzer.commons.metrics.AllMetrics;

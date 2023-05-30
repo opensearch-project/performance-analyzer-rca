@@ -13,7 +13,7 @@ import java.util.*;
 import java.util.concurrent.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.opensearch.performanceanalyzer.collectors.*;
+import org.opensearch.performanceanalyzer.commons.collectors.*;
 import org.opensearch.performanceanalyzer.commons.collectors.StatsCollector;
 import org.opensearch.performanceanalyzer.commons.config.ConfigStatus;
 import org.opensearch.performanceanalyzer.commons.config.PluginSettings;
@@ -27,18 +27,11 @@ import org.opensearch.performanceanalyzer.commons.stats.measurements.Measurement
 import org.opensearch.performanceanalyzer.commons.stats.metrics.StatExceptionCode;
 import org.opensearch.performanceanalyzer.config.TroubleshootingConfig;
 import org.opensearch.performanceanalyzer.core.Util;
-import org.opensearch.performanceanalyzer.jvm.GCMetrics;
-import org.opensearch.performanceanalyzer.jvm.HeapMetrics;
-import org.opensearch.performanceanalyzer.jvm.ThreadList;
 import org.opensearch.performanceanalyzer.metrics.MetricsRestUtil;
 import org.opensearch.performanceanalyzer.metrics.handler.MetricsServerHandler;
 import org.opensearch.performanceanalyzer.net.GRPCConnectionManager;
 import org.opensearch.performanceanalyzer.net.NetClient;
 import org.opensearch.performanceanalyzer.net.NetServer;
-import org.opensearch.performanceanalyzer.os.OSGlobals;
-import org.opensearch.performanceanalyzer.os.ThreadCPU;
-import org.opensearch.performanceanalyzer.os.ThreadDiskIO;
-import org.opensearch.performanceanalyzer.os.ThreadSched;
 import org.opensearch.performanceanalyzer.rca.RcaController;
 import org.opensearch.performanceanalyzer.rca.framework.core.MetricsDBProvider;
 import org.opensearch.performanceanalyzer.rca.framework.metrics.*;
@@ -96,34 +89,6 @@ public class PerformanceAnalyzerApp {
     public static PeriodicSamplers PERIODIC_SAMPLERS;
     public static final BlockingQueue<PAThreadException> exceptionQueue =
             new ArrayBlockingQueue<>(EXCEPTION_QUEUE_LENGTH);
-
-    public static void initMetricsConfig() {
-        final MetricsConfiguration.MetricConfig defaultConfig = MetricsConfiguration.cdefault;
-        final Map<Class, MetricsConfiguration.MetricConfig> configMap =
-                MetricsConfiguration.CONFIG_MAP;
-
-        configMap.put(ThreadCPU.class, defaultConfig);
-        configMap.put(ThreadDiskIO.class, defaultConfig);
-        configMap.put(ThreadSched.class, defaultConfig);
-        configMap.put(ThreadList.class, defaultConfig);
-        configMap.put(GCMetrics.class, defaultConfig);
-        configMap.put(HeapMetrics.class, defaultConfig);
-        configMap.put(NetworkE2ECollector.class, defaultConfig);
-        configMap.put(NetworkInterfaceCollector.class, defaultConfig);
-        configMap.put(OSGlobals.class, defaultConfig);
-        configMap.put(
-                StatsCollector.class,
-                new MetricsConfiguration.MetricConfig(
-                        MetricsConfiguration.STATS_ROTATION_INTERVAL, 0));
-        configMap.put(DisksCollector.class, defaultConfig);
-        configMap.put(HeapMetricsCollector.class, defaultConfig);
-        configMap.put(GCInfoCollector.class, defaultConfig);
-        configMap.put(MountedPartitionMetricsCollector.class, defaultConfig);
-    }
-
-    static {
-        initMetricsConfig();
-    }
 
     public static void main(String[] args) {
         StatsCollector.STATS_TYPE = "agent-stats-metadata";
