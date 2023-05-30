@@ -16,6 +16,7 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.opensearch.performanceanalyzer.PerformanceAnalyzerApp;
 import org.opensearch.performanceanalyzer.decisionmaker.actions.Action;
 import org.opensearch.performanceanalyzer.decisionmaker.actions.ActionListener;
 import org.opensearch.performanceanalyzer.decisionmaker.actions.ImpactVector;
@@ -47,6 +48,7 @@ public class PublisherTest {
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
+        PerformanceAnalyzerApp.initAggregators();
         publisher = new Publisher(EVAL_INTERVAL_S, collator);
         publisher.addActionListener(actionListener);
         List<Decision> decisionList = Lists.newArrayList(decision);

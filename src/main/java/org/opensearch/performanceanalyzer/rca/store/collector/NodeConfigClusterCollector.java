@@ -9,12 +9,12 @@ package org.opensearch.performanceanalyzer.rca.store.collector;
 import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.opensearch.performanceanalyzer.commons.metrics.ExceptionsAndErrors;
-import org.opensearch.performanceanalyzer.commons.stats.CommonStats;
+import org.opensearch.performanceanalyzer.commons.stats.ServiceMetrics;
 import org.opensearch.performanceanalyzer.decisionmaker.deciders.EmptyFlowUnit;
 import org.opensearch.performanceanalyzer.rca.framework.api.flow_units.NodeConfigFlowUnit;
 import org.opensearch.performanceanalyzer.rca.framework.api.summaries.HotNodeSummary;
 import org.opensearch.performanceanalyzer.rca.framework.core.NonLeafNode;
+import org.opensearch.performanceanalyzer.rca.framework.metrics.ExceptionsAndErrors;
 import org.opensearch.performanceanalyzer.rca.framework.metrics.RcaGraphMetrics;
 import org.opensearch.performanceanalyzer.rca.scheduler.FlowUnitOperationArgWrapper;
 import org.opensearch.performanceanalyzer.rca.store.rca.cluster.NodeKey;
@@ -72,12 +72,12 @@ public class NodeConfigClusterCollector extends NonLeafNode<EmptyFlowUnit> {
             this.operate();
         } catch (Exception ex) {
             LOG.error("Collector: Exception in operate", ex);
-            CommonStats.ERRORS_AND_EXCEPTIONS_AGGREGATOR.updateStat(
+            ServiceMetrics.ERRORS_AND_EXCEPTIONS_AGGREGATOR.updateStat(
                     ExceptionsAndErrors.EXCEPTION_IN_OPERATE, name(), 1);
         }
         long duration = System.currentTimeMillis() - startTime;
 
-        CommonStats.RCA_GRAPH_METRICS_AGGREGATOR.updateStat(
+        ServiceMetrics.RCA_GRAPH_METRICS_AGGREGATOR.updateStat(
                 RcaGraphMetrics.GRAPH_NODE_OPERATE_CALL, this.name(), duration);
     }
 

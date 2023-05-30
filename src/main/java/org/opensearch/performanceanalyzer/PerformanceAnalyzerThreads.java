@@ -6,8 +6,7 @@
 package org.opensearch.performanceanalyzer;
 
 
-import org.opensearch.performanceanalyzer.commons.metrics.MeasurementSet;
-import org.opensearch.performanceanalyzer.rca.framework.metrics.ReaderMetrics;
+import org.opensearch.performanceanalyzer.commons.stats.metrics.StatExceptionCode;
 
 /**
  * Enum of threads that are spawned by Performance Analyzer agent. Each enum value encapsulates two
@@ -15,17 +14,17 @@ import org.opensearch.performanceanalyzer.rca.framework.metrics.ReaderMetrics;
  * need to be recorded when the thread runs into an unhandled exception.
  */
 public enum PerformanceAnalyzerThreads {
-    PA_READER("pa-reader", ReaderMetrics.READER_THREAD_STOPPED),
-    PA_ERROR_HANDLER("pa-error-handler", ReaderMetrics.ERROR_HANDLER_THREAD_STOPPED),
-    GRPC_SERVER("grpc-server", ReaderMetrics.GRPC_SERVER_THREAD_STOPPED),
-    WEB_SERVER("web-server", ReaderMetrics.WEB_SERVER_THREAD_STOPPED),
-    RCA_CONTROLLER("rca-controller", ReaderMetrics.RCA_CONTROLLER_THREAD_STOPPED),
-    RCA_SCHEDULER("rca-scheduler", ReaderMetrics.RCA_SCHEDULER_THREAD_STOPPED);
+    PA_READER("pa-reader", StatExceptionCode.READER_THREAD_STOPPED),
+    PA_ERROR_HANDLER("pa-error-handler", StatExceptionCode.ERROR_HANDLER_THREAD_STOPPED),
+    GRPC_SERVER("grpc-server", StatExceptionCode.GRPC_SERVER_THREAD_STOPPED),
+    WEB_SERVER("web-server", StatExceptionCode.WEB_SERVER_THREAD_STOPPED),
+    RCA_CONTROLLER("rca-controller", StatExceptionCode.RCA_CONTROLLER_THREAD_STOPPED),
+    RCA_SCHEDULER("rca-scheduler", StatExceptionCode.RCA_SCHEDULER_THREAD_STOPPED);
 
     private final String value;
-    private final MeasurementSet threadExceptionCode;
+    private final StatExceptionCode threadExceptionCode;
 
-    PerformanceAnalyzerThreads(final String value, final MeasurementSet threadExceptionCode) {
+    PerformanceAnalyzerThreads(final String value, final StatExceptionCode threadExceptionCode) {
         this.value = value;
         this.threadExceptionCode = threadExceptionCode;
     }
@@ -47,7 +46,7 @@ public enum PerformanceAnalyzerThreads {
      *
      * @return the name of the counter.
      */
-    public MeasurementSet getThreadExceptionCode() {
+    public StatExceptionCode getThreadExceptionCode() {
         return threadExceptionCode;
     }
 }

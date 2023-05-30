@@ -29,10 +29,11 @@ import org.apache.logging.log4j.core.LoggerContext;
 import org.apache.logging.log4j.core.appender.FileAppender;
 import org.jooq.tools.json.JSONObject;
 import org.opensearch.performanceanalyzer.AppContext;
+import org.opensearch.performanceanalyzer.commons.collectors.StatsCollector;
 import org.opensearch.performanceanalyzer.commons.event_process.Event;
 import org.opensearch.performanceanalyzer.commons.metrics.AllMetrics;
-import org.opensearch.performanceanalyzer.commons.metrics.MeasurementSet;
-import org.opensearch.performanceanalyzer.commons.stats.CommonStats;
+import org.opensearch.performanceanalyzer.commons.stats.ServiceMetrics;
+import org.opensearch.performanceanalyzer.commons.stats.measurements.MeasurementSet;
 import org.opensearch.performanceanalyzer.rca.framework.core.ConnectedComponent;
 import org.opensearch.performanceanalyzer.rca.framework.core.Node;
 import org.opensearch.performanceanalyzer.reader.ClusterDetailsEventProcessor;
@@ -145,7 +146,7 @@ public class RcaTestHelper {
         nodeDetails.append(separator);
         nodeDetails.append(overridesTimestamp);
         nodeDetails.append(separator);
-        nodeDetails.append(jNode.toString());
+        nodeDetails.append(jNode);
         eventProcessor.processEvent(new Event("", nodeDetails.toString(), 0));
         AppContext appContext = new AppContext();
         appContext.setClusterDetailsEventProcessor(eventProcessor);
@@ -185,7 +186,19 @@ public class RcaTestHelper {
         final int MAX_TIME_TO_WAIT_MILLIS = 10_000;
         int waited_for_millis = 0;
         while (waited_for_millis++ < MAX_TIME_TO_WAIT_MILLIS) {
-            if (CommonStats.RCA_STATS_REPORTER.isMeasurementCollected(measurementSet)) {
+            if (ServiceMetrics.STATS_REPORTER.isMeasurementCollected(measurementSet)) {
+                return true;
+            }
+            Thread.sleep(1);
+        }
+        return false;
+    }
+
+    public static boolean verifyStatException(String exceptionCode) throws InterruptedException {
+        final int MAX_TIME_TO_WAIT_MILLIS = 10_000;
+        int waited_for_millis = 0;
+        while (waited_for_millis++ < MAX_TIME_TO_WAIT_MILLIS) {
+            if (StatsCollector.instance().getCounters().containsKey(exceptionCode)) {
                 return true;
             }
             Thread.sleep(1);

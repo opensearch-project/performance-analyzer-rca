@@ -11,7 +11,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.opensearch.performanceanalyzer.commons.stats.CommonStats;
+import org.opensearch.performanceanalyzer.commons.stats.ServiceMetrics;
 import org.opensearch.performanceanalyzer.grpc.FlowUnitMessage;
 import org.opensearch.performanceanalyzer.rca.configs.OldGenContendedRcaConfig;
 import org.opensearch.performanceanalyzer.rca.framework.api.Rca;
@@ -103,8 +103,8 @@ public class OldGenContendedRca extends Rca<ResourceFlowUnit<HotNodeSummary>> {
                 summary.appendNestedSummary(oldGenReclamationFlowUnit.getSummary());
 
                 ResourceContext context = new ResourceContext(Resources.State.CONTENDED);
-                CommonStats.RCA_VERTICES_METRICS_AGGREGATOR.updateStat(
-                        RcaVerticesMetrics.OLD_GEN_CONTENDED, "", 1);
+                ServiceMetrics.RCA_VERTICES_METRICS_AGGREGATOR.updateStat(
+                        RcaVerticesMetrics.OLD_GEN_CONTENDED, 1);
                 return new ResourceFlowUnit<>(currTime, context, summary);
             }
         }

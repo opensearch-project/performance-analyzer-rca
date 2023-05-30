@@ -19,7 +19,7 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.opensearch.performanceanalyzer.commons.stats.CommonStats;
+import org.opensearch.performanceanalyzer.commons.stats.ServiceMetrics;
 import org.opensearch.performanceanalyzer.rca.framework.api.Rca;
 import org.opensearch.performanceanalyzer.rca.framework.api.Resources;
 import org.opensearch.performanceanalyzer.rca.framework.api.contexts.ResourceContext;
@@ -162,7 +162,7 @@ public class BaseClusterRca extends Rca<ResourceFlowUnit<HotClusterSummary>> {
             for (HotNodeSummary nodeSummary : unhealthyNodeSummaries) {
                 clusterSummary.appendNestedSummary(nodeSummary);
             }
-            CommonStats.RCA_VERTICES_METRICS_AGGREGATOR.updateStat(
+            ServiceMetrics.RCA_VERTICES_METRICS_AGGREGATOR.updateStat(
                     RcaVerticesMetrics.CLUSTER_RCA_NAMED_COUNT, this.getClass().getName(), 1);
             return new ResourceFlowUnit<>(
                     timestamp,

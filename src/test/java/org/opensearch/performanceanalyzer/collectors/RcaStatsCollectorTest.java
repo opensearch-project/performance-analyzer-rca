@@ -7,22 +7,21 @@ package org.opensearch.performanceanalyzer.collectors;
 
 
 import java.nio.file.Paths;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import org.junit.After;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.opensearch.performanceanalyzer.AppContext;
 import org.opensearch.performanceanalyzer.PerformanceAnalyzerApp;
 import org.opensearch.performanceanalyzer.commons.collectors.StatsCollector;
 import org.opensearch.performanceanalyzer.commons.metrics.AllMetrics;
-import org.opensearch.performanceanalyzer.commons.metrics.MeasurementSet;
 import org.opensearch.performanceanalyzer.commons.metrics.MetricsConfiguration;
-import org.opensearch.performanceanalyzer.commons.stats.CommonStats;
+import org.opensearch.performanceanalyzer.commons.stats.ServiceMetrics;
+import org.opensearch.performanceanalyzer.commons.stats.emitters.PeriodicSamplers;
+import org.opensearch.performanceanalyzer.commons.stats.measurements.MeasurementSet;
 import org.opensearch.performanceanalyzer.rca.RcaTestHelper;
 import org.opensearch.performanceanalyzer.rca.framework.api.AnalysisGraph;
 import org.opensearch.performanceanalyzer.rca.framework.api.Metric;
@@ -40,10 +39,10 @@ import org.opensearch.performanceanalyzer.rca.framework.util.RcaConsts;
 import org.opensearch.performanceanalyzer.rca.framework.util.RcaUtil;
 import org.opensearch.performanceanalyzer.rca.scheduler.RCASchedulerTask;
 import org.opensearch.performanceanalyzer.rca.spec.MetricsDBProviderTestHelper;
-import org.opensearch.performanceanalyzer.rca.stats.emitters.PeriodicSamplers;
 import org.opensearch.performanceanalyzer.reader.ClusterDetailsEventProcessor;
 
 public class RcaStatsCollectorTest {
+
     class FaultyAnalysisGraph extends AnalysisGraph {
         @Override
         public void construct() {
@@ -79,6 +78,11 @@ public class RcaStatsCollectorTest {
                 return new SymptomFlowUnit(0L);
             }
         }
+    }
+
+    @Before
+    public void setup() {
+        PerformanceAnalyzerApp.initAggregators();
     }
 
     @Test
@@ -129,7 +133,7 @@ public class RcaStatsCollectorTest {
             if (!verify(jvmMetrics1)) {
                 PerformanceAnalyzerApp.PERIODIC_SAMPLERS =
                         new PeriodicSamplers(
-                                CommonStats.PERIODIC_SAMPLE_AGGREGATOR,
+                                ServiceMetrics.PERIODIC_SAMPLE_AGGREGATOR,
                                 PerformanceAnalyzerApp.getAllSamplers(appContext),
                                 (MetricsConfiguration.CONFIG_MAP.get(StatsCollector.class)
                                                 .samplingInterval)
@@ -147,7 +151,7 @@ public class RcaStatsCollectorTest {
         final int MAX_TIME_TO_WAIT_MILLIS = 10_000;
         int waited_for_millis = 0;
         while (waited_for_millis++ < MAX_TIME_TO_WAIT_MILLIS) {
-            if (CommonStats.RCA_STATS_REPORTER.isMeasurementCollected(measurementSet)) {
+            if (ServiceMetrics.STATS_REPORTER.isMeasurementCollected(measurementSet)) {
                 return true;
             }
             Thread.sleep(1);
