@@ -22,9 +22,9 @@ import org.opensearch.performanceanalyzer.commons.event_process.Event;
 import org.opensearch.performanceanalyzer.commons.event_process.EventProcessor;
 import org.opensearch.performanceanalyzer.commons.metrics.AllMetrics;
 import org.opensearch.performanceanalyzer.commons.metrics.PerformanceAnalyzerMetrics;
+import org.opensearch.performanceanalyzer.commons.util.JsonConverter;
 import org.opensearch.performanceanalyzer.config.overrides.ConfigOverridesApplier;
 import org.opensearch.performanceanalyzer.rca.RcaControllerHelper;
-import org.opensearch.performanceanalyzer.util.JsonConverter;
 
 public class ClusterDetailsEventProcessor implements EventProcessor {
     private static final Logger LOG = LogManager.getLogger(ClusterDetailsEventProcessor.class);
