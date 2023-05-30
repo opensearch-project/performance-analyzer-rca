@@ -20,7 +20,7 @@ import java.util.concurrent.ExecutorService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.opensearch.performanceanalyzer.AppContext;
-import org.opensearch.performanceanalyzer.PerformanceAnalyzerApp;
+import org.opensearch.performanceanalyzer.commons.stats.CommonStats;
 import org.opensearch.performanceanalyzer.rca.framework.core.ConnectedComponent;
 import org.opensearch.performanceanalyzer.rca.framework.core.Node;
 import org.opensearch.performanceanalyzer.rca.framework.core.Queryable;
@@ -375,7 +375,7 @@ public class RCASchedulerTask implements Runnable {
         currTick = currTick + 1;
         long runStartTime = System.currentTimeMillis();
 
-        PerformanceAnalyzerApp.RCA_GRAPH_METRICS_AGGREGATOR.updateStat(
+        CommonStats.RCA_GRAPH_METRICS_AGGREGATOR.updateStat(
                 RcaGraphMetrics.NUM_GRAPH_NODES, "", Stats.getInstance().getTotalNodesCount());
 
         changeDbForTasklets();
@@ -432,9 +432,9 @@ public class RCASchedulerTask implements Runnable {
 
         long runEndTime = System.currentTimeMillis();
         long durationMillis = runEndTime - runStartTime;
-        PerformanceAnalyzerApp.RCA_GRAPH_METRICS_AGGREGATOR.updateStat(
+        CommonStats.RCA_GRAPH_METRICS_AGGREGATOR.updateStat(
                 RcaGraphMetrics.GRAPH_EXECUTION_TIME, "", durationMillis);
-        PerformanceAnalyzerApp.RCA_GRAPH_METRICS_AGGREGATOR.updateStat(
+        CommonStats.RCA_GRAPH_METRICS_AGGREGATOR.updateStat(
                 RcaGraphMetrics.NUM_GRAPH_NODES_MUTED,
                 "",
                 Stats.getInstance().getMutedGraphNodesCount());

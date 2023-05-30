@@ -9,7 +9,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
-import static org.opensearch.performanceanalyzer.metrics.AllMetrics.CommonDimension.Constants.THREAD_NAME;
+import static org.opensearch.performanceanalyzer.commons.metrics.AllMetrics.CommonDimension.Constants.THREAD_NAME;
 
 import java.util.Arrays;
 import java.util.Collections;

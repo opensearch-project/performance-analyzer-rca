@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.opensearch.performanceanalyzer.PerformanceAnalyzerApp;
+import org.opensearch.performanceanalyzer.commons.stats.CommonStats;
 import org.opensearch.performanceanalyzer.grpc.FlowUnitMessage;
 import org.opensearch.performanceanalyzer.grpc.Resource;
 import org.opensearch.performanceanalyzer.metricsdb.MetricsDB;
@@ -126,7 +126,7 @@ public class FieldDataCacheRca extends Rca<ResourceFlowUnit<HotNodeSummary>> {
                 context = new ResourceContext(Resources.State.UNHEALTHY);
                 nodeSummary.appendNestedSummary(
                         cacheEvictionCollector.generateSummary(currTimestamp));
-                PerformanceAnalyzerApp.RCA_VERTICES_METRICS_AGGREGATOR.updateStat(
+                CommonStats.RCA_VERTICES_METRICS_AGGREGATOR.updateStat(
                         RcaVerticesMetrics.NUM_FIELD_DATA_CACHE_RCA_TRIGGERED,
                         instanceDetails.getInstanceId().toString(),
                         1);
@@ -208,7 +208,7 @@ public class FieldDataCacheRca extends Rca<ResourceFlowUnit<HotNodeSummary>> {
                                 this.getClass().getSimpleName(),
                                 consecutivePeriodsToClear);
                     }
-                    PerformanceAnalyzerApp.RCA_GRAPH_METRICS_AGGREGATOR.updateStat(
+                    CommonStats.RCA_GRAPH_METRICS_AGGREGATOR.updateStat(
                             RcaGraphMetrics.RCA_RX_EMPTY_FU, this.getClass().getSimpleName(), 1);
                     continue;
                 }

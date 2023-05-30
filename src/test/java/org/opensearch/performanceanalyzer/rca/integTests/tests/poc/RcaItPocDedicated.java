@@ -11,7 +11,7 @@ import java.util.Collections;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
-import org.opensearch.performanceanalyzer.metrics.AllMetrics;
+import org.opensearch.performanceanalyzer.commons.metrics.AllMetrics;
 import org.opensearch.performanceanalyzer.rca.framework.api.metrics.CPU_Utilization;
 import org.opensearch.performanceanalyzer.rca.framework.util.RcaConsts;
 import org.opensearch.performanceanalyzer.rca.integTests.framework.RcaItMarker;

@@ -8,7 +8,8 @@ package org.opensearch.performanceanalyzer.rca.stats.measurements;
 
 import java.util.Arrays;
 import java.util.List;
-import org.opensearch.performanceanalyzer.rca.stats.eval.Statistics;
+import org.opensearch.performanceanalyzer.commons.metrics.MeasurementSet;
+import org.opensearch.performanceanalyzer.commons.stats.Statistics;
 
 public enum MeasurementSetTestHelper implements MeasurementSet {
     TEST_MEASUREMENT1(

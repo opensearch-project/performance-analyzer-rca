@@ -7,7 +7,7 @@ package org.opensearch.performanceanalyzer.model;
 
 
 import java.util.HashSet;
-import org.opensearch.performanceanalyzer.metrics.MetricDimension;
+import org.opensearch.performanceanalyzer.commons.metrics.MetricDimension;
 
 public class MetricAttributes {
     public String unit;

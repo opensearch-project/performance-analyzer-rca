@@ -12,6 +12,7 @@ import com.sun.net.httpserver.HttpServer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Executors;
@@ -19,39 +20,41 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.opensearch.performanceanalyzer.collectors.ScheduledMetricCollectorsExecutor;
-import org.opensearch.performanceanalyzer.collectors.StatExceptionCode;
-import org.opensearch.performanceanalyzer.collectors.StatsCollector;
+import org.opensearch.performanceanalyzer.collectors.*;
+import org.opensearch.performanceanalyzer.commons.collectors.StatExceptionCode;
+import org.opensearch.performanceanalyzer.commons.collectors.StatsCollector;
+import org.opensearch.performanceanalyzer.commons.metrics.ExceptionsAndErrors;
+import org.opensearch.performanceanalyzer.commons.metrics.MeasurementSet;
+import org.opensearch.performanceanalyzer.commons.metrics.MetricsConfiguration;
+import org.opensearch.performanceanalyzer.commons.stats.CommonStats;
+import org.opensearch.performanceanalyzer.commons.stats.IListener;
+import org.opensearch.performanceanalyzer.commons.stats.SampleAggregator;
 import org.opensearch.performanceanalyzer.config.PluginSettings;
 import org.opensearch.performanceanalyzer.config.TroubleshootingConfig;
 import org.opensearch.performanceanalyzer.core.Util;
-import org.opensearch.performanceanalyzer.metrics.MetricsConfiguration;
+import org.opensearch.performanceanalyzer.jvm.GCMetrics;
+import org.opensearch.performanceanalyzer.jvm.HeapMetrics;
+import org.opensearch.performanceanalyzer.jvm.ThreadList;
 import org.opensearch.performanceanalyzer.metrics.MetricsRestUtil;
 import org.opensearch.performanceanalyzer.metrics.handler.MetricsServerHandler;
 import org.opensearch.performanceanalyzer.net.GRPCConnectionManager;
 import org.opensearch.performanceanalyzer.net.NetClient;
 import org.opensearch.performanceanalyzer.net.NetServer;
+import org.opensearch.performanceanalyzer.os.OSGlobals;
+import org.opensearch.performanceanalyzer.os.ThreadCPU;
+import org.opensearch.performanceanalyzer.os.ThreadDiskIO;
+import org.opensearch.performanceanalyzer.os.ThreadSched;
 import org.opensearch.performanceanalyzer.rca.RcaController;
 import org.opensearch.performanceanalyzer.rca.framework.core.MetricsDBProvider;
-import org.opensearch.performanceanalyzer.rca.framework.metrics.ExceptionsAndErrors;
-import org.opensearch.performanceanalyzer.rca.framework.metrics.JvmMetrics;
-import org.opensearch.performanceanalyzer.rca.framework.metrics.RcaGraphMetrics;
-import org.opensearch.performanceanalyzer.rca.framework.metrics.RcaRuntimeMetrics;
-import org.opensearch.performanceanalyzer.rca.framework.metrics.RcaVerticesMetrics;
-import org.opensearch.performanceanalyzer.rca.framework.metrics.ReaderMetrics;
-import org.opensearch.performanceanalyzer.rca.framework.metrics.WriterMetrics;
+import org.opensearch.performanceanalyzer.rca.framework.metrics.*;
 import org.opensearch.performanceanalyzer.rca.framework.sys.AllJvmSamplers;
 import org.opensearch.performanceanalyzer.rca.framework.util.RcaConsts;
 import org.opensearch.performanceanalyzer.rca.listener.MisbehavingGraphOperateMethodListener;
 import org.opensearch.performanceanalyzer.rca.samplers.BatchMetricsEnabledSampler;
 import org.opensearch.performanceanalyzer.rca.samplers.MetricsDBFileSampler;
 import org.opensearch.performanceanalyzer.rca.samplers.RcaStateSamplers;
-import org.opensearch.performanceanalyzer.rca.stats.RcaStatsReporter;
-import org.opensearch.performanceanalyzer.rca.stats.collectors.SampleAggregator;
 import org.opensearch.performanceanalyzer.rca.stats.emitters.ISampler;
 import org.opensearch.performanceanalyzer.rca.stats.emitters.PeriodicSamplers;
-import org.opensearch.performanceanalyzer.rca.stats.listeners.IListener;
-import org.opensearch.performanceanalyzer.rca.stats.measurements.MeasurementSet;
 import org.opensearch.performanceanalyzer.reader.ReaderMetricsProcessor;
 import org.opensearch.performanceanalyzer.rest.QueryBatchRequestHandler;
 import org.opensearch.performanceanalyzer.rest.QueryMetricsRequestHandler;
@@ -71,41 +74,66 @@ public class PerformanceAnalyzerApp {
     private static RcaController rcaController = null;
     private static final ThreadProvider THREAD_PROVIDER = new ThreadProvider();
 
-    public static final SampleAggregator RCA_GRAPH_METRICS_AGGREGATOR =
-            new SampleAggregator(RcaGraphMetrics.values());
-    public static final SampleAggregator RCA_RUNTIME_METRICS_AGGREGATOR =
-            new SampleAggregator(RcaRuntimeMetrics.values());
-    public static final SampleAggregator RCA_VERTICES_METRICS_AGGREGATOR =
-            new SampleAggregator(RcaVerticesMetrics.values());
-    public static final SampleAggregator READER_METRICS_AGGREGATOR =
-            new SampleAggregator(ReaderMetrics.values());
-    public static final SampleAggregator WRITER_METRICS_AGGREGATOR =
-            new SampleAggregator(WriterMetrics.values());
-
-    private static final IListener MISBEHAVING_NODES_LISTENER =
+    public static IListener MISBEHAVING_NODES_LISTENER =
             new MisbehavingGraphOperateMethodListener();
-    public static final SampleAggregator ERRORS_AND_EXCEPTIONS_AGGREGATOR =
-            new SampleAggregator(
-                    MISBEHAVING_NODES_LISTENER.getMeasurementsListenedTo(),
-                    MISBEHAVING_NODES_LISTENER,
-                    ExceptionsAndErrors.values());
 
-    public static final SampleAggregator PERIODIC_SAMPLE_AGGREGATOR =
-            new SampleAggregator(getPeriodicMeasurementSets());
+    public static void initAggregators() {
+        if (CommonStats.RCA_STATS_REPORTER != null) {
+            return;
+        }
+        CommonStats.RCA_GRAPH_METRICS_AGGREGATOR = new SampleAggregator(RcaGraphMetrics.values());
+        CommonStats.RCA_RUNTIME_METRICS_AGGREGATOR =
+                new SampleAggregator(RcaRuntimeMetrics.values());
+        CommonStats.RCA_VERTICES_METRICS_AGGREGATOR =
+                new SampleAggregator(RcaVerticesMetrics.values());
+        CommonStats.READER_METRICS_AGGREGATOR = new SampleAggregator(ReaderMetrics.values());
 
-    public static final RcaStatsReporter RCA_STATS_REPORTER =
-            new RcaStatsReporter(
-                    Arrays.asList(
-                            RCA_GRAPH_METRICS_AGGREGATOR,
-                            RCA_RUNTIME_METRICS_AGGREGATOR,
-                            RCA_VERTICES_METRICS_AGGREGATOR,
-                            READER_METRICS_AGGREGATOR,
-                            WRITER_METRICS_AGGREGATOR,
-                            ERRORS_AND_EXCEPTIONS_AGGREGATOR,
-                            PERIODIC_SAMPLE_AGGREGATOR));
+        CommonStats.ERRORS_AND_EXCEPTIONS_AGGREGATOR =
+                new SampleAggregator(
+                        MISBEHAVING_NODES_LISTENER.getMeasurementsListenedTo(),
+                        MISBEHAVING_NODES_LISTENER,
+                        ExceptionsAndErrors.values());
+
+        CommonStats.PERIODIC_SAMPLE_AGGREGATOR = new SampleAggregator(getPeriodicMeasurementSets());
+
+        CommonStats.initStatsReporter();
+    }
+
+    static {
+        initAggregators();
+    }
+
     public static PeriodicSamplers PERIODIC_SAMPLERS;
     public static final BlockingQueue<PAThreadException> exceptionQueue =
             new ArrayBlockingQueue<>(EXCEPTION_QUEUE_LENGTH);
+
+    public static void initMetricsConfig() {
+        final MetricsConfiguration.MetricConfig defaultConfig = MetricsConfiguration.cdefault;
+        final Map<Class, MetricsConfiguration.MetricConfig> configMap =
+                MetricsConfiguration.CONFIG_MAP;
+
+        configMap.put(ThreadCPU.class, defaultConfig);
+        configMap.put(ThreadDiskIO.class, defaultConfig);
+        configMap.put(ThreadSched.class, defaultConfig);
+        configMap.put(ThreadList.class, defaultConfig);
+        configMap.put(GCMetrics.class, defaultConfig);
+        configMap.put(HeapMetrics.class, defaultConfig);
+        configMap.put(NetworkE2ECollector.class, defaultConfig);
+        configMap.put(NetworkInterfaceCollector.class, defaultConfig);
+        configMap.put(OSGlobals.class, defaultConfig);
+        configMap.put(
+                StatsCollector.class,
+                new MetricsConfiguration.MetricConfig(
+                        MetricsConfiguration.STATS_ROTATION_INTERVAL, 0));
+        configMap.put(DisksCollector.class, defaultConfig);
+        configMap.put(HeapMetricsCollector.class, defaultConfig);
+        configMap.put(GCInfoCollector.class, defaultConfig);
+        configMap.put(MountedPartitionMetricsCollector.class, defaultConfig);
+    }
+
+    static {
+        initMetricsConfig();
+    }
 
     public static void main(String[] args) {
         StatsCollector.STATS_TYPE = "agent-stats-metadata";
@@ -114,7 +142,7 @@ public class PerformanceAnalyzerApp {
             AppContext appContext = new AppContext();
             PERIODIC_SAMPLERS =
                     new PeriodicSamplers(
-                            PERIODIC_SAMPLE_AGGREGATOR,
+                            CommonStats.PERIODIC_SAMPLE_AGGREGATOR,
                             getAllSamplers(appContext),
                             (MetricsConfiguration.CONFIG_MAP.get(StatsCollector.class)
                                             .samplingInterval)
@@ -137,7 +165,7 @@ public class PerformanceAnalyzerApp {
             startRcaTopLevelThread(clientServers, connectionManager, appContext, THREAD_PROVIDER);
         } else {
             LOG.error("Performance analyzer app stopped due to invalid config status.");
-            PerformanceAnalyzerApp.ERRORS_AND_EXCEPTIONS_AGGREGATOR.updateStat(
+            CommonStats.ERRORS_AND_EXCEPTIONS_AGGREGATOR.updateStat(
                     ExceptionsAndErrors.INVALID_CONFIG_RCA_AGENT_STOPPED, "", 1);
         }
     }
@@ -190,7 +218,7 @@ public class PerformanceAnalyzerApp {
                                     final PAThreadException exception = errorQueue.take();
                                     handle(exception);
                                 } catch (InterruptedException e) {
-                                    PerformanceAnalyzerApp.READER_METRICS_AGGREGATOR.updateStat(
+                                    CommonStats.READER_METRICS_AGGREGATOR.updateStat(
                                             ReaderMetrics.ERROR_HANDLER_THREAD_STOPPED, "", 1);
                                     LOG.error(
                                             "Exception handling thread interrupted. Reason: {}",
@@ -217,7 +245,7 @@ public class PerformanceAnalyzerApp {
         // As an improvement to this functionality, once we know what exceptions are retryable, we
         // can have each thread also register an error handler for itself. This handler will know
         // what to do when the thread has stopped due to an unexpected exception.
-        READER_METRICS_AGGREGATOR.updateStat(ReaderMetrics.OTHER, "", 1);
+        CommonStats.READER_METRICS_AGGREGATOR.updateStat(ReaderMetrics.OTHER, "", 1);
         LOG.error(
                 "Thread: {} ran into an uncaught exception: {}",
                 exception.getPaThreadName(),

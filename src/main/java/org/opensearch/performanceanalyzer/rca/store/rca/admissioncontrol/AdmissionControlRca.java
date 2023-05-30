@@ -5,8 +5,8 @@
 
 package org.opensearch.performanceanalyzer.rca.store.rca.admissioncontrol;
 
-import static org.opensearch.performanceanalyzer.metrics.AllMetrics.GCType.HEAP;
-import static org.opensearch.performanceanalyzer.metrics.AllMetrics.HeapDimension.MEM_TYPE;
+import static org.opensearch.performanceanalyzer.commons.metrics.AllMetrics.GCType.HEAP;
+import static org.opensearch.performanceanalyzer.commons.metrics.AllMetrics.HeapDimension.MEM_TYPE;
 import static org.opensearch.performanceanalyzer.rca.framework.api.Resources.State.HEALTHY;
 import static org.opensearch.performanceanalyzer.rca.framework.api.persist.SQLParsingUtil.readDataFromSqlResult;
 

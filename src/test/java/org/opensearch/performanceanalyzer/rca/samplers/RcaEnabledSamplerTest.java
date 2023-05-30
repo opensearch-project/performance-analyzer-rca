@@ -17,9 +17,9 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.opensearch.performanceanalyzer.AppContext;
 import org.opensearch.performanceanalyzer.PerformanceAnalyzerApp;
+import org.opensearch.performanceanalyzer.commons.stats.SampleAggregator;
 import org.opensearch.performanceanalyzer.rca.RcaController;
 import org.opensearch.performanceanalyzer.rca.framework.metrics.RcaRuntimeMetrics;
-import org.opensearch.performanceanalyzer.rca.stats.collectors.SampleAggregator;
 import org.opensearch.performanceanalyzer.reader.ClusterDetailsEventProcessor;
 import org.opensearch.performanceanalyzer.reader.ClusterDetailsEventProcessorTestHelper;
 

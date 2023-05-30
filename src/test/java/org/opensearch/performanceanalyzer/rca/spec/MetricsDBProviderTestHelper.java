@@ -13,7 +13,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
-import org.opensearch.performanceanalyzer.metrics.AllMetrics;
+import org.opensearch.performanceanalyzer.commons.metrics.AllMetrics;
 import org.opensearch.performanceanalyzer.metricsdb.MetricsDB;
 import org.opensearch.performanceanalyzer.rca.framework.core.MetricsDBProvider;
 import org.opensearch.performanceanalyzer.rca.spec.helpers.OSMetricHelper;

@@ -11,9 +11,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
-import org.opensearch.performanceanalyzer.rca.stats.eval.Statistics;
-import org.opensearch.performanceanalyzer.rca.stats.format.Formatter;
-import org.opensearch.performanceanalyzer.rca.stats.measurements.MeasurementSet;
+import org.opensearch.performanceanalyzer.commons.formatter.Formatter;
+import org.opensearch.performanceanalyzer.commons.metrics.MeasurementSet;
+import org.opensearch.performanceanalyzer.commons.stats.Statistics;
 
 public class StatsCollectorFormatter implements Formatter {
     StringBuilder formatted;

@@ -24,6 +24,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.opensearch.performanceanalyzer.PerformanceAnalyzerApp;
 import org.opensearch.performanceanalyzer.grpc.FlowUnitMessage;
 import org.opensearch.performanceanalyzer.grpc.PublishResponse;
 import org.opensearch.performanceanalyzer.rca.net.NodeStateManager;
@@ -52,6 +53,7 @@ public class PublishRequestHandlerTest {
     @Before
     public void setup() {
         initMocks(this);
+        PerformanceAnalyzerApp.initAggregators();
         atomicReference =
                 (AtomicReference<ExecutorService>) PowerMockito.mock(AtomicReference.class);
         PowerMockito.when(atomicReference.get()).thenReturn(executorService);

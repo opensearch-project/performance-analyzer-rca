@@ -11,8 +11,9 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.Assert;
 import org.junit.Test;
-import org.opensearch.performanceanalyzer.rca.stats.collectors.SampleAggregator;
-import org.opensearch.performanceanalyzer.rca.stats.measurements.MeasurementSet;
+import org.opensearch.performanceanalyzer.commons.metrics.MeasurementSet;
+import org.opensearch.performanceanalyzer.commons.stats.IListener;
+import org.opensearch.performanceanalyzer.commons.stats.SampleAggregator;
 import org.opensearch.performanceanalyzer.rca.stats.measurements.MeasurementSetTestHelper;
 
 public class IListenerTest {

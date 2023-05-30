@@ -10,7 +10,7 @@ import static org.opensearch.performanceanalyzer.rca.integTests.tests.queue_tuni
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
-import org.opensearch.performanceanalyzer.metrics.AllMetrics;
+import org.opensearch.performanceanalyzer.commons.metrics.AllMetrics;
 import org.opensearch.performanceanalyzer.rca.framework.api.metrics.ThreadPool_QueueCapacity;
 import org.opensearch.performanceanalyzer.rca.framework.api.metrics.ThreadPool_RejectedReqs;
 import org.opensearch.performanceanalyzer.rca.integTests.framework.RcaItMarker;

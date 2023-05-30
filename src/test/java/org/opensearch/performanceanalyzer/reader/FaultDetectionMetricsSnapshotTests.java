@@ -15,7 +15,7 @@ import org.jooq.Result;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.opensearch.performanceanalyzer.metrics.AllMetrics;
+import org.opensearch.performanceanalyzer.commons.metrics.AllMetrics;
 
 public class FaultDetectionMetricsSnapshotTests {
     private static final String DB_URL = "jdbc:sqlite:";
