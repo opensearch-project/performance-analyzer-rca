@@ -393,17 +393,6 @@ configurations.each {
     }
 }
 
-task dependencyLicenses {
-    doFirst {
-        def licenseDir = "${projectDir}/licenses"
-        exec {
-            workingDir("${licenseDir}")
-            commandLine "rm", "-f", "performance-analyzer-commons-${paCommonsVersion}.jar.sha1"
-        }
-        updateShas.updateShas()
-    }
-}
-
 protobuf {
     protoc {
         artifact = "com.google.protobuf:protoc:3.21.12"
