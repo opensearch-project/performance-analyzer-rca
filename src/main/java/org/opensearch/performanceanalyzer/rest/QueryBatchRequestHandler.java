@@ -25,9 +25,10 @@ import org.apache.logging.log4j.Logger;
 import org.jooq.Record;
 import org.jooq.Result;
 import org.jooq.exception.DataAccessException;
+import org.opensearch.performanceanalyzer.commons.collectors.StatsCollector;
 import org.opensearch.performanceanalyzer.commons.config.PluginSettings;
-import org.opensearch.performanceanalyzer.commons.metrics.ExceptionsAndErrors;
-import org.opensearch.performanceanalyzer.commons.stats.CommonStats;
+import org.opensearch.performanceanalyzer.commons.stats.ServiceMetrics;
+import org.opensearch.performanceanalyzer.commons.stats.metrics.StatExceptionCode;
 import org.opensearch.performanceanalyzer.metrics.MetricsRestUtil;
 import org.opensearch.performanceanalyzer.metricsdb.MetricsDB;
 import org.opensearch.performanceanalyzer.model.MetricsModel;
@@ -199,43 +200,40 @@ public class QueryBatchRequestHandler extends MetricsHandler implements HttpHand
                             endTime,
                             samplingPeriod,
                             DEFAULT_MAX_DATAPOINTS);
-            CommonStats.RCA_RUNTIME_METRICS_AGGREGATOR.updateStat(
+            ServiceMetrics.READER_METRICS_AGGREGATOR.updateStat(
                     ReaderMetrics.BATCH_METRICS_QUERY_PROCESSING_TIME,
-                    "",
                     System.currentTimeMillis() - processingStartTime);
-            CommonStats.RCA_RUNTIME_METRICS_AGGREGATOR.updateStat(
-                    ReaderMetrics.BATCH_METRICS_HTTP_SUCCESS, "", 1);
+            ServiceMetrics.READER_METRICS_AGGREGATOR.updateStat(
+                    ReaderMetrics.BATCH_METRICS_HTTP_SUCCESS, 1);
             sendResponse(exchange, queryResponse, HttpURLConnection.HTTP_OK);
         } catch (DataAccessException e) {
-            CommonStats.ERRORS_AND_EXCEPTIONS_AGGREGATOR.updateStat(
-                    ExceptionsAndErrors.READER_METRICSDB_ACCESS_ERRORS, "", 1);
+            StatsCollector.instance()
+                    .logException(StatExceptionCode.READER_METRICSDB_ACCESS_ERRORS);
             LOG.error(
                     "QueryException {} ExceptionCode: {}.",
                     e,
-                    ExceptionsAndErrors.BATCH_METRICS_HTTP_HOST_ERROR,
+                    StatExceptionCode.BATCH_METRICS_HTTP_HOST_ERROR,
                     e);
-            CommonStats.ERRORS_AND_EXCEPTIONS_AGGREGATOR.updateStat(
-                    ExceptionsAndErrors.BATCH_METRICS_HTTP_HOST_ERROR, "", 1);
+            StatsCollector.instance().logException(StatExceptionCode.BATCH_METRICS_HTTP_HOST_ERROR);
             String response = "{\"error\":\"" + e.toString() + "\"}";
             sendResponse(exchange, response, HttpURLConnection.HTTP_INTERNAL_ERROR);
         } catch (InvalidParameterException e) {
             LOG.error(
                     "QueryException {} ExceptionCode: {}.",
                     e,
-                    ExceptionsAndErrors.BATCH_METRICS_HTTP_CLIENT_ERROR,
+                    StatExceptionCode.BATCH_METRICS_HTTP_CLIENT_ERROR,
                     e);
-            CommonStats.ERRORS_AND_EXCEPTIONS_AGGREGATOR.updateStat(
-                    ExceptionsAndErrors.BATCH_METRICS_HTTP_CLIENT_ERROR, "", 1);
+            StatsCollector.instance()
+                    .logException(StatExceptionCode.BATCH_METRICS_HTTP_CLIENT_ERROR);
             String response = "{\"error\":\"" + e.getMessage() + ".\"}";
             sendResponse(exchange, response, HttpURLConnection.HTTP_BAD_REQUEST);
         } catch (Exception e) {
             LOG.error(
                     "QueryException {} ExceptionCode: {}.",
                     e,
-                    ExceptionsAndErrors.BATCH_METRICS_HTTP_HOST_ERROR,
+                    StatExceptionCode.BATCH_METRICS_HTTP_HOST_ERROR,
                     e);
-            CommonStats.ERRORS_AND_EXCEPTIONS_AGGREGATOR.updateStat(
-                    ExceptionsAndErrors.BATCH_METRICS_HTTP_HOST_ERROR, "", 1);
+            StatsCollector.instance().logException(StatExceptionCode.BATCH_METRICS_HTTP_HOST_ERROR);
             String response = "{\"error\":\"" + e.toString() + "\"}";
             sendResponse(exchange, response, HttpURLConnection.HTTP_INTERNAL_ERROR);
         }
@@ -261,8 +259,8 @@ public class QueryBatchRequestHandler extends MetricsHandler implements HttpHand
             if (results != null) {
                 maxDatapoints -= results.size();
                 if (maxDatapoints <= 0) {
-                    CommonStats.ERRORS_AND_EXCEPTIONS_AGGREGATOR.updateStat(
-                            ExceptionsAndErrors.BATCH_METRICS_EXCEEDED_MAX_DATAPOINTS, "", 1);
+                    StatsCollector.instance()
+                            .logException(StatExceptionCode.BATCH_METRICS_EXCEEDED_MAX_DATAPOINTS);
                     throw new InvalidParameterException(
                             String.format(
                                     "requested data exceeds the %d datapoints limit",
@@ -282,10 +280,10 @@ public class QueryBatchRequestHandler extends MetricsHandler implements HttpHand
                     if (results != null) {
                         maxDatapoints -= results.size();
                         if (maxDatapoints <= 0) {
-                            CommonStats.ERRORS_AND_EXCEPTIONS_AGGREGATOR.updateStat(
-                                    ExceptionsAndErrors.BATCH_METRICS_EXCEEDED_MAX_DATAPOINTS,
-                                    "",
-                                    1);
+                            StatsCollector.instance()
+                                    .logException(
+                                            StatExceptionCode
+                                                    .BATCH_METRICS_EXCEEDED_MAX_DATAPOINTS);
                             throw new InvalidParameterException(
                                     String.format(
                                             "requested data exceeds the %d datapoints limit",

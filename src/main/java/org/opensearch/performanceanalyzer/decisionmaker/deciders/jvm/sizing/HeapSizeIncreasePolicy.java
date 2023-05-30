@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Map;
 import javax.annotation.Nonnull;
 import org.opensearch.performanceanalyzer.AppContext;
-import org.opensearch.performanceanalyzer.commons.stats.CommonStats;
+import org.opensearch.performanceanalyzer.commons.stats.ServiceMetrics;
 import org.opensearch.performanceanalyzer.decisionmaker.actions.Action;
 import org.opensearch.performanceanalyzer.decisionmaker.actions.HeapSizeIncreaseAction;
 import org.opensearch.performanceanalyzer.decisionmaker.deciders.AlarmMonitor;
@@ -52,8 +52,8 @@ public class HeapSizeIncreasePolicy implements DecisionPolicy {
         if (!heapSizeIncreaseClusterMonitor.isHealthy()) {
             Action heapSizeIncreaseAction = new HeapSizeIncreaseAction(appContext);
             if (heapSizeIncreaseAction.isActionable()) {
-                CommonStats.RCA_RUNTIME_METRICS_AGGREGATOR.updateStat(
-                        RcaRuntimeMetrics.HEAP_SIZE_INCREASE_ACTION_SUGGESTED, "", 1);
+                ServiceMetrics.RCA_RUNTIME_METRICS_AGGREGATOR.updateStat(
+                        RcaRuntimeMetrics.HEAP_SIZE_INCREASE_ACTION_SUGGESTED, 1);
                 actions.add(heapSizeIncreaseAction);
             }
         }

@@ -5,14 +5,15 @@
 
 package org.opensearch.performanceanalyzer.threads;
 
+import static org.opensearch.performanceanalyzer.commons.stats.metrics.StatExceptionCode.NUM_PA_THREADS_ENDED;
+import static org.opensearch.performanceanalyzer.commons.stats.metrics.StatExceptionCode.NUM_PA_THREADS_STARTED;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.opensearch.performanceanalyzer.PerformanceAnalyzerApp;
 import org.opensearch.performanceanalyzer.PerformanceAnalyzerThreads;
-import org.opensearch.performanceanalyzer.commons.metrics.MeasurementSet;
-import org.opensearch.performanceanalyzer.commons.stats.CommonStats;
-import org.opensearch.performanceanalyzer.rca.framework.metrics.ReaderMetrics;
+import org.opensearch.performanceanalyzer.commons.collectors.StatsCollector;
+import org.opensearch.performanceanalyzer.commons.stats.metrics.StatExceptionCode;
 import org.opensearch.performanceanalyzer.threads.exceptions.PAThreadException;
 
 /** Class that wraps a given runnable in a thread with exception handling capabilities. */
@@ -38,7 +39,7 @@ public class ThreadProvider {
             threadName.append("-").append(threadNameAppender);
         }
         String threadNameStr = threadName.toString();
-        MeasurementSet metric = paThread.getThreadExceptionCode();
+        StatExceptionCode metric = paThread.getThreadExceptionCode();
         Thread t =
                 new Thread(
                         () -> {
@@ -50,28 +51,21 @@ public class ThreadProvider {
                                     PerformanceAnalyzerApp.exceptionQueue.put(
                                             new PAThreadException(paThread, innerThrowable));
                                 } catch (InterruptedException e) {
-                                    CommonStats.RCA_RUNTIME_METRICS_AGGREGATOR.updateStat(
-                                            metric, "", 1);
                                     LOG.error(
                                             "Thread was interrupted while waiting to put an exception into the queue. "
                                                     + "Message: {}",
                                             e.getMessage(),
                                             e);
+                                    StatsCollector.instance().logException(metric);
                                 }
                             }
-                            CommonStats.RCA_RUNTIME_METRICS_AGGREGATOR.updateStat(
-                                    ReaderMetrics.NUM_PA_THREADS_ENDED,
-                                    ReaderMetrics.NUM_PA_THREADS_ENDED.toString(),
-                                    1);
                             LOG.info("Thread: {} completed.", threadNameStr);
+                            StatsCollector.instance().logException(NUM_PA_THREADS_ENDED);
                         },
                         threadNameStr);
 
-        CommonStats.RCA_RUNTIME_METRICS_AGGREGATOR.updateStat(
-                ReaderMetrics.NUM_PA_THREADS_STARTED,
-                ReaderMetrics.NUM_PA_THREADS_STARTED.toString(),
-                1);
         LOG.info("Spun up a thread with name: {}", threadNameStr);
+        StatsCollector.instance().logException(NUM_PA_THREADS_STARTED);
         return t;
     }
 

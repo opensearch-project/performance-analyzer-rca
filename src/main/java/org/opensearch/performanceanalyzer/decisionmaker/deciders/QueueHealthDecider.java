@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.opensearch.performanceanalyzer.commons.stats.CommonStats;
+import org.opensearch.performanceanalyzer.commons.stats.ServiceMetrics;
 import org.opensearch.performanceanalyzer.decisionmaker.actions.Action;
 import org.opensearch.performanceanalyzer.decisionmaker.actions.ModifyQueueCapacityAction;
 import org.opensearch.performanceanalyzer.grpc.ResourceEnum;
@@ -99,7 +99,7 @@ public class QueueHealthDecider extends HeapBasedDecider {
                 }
             }
         } else {
-            CommonStats.RCA_RUNTIME_METRICS_AGGREGATOR.updateStat(
+            ServiceMetrics.RCA_RUNTIME_METRICS_AGGREGATOR.updateStat(
                     RcaRuntimeMetrics.NO_INCREASE_ACTION_SUGGESTED,
                     NAME + ":" + nodeKey.getHostAddress(),
                     1);

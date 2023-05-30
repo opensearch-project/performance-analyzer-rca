@@ -8,7 +8,7 @@ package org.opensearch.performanceanalyzer.rca.net.tasks;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.opensearch.performanceanalyzer.commons.stats.CommonStats;
+import org.opensearch.performanceanalyzer.commons.stats.ServiceMetrics;
 import org.opensearch.performanceanalyzer.grpc.FlowUnitMessage;
 import org.opensearch.performanceanalyzer.rca.framework.metrics.RcaGraphMetrics;
 import org.opensearch.performanceanalyzer.rca.framework.util.InstanceDetails;
@@ -54,7 +54,7 @@ public class FlowUnitRxTask implements Runnable {
                     "Dropped a flow unit because the vertex buffer was full for vertex: {}",
                     vertex);
         }
-        CommonStats.RCA_GRAPH_METRICS_AGGREGATOR.updateStat(
+        ServiceMetrics.RCA_GRAPH_METRICS_AGGREGATOR.updateStat(
                 RcaGraphMetrics.RCA_NODES_FU_CONSUME_COUNT, vertex, 1);
     }
 }

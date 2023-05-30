@@ -34,8 +34,8 @@ import java.util.function.Predicate;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.opensearch.performanceanalyzer.PerformanceAnalyzerApp;
-import org.opensearch.performanceanalyzer.commons.metrics.ExceptionsAndErrors;
-import org.opensearch.performanceanalyzer.commons.stats.CommonStats;
+import org.opensearch.performanceanalyzer.commons.collectors.StatsCollector;
+import org.opensearch.performanceanalyzer.commons.stats.metrics.StatExceptionCode;
 import org.opensearch.performanceanalyzer.decisionmaker.actions.configs.CacheActionConfig;
 import org.opensearch.performanceanalyzer.decisionmaker.actions.configs.QueueActionConfig;
 import org.opensearch.performanceanalyzer.decisionmaker.deciders.configs.DeciderConfig;
@@ -276,8 +276,8 @@ public class RcaConf {
         for (String confFilePath : rcaConfFiles) {
             updateStatus = updateRcaConf(confFilePath, mutedRcas, mutedDeciders, mutedActions);
             if (!updateStatus) {
-                CommonStats.ERRORS_AND_EXCEPTIONS_AGGREGATOR.updateStat(
-                        ExceptionsAndErrors.WRITE_UPDATED_RCA_CONF_ERROR, "", 1);
+                StatsCollector.instance()
+                        .logException(StatExceptionCode.WRITE_UPDATED_RCA_CONF_ERROR);
                 LOG.error("Failed to update the conf file at path: {}", confFilePath);
                 break;
             }

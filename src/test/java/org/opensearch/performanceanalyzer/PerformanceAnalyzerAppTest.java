@@ -8,15 +8,20 @@ package org.opensearch.performanceanalyzer;
 
 import java.util.concurrent.ArrayBlockingQueue;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.opensearch.performanceanalyzer.commons.config.ConfigStatus;
-import org.opensearch.performanceanalyzer.commons.metrics.ExceptionsAndErrors;
+import org.opensearch.performanceanalyzer.commons.stats.metrics.StatExceptionCode;
 import org.opensearch.performanceanalyzer.rca.RcaTestHelper;
-import org.opensearch.performanceanalyzer.rca.framework.metrics.ReaderMetrics;
 import org.opensearch.performanceanalyzer.threads.ThreadProvider;
 import org.opensearch.performanceanalyzer.threads.exceptions.PAThreadException;
 
 public class PerformanceAnalyzerAppTest {
+
+    @Before
+    public void setup() {
+        System.setProperty("performanceanalyzer.metrics.log.enabled", "False");
+    }
 
     @Test
     public void testMain() {
@@ -29,7 +34,8 @@ public class PerformanceAnalyzerAppTest {
         ConfigStatus.INSTANCE.setConfigurationInvalid();
         PerformanceAnalyzerApp.main(new String[0]);
         Assert.assertTrue(
-                RcaTestHelper.verify(ExceptionsAndErrors.INVALID_CONFIG_RCA_AGENT_STOPPED));
+                RcaTestHelper.verifyStatException(
+                        StatExceptionCode.INVALID_CONFIG_RCA_AGENT_STOPPED.toString()));
     }
 
     @Test
@@ -39,6 +45,8 @@ public class PerformanceAnalyzerAppTest {
         final Thread errorHandlingThread =
                 PerformanceAnalyzerApp.startErrorHandlingThread(threadProvider, exceptionQueue);
         errorHandlingThread.interrupt();
-        Assert.assertTrue(RcaTestHelper.verify(ReaderMetrics.ERROR_HANDLER_THREAD_STOPPED));
+        Assert.assertTrue(
+                RcaTestHelper.verifyStatException(
+                        StatExceptionCode.ERROR_HANDLER_THREAD_STOPPED.toString()));
     }
 }

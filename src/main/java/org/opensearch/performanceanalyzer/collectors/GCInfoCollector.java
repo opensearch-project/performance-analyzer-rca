@@ -14,8 +14,8 @@ import org.opensearch.performanceanalyzer.commons.metrics.AllMetrics.GCInfoDimen
 import org.opensearch.performanceanalyzer.commons.metrics.MetricsConfiguration;
 import org.opensearch.performanceanalyzer.commons.metrics.MetricsProcessor;
 import org.opensearch.performanceanalyzer.commons.metrics.PerformanceAnalyzerMetrics;
-import org.opensearch.performanceanalyzer.commons.metrics.WriterMetrics;
-import org.opensearch.performanceanalyzer.commons.stats.CommonStats;
+import org.opensearch.performanceanalyzer.commons.stats.metrics.StatExceptionCode;
+import org.opensearch.performanceanalyzer.commons.stats.metrics.StatMetrics;
 import org.opensearch.performanceanalyzer.jvm.GarbageCollectorInfo;
 
 /**
@@ -30,12 +30,15 @@ public class GCInfoCollector extends PerformanceAnalyzerMetricsCollector
     private static final int EXPECTED_KEYS_PATH_LENGTH = 0;
 
     public GCInfoCollector() {
-        super(SAMPLING_TIME_INTERVAL, "GCInfo");
+        super(
+                SAMPLING_TIME_INTERVAL,
+                "GCInfo",
+                StatMetrics.GC_INFO_COLLECTOR_EXECUTION_TIME,
+                StatExceptionCode.GC_INFO_COLLECTOR_ERROR);
     }
 
     @Override
     public void collectMetrics(long startTime) {
-        long mCurrT = System.currentTimeMillis();
         // Zero the string builder
         value.setLength(0);
 
@@ -50,10 +53,6 @@ public class GCInfoCollector extends PerformanceAnalyzerMetricsCollector
         }
 
         saveMetricValues(value.toString(), startTime);
-        CommonStats.WRITER_METRICS_AGGREGATOR.updateStat(
-                WriterMetrics.GC_INFO_COLLECTOR_EXECUTION_TIME,
-                "",
-                System.currentTimeMillis() - mCurrT);
     }
 
     @Override

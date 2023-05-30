@@ -20,7 +20,8 @@ import java.util.concurrent.ExecutorService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.opensearch.performanceanalyzer.AppContext;
-import org.opensearch.performanceanalyzer.commons.stats.CommonStats;
+import org.opensearch.performanceanalyzer.commons.stats.ServiceMetrics;
+import org.opensearch.performanceanalyzer.commons.stats.collectors.SampleAggregator;
 import org.opensearch.performanceanalyzer.rca.framework.core.ConnectedComponent;
 import org.opensearch.performanceanalyzer.rca.framework.core.Node;
 import org.opensearch.performanceanalyzer.rca.framework.core.Queryable;
@@ -375,8 +376,9 @@ public class RCASchedulerTask implements Runnable {
         currTick = currTick + 1;
         long runStartTime = System.currentTimeMillis();
 
-        CommonStats.RCA_GRAPH_METRICS_AGGREGATOR.updateStat(
-                RcaGraphMetrics.NUM_GRAPH_NODES, "", Stats.getInstance().getTotalNodesCount());
+        SampleAggregator test = ServiceMetrics.RCA_GRAPH_METRICS_AGGREGATOR;
+        LOG.error("MOCHI: {} ", test);
+        test.updateStat(RcaGraphMetrics.NUM_GRAPH_NODES, Stats.getInstance().getTotalNodesCount());
 
         changeDbForTasklets();
         List<CompletableFuture<Void>> lastLevelTasks = createAsyncTasks();
@@ -432,11 +434,10 @@ public class RCASchedulerTask implements Runnable {
 
         long runEndTime = System.currentTimeMillis();
         long durationMillis = runEndTime - runStartTime;
-        CommonStats.RCA_GRAPH_METRICS_AGGREGATOR.updateStat(
-                RcaGraphMetrics.GRAPH_EXECUTION_TIME, "", durationMillis);
-        CommonStats.RCA_GRAPH_METRICS_AGGREGATOR.updateStat(
+        ServiceMetrics.RCA_GRAPH_METRICS_AGGREGATOR.updateStat(
+                RcaGraphMetrics.GRAPH_EXECUTION_TIME, durationMillis);
+        ServiceMetrics.RCA_GRAPH_METRICS_AGGREGATOR.updateStat(
                 RcaGraphMetrics.NUM_GRAPH_NODES_MUTED,
-                "",
                 Stats.getInstance().getMutedGraphNodesCount());
     }
 
