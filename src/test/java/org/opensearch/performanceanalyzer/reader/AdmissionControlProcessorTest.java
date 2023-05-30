@@ -19,9 +19,9 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.opensearch.performanceanalyzer.collectors.MetricStatus;
-import org.opensearch.performanceanalyzer.metrics.AllMetrics;
-import org.opensearch.performanceanalyzer.metrics.PerformanceAnalyzerMetrics;
-import org.opensearch.performanceanalyzer.reader_writer_shared.Event;
+import org.opensearch.performanceanalyzer.commons.event_process.Event;
+import org.opensearch.performanceanalyzer.commons.metrics.AllMetrics;
+import org.opensearch.performanceanalyzer.commons.metrics.PerformanceAnalyzerMetrics;
 
 public class AdmissionControlProcessorTest {
 

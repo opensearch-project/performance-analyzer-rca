@@ -12,6 +12,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.opensearch.performanceanalyzer.AppContext;
+import org.opensearch.performanceanalyzer.commons.metrics.AllMetrics;
 import org.opensearch.performanceanalyzer.decisionmaker.actions.Action;
 import org.opensearch.performanceanalyzer.decisionmaker.actions.CacheClearAction;
 import org.opensearch.performanceanalyzer.decisionmaker.actions.ModifyCacheMaxSizeAction;
@@ -22,7 +23,6 @@ import org.opensearch.performanceanalyzer.decisionmaker.deciders.configs.jvm.Lev
 import org.opensearch.performanceanalyzer.decisionmaker.deciders.jvm.old_gen.LevelThreeActionBuilder;
 import org.opensearch.performanceanalyzer.decisionmaker.deciders.test_utils.DeciderActionParserUtil;
 import org.opensearch.performanceanalyzer.grpc.ResourceEnum;
-import org.opensearch.performanceanalyzer.metrics.AllMetrics;
 import org.opensearch.performanceanalyzer.rca.framework.api.summaries.ResourceUtil;
 import org.opensearch.performanceanalyzer.rca.framework.core.RcaConf;
 import org.opensearch.performanceanalyzer.rca.framework.util.InstanceDetails;

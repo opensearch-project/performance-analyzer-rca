@@ -13,7 +13,7 @@ import org.jooq.Record;
 import org.jooq.Result;
 import org.jooq.SelectSeekStep1;
 import org.jooq.impl.DSL;
-import org.opensearch.performanceanalyzer.metrics.AllMetrics;
+import org.opensearch.performanceanalyzer.commons.metrics.AllMetrics;
 import org.opensearch.performanceanalyzer.rca.framework.core.temperature.TemperatureDimension;
 import org.opensearch.performanceanalyzer.rca.store.metric.temperature.TemperatureMetricsBase;
 

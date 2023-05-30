@@ -8,9 +8,9 @@ package org.opensearch.performanceanalyzer.rca.integTests.tests.queue_tuning.val
 
 import org.junit.Assert;
 import org.opensearch.performanceanalyzer.AppContext;
+import org.opensearch.performanceanalyzer.commons.metrics.AllMetrics;
 import org.opensearch.performanceanalyzer.decisionmaker.actions.ModifyQueueCapacityAction;
 import org.opensearch.performanceanalyzer.grpc.ResourceEnum;
-import org.opensearch.performanceanalyzer.metrics.AllMetrics;
 import org.opensearch.performanceanalyzer.rca.RcaControllerHelper;
 import org.opensearch.performanceanalyzer.rca.framework.core.RcaConf;
 import org.opensearch.performanceanalyzer.rca.integTests.framework.api.IValidator;

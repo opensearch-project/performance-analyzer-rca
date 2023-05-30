@@ -10,7 +10,7 @@ import static org.junit.Assert.assertFalse;
 
 import java.util.Arrays;
 import org.junit.Test;
-import org.opensearch.performanceanalyzer.metrics.AllMetrics;
+import org.opensearch.performanceanalyzer.commons.metrics.AllMetrics;
 import org.opensearch.performanceanalyzer.metricsdb.MetricsDB;
 import org.opensearch.performanceanalyzer.rca.framework.api.Metric;
 import org.opensearch.performanceanalyzer.rca.framework.api.flow_units.MetricFlowUnit;

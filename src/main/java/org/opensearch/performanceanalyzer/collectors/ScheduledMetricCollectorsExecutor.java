@@ -15,7 +15,9 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.opensearch.performanceanalyzer.PerformanceAnalyzerApp;
+import org.opensearch.performanceanalyzer.commons.collectors.PerformanceAnalyzerMetricsCollector;
+import org.opensearch.performanceanalyzer.commons.collectors.StatsCollector;
+import org.opensearch.performanceanalyzer.commons.stats.CommonStats;
 import org.opensearch.performanceanalyzer.rca.framework.metrics.WriterMetrics;
 
 public class ScheduledMetricCollectorsExecutor extends Thread {
@@ -114,7 +116,7 @@ public class ScheduledMetricCollectorsExecutor extends Thread {
                         PerformanceAnalyzerMetricsCollector collector = entry.getKey();
                         if (collector.getState()
                                 == PerformanceAnalyzerMetricsCollector.State.MUTED) {
-                            PerformanceAnalyzerApp.WRITER_METRICS_AGGREGATOR.updateStat(
+                            CommonStats.WRITER_METRICS_AGGREGATOR.updateStat(
                                     WriterMetrics.COLLECTORS_MUTED,
                                     collector.getCollectorName(),
                                     1);
@@ -141,7 +143,7 @@ public class ScheduledMetricCollectorsExecutor extends Thread {
                             if (collector.getState()
                                     == PerformanceAnalyzerMetricsCollector.State.HEALTHY) {
                                 collector.setState(PerformanceAnalyzerMetricsCollector.State.SLOW);
-                                PerformanceAnalyzerApp.WRITER_METRICS_AGGREGATOR.updateStat(
+                                CommonStats.WRITER_METRICS_AGGREGATOR.updateStat(
                                         WriterMetrics.COLLECTORS_SLOW,
                                         collector.getCollectorName(),
                                         1);
@@ -152,7 +154,7 @@ public class ScheduledMetricCollectorsExecutor extends Thread {
                             LOG.info(
                                     "Collector {} is still in progress, so skipping this Interval",
                                     collector.getCollectorName());
-                            PerformanceAnalyzerApp.WRITER_METRICS_AGGREGATOR.updateStat(
+                            CommonStats.WRITER_METRICS_AGGREGATOR.updateStat(
                                     WriterMetrics.COLLECTORS_SKIPPED,
                                     collector.getCollectorName(),
                                     1);

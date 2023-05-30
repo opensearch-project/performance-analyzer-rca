@@ -15,7 +15,7 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.opensearch.performanceanalyzer.rca.stats.collectors.SampleAggregator;
+import org.opensearch.performanceanalyzer.commons.stats.SampleAggregator;
 
 public class PeriodicSamplers implements Runnable {
     private static final Logger LOG = LogManager.getLogger(PeriodicSamplers.class);

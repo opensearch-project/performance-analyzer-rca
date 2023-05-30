@@ -5,7 +5,7 @@
 
 package org.opensearch.performanceanalyzer.net;
 
-import static org.opensearch.performanceanalyzer.rca.framework.metrics.ExceptionsAndErrors.GRPC_CHANNEL_CLOSURE_ERROR;
+import static org.opensearch.performanceanalyzer.commons.metrics.ExceptionsAndErrors.GRPC_CHANNEL_CLOSURE_ERROR;
 
 import com.google.common.annotations.VisibleForTesting;
 import io.grpc.ManagedChannel;
@@ -23,7 +23,7 @@ import javax.net.ssl.SSLException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.opensearch.performanceanalyzer.CertificateUtils;
-import org.opensearch.performanceanalyzer.PerformanceAnalyzerApp;
+import org.opensearch.performanceanalyzer.commons.stats.CommonStats;
 import org.opensearch.performanceanalyzer.grpc.InterNodeRpcServiceGrpc;
 import org.opensearch.performanceanalyzer.grpc.InterNodeRpcServiceGrpc.InterNodeRpcServiceStub;
 import org.opensearch.performanceanalyzer.rca.framework.util.InstanceDetails;
@@ -220,7 +220,7 @@ public class GRPCConnectionManager {
             channel.shutdownNow();
             try {
                 if (!channel.awaitTermination(1, TimeUnit.MINUTES)) {
-                    PerformanceAnalyzerApp.WRITER_METRICS_AGGREGATOR.updateStat(
+                    CommonStats.WRITER_METRICS_AGGREGATOR.updateStat(
                             GRPC_CHANNEL_CLOSURE_ERROR, "", 1);
                     LOG.warn("Unable to close channel gracefully for host: {}", entry.getKey());
                 }

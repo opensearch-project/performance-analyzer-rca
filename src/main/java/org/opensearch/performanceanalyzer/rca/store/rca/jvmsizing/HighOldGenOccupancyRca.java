@@ -9,7 +9,7 @@ package org.opensearch.performanceanalyzer.rca.store.rca.jvmsizing;
 import java.util.concurrent.TimeUnit;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.opensearch.performanceanalyzer.PerformanceAnalyzerApp;
+import org.opensearch.performanceanalyzer.commons.stats.CommonStats;
 import org.opensearch.performanceanalyzer.rca.configs.HighOldGenOccupancyRcaConfig;
 import org.opensearch.performanceanalyzer.rca.framework.api.Metric;
 import org.opensearch.performanceanalyzer.rca.framework.api.Resources;
@@ -113,7 +113,7 @@ public class HighOldGenOccupancyRca extends OldGenRca<ResourceFlowUnit<HotResour
                         averageUtilizationPercentage,
                         (int) rcaEvaluationIntervalInS);
         if (averageUtilizationPercentage >= heapUtilizationThreshold) {
-            PerformanceAnalyzerApp.RCA_VERTICES_METRICS_AGGREGATOR.updateStat(
+            CommonStats.RCA_VERTICES_METRICS_AGGREGATOR.updateStat(
                     RcaVerticesMetrics.OLD_GEN_OVER_OCCUPIED, "", 1);
             context = new ResourceContext(Resources.State.UNHEALTHY);
         }
@@ -127,7 +127,7 @@ public class HighOldGenOccupancyRca extends OldGenRca<ResourceFlowUnit<HotResour
         double maxOldGen = getMaxOldGenSizeOrDefault(Double.MAX_VALUE);
 
         if (maxOldGen == 0d) {
-            PerformanceAnalyzerApp.RCA_VERTICES_METRICS_AGGREGATOR.updateStat(
+            CommonStats.RCA_VERTICES_METRICS_AGGREGATOR.updateStat(
                     RcaVerticesMetrics.INVALID_OLD_GEN_SIZE, "", 1);
             LOG.info("Max Old Gen capacity cannot be 0. Skipping.");
             return;

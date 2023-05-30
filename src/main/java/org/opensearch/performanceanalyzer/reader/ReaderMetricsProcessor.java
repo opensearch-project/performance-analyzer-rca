@@ -5,8 +5,8 @@
 
 package org.opensearch.performanceanalyzer.reader;
 
-import static org.opensearch.performanceanalyzer.rca.framework.metrics.ExceptionsAndErrors.IN_MEMORY_DATABASE_CONN_CLOSURE_ERROR;
-import static org.opensearch.performanceanalyzer.rca.framework.metrics.ExceptionsAndErrors.METRICS_DB_CLOSURE_ERROR;
+import static org.opensearch.performanceanalyzer.commons.metrics.ExceptionsAndErrors.IN_MEMORY_DATABASE_CONN_CLOSURE_ERROR;
+import static org.opensearch.performanceanalyzer.commons.metrics.ExceptionsAndErrors.METRICS_DB_CLOSURE_ERROR;
 
 import com.google.common.annotations.VisibleForTesting;
 import java.io.File;
@@ -35,18 +35,20 @@ import org.jooq.DSLContext;
 import org.jooq.SQLDialect;
 import org.jooq.impl.DSL;
 import org.opensearch.performanceanalyzer.AppContext;
-import org.opensearch.performanceanalyzer.PerformanceAnalyzerApp;
+import org.opensearch.performanceanalyzer.commons.event_process.EventDispatcher;
+import org.opensearch.performanceanalyzer.commons.event_process.EventLog;
+import org.opensearch.performanceanalyzer.commons.event_process.EventLogFileHandler;
+import org.opensearch.performanceanalyzer.commons.event_process.EventProcessor;
+import org.opensearch.performanceanalyzer.commons.metrics.AllMetrics;
+import org.opensearch.performanceanalyzer.commons.metrics.ExceptionsAndErrors;
+import org.opensearch.performanceanalyzer.commons.metrics.MetricsConfiguration;
+import org.opensearch.performanceanalyzer.commons.metrics.PerformanceAnalyzerMetrics;
+import org.opensearch.performanceanalyzer.commons.stats.CommonStats;
 import org.opensearch.performanceanalyzer.config.PluginSettings;
 import org.opensearch.performanceanalyzer.config.overrides.ConfigOverridesApplier;
 import org.opensearch.performanceanalyzer.core.Util;
-import org.opensearch.performanceanalyzer.metrics.AllMetrics;
-import org.opensearch.performanceanalyzer.metrics.MetricsConfiguration;
-import org.opensearch.performanceanalyzer.metrics.PerformanceAnalyzerMetrics;
 import org.opensearch.performanceanalyzer.metricsdb.MetricsDB;
-import org.opensearch.performanceanalyzer.rca.framework.metrics.ExceptionsAndErrors;
 import org.opensearch.performanceanalyzer.rca.framework.metrics.ReaderMetrics;
-import org.opensearch.performanceanalyzer.reader_writer_shared.EventLog;
-import org.opensearch.performanceanalyzer.reader_writer_shared.EventLogFileHandler;
 
 public class ReaderMetricsProcessor implements Runnable {
     private static final Logger LOG = LogManager.getLogger(ReaderMetricsProcessor.class);
@@ -181,7 +183,7 @@ public class ReaderMetricsProcessor implements Runnable {
                 }
             }
         } catch (Throwable e) {
-            PerformanceAnalyzerApp.READER_METRICS_AGGREGATOR.updateStat(ReaderMetrics.OTHER, "", 1);
+            CommonStats.RCA_RUNTIME_METRICS_AGGREGATOR.updateStat(ReaderMetrics.OTHER, "", 1);
             LOG.error(
                     (Supplier<?>)
                             () ->
@@ -215,7 +217,7 @@ public class ReaderMetricsProcessor implements Runnable {
                 conn.close();
             }
         } catch (Exception e) {
-            PerformanceAnalyzerApp.ERRORS_AND_EXCEPTIONS_AGGREGATOR.updateStat(
+            CommonStats.ERRORS_AND_EXCEPTIONS_AGGREGATOR.updateStat(
                     IN_MEMORY_DATABASE_CONN_CLOSURE_ERROR, "", 1);
             LOG.error("Unable to close inmemory database connection.", e);
         }
@@ -224,8 +226,7 @@ public class ReaderMetricsProcessor implements Runnable {
             try {
                 db.close();
             } catch (Exception e) {
-                PerformanceAnalyzerApp.WRITER_METRICS_AGGREGATOR.updateStat(
-                        METRICS_DB_CLOSURE_ERROR, "", 1);
+                CommonStats.WRITER_METRICS_AGGREGATOR.updateStat(METRICS_DB_CLOSURE_ERROR, "", 1);
                 LOG.error("Unable to close database - " + db.getDBFilePath(), e);
             }
         }
@@ -381,7 +382,7 @@ public class ReaderMetricsProcessor implements Runnable {
 
         long mFinalT = System.currentTimeMillis();
         LOG.debug("Total time taken for aligning OS Metrics: {}", mFinalT - mCurrT);
-        PerformanceAnalyzerApp.READER_METRICS_AGGREGATOR.updateStat(
+        CommonStats.RCA_RUNTIME_METRICS_AGGREGATOR.updateStat(
                 ReaderMetrics.READER_METRICS_EMIT_TIME, "", (double) (mFinalT - mCurrT));
 
         mCurrT = System.currentTimeMillis();
@@ -400,7 +401,7 @@ public class ReaderMetricsProcessor implements Runnable {
 
         metricsDB.commit();
         metricsDBMap.put(prevWindowStartTime, metricsDB);
-        PerformanceAnalyzerApp.READER_METRICS_AGGREGATOR.updateStat(
+        CommonStats.RCA_RUNTIME_METRICS_AGGREGATOR.updateStat(
                 ReaderMetrics.METRICSDB_FILE_SIZE,
                 "",
                 new File(metricsDB.getDBFilePath()).length());
@@ -409,7 +410,7 @@ public class ReaderMetricsProcessor implements Runnable {
         }
         mFinalT = System.currentTimeMillis();
         LOG.debug("Total time taken for emitting Metrics: {}", mFinalT - mCurrT);
-        PerformanceAnalyzerApp.READER_METRICS_AGGREGATOR.updateStat(
+        CommonStats.RCA_RUNTIME_METRICS_AGGREGATOR.updateStat(
                 ReaderMetrics.READER_METRICS_EMIT_TIME, "", (double) (mFinalT - mCurrT));
     }
 
@@ -454,7 +455,7 @@ public class ReaderMetricsProcessor implements Runnable {
                 LOG.debug("OS METRICS NULL");
             }
             alignedOSSnapHolder.remove();
-            PerformanceAnalyzerApp.READER_METRICS_AGGREGATOR.updateStat(
+            CommonStats.RCA_RUNTIME_METRICS_AGGREGATOR.updateStat(
                     ReaderMetrics.SHARD_REQUEST_METRICS_EMITTER_EXECUTION_TIME,
                     "",
                     System.currentTimeMillis() - mCurrT);
@@ -725,7 +726,7 @@ public class ReaderMetricsProcessor implements Runnable {
         }
         long mFinalT = System.currentTimeMillis();
         LOG.debug("Total time taken for processing Metrics: {}", mFinalT - mCurrT);
-        PerformanceAnalyzerApp.READER_METRICS_AGGREGATOR.updateStat(
+        CommonStats.RCA_RUNTIME_METRICS_AGGREGATOR.updateStat(
                 ReaderMetrics.READER_METRICS_PROCESS_TIME, "", (double) (mFinalT - mCurrT));
     }
 
@@ -988,7 +989,7 @@ public class ReaderMetricsProcessor implements Runnable {
                                     newValue);
                         }
                     } catch (IOException e) {
-                        PerformanceAnalyzerApp.ERRORS_AND_EXCEPTIONS_AGGREGATOR.updateStat(
+                        CommonStats.ERRORS_AND_EXCEPTIONS_AGGREGATOR.updateStat(
                                 ExceptionsAndErrors.BATCH_METRICS_CONFIG_ERROR, "", 1);
                         LOG.error("Error reading file '{}': {}", filePath.toString(), e);
                         batchMetricsEnabled = defaultBatchMetricsEnabled;

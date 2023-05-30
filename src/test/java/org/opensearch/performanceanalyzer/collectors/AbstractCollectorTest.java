@@ -8,8 +8,11 @@ package org.opensearch.performanceanalyzer.collectors;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.Instant;
+import org.junit.Before;
 import org.junit.Test;
-import org.opensearch.performanceanalyzer.metrics.PerformanceAnalyzerMetrics;
+import org.opensearch.performanceanalyzer.PerformanceAnalyzerApp;
+import org.opensearch.performanceanalyzer.commons.collectors.PerformanceAnalyzerMetricsCollector;
+import org.opensearch.performanceanalyzer.commons.metrics.PerformanceAnalyzerMetrics;
 
 /** A base class that others can extend to validate their Metrics Collectors behavior */
 public abstract class AbstractCollectorTest {
@@ -23,6 +26,11 @@ public abstract class AbstractCollectorTest {
 
     // This is the only line that implementors need to modify
     public abstract void validateMetric(String metric) throws Exception;
+
+    @Before
+    public void prepareMetrics() {
+        PerformanceAnalyzerApp.initMetricsConfig();
+    }
 
     @Test
     public void validateMetrics() throws Exception {

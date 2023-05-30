@@ -25,13 +25,13 @@ import org.apache.logging.log4j.Logger;
 import org.jooq.Record;
 import org.jooq.Result;
 import org.jooq.exception.DataAccessException;
-import org.opensearch.performanceanalyzer.PerformanceAnalyzerApp;
+import org.opensearch.performanceanalyzer.commons.metrics.ExceptionsAndErrors;
+import org.opensearch.performanceanalyzer.commons.stats.CommonStats;
 import org.opensearch.performanceanalyzer.config.PluginSettings;
 import org.opensearch.performanceanalyzer.metrics.MetricsRestUtil;
 import org.opensearch.performanceanalyzer.metricsdb.MetricsDB;
 import org.opensearch.performanceanalyzer.model.MetricsModel;
 import org.opensearch.performanceanalyzer.net.NetClient;
-import org.opensearch.performanceanalyzer.rca.framework.metrics.ExceptionsAndErrors;
 import org.opensearch.performanceanalyzer.rca.framework.metrics.ReaderMetrics;
 import org.opensearch.performanceanalyzer.reader.ReaderMetricsProcessor;
 
@@ -199,22 +199,22 @@ public class QueryBatchRequestHandler extends MetricsHandler implements HttpHand
                             endTime,
                             samplingPeriod,
                             DEFAULT_MAX_DATAPOINTS);
-            PerformanceAnalyzerApp.READER_METRICS_AGGREGATOR.updateStat(
+            CommonStats.RCA_RUNTIME_METRICS_AGGREGATOR.updateStat(
                     ReaderMetrics.BATCH_METRICS_QUERY_PROCESSING_TIME,
                     "",
                     System.currentTimeMillis() - processingStartTime);
-            PerformanceAnalyzerApp.READER_METRICS_AGGREGATOR.updateStat(
+            CommonStats.RCA_RUNTIME_METRICS_AGGREGATOR.updateStat(
                     ReaderMetrics.BATCH_METRICS_HTTP_SUCCESS, "", 1);
             sendResponse(exchange, queryResponse, HttpURLConnection.HTTP_OK);
         } catch (DataAccessException e) {
-            PerformanceAnalyzerApp.ERRORS_AND_EXCEPTIONS_AGGREGATOR.updateStat(
+            CommonStats.ERRORS_AND_EXCEPTIONS_AGGREGATOR.updateStat(
                     ExceptionsAndErrors.READER_METRICSDB_ACCESS_ERRORS, "", 1);
             LOG.error(
                     "QueryException {} ExceptionCode: {}.",
                     e,
                     ExceptionsAndErrors.BATCH_METRICS_HTTP_HOST_ERROR,
                     e);
-            PerformanceAnalyzerApp.ERRORS_AND_EXCEPTIONS_AGGREGATOR.updateStat(
+            CommonStats.ERRORS_AND_EXCEPTIONS_AGGREGATOR.updateStat(
                     ExceptionsAndErrors.BATCH_METRICS_HTTP_HOST_ERROR, "", 1);
             String response = "{\"error\":\"" + e.toString() + "\"}";
             sendResponse(exchange, response, HttpURLConnection.HTTP_INTERNAL_ERROR);
@@ -224,7 +224,7 @@ public class QueryBatchRequestHandler extends MetricsHandler implements HttpHand
                     e,
                     ExceptionsAndErrors.BATCH_METRICS_HTTP_CLIENT_ERROR,
                     e);
-            PerformanceAnalyzerApp.ERRORS_AND_EXCEPTIONS_AGGREGATOR.updateStat(
+            CommonStats.ERRORS_AND_EXCEPTIONS_AGGREGATOR.updateStat(
                     ExceptionsAndErrors.BATCH_METRICS_HTTP_CLIENT_ERROR, "", 1);
             String response = "{\"error\":\"" + e.getMessage() + ".\"}";
             sendResponse(exchange, response, HttpURLConnection.HTTP_BAD_REQUEST);
@@ -234,7 +234,7 @@ public class QueryBatchRequestHandler extends MetricsHandler implements HttpHand
                     e,
                     ExceptionsAndErrors.BATCH_METRICS_HTTP_HOST_ERROR,
                     e);
-            PerformanceAnalyzerApp.ERRORS_AND_EXCEPTIONS_AGGREGATOR.updateStat(
+            CommonStats.ERRORS_AND_EXCEPTIONS_AGGREGATOR.updateStat(
                     ExceptionsAndErrors.BATCH_METRICS_HTTP_HOST_ERROR, "", 1);
             String response = "{\"error\":\"" + e.toString() + "\"}";
             sendResponse(exchange, response, HttpURLConnection.HTTP_INTERNAL_ERROR);
@@ -261,7 +261,7 @@ public class QueryBatchRequestHandler extends MetricsHandler implements HttpHand
             if (results != null) {
                 maxDatapoints -= results.size();
                 if (maxDatapoints <= 0) {
-                    PerformanceAnalyzerApp.ERRORS_AND_EXCEPTIONS_AGGREGATOR.updateStat(
+                    CommonStats.ERRORS_AND_EXCEPTIONS_AGGREGATOR.updateStat(
                             ExceptionsAndErrors.BATCH_METRICS_EXCEEDED_MAX_DATAPOINTS, "", 1);
                     throw new InvalidParameterException(
                             String.format(
@@ -282,7 +282,7 @@ public class QueryBatchRequestHandler extends MetricsHandler implements HttpHand
                     if (results != null) {
                         maxDatapoints -= results.size();
                         if (maxDatapoints <= 0) {
-                            PerformanceAnalyzerApp.ERRORS_AND_EXCEPTIONS_AGGREGATOR.updateStat(
+                            CommonStats.ERRORS_AND_EXCEPTIONS_AGGREGATOR.updateStat(
                                     ExceptionsAndErrors.BATCH_METRICS_EXCEEDED_MAX_DATAPOINTS,
                                     "",
                                     1);

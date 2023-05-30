@@ -22,7 +22,7 @@ import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.message.ParameterizedMessage;
 import org.apache.logging.log4j.util.Supplier;
 import org.opensearch.performanceanalyzer.AppContext;
-import org.opensearch.performanceanalyzer.collectors.StatExceptionCode;
+import org.opensearch.performanceanalyzer.commons.collectors.StatExceptionCode;
 import org.opensearch.performanceanalyzer.metrics.MetricsRestUtil;
 import org.opensearch.performanceanalyzer.rca.Version;
 import org.opensearch.performanceanalyzer.rca.framework.core.Stats;

@@ -11,8 +11,8 @@ import java.io.File;
 import java.io.FileReader;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.opensearch.performanceanalyzer.PerformanceAnalyzerApp;
-import org.opensearch.performanceanalyzer.metrics.PerformanceAnalyzerMetrics;
+import org.opensearch.performanceanalyzer.commons.metrics.PerformanceAnalyzerMetrics;
+import org.opensearch.performanceanalyzer.commons.stats.CommonStats;
 import org.opensearch.performanceanalyzer.rca.framework.metrics.ReaderMetrics;
 
 public class FileHelper {
@@ -57,7 +57,7 @@ public class FileHelper {
                 }
             }
         } catch (Exception ex) {
-            PerformanceAnalyzerApp.READER_METRICS_AGGREGATOR.updateStat(ReaderMetrics.OTHER, "", 1);
+            CommonStats.RCA_RUNTIME_METRICS_AGGREGATOR.updateStat(ReaderMetrics.OTHER, "", 1);
             log.debug(
                     "Having issue to read current time from the content of file. Using file metadata; exception: {} ExceptionCode: {}",
                     () -> ex,

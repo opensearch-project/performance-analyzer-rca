@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Set;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.opensearch.performanceanalyzer.PerformanceAnalyzerApp;
+import org.opensearch.performanceanalyzer.commons.stats.CommonStats;
 import org.opensearch.performanceanalyzer.decisionmaker.actions.Action;
 import org.opensearch.performanceanalyzer.decisionmaker.actions.ModifyCacheMaxSizeAction;
 import org.opensearch.performanceanalyzer.grpc.ResourceEnum;
@@ -134,7 +134,7 @@ public class CacheHealthDecider extends HeapBasedDecider {
         if (canUseMoreHeap(nodeKey)) {
             action = getAction(ModifyCacheMaxSizeAction.NAME, nodeKey, cacheType, true);
         } else {
-            PerformanceAnalyzerApp.RCA_RUNTIME_METRICS_AGGREGATOR.updateStat(
+            CommonStats.RCA_RUNTIME_METRICS_AGGREGATOR.updateStat(
                     RcaRuntimeMetrics.NO_INCREASE_ACTION_SUGGESTED,
                     NAME + ":" + nodeKey.getHostAddress(),
                     1);

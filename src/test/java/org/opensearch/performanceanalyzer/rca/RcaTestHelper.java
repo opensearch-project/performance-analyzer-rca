@@ -29,13 +29,13 @@ import org.apache.logging.log4j.core.LoggerContext;
 import org.apache.logging.log4j.core.appender.FileAppender;
 import org.jooq.tools.json.JSONObject;
 import org.opensearch.performanceanalyzer.AppContext;
-import org.opensearch.performanceanalyzer.PerformanceAnalyzerApp;
-import org.opensearch.performanceanalyzer.metrics.AllMetrics;
+import org.opensearch.performanceanalyzer.commons.event_process.Event;
+import org.opensearch.performanceanalyzer.commons.metrics.AllMetrics;
+import org.opensearch.performanceanalyzer.commons.metrics.MeasurementSet;
+import org.opensearch.performanceanalyzer.commons.stats.CommonStats;
 import org.opensearch.performanceanalyzer.rca.framework.core.ConnectedComponent;
 import org.opensearch.performanceanalyzer.rca.framework.core.Node;
-import org.opensearch.performanceanalyzer.rca.stats.measurements.MeasurementSet;
 import org.opensearch.performanceanalyzer.reader.ClusterDetailsEventProcessor;
-import org.opensearch.performanceanalyzer.reader_writer_shared.Event;
 
 public class RcaTestHelper {
     public static List<String> getAllLinesFromStatsLog() {
@@ -185,7 +185,7 @@ public class RcaTestHelper {
         final int MAX_TIME_TO_WAIT_MILLIS = 10_000;
         int waited_for_millis = 0;
         while (waited_for_millis++ < MAX_TIME_TO_WAIT_MILLIS) {
-            if (PerformanceAnalyzerApp.RCA_STATS_REPORTER.isMeasurementCollected(measurementSet)) {
+            if (CommonStats.RCA_STATS_REPORTER.isMeasurementCollected(measurementSet)) {
                 return true;
             }
             Thread.sleep(1);

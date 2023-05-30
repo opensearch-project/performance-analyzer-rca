@@ -10,7 +10,7 @@ import io.grpc.stub.StreamObserver;
 import java.util.Map;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.opensearch.performanceanalyzer.PerformanceAnalyzerApp;
+import org.opensearch.performanceanalyzer.commons.stats.CommonStats;
 import org.opensearch.performanceanalyzer.grpc.SubscribeMessage;
 import org.opensearch.performanceanalyzer.grpc.SubscribeResponse;
 import org.opensearch.performanceanalyzer.grpc.SubscribeResponse.SubscriptionStatus;
@@ -66,7 +66,7 @@ public class SubscriptionRxTask implements Runnable {
         responseStream.onNext(
                 SubscribeResponse.newBuilder().setSubscriptionStatus(subscriptionStatus).build());
         responseStream.onCompleted();
-        PerformanceAnalyzerApp.RCA_GRAPH_METRICS_AGGREGATOR.updateStat(
+        CommonStats.RCA_GRAPH_METRICS_AGGREGATOR.updateStat(
                 RcaGraphMetrics.RCA_NODES_SUB_ACK_COUNT,
                 request.getRequesterGraphNode() + ":" + request.getDestinationGraphNode(),
                 1);
