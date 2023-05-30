@@ -28,37 +28,37 @@ public enum RcaRuntimeMetrics implements MeasurementSet {
      * is a named counter and therefore we can get a count per OpenSearch API.
      */
     OPEN_SEARCH_APIS_CALLED(
-            "OpenSearchApisCalled",
-            "namedCount",
-            StatsType.STATS_DATA,
-            Collections.singletonList(Statistics.NAMED_COUNTERS)),
+            "OpenSearchApisCalled", "namedCount", StatsType.STATS_DATA, Statistics.NAMED_COUNTERS),
 
     /**
      * Metric tracking if RCA is enabled or disabled. We write a 0 if RCA is disabled and 1 if it is
      * enabled.
      */
-    RCA_ENABLED(
-            "RcaEnabled",
-            "count",
-            StatsType.STATS_DATA,
-            Collections.singletonList(Statistics.SAMPLE)),
+    RCA_ENABLED("RcaEnabled", "count", StatsType.STATS_DATA, Statistics.SAMPLE),
 
     /** Metric tracking the actions published by the publisher that are persisted in sqlite. */
     NO_INCREASE_ACTION_SUGGESTED(
-            "NoIncreaseAction",
-            "namedCount",
-            StatsType.STATS_DATA,
-            Collections.singletonList(Statistics.NAMED_COUNTERS)),
+            "NoIncreaseAction", "namedCount", StatsType.STATS_DATA, Statistics.NAMED_COUNTERS),
 
     /** Metric tracking the Heap Size increase action published by the publisher. */
     HEAP_SIZE_INCREASE_ACTION_SUGGESTED("HeapSizeIncreaseAction"),
 
     /** Metric tracking the actions published by the publisher that are persisted in sqlite. */
     ACTIONS_PUBLISHED(
-            "ActionsPublished",
-            "namedCount",
-            StatsType.STATS_DATA,
-            Collections.singletonList(Statistics.NAMED_COUNTERS));
+            "ActionsPublished", "namedCount", StatsType.STATS_DATA, Statistics.NAMED_COUNTERS),
+
+    /**
+     * Tracks transport thread state(WAITING, TIMED-WAITING, BLOCKED) and time. T The last 2 metrics
+     * track time for 60s moving window.
+     */
+    BLOCKED_TRANSPORT_THREAD_COUNT(
+            "BlockedTransportThreadCount", "count", StatsType.STATS_DATA, Statistics.MAX),
+    WAITED_TRANSPORT_THREAD_COUNT(
+            "WaitedTransportThreadCount", "count", StatsType.STATS_DATA, Statistics.MAX),
+    MAX_TRANSPORT_THREAD_BLOCKED_TIME(
+            "MaxTransportThreadBlockedTime", "seconds", StatsType.LATENCIES, Statistics.MAX),
+    MAX_TRANSPORT_THREAD_WAITED_TIME(
+            "MaxTransportThreadWaitedTime", "seconds", StatsType.LATENCIES, Statistics.MAX);
 
     /** What we want to appear as the metric name. */
     private String name;
@@ -80,6 +80,10 @@ public enum RcaRuntimeMetrics implements MeasurementSet {
 
     RcaRuntimeMetrics(String name) {
         this(name, "count", StatsType.STATS_DATA, Collections.singletonList(Statistics.COUNT));
+    }
+
+    RcaRuntimeMetrics(String name, String unit, StatsType statsType, Statistics stats) {
+        this(name, unit, statsType, Collections.singletonList(stats));
     }
 
     RcaRuntimeMetrics(
