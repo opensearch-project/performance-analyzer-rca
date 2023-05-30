@@ -31,7 +31,7 @@ import org.junit.runner.manipulation.Filter;
 import org.junit.runner.manipulation.Filterable;
 import org.junit.runner.notification.Failure;
 import org.junit.runner.notification.RunNotifier;
-import org.opensearch.performanceanalyzer.core.Util;
+import org.opensearch.performanceanalyzer.commons.util.Util;
 import org.opensearch.performanceanalyzer.rca.integTests.framework.Cluster;
 import org.opensearch.performanceanalyzer.rca.integTests.framework.RcaItMarker;
 import org.opensearch.performanceanalyzer.rca.integTests.framework.TestEnvironment;

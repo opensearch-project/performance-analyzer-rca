@@ -13,13 +13,13 @@ import org.opensearch.performanceanalyzer.commons.metrics.AllMetrics.OSMetrics;
 import org.opensearch.performanceanalyzer.commons.metrics.MetricsConfiguration;
 import org.opensearch.performanceanalyzer.commons.metrics.MetricsProcessor;
 import org.opensearch.performanceanalyzer.commons.metrics.PerformanceAnalyzerMetrics;
+import org.opensearch.performanceanalyzer.commons.metrics.WriterMetrics;
 import org.opensearch.performanceanalyzer.commons.stats.CommonStats;
 import org.opensearch.performanceanalyzer.jvm.ThreadList;
 import org.opensearch.performanceanalyzer.metrics_generator.CPUPagingActivityGenerator;
 import org.opensearch.performanceanalyzer.metrics_generator.DiskIOMetricsGenerator;
 import org.opensearch.performanceanalyzer.metrics_generator.OSMetricsGenerator;
 import org.opensearch.performanceanalyzer.metrics_generator.SchedMetricsGenerator;
-import org.opensearch.performanceanalyzer.rca.framework.metrics.WriterMetrics;
 
 public class OSMetricsCollector extends PerformanceAnalyzerMetricsCollector
         implements MetricsProcessor {
