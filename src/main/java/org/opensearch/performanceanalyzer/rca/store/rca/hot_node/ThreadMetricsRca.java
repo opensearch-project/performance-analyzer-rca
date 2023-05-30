@@ -5,7 +5,7 @@
 
 package org.opensearch.performanceanalyzer.rca.store.rca.hot_node;
 
-import static org.opensearch.performanceanalyzer.rca.framework.metrics.ReaderMetrics.*;
+import static org.opensearch.performanceanalyzer.rca.framework.metrics.RcaRuntimeMetrics.*;
 
 import com.google.common.annotations.VisibleForTesting;
 import java.time.Clock;

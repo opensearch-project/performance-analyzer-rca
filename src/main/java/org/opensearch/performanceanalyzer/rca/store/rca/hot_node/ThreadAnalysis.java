@@ -7,24 +7,24 @@ package org.opensearch.performanceanalyzer.rca.store.rca.hot_node;
 
 
 import java.util.function.Predicate;
-import org.opensearch.performanceanalyzer.rca.framework.metrics.ReaderMetrics;
+import org.opensearch.performanceanalyzer.rca.framework.metrics.RcaRuntimeMetrics;
 
 public class ThreadAnalysis {
     private final ThreadMetricsSlidingWindow blockedTimeWindow;
 
     private final ThreadMetricsSlidingWindow waitedTimeWindow;
     private final Predicate<String> typeFilter;
-    private final ReaderMetrics blockedThreadCountMetric,
+    private final RcaRuntimeMetrics blockedThreadCountMetric,
             waitedThreadCountMetric,
             maxBlockedTimeMetric,
             maxWaitedTimeMetric;
 
     public ThreadAnalysis(
             Predicate<String> typeFilter,
-            ReaderMetrics blockedThreadCountMetric,
-            ReaderMetrics waitedThreadCount,
-            ReaderMetrics maxBlockedTime,
-            ReaderMetrics maxWaitedTimeMetric) {
+            RcaRuntimeMetrics blockedThreadCountMetric,
+            RcaRuntimeMetrics waitedThreadCount,
+            RcaRuntimeMetrics maxBlockedTime,
+            RcaRuntimeMetrics maxWaitedTimeMetric) {
         this.typeFilter = typeFilter;
         this.blockedThreadCountMetric = blockedThreadCountMetric;
         this.waitedThreadCountMetric = waitedThreadCount;
@@ -46,19 +46,19 @@ public class ThreadAnalysis {
         return typeFilter;
     }
 
-    public ReaderMetrics getBlockedThreadCountMetric() {
+    public RcaRuntimeMetrics getBlockedThreadCountMetric() {
         return blockedThreadCountMetric;
     }
 
-    public ReaderMetrics getWaitedThreadCountMetric() {
+    public RcaRuntimeMetrics getWaitedThreadCountMetric() {
         return waitedThreadCountMetric;
     }
 
-    public ReaderMetrics getMaxBlockedTimeMetric() {
+    public RcaRuntimeMetrics getMaxBlockedTimeMetric() {
         return maxBlockedTimeMetric;
     }
 
-    public ReaderMetrics getMaxWaitedTimeMetric() {
+    public RcaRuntimeMetrics getMaxWaitedTimeMetric() {
         return maxWaitedTimeMetric;
     }
 }
