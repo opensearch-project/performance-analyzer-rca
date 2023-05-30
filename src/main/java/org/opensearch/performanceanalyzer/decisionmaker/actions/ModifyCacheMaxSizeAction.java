@@ -5,7 +5,7 @@
 
 package org.opensearch.performanceanalyzer.decisionmaker.actions;
 
-import static org.opensearch.performanceanalyzer.decisionmaker.DecisionMakerConsts.JSON_PARSER;
+import static org.opensearch.performanceanalyzer.commons.stats.decisionmaker.DecisionMakerConsts.JSON_PARSER;
 import static org.opensearch.performanceanalyzer.decisionmaker.actions.ImpactVector.Dimension.HEAP;
 
 import com.google.gson.Gson;

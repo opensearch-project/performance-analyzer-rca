@@ -1,6 +1,7 @@
 grant {
     permission java.lang.management.ManagementPermission "control";
     permission java.net.SocketPermission "localhost:9600","connect,resolve";
+    permission java.lang.RuntimePermission "getClassLoader";
 };
 
 grant codebase "file:${java.home}/../lib/tools.jar" {

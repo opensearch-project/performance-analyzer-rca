@@ -9,11 +9,11 @@ package org.opensearch.performanceanalyzer.reader;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import org.opensearch.performanceanalyzer.commons.config.overrides.ConfigOverrides;
 import org.opensearch.performanceanalyzer.commons.event_process.Event;
 import org.opensearch.performanceanalyzer.commons.metrics.AllMetrics;
 import org.opensearch.performanceanalyzer.commons.metrics.PerformanceAnalyzerMetrics;
 import org.opensearch.performanceanalyzer.commons.util.JsonConverter;
-import org.opensearch.performanceanalyzer.config.overrides.ConfigOverrides;
 
 public class ClusterDetailsEventProcessorTestHelper extends AbstractReaderTests {
 
