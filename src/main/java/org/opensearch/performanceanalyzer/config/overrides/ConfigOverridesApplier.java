@@ -14,6 +14,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.opensearch.performanceanalyzer.PerformanceAnalyzerApp;
+import org.opensearch.performanceanalyzer.commons.config.overrides.ConfigOverrides;
+import org.opensearch.performanceanalyzer.commons.config.overrides.ConfigOverridesHelper;
 import org.opensearch.performanceanalyzer.rca.framework.core.RcaConf;
 import org.opensearch.performanceanalyzer.reader.ClusterDetailsEventProcessor;
 
