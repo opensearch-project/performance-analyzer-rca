@@ -346,11 +346,11 @@ dependencies {
     implementation 'org.checkerframework:checker-qual:3.29.0'
     implementation "com.fasterxml.jackson.core:jackson-annotations:${jacksonVersion}"
     implementation "com.fasterxml.jackson.core:jackson-databind:${jacksonDataBindVersion}"
+    implementation "org.opensearch:performance-analyzer-commons:1.0.0-SNAPSHOT"
     implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: "${log4jVersion}"
     implementation group: 'org.apache.logging.log4j', name: 'log4j-core', version: "${log4jVersion}"
     implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.9'
     implementation group: 'commons-io', name: 'commons-io', version: '2.7'
-    implementation group: 'org.opensearch', name: 'performanceanalyzer-commons', version: "${version}"
     implementation group: 'com.google.errorprone', name: 'error_prone_annotations', version: '2.9.0'
     implementation group: 'com.google.protobuf', name: 'protobuf-java', version: "${protobufVersion}"
     implementation 'io.grpc:grpc-netty:1.52.1'

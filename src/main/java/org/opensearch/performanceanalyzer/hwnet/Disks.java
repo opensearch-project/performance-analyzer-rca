@@ -15,7 +15,7 @@ import java.util.Set;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.opensearch.performanceanalyzer.collectors.DiskMetrics;
-import org.opensearch.performanceanalyzer.core.Util;
+import org.opensearch.performanceanalyzer.commons.util.Util;
 import org.opensearch.performanceanalyzer.metrics_generator.DiskMetricsGenerator;
 import org.opensearch.performanceanalyzer.metrics_generator.linux.LinuxDiskMetricsGenerator;
 import org.opensearch.performanceanalyzer.os.SchemaFileParser;

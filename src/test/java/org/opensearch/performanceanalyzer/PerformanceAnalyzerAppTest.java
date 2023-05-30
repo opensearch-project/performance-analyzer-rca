@@ -9,6 +9,7 @@ package org.opensearch.performanceanalyzer;
 import java.util.concurrent.ArrayBlockingQueue;
 import org.junit.Assert;
 import org.junit.Test;
+import org.opensearch.performanceanalyzer.commons.config.ConfigStatus;
 import org.opensearch.performanceanalyzer.commons.metrics.ExceptionsAndErrors;
 import org.opensearch.performanceanalyzer.rca.RcaTestHelper;
 import org.opensearch.performanceanalyzer.rca.framework.metrics.ReaderMetrics;

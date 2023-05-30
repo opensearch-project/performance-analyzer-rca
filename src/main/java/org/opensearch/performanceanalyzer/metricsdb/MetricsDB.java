@@ -38,9 +38,9 @@ import org.jooq.TableLike;
 import org.jooq.exception.DataAccessException;
 import org.jooq.impl.DSL;
 import org.opensearch.performanceanalyzer.DBUtils;
+import org.opensearch.performanceanalyzer.commons.config.PluginSettings;
 import org.opensearch.performanceanalyzer.commons.metrics.ExceptionsAndErrors;
 import org.opensearch.performanceanalyzer.commons.stats.CommonStats;
-import org.opensearch.performanceanalyzer.config.PluginSettings;
 import org.opensearch.performanceanalyzer.reader.Removable;
 
 /**

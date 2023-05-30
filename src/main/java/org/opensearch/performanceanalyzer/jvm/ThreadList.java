@@ -28,9 +28,9 @@ import org.opensearch.performanceanalyzer.OSMetricsGeneratorFactory;
 import org.opensearch.performanceanalyzer.collectors.ScheduledMetricCollectorsExecutor;
 import org.opensearch.performanceanalyzer.commons.metrics.ExceptionsAndErrors;
 import org.opensearch.performanceanalyzer.commons.metrics.MetricsConfiguration;
+import org.opensearch.performanceanalyzer.commons.metrics.WriterMetrics;
 import org.opensearch.performanceanalyzer.commons.stats.CommonStats;
-import org.opensearch.performanceanalyzer.core.Util;
-import org.opensearch.performanceanalyzer.rca.framework.metrics.WriterMetrics;
+import org.opensearch.performanceanalyzer.commons.util.Util;
 import sun.tools.attach.HotSpotVirtualMachine;
 
 /** Traverses and prints the stack traces for all Java threads in the remote VM */

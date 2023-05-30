@@ -27,7 +27,7 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.opensearch.performanceanalyzer.config.PluginSettings;
+import org.opensearch.performanceanalyzer.commons.config.PluginSettings;
 
 public class PerformanceAnalyzerWebServerTest {
     private static final String BIND_HOST = "localhost";
