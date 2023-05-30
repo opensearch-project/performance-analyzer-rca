@@ -86,20 +86,7 @@ public enum ReaderMetrics implements MeasurementSet {
             "FaultDetectionMetricsEmitterExecutionTime",
             "millis",
             StatsType.LATENCIES,
-            Statistics.SUM),
-
-    /**
-     * Tracks transport thread state(WAITING, TIMED-WAITING, BLOCKED) and time. T The last 2 metrics
-     * track time for 60s moving window.
-     */
-    BLOCKED_TRANSPORT_THREAD_COUNT(
-            "BlockedTransportThreadCount", "count", StatsType.STATS_DATA, Statistics.MAX),
-    WAITED_TRANSPORT_THREAD_COUNT(
-            "WaitedTransportThreadCount", "count", StatsType.STATS_DATA, Statistics.MAX),
-    MAX_TRANSPORT_THREAD_BLOCKED_TIME(
-            "MaxTransportThreadBlockedTime", "seconds", StatsType.LATENCIES, Statistics.MAX),
-    MAX_TRANSPORT_THREAD_WAITED_TIME(
-            "MaxTransportThreadWaitedTime", "seconds", StatsType.LATENCIES, Statistics.MAX);
+            Statistics.SUM);
 
     /** What we want to appear as the metric name. */
     private String name;
