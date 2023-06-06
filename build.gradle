@@ -336,7 +336,7 @@ dependencies {
     def log4jVersion = "${versions.log4j}"
     def protobufVersion = "${versions.protobuf}"
     def guavaVersion = "${versions.guava}"
-    def jbossVersion = "${versions.jboss_annotation}"
+    def jakartaVersion = "${versions.jakarta_annotation}"
 
     implementation 'org.jooq:jooq:3.10.8'
     implementation 'org.bouncycastle:bcprov-jdk15on:1.70'
@@ -363,7 +363,7 @@ dependencies {
         force = 'true'
     }
     implementation 'io.grpc:grpc-stub:1.52.1'
-    implementation "org.jboss.spec.javax.annotation:jboss-annotations-api_1.2_spec:${jbossVersion}"
+    implementation "jakarta.annotation:jakarta.annotation-api:${jakartaVersion}"
 
     // JDK9+ has to run powermock 2+. https://github.com/powermock/powermock/issues/888
     testImplementation group: 'org.powermock', name: 'powermock-api-mockito2', version: '2.0.0'
