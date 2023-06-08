@@ -25,14 +25,14 @@ import org.opensearch.performanceanalyzer.rca.framework.core.GenericSummary;
 
 /**
  * HotShardSummary contains information such as the index_name, shard_id, node_id, cpu_utilization,
- * heap_alloc_rate, criteria and time_period.
+ * criteria and time_period.
  *
  * <p>The hot shard summary is created by node level and cluster level RCAs running on data nodes
  * and elected cluster_manager node resp. This object is persisted in SQLite table. Table name :
  * HotClusterSummary
  *
- * <p>schema : | ID(primary key) | index_name | shard_id | node_id | cpu_utilization |
- * heap_alloc_rate| ID in FlowUnit(foreign key)
+ * <p>schema : | ID(primary key) | index_name | shard_id | node_id | cpu_utilization | ID in
+ * FlowUnit(foreign key)
  */
 public class HotShardSummary extends GenericSummary {
 
@@ -43,7 +43,6 @@ public class HotShardSummary extends GenericSummary {
     private final String nodeId;
     private CriteriaEnum criteria;
     private double cpuUtilization;
-    private double heapAllocRate;
     private int timePeriodInSeconds;
 
     public HotShardSummary(String indexName, String shardId, String nodeId, int timePeriod) {
@@ -56,10 +55,6 @@ public class HotShardSummary extends GenericSummary {
 
     public void setCpuUtilization(final double cpuUtilization) {
         this.cpuUtilization = cpuUtilization;
-    }
-
-    public void setHeapAllocRate(final double heapAllocRate) {
-        this.heapAllocRate = heapAllocRate;
     }
 
     public void setCriteria(final CriteriaEnum criteria) {
@@ -82,10 +77,6 @@ public class HotShardSummary extends GenericSummary {
         return this.cpuUtilization;
     }
 
-    public double getHeapAllocRate() {
-        return this.heapAllocRate;
-    }
-
     public CriteriaEnum getCriteria() {
         return this.criteria;
     }
@@ -98,7 +89,6 @@ public class HotShardSummary extends GenericSummary {
         summaryMessageBuilder.setShardId(this.shardId);
         summaryMessageBuilder.setNodeId(this.nodeId);
         summaryMessageBuilder.setCpuUtilization(this.cpuUtilization);
-        summaryMessageBuilder.setHeapAllocRate(this.heapAllocRate);
         summaryMessageBuilder.setCriteria(this.criteria);
         summaryMessageBuilder.setTimePeriod(this.timePeriodInSeconds);
         return summaryMessageBuilder.build();
@@ -117,7 +107,6 @@ public class HotShardSummary extends GenericSummary {
                         message.getNodeId(),
                         message.getTimePeriod());
         summary.setCpuUtilization(message.getCpuUtilization());
-        summary.setHeapAllocRate(message.getHeapAllocRate());
         summary.setCriteria(message.getCriteria());
         return summary;
     }
@@ -131,7 +120,6 @@ public class HotShardSummary extends GenericSummary {
                     this.shardId,
                     this.nodeId,
                     String.valueOf(this.cpuUtilization),
-                    String.valueOf(this.heapAllocRate),
                     String.valueOf(this.criteria)
                 });
     }
@@ -148,7 +136,6 @@ public class HotShardSummary extends GenericSummary {
         schema.add(HotShardSummaryField.SHARD_ID_FIELD.getField());
         schema.add(HotShardSummaryField.NODE_ID_FIELD.getField());
         schema.add(HotShardSummaryField.CPU_UTILIZATION_FIELD.getField());
-        schema.add(HotShardSummaryField.HEAP_ALLOC_RATE_FIELD.getField());
         schema.add(HotShardSummaryField.CRITERIA_FIELD.getField());
         schema.add(HotShardSummaryField.TIME_PERIOD_FIELD.getField());
         return schema;
@@ -161,7 +148,6 @@ public class HotShardSummary extends GenericSummary {
         value.add(this.shardId);
         value.add(this.nodeId);
         value.add(this.cpuUtilization);
-        value.add(this.heapAllocRate);
         value.add(this.criteria.getNumber());
         value.add(Integer.valueOf(this.timePeriodInSeconds));
         return value;
@@ -179,7 +165,6 @@ public class HotShardSummary extends GenericSummary {
         summaryObj.addProperty(SQL_SCHEMA_CONSTANTS.SHARD_ID_COL_NAME, this.shardId);
         summaryObj.addProperty(SQL_SCHEMA_CONSTANTS.NODE_ID_COL_NAME, this.nodeId);
         summaryObj.addProperty(SQL_SCHEMA_CONSTANTS.CPU_UTILIZATION_COL_NAME, this.cpuUtilization);
-        summaryObj.addProperty(SQL_SCHEMA_CONSTANTS.HEAP_ALLOC_RATE_COL_NAME, this.heapAllocRate);
         summaryObj.addProperty(SQL_SCHEMA_CONSTANTS.CRITERIA_COL_NAME, this.criteria.toString());
         summaryObj.addProperty(SQL_SCHEMA_CONSTANTS.TIME_PERIOD_COL_NAME, this.timePeriodInSeconds);
         return summaryObj;
@@ -190,7 +175,6 @@ public class HotShardSummary extends GenericSummary {
         public static final String SHARD_ID_COL_NAME = "shard_id";
         public static final String NODE_ID_COL_NAME = "node_id";
         public static final String CPU_UTILIZATION_COL_NAME = "cpu_utilization";
-        public static final String HEAP_ALLOC_RATE_COL_NAME = "heap_alloc_rate";
         public static final String CRITERIA_COL_NAME = "criteria";
         public static final String TIME_PERIOD_COL_NAME = "time_period";
     }
@@ -201,7 +185,6 @@ public class HotShardSummary extends GenericSummary {
         SHARD_ID_FIELD(SQL_SCHEMA_CONSTANTS.SHARD_ID_COL_NAME, String.class),
         NODE_ID_FIELD(SQL_SCHEMA_CONSTANTS.NODE_ID_COL_NAME, String.class),
         CPU_UTILIZATION_FIELD(SQL_SCHEMA_CONSTANTS.CPU_UTILIZATION_COL_NAME, Double.class),
-        HEAP_ALLOC_RATE_FIELD(SQL_SCHEMA_CONSTANTS.HEAP_ALLOC_RATE_COL_NAME, Double.class),
         CRITERIA_FIELD(SQL_SCHEMA_CONSTANTS.CRITERIA_COL_NAME, Integer.class),
         TIME_PERIOD_FIELD(SQL_SCHEMA_CONSTANTS.TIME_PERIOD_COL_NAME, Integer.class);
 
@@ -244,29 +227,22 @@ public class HotShardSummary extends GenericSummary {
             String nodeId = record.get(HotShardSummaryField.NODE_ID_FIELD.getField(), String.class);
             Double cpuUtilization =
                     record.get(HotShardSummaryField.CPU_UTILIZATION_FIELD.getField(), Double.class);
-            Double heapAllocRate =
-                    record.get(HotShardSummaryField.HEAP_ALLOC_RATE_FIELD.getField(), Double.class);
             Integer criteria =
                     record.get(HotShardSummaryField.CRITERIA_FIELD.getField(), Integer.class);
 
             Integer timePeriod =
                     record.get(HotShardSummaryField.TIME_PERIOD_FIELD.getField(), Integer.class);
-            if (timePeriod == null
-                    || cpuUtilization == null
-                    || heapAllocRate == null
-                    || criteria == null) {
+            if (timePeriod == null || cpuUtilization == null || criteria == null) {
                 LOG.warn(
-                        "read null object from SQL, timePeriod: {},  cpuUtilization: {}, heapAllocRate: {},"
+                        "read null object from SQL, timePeriod: {},  cpuUtilization: {},"
                                 + " criteria: {}",
                         timePeriod,
                         cpuUtilization,
-                        heapAllocRate,
                         criteria);
                 return null;
             }
             summary = new HotShardSummary(indexName, shardId, nodeId, timePeriod);
             summary.setCpuUtilization(cpuUtilization);
-            summary.setHeapAllocRate(heapAllocRate);
             summary.setCriteria(CriteriaEnum.forNumber(criteria));
         } catch (IllegalArgumentException ie) {
             LOG.error("Some fields might not be found in record, cause : {}", ie.getMessage());
