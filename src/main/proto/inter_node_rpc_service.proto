@@ -148,16 +148,14 @@ message HotResourceSummaryMessage {
 }
 message HotShardSummaryMessage {
   enum CriteriaEnum {
-    HEAP_ALLOC_RATE_CRITERIA = 0;
-    CPU_UTILIZATION_CRITERIA = 1;
+    CPU_UTILIZATION_CRITERIA = 0;
     DOUBLE_CRITERIA = 2;
   }
   string indexName = 1;
   string shardId = 2;
   string nodeId = 3;
   double cpuUtilization = 4;
-  double heapAllocRate = 5;
-  CriteriaEnum criteria = 6;
+  CriteriaEnum criteria = 5;
   int32 timePeriod = 10;
 }
 message HotNodeSummaryMessage {
