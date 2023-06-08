@@ -626,23 +626,19 @@ public class ResourceHeatMapGraphTest {
         @Override
         public void construct() {
             Metric cpuUtilization = new CPU_Utilization(1);
-            Metric heapAllocRate = new Heap_AllocRate(1);
 
             cpuUtilization.addTag(
                     RcaConsts.RcaTagConstants.TAG_LOCUS,
                     RcaConsts.RcaTagConstants.LOCUS_DATA_CLUSTER_MANAGER_NODE);
-            heapAllocRate.addTag(
-                    RcaConsts.RcaTagConstants.TAG_LOCUS,
-                    RcaConsts.RcaTagConstants.LOCUS_DATA_CLUSTER_MANAGER_NODE);
+
             addLeaf(cpuUtilization);
-            addLeaf(heapAllocRate);
 
             // Hot Shard RCA consuming CPU_Utilization and Heap_AllocRate
-            HotShardRca hotShardRca = new HotShardRca(1, 1, cpuUtilization, heapAllocRate);
+            HotShardRca hotShardRca = new HotShardRca(1, 1, cpuUtilization);
             hotShardRca.addTag(
                     RcaConsts.RcaTagConstants.TAG_LOCUS,
                     RcaConsts.RcaTagConstants.LOCUS_DATA_CLUSTER_MANAGER_NODE);
-            hotShardRca.addAllUpstreams(Arrays.asList(cpuUtilization, heapAllocRate));
+            hotShardRca.addAllUpstreams(Arrays.asList(cpuUtilization));
 
             // Hot Shard Cluster RCA which consumes the above
             HotShardClusterRca hotShardClusterRca = new HotShardClusterRca(1, hotShardRca);
