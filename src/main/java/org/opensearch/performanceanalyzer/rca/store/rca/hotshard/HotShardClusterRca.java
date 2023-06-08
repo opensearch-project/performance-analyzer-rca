@@ -45,8 +45,6 @@ public class HotShardClusterRca extends Rca<ResourceFlowUnit<HotClusterSummary>>
     private static final int SLIDING_WINDOW_IN_SECONDS = 60;
 
     private double cpuUtilizationClusterThreshold;
-    private double heapAllocRateClusterThreshold;
-
     private final Rca<ResourceFlowUnit<HotNodeSummary>> hotShardRca;
     private int rcaPeriod;
     private int counter;
@@ -56,7 +54,6 @@ public class HotShardClusterRca extends Rca<ResourceFlowUnit<HotClusterSummary>>
     // TODO: Use the fact that we're getting at max topK*2 consumers from each node and perform
     // further optimization.
     private Table<String, NodeShardKey, Double> cpuUtilizationInfoTable;
-    private Table<String, NodeShardKey, Double> heapAllocRateInfoTable;
 
     public <R extends Rca<ResourceFlowUnit<HotNodeSummary>>> HotShardClusterRca(
             final int rcaPeriod, final R hotShardRca) {
@@ -66,11 +63,8 @@ public class HotShardClusterRca extends Rca<ResourceFlowUnit<HotClusterSummary>>
         this.counter = 0;
         this.unhealthyNodes = new HashSet<>();
         this.cpuUtilizationInfoTable = HashBasedTable.create();
-        this.heapAllocRateInfoTable = HashBasedTable.create();
         this.cpuUtilizationClusterThreshold =
                 HotShardClusterRcaConfig.DEFAULT_CPU_UTILIZATION_CLUSTER_THRESHOLD;
-        this.heapAllocRateClusterThreshold =
-                HotShardClusterRcaConfig.DEFAULT_HEAP_ALLOC_RATE_CLUSTER_THRESHOLD;
     }
 
     private void populateResourceInfoTable(
@@ -81,8 +75,8 @@ public class HotShardClusterRca extends Rca<ResourceFlowUnit<HotClusterSummary>>
         if (null == metricMap.get(indexName, nodeShardKey)) {
             metricMap.put(indexName, nodeShardKey, metricValue);
         } else {
-            double existingOccurence = metricMap.get(indexName, nodeShardKey);
-            metricMap.put(indexName, nodeShardKey, existingOccurence + metricValue);
+            double existingOccurrence = metricMap.get(indexName, nodeShardKey);
+            metricMap.put(indexName, nodeShardKey, existingOccurrence + metricValue);
         }
     }
 
@@ -104,14 +98,6 @@ public class HotShardClusterRca extends Rca<ResourceFlowUnit<HotClusterSummary>>
                             nodeShardKey,
                             hotShardSummary.getCpuUtilization(),
                             cpuUtilizationInfoTable);
-                }
-                if (CriteriaEnum.HEAP_ALLOC_RATE_CRITERIA.equals(criteria)
-                        || CriteriaEnum.DOUBLE_CRITERIA.equals(criteria)) {
-                    populateResourceInfoTable(
-                            indexName,
-                            nodeShardKey,
-                            hotShardSummary.getHeapAllocRate(),
-                            heapAllocRateInfoTable);
                 }
             }
         }
@@ -217,12 +203,6 @@ public class HotShardClusterRca extends Rca<ResourceFlowUnit<HotClusterSummary>>
                     hotShardSummaryList,
                     ResourceUtil.CPU_USAGE);
 
-            findHotShardAndCreateSummary(
-                    heapAllocRateInfoTable,
-                    heapAllocRateClusterThreshold,
-                    hotShardSummaryList,
-                    ResourceUtil.HEAP_ALLOC_RATE);
-
             if (hotShardSummaryList.isEmpty()) {
                 context = new ResourceContext(Resources.State.HEALTHY);
             } else {
@@ -243,7 +223,6 @@ public class HotShardClusterRca extends Rca<ResourceFlowUnit<HotClusterSummary>>
             counter = 0;
             this.unhealthyNodes.clear();
             this.cpuUtilizationInfoTable.clear();
-            this.heapAllocRateInfoTable.clear();
             LOG.debug("Hot Shard Cluster RCA Context :  " + context.toString());
             return new ResourceFlowUnit<>(System.currentTimeMillis(), context, summary, true);
         } else {
@@ -261,7 +240,6 @@ public class HotShardClusterRca extends Rca<ResourceFlowUnit<HotClusterSummary>>
     public void readRcaConf(RcaConf conf) {
         HotShardClusterRcaConfig configObj = conf.getHotShardClusterRcaConfig();
         cpuUtilizationClusterThreshold = configObj.getCpuUtilizationClusterThreshold();
-        heapAllocRateClusterThreshold = configObj.getHeapAllocRateClusterThreshold();
     }
 
     /**

@@ -38,7 +38,6 @@ import org.opensearch.performanceanalyzer.rca.framework.api.metrics.Cache_Reques
 import org.opensearch.performanceanalyzer.rca.framework.api.metrics.GC_Collection_Event;
 import org.opensearch.performanceanalyzer.rca.framework.api.metrics.GC_Collection_Time;
 import org.opensearch.performanceanalyzer.rca.framework.api.metrics.GC_Type;
-import org.opensearch.performanceanalyzer.rca.framework.api.metrics.Heap_AllocRate;
 import org.opensearch.performanceanalyzer.rca.framework.api.metrics.Heap_Max;
 import org.opensearch.performanceanalyzer.rca.framework.api.metrics.Heap_Used;
 import org.opensearch.performanceanalyzer.rca.framework.api.metrics.IndexWriter_Memory;
@@ -499,26 +498,20 @@ public class OpenSearchAnalysisGraph extends AnalysisGraph {
 
     private void constructShardResourceUsageGraph() {
         Metric cpuUtilization = new CPU_Utilization(EVALUATION_INTERVAL_SECONDS);
-        Metric heapAllocRate = new Heap_AllocRate(EVALUATION_INTERVAL_SECONDS);
 
         cpuUtilization.addTag(
                 RcaConsts.RcaTagConstants.TAG_LOCUS,
                 RcaConsts.RcaTagConstants.LOCUS_DATA_CLUSTER_MANAGER_NODE);
-        heapAllocRate.addTag(
-                RcaConsts.RcaTagConstants.TAG_LOCUS,
-                RcaConsts.RcaTagConstants.LOCUS_DATA_CLUSTER_MANAGER_NODE);
 
         addLeaf(cpuUtilization);
-        addLeaf(heapAllocRate);
 
         // High CPU Utilization RCA
         HotShardRca hotShardRca =
-                new HotShardRca(
-                        EVALUATION_INTERVAL_SECONDS, RCA_PERIOD, cpuUtilization, heapAllocRate);
+                new HotShardRca(EVALUATION_INTERVAL_SECONDS, RCA_PERIOD, cpuUtilization);
         hotShardRca.addTag(
                 RcaConsts.RcaTagConstants.TAG_LOCUS,
                 RcaConsts.RcaTagConstants.LOCUS_DATA_CLUSTER_MANAGER_NODE);
-        hotShardRca.addAllUpstreams(Arrays.asList(cpuUtilization, heapAllocRate));
+        hotShardRca.addAllUpstreams(Arrays.asList(cpuUtilization));
 
         // Hot Shard Cluster RCA which consumes the above
         HotShardClusterRca hotShardClusterRca = new HotShardClusterRca(RCA_PERIOD, hotShardRca);

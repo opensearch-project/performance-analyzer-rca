@@ -56,10 +56,8 @@ public class HotShardRca extends Rca<ResourceFlowUnit<HotNodeSummary>> {
     private static final int SLIDING_WINDOW_IN_SECONDS = 60;
 
     private double cpuUtilizationThreshold;
-    private double heapAllocRateThreshold;
     private int topKConsumers;
     private final Metric cpuUtilization;
-    private final Metric heapAllocRate;
     private final int rcaPeriod;
     private int counter;
     protected Clock clock;
@@ -68,20 +66,14 @@ public class HotShardRca extends Rca<ResourceFlowUnit<HotNodeSummary>> {
     private Map<IndexShardKey, SummarizedWindow> shardResourceSummarizationMap;
 
     public <M extends Metric> HotShardRca(
-            final long evaluationIntervalSeconds,
-            final int rcaPeriod,
-            final M cpuUtilization,
-            final M heapAllocRate) {
+            final long evaluationIntervalSeconds, final int rcaPeriod, final M cpuUtilization) {
         super(evaluationIntervalSeconds);
         this.cpuUtilization = cpuUtilization;
-        this.heapAllocRate = heapAllocRate;
         this.rcaPeriod = rcaPeriod;
         this.counter = 0;
         this.clock = Clock.systemUTC();
         this.shardResourceSummarizationMap = new HashMap<>();
         this.cpuUtilizationThreshold = HotShardRcaConfig.DEFAULT_CPU_UTILIZATION_THRESHOLD;
-        this.heapAllocRateThreshold =
-                HotShardRcaConfig.DEFAULT_HEAP_ALLOC_RATE_THRESHOLD_IN_BYTE_PER_SEC;
         this.topKConsumers = HotShardRcaConfig.DEFAULT_TOP_K_CONSUMERS;
     }
 
@@ -134,8 +126,7 @@ public class HotShardRca extends Rca<ResourceFlowUnit<HotNodeSummary>> {
     private void drainQueue(
             MinMaxPriorityQueue<NamedSummarizedWindow> queue,
             Map<IndexShardKey, HotShardSummary> consumersToSend,
-            InstanceDetails instanceDetails,
-            OSMetrics metricType) {
+            InstanceDetails instanceDetails) {
         while (!queue.isEmpty()) {
             NamedSummarizedWindow candidate = queue.remove();
             if (consumersToSend.containsKey(candidate.indexShardKey)) {
@@ -152,15 +143,9 @@ public class HotShardRca extends Rca<ResourceFlowUnit<HotNodeSummary>> {
 
             double avgCpuUtilization =
                     candidate.summarizedWindow.readAvgCpuUtilization(TimeUnit.SECONDS);
-            double avgHeapAllocRate =
-                    candidate.summarizedWindow.readAvgHeapAllocRate(TimeUnit.SECONDS);
 
             summary.setCpuUtilization(avgCpuUtilization);
-            summary.setHeapAllocRate(avgHeapAllocRate);
-            summary.setCriteria(
-                    OSMetrics.CPU_UTILIZATION.equals(metricType)
-                            ? CriteriaEnum.CPU_UTILIZATION_CRITERIA
-                            : CriteriaEnum.HEAP_ALLOC_RATE_CRITERIA);
+            summary.setCriteria(CriteriaEnum.CPU_UTILIZATION_CRITERIA);
 
             consumersToSend.put(candidate.indexShardKey, summary);
         }
@@ -186,8 +171,8 @@ public class HotShardRca extends Rca<ResourceFlowUnit<HotNodeSummary>> {
     }
 
     /**
-     * Locally identifies hot shards on the node. The function uses CPU_Utilization, HEAP_Alloc_Rate
-     * FlowUnits to identify a Hot Shard.
+     * Locally identifies hot shards on the node. The function uses CPU_Utilization FlowUnits to
+     * identify a Hot Shard.
      *
      * <p>We specify the threshold for CPU_Utilization, HEAP_Alloc_Rate and any shard using either
      * of 2 resources more than the specified threshold is declared top consumer.
@@ -197,18 +182,12 @@ public class HotShardRca extends Rca<ResourceFlowUnit<HotNodeSummary>> {
         counter += 1;
         // Populate the Resource maps
         consumeMetric(cpuUtilization, OSMetrics.CPU_UTILIZATION);
-        consumeMetric(heapAllocRate, OSMetrics.HEAP_ALLOC_RATE);
 
         if (counter == rcaPeriod) {
             /* We limit the queues by maxConsumersToSend. This guarantees no heap re-allocations for
             underlying structures plus we ensure constant memory complexity for the duration of the function */
             MinMaxPriorityQueue<NamedSummarizedWindow> cpuUtilTopConsumers =
                     MinMaxPriorityQueue.orderedBy(new SummarizedWindowCPUComparator())
-                            .maximumSize(topKConsumers)
-                            .create();
-
-            MinMaxPriorityQueue<NamedSummarizedWindow> heapAllocRateTopConsumers =
-                    MinMaxPriorityQueue.orderedBy(new SummarizedWindowHEAPComparator())
                             .maximumSize(topKConsumers)
                             .create();
 
@@ -222,13 +201,6 @@ public class HotShardRca extends Rca<ResourceFlowUnit<HotNodeSummary>> {
                         entry.getValue(),
                         OSMetrics.CPU_UTILIZATION,
                         cpuUtilizationThreshold);
-
-                isTopConsumer(
-                        heapAllocRateTopConsumers,
-                        entry.getKey(),
-                        entry.getValue(),
-                        OSMetrics.HEAP_ALLOC_RATE,
-                        heapAllocRateThreshold);
             }
 
             shardResourceSummarizationMap.clear();
@@ -236,16 +208,7 @@ public class HotShardRca extends Rca<ResourceFlowUnit<HotNodeSummary>> {
             InstanceDetails instanceDetails = getInstanceDetails();
             Map<IndexShardKey, HotShardSummary> consumersToSend = new HashMap<>();
 
-            drainQueue(
-                    cpuUtilTopConsumers,
-                    consumersToSend,
-                    instanceDetails,
-                    OSMetrics.CPU_UTILIZATION);
-            drainQueue(
-                    heapAllocRateTopConsumers,
-                    consumersToSend,
-                    instanceDetails,
-                    OSMetrics.HEAP_ALLOC_RATE);
+            drainQueue(cpuUtilTopConsumers, consumersToSend, instanceDetails);
 
             HotNodeSummary nodeSummary =
                     new HotNodeSummary(
@@ -280,7 +243,6 @@ public class HotShardRca extends Rca<ResourceFlowUnit<HotNodeSummary>> {
     public void readRcaConf(RcaConf conf) {
         HotShardRcaConfig configObj = conf.getHotShardRcaConfig();
         cpuUtilizationThreshold = configObj.getCpuUtilizationThreshold();
-        heapAllocRateThreshold = configObj.getHeapAllocRateThreshold();
         topKConsumers = configObj.getMaximumConsumersToSend();
     }
 
@@ -316,14 +278,5 @@ class SummarizedWindowCPUComparator implements Comparator<NamedSummarizedWindow>
         return Double.compare(
                 o2.summarizedWindow.readAvgCpuUtilization(TimeUnit.SECONDS),
                 o1.summarizedWindow.readAvgCpuUtilization(TimeUnit.SECONDS));
-    }
-}
-
-class SummarizedWindowHEAPComparator implements Comparator<NamedSummarizedWindow> {
-    @Override
-    public int compare(NamedSummarizedWindow o1, NamedSummarizedWindow o2) {
-        return Double.compare(
-                o2.summarizedWindow.readAvgHeapAllocRate(TimeUnit.SECONDS),
-                o1.summarizedWindow.readAvgHeapAllocRate(TimeUnit.SECONDS));
     }
 }
