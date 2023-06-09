@@ -17,10 +17,14 @@ public final class Version {
      * An increase in the major version means that the flow units are in-compatible and if different
      * instances(physical nodes) are running different versions of the framework, then the
      * transferred packets should be dropped. Every increment here should be accompanied with a line
-     * of note.
+     * describing the version bump.
+     *
+     * Note: The RCA version is agnostic of OpenSearch version.
      */
     static final class Major {
-        static final int RCA_MAJ_VERSION = 0;
+        // Bumping this post the Commons Lib(https://github.com/opensearch-project/performance-analyzer-commons/issues/2)
+        // and Service Metrics(https://github.com/opensearch-project/performance-analyzer-commons/issues/8) change
+        static final int RCA_MAJ_VERSION = 1;
     }
 
     /**
