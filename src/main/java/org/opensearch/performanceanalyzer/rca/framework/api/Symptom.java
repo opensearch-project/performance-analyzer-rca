@@ -31,7 +31,6 @@ public abstract class Symptom extends NonLeafNode<SymptomFlowUnit> {
         try {
             result = this.operate();
         } catch (Exception ex) {
-            LOG.error("[MOCHI]: Key Value is: {}", this.name());
             ServiceMetrics.ERRORS_AND_EXCEPTIONS_AGGREGATOR.updateStat(
                     ExceptionsAndErrors.EXCEPTION_IN_OPERATE, this.name(), 1);
             LOG.error("Exception caught during operate", ex);
