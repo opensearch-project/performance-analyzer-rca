@@ -436,7 +436,8 @@ task pullPAPlugin(type: Copy) {
     println String.format('opensearch_version: (%s), plugin_version: (%s), snapshot: (%s), qualifier: (%s).', opensearch_version, version, isSnapshot, buildVersionQualifier)
     from(configurations.dockerBuild)
     into(paDir)
-    println String.format('Pulled PA Plugin at: (%s), will be used for Docker Build', Paths.get(paDir, "performance-analyzer-${version}.${file_ext}"))
+    rename "performance-analyzer-${version}.${file_ext}", "opensearch-performance-analyzer-${version}.${file_ext}"
+    println String.format('Pulled PA Plugin at: (%s), will be used for Docker Build', Paths.get(paDir, "opensearch-performance-analyzer-${version}.${file_ext}"))
 }
 
 task copyAllArtifacts(type: Copy) {
@@ -444,7 +445,7 @@ task copyAllArtifacts(type: Copy) {
     def projectPathStr = getProjectDir().toPath().toString()
     def dockerArtifacts = Paths.get(projectPathStr, 'docker').toString()
     def rcaArtifacts = Paths.get(projectPathStr, 'build', 'distributions', "performance-analyzer-rca-${version}.${file_ext}")
-    def paArtifacts = Paths.get(dockerBuildDir, 'pa', "performance-analyzer-${version}.${file_ext}")
+    def paArtifacts = Paths.get(dockerBuildDir, 'pa', "opensearch-performance-analyzer-${version}.${file_ext}")
 
     dockerArtifactsDir = Paths.get(dockerBuildDir, 'rca-docker')
     mkdir dockerArtifactsDir

@@ -180,8 +180,10 @@ public class OpenSearchAnalysisGraph extends AnalysisGraph {
                 RcaConsts.RcaTagConstants.LOCUS_DATA_CLUSTER_MANAGER_NODE);
         highCpuRca.addAllUpstreams(Collections.singletonList(cpuUtilizationGroupByOperation));
 
+        // Use EVALUATION_INTERVAL_SECONDS instead of RCA_PERIOD which resolved to 12 seconds.
+        // This is resulting in this RCA not getting executed in every 5 seconds.
         Rca<ResourceFlowUnit<HotNodeSummary>> threadMetricsRca =
-                new ThreadMetricsRca(threadBlockedTime, threadWaitedTime, RCA_PERIOD);
+                new ThreadMetricsRca(threadBlockedTime, threadWaitedTime, EVALUATION_INTERVAL_SECONDS);
         threadMetricsRca.addTag(
                 RcaConsts.RcaTagConstants.TAG_LOCUS,
                 RcaConsts.RcaTagConstants.LOCUS_DATA_CLUSTER_MANAGER_NODE);
