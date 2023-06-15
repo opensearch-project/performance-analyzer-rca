@@ -183,7 +183,8 @@ public class OpenSearchAnalysisGraph extends AnalysisGraph {
         // Use EVALUATION_INTERVAL_SECONDS instead of RCA_PERIOD which resolved to 12 seconds.
         // This is resulting in this RCA not getting executed in every 5 seconds.
         Rca<ResourceFlowUnit<HotNodeSummary>> threadMetricsRca =
-                new ThreadMetricsRca(threadBlockedTime, threadWaitedTime, EVALUATION_INTERVAL_SECONDS);
+                new ThreadMetricsRca(
+                        threadBlockedTime, threadWaitedTime, EVALUATION_INTERVAL_SECONDS);
         threadMetricsRca.addTag(
                 RcaConsts.RcaTagConstants.TAG_LOCUS,
                 RcaConsts.RcaTagConstants.LOCUS_DATA_CLUSTER_MANAGER_NODE);
@@ -502,8 +503,7 @@ public class OpenSearchAnalysisGraph extends AnalysisGraph {
         Metric cpuUtilization = new CPU_Utilization(EVALUATION_INTERVAL_SECONDS);
 
         cpuUtilization.addTag(
-                RcaConsts.RcaTagConstants.TAG_LOCUS,
-                RcaConsts.RcaTagConstants.LOCUS_DATA_CLUSTER_MANAGER_NODE);
+                RcaConsts.RcaTagConstants.TAG_LOCUS, RcaConsts.RcaTagConstants.LOCUS_DATA_NODE);
 
         addLeaf(cpuUtilization);
 
@@ -511,8 +511,7 @@ public class OpenSearchAnalysisGraph extends AnalysisGraph {
         HotShardRca hotShardRca =
                 new HotShardRca(EVALUATION_INTERVAL_SECONDS, RCA_PERIOD, cpuUtilization);
         hotShardRca.addTag(
-                RcaConsts.RcaTagConstants.TAG_LOCUS,
-                RcaConsts.RcaTagConstants.LOCUS_DATA_CLUSTER_MANAGER_NODE);
+                RcaConsts.RcaTagConstants.TAG_LOCUS, RcaConsts.RcaTagConstants.LOCUS_DATA_NODE);
         hotShardRca.addAllUpstreams(Arrays.asList(cpuUtilization));
 
         // Hot Shard Cluster RCA which consumes the above

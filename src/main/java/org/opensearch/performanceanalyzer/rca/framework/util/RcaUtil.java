@@ -55,12 +55,44 @@ public class RcaUtil {
         return Stats.getInstance().getConnectedComponents();
     }
 
+    /**
+     * As there is possibility for host locus tags to be hybrid, in terms of rca subscription we
+     * still have to identify the host with single tag, the most priority one.
+     */
+    public static String getPriorityLocus(String hostLocus) {
+        if (hostLocus == null || hostLocus.isEmpty()) {
+            return "";
+        }
+        List<String> hostLociStrings =
+                Arrays.asList(hostLocus.split(RcaConsts.RcaTagConstants.SEPARATOR));
+        if (hostLociStrings.size() > 1
+                && hostLociStrings.contains(RcaConsts.RcaTagConstants.LOCUS_CLUSTER_MANAGER_NODE)) {
+            return RcaConsts.RcaTagConstants.LOCUS_CLUSTER_MANAGER_NODE;
+        }
+        // Non-empty string was split -> guaranteed to be of size at least one.
+        return hostLociStrings.get(0);
+    }
+
+    public static boolean containsAny(List<String> containerList, List<String> containedList) {
+        for (String elem : containedList) {
+            if (containerList.contains(elem)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public static boolean doTagsMatch(Node<?> node, RcaConf conf) {
         Map<String, String> rcaTagMap = conf.getTagMap();
         for (Map.Entry<String, String> tag : node.getTags().entrySet()) {
-            String rcaConfTagvalue = rcaTagMap.get(tag.getKey());
+            String rcaConfTag = rcaTagMap.get(tag.getKey());
+            if (rcaConfTag == null) {
+                return false;
+            }
+            List<String> rcaConfTagStrings = Arrays.asList(rcaConfTag.split(","));
+
             return tag.getValue() != null
-                    && Arrays.asList(tag.getValue().split(",")).contains(rcaConfTagvalue);
+                    && containsAny(rcaConfTagStrings, Arrays.asList(tag.getValue().split(",")));
         }
         return true;
     }
@@ -70,12 +102,14 @@ public class RcaUtil {
         final Map<String, String> nodeTagMap = node.getTags();
 
         if (confTagMap != null && nodeTagMap != null) {
-            final String hostLocus = confTagMap.get(RcaConsts.RcaTagConstants.TAG_LOCUS);
+            final String hostLoci = confTagMap.get(RcaConsts.RcaTagConstants.TAG_LOCUS);
             final String nodeLoci = nodeTagMap.get(RcaConsts.RcaTagConstants.TAG_LOCUS);
             if (nodeLoci != null && !nodeLoci.isEmpty()) {
                 List<String> nodeLociStrings =
                         Arrays.asList(nodeLoci.split(RcaConsts.RcaTagConstants.SEPARATOR));
-                return nodeLociStrings.contains(hostLocus);
+                List<String> hostLociStrings =
+                        Arrays.asList(hostLoci.split(RcaConsts.RcaTagConstants.SEPARATOR));
+                return containsAny(hostLociStrings, nodeLociStrings);
             }
         }
 
