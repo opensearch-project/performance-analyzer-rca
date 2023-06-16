@@ -6,6 +6,8 @@
 package org.opensearch.performanceanalyzer.rca.scheduler;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -27,6 +29,7 @@ import org.opensearch.performanceanalyzer.rca.framework.core.ConnectedComponent;
 import org.opensearch.performanceanalyzer.rca.framework.core.Node;
 import org.opensearch.performanceanalyzer.rca.framework.core.Queryable;
 import org.opensearch.performanceanalyzer.rca.framework.core.RcaConf;
+import org.opensearch.performanceanalyzer.rca.framework.util.RcaConsts;
 import org.opensearch.performanceanalyzer.rca.framework.util.RcaUtil;
 import org.opensearch.performanceanalyzer.rca.messages.DataMsg;
 import org.opensearch.performanceanalyzer.rca.messages.IntentMsg;
@@ -397,5 +400,52 @@ public class RCASchedulerTaskTests {
         for (int i = 0; i < ret.size(); i++) {
             AssertHelper.compareLists(l1.get(i), ret.get(i));
         }
+    }
+
+    @Test
+    public void testHybridLocusTags() {
+        Node<MetricFlowUnit> cpuUtilization = new CPU_Utilization(5);
+        cpuUtilization.addTag(
+                RcaConsts.RcaTagConstants.TAG_LOCUS, RcaConsts.RcaTagConstants.LOCUS_DATA_NODE);
+
+        Node<MetricFlowUnit> hotShardClusterRca = new CPU_Utilization(5);
+        hotShardClusterRca.addTag(
+                RcaConsts.RcaTagConstants.TAG_LOCUS,
+                RcaConsts.RcaTagConstants.LOCUS_CLUSTER_MANAGER_NODE);
+
+        RcaConf nonDedicatedClusterManagerConf =
+                new RcaConf() {
+                    @Override
+                    public Map<String, String> getTagMap() {
+                        return new HashMap<String, String>() {
+                            {
+                                this.put(
+                                        RcaConsts.RcaTagConstants.TAG_LOCUS,
+                                        "cluster_manager-node,data-node");
+                            }
+                        };
+                    }
+                };
+
+        assertTrue(RcaUtil.shouldExecuteLocally(cpuUtilization, nonDedicatedClusterManagerConf));
+        assertTrue(
+                RcaUtil.shouldExecuteLocally(hotShardClusterRca, nonDedicatedClusterManagerConf));
+
+        RcaConf dedicatedClusterManagerConf =
+                new RcaConf() {
+                    @Override
+                    public Map<String, String> getTagMap() {
+                        return new HashMap<String, String>() {
+                            {
+                                this.put(
+                                        RcaConsts.RcaTagConstants.TAG_LOCUS,
+                                        "cluster_manager-node");
+                            }
+                        };
+                    }
+                };
+
+        assertFalse(RcaUtil.shouldExecuteLocally(cpuUtilization, dedicatedClusterManagerConf));
+        assertTrue(RcaUtil.shouldExecuteLocally(hotShardClusterRca, dedicatedClusterManagerConf));
     }
 }
