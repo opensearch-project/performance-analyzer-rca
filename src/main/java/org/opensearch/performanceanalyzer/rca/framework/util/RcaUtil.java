@@ -65,10 +65,6 @@ public class RcaUtil {
         }
         List<String> hostLociStrings =
                 Arrays.asList(hostLocus.split(RcaConsts.RcaTagConstants.SEPARATOR));
-        if (hostLociStrings.size() > 1
-                && hostLociStrings.contains(RcaConsts.RcaTagConstants.LOCUS_CLUSTER_MANAGER_NODE)) {
-            return RcaConsts.RcaTagConstants.LOCUS_CLUSTER_MANAGER_NODE;
-        }
         // Non-empty string was split -> guaranteed to be of size at least one.
         return hostLociStrings.get(0);
     }
