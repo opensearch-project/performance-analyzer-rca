@@ -749,6 +749,67 @@ public class MetricsEmitter {
                 ReaderMetrics.GC_INFO_EMITTER_EXECUTION_TIME, mFinalT - mCurrT);
     }
 
+    public static void emitSearchBackPressureMetrics(
+            MetricsDB metricsDB,
+            SearchBackPressureMetricsSnapShot searchBackPressureMetricsSnapShot) {
+        long mCurrT = System.currentTimeMillis();
+        Result<Record> searchbp_records = searchBackPressureMetricsSnapShot.fetchAll();
+        LOG.info("searchbp_records.size() is: " + String.valueOf(searchbp_records.size()));
+
+        String SEARCHBP_MODE_DIM = "searchbp_mode";
+        String SEARCHBP_METRIC_NAME = "searchbp_metric";
+
+        List<String> dims =
+                new ArrayList<String>() {
+                    {
+                        this.add(SEARCHBP_MODE_DIM);
+                        // this.add(AllMetrics.GCInfoDimension.COLLECTOR_NAME.toString());
+                    }
+                };
+
+        // metricsDB.createMetric(
+        //         new Metric<>(AllMetrics.GCInfoValue.GARBAGE_COLLECTOR_TYPE.toString(), 0d),
+        // dims);
+
+        metricsDB.createMetric(new Metric<>(SEARCHBP_METRIC_NAME, 0d), dims);
+
+        // BatchBindStep handle =
+        //         metricsDB.startBatchPut(
+        //                 new Metric<>(AllMetrics.GCInfoValue.GARBAGE_COLLECTOR_TYPE.toString(),
+        // 0d),
+        //                 dims);
+
+        BatchBindStep handle =
+                metricsDB.startBatchPut(new Metric<>(SEARCHBP_METRIC_NAME, 0d), dims);
+
+        for (Record record : searchbp_records) {
+            Optional<Object> modeObj = Optional.ofNullable(record.get(SEARCHBP_MODE_DIM));
+            //     Optional<Object> collectorObj =
+            //             Optional.ofNullable(
+            //
+            // record.get(AllMetrics.GCInfoDimension.COLLECTOR_NAME.toString()));
+            handle.bind(
+                    modeObj.orElseGet(Object::new).toString(),
+                    //     collectorObj.orElseGet(Object::new).toString(),
+                    // the rest are agg fields: sum, avg, min, max which don't make sense for gc
+                    // type.
+                    null,
+                    null,
+                    null,
+                    null);
+        }
+
+        handle.execute();
+
+        long mFinalT = System.currentTimeMillis();
+        LOG.debug(
+                "Total time taken for writing Search Back Pressure info into metricsDB: {}",
+                mFinalT - mCurrT);
+        ServiceMetrics.READER_METRICS_AGGREGATOR.updateStat(
+                ReaderMetrics.SEARCH_BACK_PRESSURE_METRICS_EMITTER_EXECUTION_TIME,
+                mFinalT - mCurrT);
+    }
+
     public static void emitAdmissionControlMetrics(
             MetricsDB metricsDB, AdmissionControlSnapshot snapshot) {
         long mCurrT = System.currentTimeMillis();

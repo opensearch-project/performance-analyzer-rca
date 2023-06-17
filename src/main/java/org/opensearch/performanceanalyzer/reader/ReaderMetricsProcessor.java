@@ -70,6 +70,7 @@ public class ReaderMetricsProcessor implements Runnable {
             clusterManagerThrottlingMetricsMap;
     private NavigableMap<Long, ShardStateMetricsSnapshot> shardStateMetricsMap;
     private NavigableMap<Long, AdmissionControlSnapshot> admissionControlMetricsMap;
+    private NavigableMap<Long, SearchBackPressureMetricsSnapShot> searchBackPressureMetricsMap;
 
     private static final int MAX_DATABASES = 2;
     private static final int OS_SNAPSHOTS = 4;
@@ -81,6 +82,7 @@ public class ReaderMetricsProcessor implements Runnable {
     private static final int GC_INFO_SNAPSHOTS = 4;
     private static final int CLUSTER_MANAGER_THROTTLING_SNAPSHOTS = 2;
     private static final int AC_SNAPSHOTS = 2;
+    private static final int SEARCH_BP_SNAPSHOTS = 4;
     private final String rootLocation;
 
     private final AppContext appContext;
@@ -125,6 +127,8 @@ public class ReaderMetricsProcessor implements Runnable {
         gcInfoMap = new TreeMap<>();
         clusterManagerThrottlingMetricsMap = new TreeMap<>();
         admissionControlMetricsMap = new TreeMap<>();
+        searchBackPressureMetricsMap = new TreeMap<>();
+
         this.rootLocation = rootLocation;
         this.configOverridesApplier = new ConfigOverridesApplier();
 
@@ -268,6 +272,7 @@ public class ReaderMetricsProcessor implements Runnable {
         trimMap(gcInfoMap, GC_INFO_SNAPSHOTS);
         trimMap(clusterManagerThrottlingMetricsMap, CLUSTER_MANAGER_THROTTLING_SNAPSHOTS);
         trimMap(admissionControlMetricsMap, AC_SNAPSHOTS);
+        trimMap(searchBackPressureMetricsMap, SEARCH_BP_SNAPSHOTS);
 
         for (NavigableMap<Long, MemoryDBSnapshot> snap : nodeMetricsMap.values()) {
             // do the same thing as OS_SNAPSHOTS.  Eventually MemoryDBSnapshot
@@ -397,6 +402,7 @@ public class ReaderMetricsProcessor implements Runnable {
         emitAdmissionControlMetrics(prevWindowStartTime, metricsDB);
         emitClusterManagerMetrics(prevWindowStartTime, metricsDB);
         emitClusterManagerThrottlingMetrics(prevWindowStartTime, metricsDB);
+        emitSearchBackPressureMetrics(prevWindowStartTime, metricsDB);
 
         metricsDB.commit();
         metricsDBMap.put(prevWindowStartTime, metricsDB);
@@ -594,6 +600,19 @@ public class ReaderMetricsProcessor implements Runnable {
         }
     }
 
+    private void emitSearchBackPressureMetrics(long prevWindowStartTime, MetricsDB metricsDB)
+            throws Exception {
+        if (searchBackPressureMetricsMap.containsKey(prevWindowStartTime)) {
+            SearchBackPressureMetricsSnapShot prevSearchBPSnapShot =
+                    searchBackPressureMetricsMap.get(prevWindowStartTime);
+            MetricsEmitter.emitSearchBackPressureMetrics(metricsDB, prevSearchBPSnapShot);
+        } else {
+            LOG.debug(
+                    "Search Back Pressure snapshot does not exist for the previous window. "
+                            + "Not emitting metrics.");
+        }
+    }
+
     /**
      * OS, Request, Http and cluster_manager first aligns the currentTimeStamp with a 5 second
      * interval. In the current format, a file (previously a directory) is written every 5 seconds.
@@ -679,6 +698,9 @@ public class ReaderMetricsProcessor implements Runnable {
         EventProcessor admissionControlProcessor =
                 AdmissionControlProcessor.build(
                         currWindowStartTime, conn, admissionControlMetricsMap);
+        EventProcessor searchBackPressureMetricsProcessor =
+                SearchBackPressureMetricsProcessor.buildSearchBackPressureMetricsProcessor(
+                        currWindowStartTime, conn, searchBackPressureMetricsMap);
 
         // The event dispatcher dispatches events to each of the registered event processors.
         // In addition to event processing each processor has an initialize/finalize function that
@@ -702,6 +724,7 @@ public class ReaderMetricsProcessor implements Runnable {
         eventDispatcher.registerEventProcessor(faultDetectionProcessor);
         eventDispatcher.registerEventProcessor(garbageCollectorInfoProcessor);
         eventDispatcher.registerEventProcessor(admissionControlProcessor);
+        eventDispatcher.registerEventProcessor(searchBackPressureMetricsProcessor);
 
         eventDispatcher.initializeProcessing(
                 currWindowStartTime, currWindowStartTime + MetricsConfiguration.SAMPLING_INTERVAL);

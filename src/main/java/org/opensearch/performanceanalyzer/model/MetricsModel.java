@@ -406,7 +406,7 @@ public class MetricsModel {
                 new MetricAttributes(MetricUnits.MILLISECOND.toString(), EmptyDimension.values()));
 
         allMetricsInitializer.put(
-                "SearchBackPressureStats_Test",
+                "searchbp_metric",
                 new MetricAttributes(MetricUnits.COUNT.toString(), EmptyDimension.values()));
 
         allMetricsInitializer.put(

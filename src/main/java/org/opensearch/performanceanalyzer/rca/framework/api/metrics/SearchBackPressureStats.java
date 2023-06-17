@@ -8,8 +8,8 @@ package org.opensearch.performanceanalyzer.rca.framework.api.metrics;
 
 import org.opensearch.performanceanalyzer.rca.framework.api.Metric;
 
-public class SearchBackPressureStats_Test extends Metric {
-    public SearchBackPressureStats_Test(long evaluationIntervalSeconds) {
-        super("SearchBackPressureStats_Test", evaluationIntervalSeconds);
+public class SearchBackPressureStats extends Metric {
+    public SearchBackPressureStats(long evaluationIntervalSeconds) {
+        super("searchbp_metric", evaluationIntervalSeconds);
     }
 }
