@@ -757,7 +757,7 @@ public class MetricsEmitter {
         LOG.info("searchbp_records.size() is: " + String.valueOf(searchbp_records.size()));
 
         // String SEARCHBP_MODE_DIM = "searchbp_mode";
-        String SEARCHBP_TYPE_DIM= "SearchBackPressureStats";
+        String SEARCHBP_TYPE_DIM = "SearchBackPressureStats";
 
         List<String> dims =
                 new ArrayList<String>() {
@@ -797,14 +797,15 @@ public class MetricsEmitter {
                                     .toString());
             // record.get(AllMetrics.GCInfoDimension.COLLECTOR_NAME.toString()));
             handle.bind(
-                    AllMetrics.SearchBackPressureStatsValue.SEARCHBP_SHARD_STATS_CANCELLATIONCOUNT.toString(),
-                    cancellationCountObj.map(o -> Long.parseLong(o.toString())).orElse(0.0d),
+                    AllMetrics.SearchBackPressureStatsValue.SEARCHBP_SHARD_STATS_CANCELLATIONCOUNT
+                            .toString(),
+                    cancellationCountObj.map(o -> Long.parseLong(o.toString())).orElse(0L),
                     //  collectorObj.orElseGet(Object::new).toString(),
                     // the rest are agg fields: sum, avg, min, max which don't make sense for gc
                     // type.
-                    cancellationCountObj.map(o -> Long.parseLong(o.toString())).orElse(0.0d),
-                    cancellationCountObj.map(o -> Long.parseLong(o.toString())).orElse(0.0d),
-                    cancellationCountObj.map(o -> Long.parseLong(o.toString())).orElse(0.0d);
+                    cancellationCountObj.map(o -> Long.parseLong(o.toString())).orElse(0L),
+                    cancellationCountObj.map(o -> Long.parseLong(o.toString())).orElse(0L),
+                    cancellationCountObj.map(o -> Long.parseLong(o.toString())).orElse(0L));
         }
 
         handle.execute();
