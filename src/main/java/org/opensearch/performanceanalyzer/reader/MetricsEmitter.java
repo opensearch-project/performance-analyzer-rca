@@ -757,12 +757,12 @@ public class MetricsEmitter {
         LOG.info("searchbp_records.size() is: " + String.valueOf(searchbp_records.size()));
 
         // String SEARCHBP_MODE_DIM = "searchbp_mode";
-        String SEARCHBP_SHARD_CANCELLATION_COUNT_DIM = "searchbp_shard_stats_cancellationCount";
+        String SEARCHBP_TYPE_DIM= "SearchBackPressureStats";
 
         List<String> dims =
                 new ArrayList<String>() {
                     {
-                        // this.add(AllMetrics.GCInfoDimension.COLLECTOR_NAME.toString());
+                        this.add(SEARCHBP_TYPE_DIM);
                     }
                 };
 
@@ -790,17 +790,21 @@ public class MetricsEmitter {
                                     AllMetrics.SearchBackPressureStatsValue
                                             .SEARCHBP_SHARD_STATS_CANCELLATIONCOUNT
                                             .toString()));
-
+            LOG.info(
+                    "ancellationCountObj.map(o -> Long.parseLong(o.toString())) is: "
+                            + cancellationCountObj
+                                    .map(o -> Long.parseLong(o.toString()))
+                                    .toString());
             // record.get(AllMetrics.GCInfoDimension.COLLECTOR_NAME.toString()));
             handle.bind(
-                    cancellationCountObj.map(o -> Long.parseLong(o.toString())).orElse(0L),
+                    AllMetrics.SearchBackPressureStatsValue.SEARCHBP_SHARD_STATS_CANCELLATIONCOUNT.toString(),
+                    cancellationCountObj.map(o -> Long.parseLong(o.toString())).orElse(0.0d),
                     //  collectorObj.orElseGet(Object::new).toString(),
                     // the rest are agg fields: sum, avg, min, max which don't make sense for gc
                     // type.
-                    1.0d,
-                    2.0d,
-                    3.0d,
-                    4.0d);
+                    cancellationCountObj.map(o -> Long.parseLong(o.toString())).orElse(0.0d),
+                    cancellationCountObj.map(o -> Long.parseLong(o.toString())).orElse(0.0d),
+                    cancellationCountObj.map(o -> Long.parseLong(o.toString())).orElse(0.0d);
         }
 
         handle.execute();

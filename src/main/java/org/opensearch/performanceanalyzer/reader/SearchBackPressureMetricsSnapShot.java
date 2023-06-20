@@ -18,6 +18,7 @@ import org.jooq.Record;
 import org.jooq.Result;
 import org.jooq.SQLDialect;
 import org.jooq.impl.DSL;
+import org.opensearch.performanceanalyzer.commons.metrics.AllMetrics;
 
 public class SearchBackPressureMetricsSnapShot implements Removable {
 
@@ -45,8 +46,11 @@ public class SearchBackPressureMetricsSnapShot implements Removable {
                     {
                         this.add(
                                 DSL.field(
-                                        DSL.name(Fields.CONTROLLER_NAME.toString()), String.class));
-                        this.add(DSL.field(DSL.name(Fields.SEARCHBP_MODE.toString()), Long.class));
+                                        DSL.name(
+                                                AllMetrics.SearchBackPressureStatsValue
+                                                        .SEARCHBP_SHARD_STATS_CANCELLATIONCOUNT
+                                                        .toString()),
+                                        Long.class));
                     }
                 };
 

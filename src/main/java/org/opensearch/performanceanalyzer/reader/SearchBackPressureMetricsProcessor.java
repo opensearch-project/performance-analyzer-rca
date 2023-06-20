@@ -15,6 +15,7 @@ import org.apache.logging.log4j.Logger;
 import org.jooq.BatchBindStep;
 import org.opensearch.performanceanalyzer.commons.event_process.Event;
 import org.opensearch.performanceanalyzer.commons.event_process.EventProcessor;
+import org.opensearch.performanceanalyzer.commons.metrics.AllMetrics;
 import org.opensearch.performanceanalyzer.commons.metrics.PerformanceAnalyzerMetrics;
 import org.opensearch.performanceanalyzer.commons.util.JsonConverter;
 
@@ -94,37 +95,34 @@ public class SearchBackPressureMetricsProcessor implements EventProcessor {
     // Handler method for incoming events
     private void handleSearchBackPressureEvent(String eventValue) {
         String[] lines = eventValue.split(System.lineSeparator());
-        // 0th line is the headline like ^search_back_pressure
-        // 1st line is current time string (e.g. {current_time:1686952296889})
-        // 2nd line is the payload the metrics
+        LOG.info("handleSearchBackPressureEvent start to parse evnt: " + eventValue);
+        // 0thline is current time string (e.g. {current_time:1686952296889})
+        // 1st line is the payload the metrics
         if (lines.length < 2) {
             LOG.warn("SearchBackPressure metrics length should be at least 2");
             return;
         }
 
-        for (int i = 2; i < lines.length; ++i) {
-            parseJsonLine(lines[i]);
-        }
+        // Parse metrics payload
+        parseJsonLine(lines[1]);
     }
 
     private void parseJsonLine(final String jsonString) {
         Map<String, Object> map = JsonConverter.createMapFrom(jsonString);
-        String searchbp_mode = "searchbp_mode";
-        String searchbp_shard_stats_cancellation = "searchbp_shard_stats_cancellationCount";
-        LOG.info("SearchBackPressureMetricsProcessor start to parse jsonString: {}", jsonString);
+        LOG.info("SearchBackPressureMetricsProcessor parseJsonLine: {}", jsonString);
 
         if (map.isEmpty()) {
             LOG.warn("Empty line in the event log for search back pressure section.");
             return;
         }
-
-        // AllMetrics.GCInfoDimension[] dims = AllMetrics.GCInfoDimension.values();
         // A list of dims to be collected
         ArrayList<String> required_searchbp_dims =
                 new ArrayList<String>() {
                     {
-                        this.add(searchbp_mode);
-                        this.add(searchbp_shard_stats_cancellation);
+                        this.add(
+                                AllMetrics.SearchBackPressureStatsValue
+                                        .SEARCHBP_SHARD_STATS_CANCELLATIONCOUNT
+                                        .toString());
                     }
                 };
 
@@ -132,6 +130,10 @@ public class SearchBackPressureMetricsProcessor implements EventProcessor {
         int idx = 0;
         for (String dimension : required_searchbp_dims) {
             bindVals[idx++] = map.get(dimension);
+            LOG.info(
+                    "SearchBackPressureMetricsProcessor field {} parsed is: {}",
+                    dimension,
+                    map.get(dimension));
         }
 
         handle.bind(bindVals);
@@ -140,6 +142,7 @@ public class SearchBackPressureMetricsProcessor implements EventProcessor {
     @Override
     public void processEvent(Event event) {
         // One Handler method for incoming event
+        LOG.info("SearchBP processEvent start!");
         handleSearchBackPressureEvent(event.value);
 
         // commit Batch queries is overflow the limit
