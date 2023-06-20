@@ -406,10 +406,6 @@ public class MetricsModel {
                 new MetricAttributes(MetricUnits.MILLISECOND.toString(), EmptyDimension.values()));
 
         allMetricsInitializer.put(
-                "searchbp_metric",
-                new MetricAttributes(MetricUnits.COUNT.toString(), EmptyDimension.values()));
-
-        allMetricsInitializer.put(
                 ElectionTermValue.ELECTION_TERM.toString(),
                 new MetricAttributes(MetricUnits.COUNT.toString(), EmptyDimension.values()));
 
@@ -468,6 +464,11 @@ public class MetricsModel {
                         MetricUnits.MILLISECOND.toString(),
                         AllMetrics.ShardIndexingPressureDimension.values()));
 
+        // Search Back Pressure Metrics
+        allMetricsInitializer.put(
+                AllMetrics.SearchBackPressureStatsValue.SEARCHBP_SHARD_STATS_CANCELLATIONCOUNT
+                        .toString(),
+                new MetricAttributes(MetricUnits.COUNT.toString(), EmptyDimension.values()));
         ALL_METRICS = Collections.unmodifiableMap(allMetricsInitializer);
     }
 }

@@ -49,6 +49,8 @@ public class GarbageCollectorInfoSnapshot implements Removable {
         this.create = DSL.using(conn, SQLDialect.SQLITE);
         this.windowStartTime = windowStartTime;
         this.tableName = "gc_info_" + windowStartTime;
+        LOG.info("GarbageCollectorInfoSnapshot Writing to table {}", tableName);
+
         this.columns =
                 new ArrayList<Field<?>>() {
                     {

@@ -701,6 +701,7 @@ public class ReaderMetricsProcessor implements Runnable {
         EventProcessor searchBackPressureMetricsProcessor =
                 SearchBackPressureMetricsProcessor.buildSearchBackPressureMetricsProcessor(
                         currWindowStartTime, conn, searchBackPressureMetricsMap);
+        LOG.info("searchBackPressureMetricsProcessor created in readerMetricsProcessor");
 
         // The event dispatcher dispatches events to each of the registered event processors.
         // In addition to event processing each processor has an initialize/finalize function that
@@ -725,6 +726,8 @@ public class ReaderMetricsProcessor implements Runnable {
         eventDispatcher.registerEventProcessor(garbageCollectorInfoProcessor);
         eventDispatcher.registerEventProcessor(admissionControlProcessor);
         eventDispatcher.registerEventProcessor(searchBackPressureMetricsProcessor);
+
+        LOG.info("searchBackPressureMetricsProcessor registered in readerMetricsProcessor");
 
         eventDispatcher.initializeProcessing(
                 currWindowStartTime, currWindowStartTime + MetricsConfiguration.SAMPLING_INTERVAL);

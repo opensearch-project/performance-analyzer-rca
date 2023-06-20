@@ -15,6 +15,7 @@ import org.apache.logging.log4j.Logger;
 import org.jooq.BatchBindStep;
 import org.opensearch.performanceanalyzer.commons.event_process.Event;
 import org.opensearch.performanceanalyzer.commons.event_process.EventProcessor;
+import org.opensearch.performanceanalyzer.commons.metrics.PerformanceAnalyzerMetrics;
 import org.opensearch.performanceanalyzer.commons.util.JsonConverter;
 
 public class SearchBackPressureMetricsProcessor implements EventProcessor {
@@ -34,11 +35,12 @@ public class SearchBackPressureMetricsProcessor implements EventProcessor {
 
     private SearchBackPressureMetricsProcessor(
             SearchBackPressureMetricsSnapShot searchBackPressureMetricsSnapShot) {
+        LOG.info("SearchBackPressureMetricsProcessor initialized");
         this.searchBackPressureMetricsSnapShot = searchBackPressureMetricsSnapShot;
     }
 
     // path for the metrics in shared folder
-    public static final String searchbp_path = "search_back_pressure";
+    // public static final String searchbp_path = "search_back_pressure";
 
     /*
      * if current SnapShotMap has the snapshot for currentWindowStartTime, use the snapshot to build the processor
@@ -78,7 +80,7 @@ public class SearchBackPressureMetricsProcessor implements EventProcessor {
 
     @Override
     public boolean shouldProcessEvent(Event event) {
-        return event.key.contains(searchbp_path);
+        return event.key.contains(PerformanceAnalyzerMetrics.sSearchBackPressureMetricsPath);
     }
 
     @Override
@@ -93,7 +95,7 @@ public class SearchBackPressureMetricsProcessor implements EventProcessor {
     private void handleSearchBackPressureEvent(String eventValue) {
         String[] lines = eventValue.split(System.lineSeparator());
         // 0th line is the headline like ^search_back_pressure
-        // 1st line is current time string (e.g. current_time:1686952296889)
+        // 1st line is current time string (e.g. {current_time:1686952296889})
         // 2nd line is the payload the metrics
         if (lines.length < 2) {
             LOG.warn("SearchBackPressure metrics length should be at least 2");
@@ -108,6 +110,9 @@ public class SearchBackPressureMetricsProcessor implements EventProcessor {
     private void parseJsonLine(final String jsonString) {
         Map<String, Object> map = JsonConverter.createMapFrom(jsonString);
         String searchbp_mode = "searchbp_mode";
+        String searchbp_shard_stats_cancellation = "searchbp_shard_stats_cancellationCount";
+        LOG.info("SearchBackPressureMetricsProcessor start to parse jsonString: {}", jsonString);
+
         if (map.isEmpty()) {
             LOG.warn("Empty line in the event log for search back pressure section.");
             return;
@@ -119,6 +124,7 @@ public class SearchBackPressureMetricsProcessor implements EventProcessor {
                 new ArrayList<String>() {
                     {
                         this.add(searchbp_mode);
+                        this.add(searchbp_shard_stats_cancellation);
                     }
                 };
 
