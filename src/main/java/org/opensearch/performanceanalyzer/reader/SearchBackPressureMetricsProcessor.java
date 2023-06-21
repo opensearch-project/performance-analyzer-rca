@@ -108,6 +108,7 @@ public class SearchBackPressureMetricsProcessor implements EventProcessor {
     }
 
     private void parseJsonLine(final String jsonString) {
+        //
         Map<String, Object> map = JsonConverter.createMapFrom(jsonString);
         LOG.info("SearchBackPressureMetricsProcessor parseJsonLine: {}", jsonString);
 
@@ -119,9 +120,66 @@ public class SearchBackPressureMetricsProcessor implements EventProcessor {
         ArrayList<String> required_searchbp_dims =
                 new ArrayList<String>() {
                     {
+                        // Shard/Task Stats Cancellation Count
                         this.add(
                                 AllMetrics.SearchBackPressureStatsValue
                                         .SEARCHBP_SHARD_STATS_CANCELLATIONCOUNT
+                                        .toString());
+                        this.add(
+                                AllMetrics.SearchBackPressureStatsValue
+                                        .SEARCHBP_TASK_STATS_CANCELLATIONCOUNT
+                                        .toString());
+
+                        // Shard Stats Resource Heap / CPU Usage
+                        this.add(
+                                AllMetrics.SearchBackPressureStatsValue
+                                        .SEARCHBP_SHARD_STATS_RESOURCE_HEAP_USAGE_CANCELLATIONCOUNT
+                                        .toString());
+                        this.add(
+                                AllMetrics.SearchBackPressureStatsValue
+                                        .SEARCHBP_SHARD_STATS_RESOURCE_HEAP_USAGE_CURRENTMAX
+                                        .toString());
+                        this.add(
+                                AllMetrics.SearchBackPressureStatsValue
+                                        .SEARCHBP_SHARD_STATS_RESOURCE_HEAP_USAGE_ROLLINGAVG
+                                        .toString());
+                        this.add(
+                                AllMetrics.SearchBackPressureStatsValue
+                                        .SEARCHBP_SHARD_STATS_RESOURCE_CPU_USAGE_CANCELLATIONCOUNT
+                                        .toString());
+                        this.add(
+                                AllMetrics.SearchBackPressureStatsValue
+                                        .SEARCHBP_SHARD_STATS_RESOURCE_CPU_USAGE_CURRENTMAX
+                                        .toString());
+                        this.add(
+                                AllMetrics.SearchBackPressureStatsValue
+                                        .SEARCHBP_SHARD_STATS_RESOURCE_CPU_USAGE_CURRENTAVG
+                                        .toString());
+
+                        // Task Stats Resource Heap / CPU Usage
+                        this.add(
+                                AllMetrics.SearchBackPressureStatsValue
+                                        .SEARCHBP_TASK_STATS_RESOURCE_HEAP_USAGE_CANCELLATIONCOUNT
+                                        .toString());
+                        this.add(
+                                AllMetrics.SearchBackPressureStatsValue
+                                        .SEARCHBP_TASK_STATS_RESOURCE_HEAP_USAGE_CURRENTMAX
+                                        .toString());
+                        this.add(
+                                AllMetrics.SearchBackPressureStatsValue
+                                        .SEARCHBP_TASK_STATS_RESOURCE_HEAP_USAGE_ROLLINGAVG
+                                        .toString());
+                        this.add(
+                                AllMetrics.SearchBackPressureStatsValue
+                                        .SEARCHBP_TASK_STATS_RESOURCE_CPU_USAGE_CANCELLATIONCOUNT
+                                        .toString());
+                        this.add(
+                                AllMetrics.SearchBackPressureStatsValue
+                                        .SEARCHBP_TASK_STATS_RESOURCE_CPU_USAGE_CURRENTMAX
+                                        .toString());
+                        this.add(
+                                AllMetrics.SearchBackPressureStatsValue
+                                        .SEARCHBP_TASK_STATS_RESOURCE_CPU_USAGE_CURRENTAVG
                                         .toString());
                     }
                 };

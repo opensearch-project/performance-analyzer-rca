@@ -758,6 +758,7 @@ public class MetricsEmitter {
 
         // String SEARCHBP_MODE_DIM = "searchbp_mode";
         String SEARCHBP_TYPE_DIM = "SearchBackPressureStats";
+        String SEARCHBP_TABLE_NAME = "searchbp_stats";
 
         List<String> dims =
                 new ArrayList<String>() {
@@ -766,46 +767,91 @@ public class MetricsEmitter {
                     }
                 };
 
-        metricsDB.createMetric(
-                new Metric<>(
-                        AllMetrics.SearchBackPressureStatsValue
-                                .SEARCHBP_SHARD_STATS_CANCELLATIONCOUNT
-                                .toString(),
-                        0d),
-                dims);
-
-        BatchBindStep handle =
-                metricsDB.startBatchPut(
-                        new Metric<>(
+        List<String> stats_types =
+                new ArrayList<String>() {
+                    {
+                        // Shard/Task Stats Cancellation Count
+                        this.add(
                                 AllMetrics.SearchBackPressureStatsValue
                                         .SEARCHBP_SHARD_STATS_CANCELLATIONCOUNT
-                                        .toString(),
-                                0d),
-                        dims);
+                                        .toString());
+                        this.add(
+                                AllMetrics.SearchBackPressureStatsValue
+                                        .SEARCHBP_TASK_STATS_CANCELLATIONCOUNT
+                                        .toString());
+                        // Shard Stats Resource Heap / CPU Usage
+                        this.add(
+                                AllMetrics.SearchBackPressureStatsValue
+                                        .SEARCHBP_SHARD_STATS_RESOURCE_HEAP_USAGE_CANCELLATIONCOUNT
+                                        .toString());
+                        this.add(
+                                AllMetrics.SearchBackPressureStatsValue
+                                        .SEARCHBP_SHARD_STATS_RESOURCE_HEAP_USAGE_CURRENTMAX
+                                        .toString());
+                        this.add(
+                                AllMetrics.SearchBackPressureStatsValue
+                                        .SEARCHBP_SHARD_STATS_RESOURCE_HEAP_USAGE_ROLLINGAVG
+                                        .toString());
+                        this.add(
+                                AllMetrics.SearchBackPressureStatsValue
+                                        .SEARCHBP_SHARD_STATS_RESOURCE_CPU_USAGE_CANCELLATIONCOUNT
+                                        .toString());
+                        this.add(
+                                AllMetrics.SearchBackPressureStatsValue
+                                        .SEARCHBP_SHARD_STATS_RESOURCE_CPU_USAGE_CURRENTMAX
+                                        .toString());
+                        this.add(
+                                AllMetrics.SearchBackPressureStatsValue
+                                        .SEARCHBP_SHARD_STATS_RESOURCE_CPU_USAGE_CURRENTAVG
+                                        .toString());
+                        // Task Stats Resource Heap / CPU Usage
+                        this.add(
+                                AllMetrics.SearchBackPressureStatsValue
+                                        .SEARCHBP_TASK_STATS_RESOURCE_HEAP_USAGE_CANCELLATIONCOUNT
+                                        .toString());
+                        this.add(
+                                AllMetrics.SearchBackPressureStatsValue
+                                        .SEARCHBP_TASK_STATS_RESOURCE_HEAP_USAGE_CURRENTMAX
+                                        .toString());
+                        this.add(
+                                AllMetrics.SearchBackPressureStatsValue
+                                        .SEARCHBP_TASK_STATS_RESOURCE_HEAP_USAGE_ROLLINGAVG
+                                        .toString());
+                        this.add(
+                                AllMetrics.SearchBackPressureStatsValue
+                                        .SEARCHBP_TASK_STATS_RESOURCE_CPU_USAGE_CANCELLATIONCOUNT
+                                        .toString());
+                        this.add(
+                                AllMetrics.SearchBackPressureStatsValue
+                                        .SEARCHBP_TASK_STATS_RESOURCE_CPU_USAGE_CURRENTMAX
+                                        .toString());
+                        this.add(
+                                AllMetrics.SearchBackPressureStatsValue
+                                        .SEARCHBP_TASK_STATS_RESOURCE_CPU_USAGE_CURRENTAVG
+                                        .toString());
+                    }
+                };
+
+        metricsDB.createMetric(new Metric<>(SEARCHBP_TABLE_NAME, 0d), dims);
+
+        BatchBindStep handle = metricsDB.startBatchPut(new Metric<>(SEARCHBP_TABLE_NAME, 0d), dims);
 
         for (Record record : searchbp_records) {
-            Optional<Object> cancellationCountObj =
-                    Optional.ofNullable(
-                            record.get(
-                                    AllMetrics.SearchBackPressureStatsValue
-                                            .SEARCHBP_SHARD_STATS_CANCELLATIONCOUNT
-                                            .toString()));
-            LOG.info(
-                    "ancellationCountObj.map(o -> Long.parseLong(o.toString())) is: "
-                            + cancellationCountObj
-                                    .map(o -> Long.parseLong(o.toString()))
-                                    .toString());
-            // record.get(AllMetrics.GCInfoDimension.COLLECTOR_NAME.toString()));
-            handle.bind(
-                    AllMetrics.SearchBackPressureStatsValue.SEARCHBP_SHARD_STATS_CANCELLATIONCOUNT
-                            .toString(),
-                    cancellationCountObj.map(o -> Long.parseLong(o.toString())).orElse(0L),
-                    //  collectorObj.orElseGet(Object::new).toString(),
-                    // the rest are agg fields: sum, avg, min, max which don't make sense for gc
-                    // type.
-                    cancellationCountObj.map(o -> Long.parseLong(o.toString())).orElse(0L),
-                    cancellationCountObj.map(o -> Long.parseLong(o.toString())).orElse(0L),
-                    cancellationCountObj.map(o -> Long.parseLong(o.toString())).orElse(0L));
+            for (String stats_type : stats_types) {
+                Optional<Object> tmpStatsObj = Optional.ofNullable(record.get(stats_type));
+                LOG.info(
+                        "Tmp Obj .map(o -> Long.parseLong(o.toString())) is: "
+                                + tmpStatsObj.map(o -> Long.parseLong(o.toString())).toString());
+
+                handle.bind(
+                        stats_type,
+                        // the rest are agg fields: sum, avg, min, max which don't make sense for
+                        // searchbackpressure
+                        tmpStatsObj.map(o -> Long.parseLong(o.toString())).orElse(0L),
+                        tmpStatsObj.map(o -> Long.parseLong(o.toString())).orElse(0L),
+                        tmpStatsObj.map(o -> Long.parseLong(o.toString())).orElse(0L),
+                        tmpStatsObj.map(o -> Long.parseLong(o.toString())).orElse(0L));
+            }
         }
 
         handle.execute();
