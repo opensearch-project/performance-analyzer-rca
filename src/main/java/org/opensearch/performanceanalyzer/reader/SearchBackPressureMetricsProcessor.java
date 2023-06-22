@@ -38,7 +38,7 @@ public class SearchBackPressureMetricsProcessor implements EventProcessor {
             SearchBackPressureMetricsSnapShot searchBackPressureMetricsSnapShot) {
         this.searchBackPressureMetricsSnapShot = searchBackPressureMetricsSnapShot;
     }
-    
+
     /*
      * if current SnapShotMap has the snapshot for currentWindowStartTime, use the snapshot to build the processor
      * else create a new Instance of SearchBackPressureMetricsSnapShot to initialize the processor
