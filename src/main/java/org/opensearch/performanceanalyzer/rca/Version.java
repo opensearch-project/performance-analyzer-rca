@@ -22,11 +22,8 @@ public final class Version {
      * Note: The RCA version is agnostic of OpenSearch version.
      */
     static final class Major {
-        // Bumping this post the Commons
-        // Lib(https://github.com/opensearch-project/performance-analyzer-commons/issues/2)
-        // and Service
-        // Metrics(https://github.com/opensearch-project/performance-analyzer-commons/issues/8)
-        // change
+        // Bumping this post the Commons Lib(https://github.com/opensearch-project/performance-analyzer-commons/issues/2)
+        // and Service Metrics(https://github.com/opensearch-project/performance-analyzer-commons/issues/8) change
         static final int RCA_MAJ_VERSION = 1;
     }
 

@@ -14,6 +14,7 @@ public class MetricAttributes {
     public HashSet<String> dimensionNames;
 
     MetricAttributes(String unit, MetricDimension[] dimensions) {
+
         this.unit = unit;
         this.dimensionNames = new HashSet<String>();
         for (MetricDimension dimension : dimensions) {
