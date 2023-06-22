@@ -464,6 +464,11 @@ public class MetricsModel {
                         MetricUnits.MILLISECOND.toString(),
                         AllMetrics.ShardIndexingPressureDimension.values()));
 
+        // Search Back Pressure Metrics
+        allMetricsInitializer.put(
+                AllMetrics.SearchBackPressureStatsValue.SEARCHBP_SHARD_STATS_CANCELLATIONCOUNT
+                        .toString(),
+                new MetricAttributes(MetricUnits.COUNT.toString(), EmptyDimension.values()));
         ALL_METRICS = Collections.unmodifiableMap(allMetricsInitializer);
     }
 }

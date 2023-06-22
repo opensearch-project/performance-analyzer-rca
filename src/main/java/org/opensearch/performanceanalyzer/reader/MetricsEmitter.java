@@ -749,6 +749,120 @@ public class MetricsEmitter {
                 ReaderMetrics.GC_INFO_EMITTER_EXECUTION_TIME, mFinalT - mCurrT);
     }
 
+    public static void emitSearchBackPressureMetrics(
+            MetricsDB metricsDB,
+            SearchBackPressureMetricsSnapShot searchBackPressureMetricsSnapShot) {
+        long mCurrT = System.currentTimeMillis();
+        Result<Record> searchbp_records = searchBackPressureMetricsSnapShot.fetchAll();
+
+        // String SEARCHBP_MODE_DIM = "searchbp_mode";
+        String SEARCHBP_TYPE_DIM = "SearchBackPressureStats";
+        String SEARCHBP_TABLE_NAME = "searchbp_stats";
+
+        List<String> dims =
+                new ArrayList<String>() {
+                    {
+                        this.add(SEARCHBP_TYPE_DIM);
+                    }
+                };
+
+        List<String> stats_types =
+                new ArrayList<String>() {
+                    {
+                        // Shard/Task Stats Cancellation Count
+                        this.add(
+                                AllMetrics.SearchBackPressureStatsValue
+                                        .SEARCHBP_SHARD_STATS_CANCELLATIONCOUNT
+                                        .toString());
+                        this.add(
+                                AllMetrics.SearchBackPressureStatsValue
+                                        .SEARCHBP_TASK_STATS_CANCELLATIONCOUNT
+                                        .toString());
+                        // Shard Stats Resource Heap / CPU Usage
+                        this.add(
+                                AllMetrics.SearchBackPressureStatsValue
+                                        .SEARCHBP_SHARD_STATS_RESOURCE_HEAP_USAGE_CANCELLATIONCOUNT
+                                        .toString());
+                        this.add(
+                                AllMetrics.SearchBackPressureStatsValue
+                                        .SEARCHBP_SHARD_STATS_RESOURCE_HEAP_USAGE_CURRENTMAX
+                                        .toString());
+                        this.add(
+                                AllMetrics.SearchBackPressureStatsValue
+                                        .SEARCHBP_SHARD_STATS_RESOURCE_HEAP_USAGE_ROLLINGAVG
+                                        .toString());
+                        this.add(
+                                AllMetrics.SearchBackPressureStatsValue
+                                        .SEARCHBP_SHARD_STATS_RESOURCE_CPU_USAGE_CANCELLATIONCOUNT
+                                        .toString());
+                        this.add(
+                                AllMetrics.SearchBackPressureStatsValue
+                                        .SEARCHBP_SHARD_STATS_RESOURCE_CPU_USAGE_CURRENTMAX
+                                        .toString());
+                        this.add(
+                                AllMetrics.SearchBackPressureStatsValue
+                                        .SEARCHBP_SHARD_STATS_RESOURCE_CPU_USAGE_CURRENTAVG
+                                        .toString());
+                        // Task Stats Resource Heap / CPU Usage
+                        this.add(
+                                AllMetrics.SearchBackPressureStatsValue
+                                        .SEARCHBP_TASK_STATS_RESOURCE_HEAP_USAGE_CANCELLATIONCOUNT
+                                        .toString());
+                        this.add(
+                                AllMetrics.SearchBackPressureStatsValue
+                                        .SEARCHBP_TASK_STATS_RESOURCE_HEAP_USAGE_CURRENTMAX
+                                        .toString());
+                        this.add(
+                                AllMetrics.SearchBackPressureStatsValue
+                                        .SEARCHBP_TASK_STATS_RESOURCE_HEAP_USAGE_ROLLINGAVG
+                                        .toString());
+                        this.add(
+                                AllMetrics.SearchBackPressureStatsValue
+                                        .SEARCHBP_TASK_STATS_RESOURCE_CPU_USAGE_CANCELLATIONCOUNT
+                                        .toString());
+                        this.add(
+                                AllMetrics.SearchBackPressureStatsValue
+                                        .SEARCHBP_TASK_STATS_RESOURCE_CPU_USAGE_CURRENTMAX
+                                        .toString());
+                        this.add(
+                                AllMetrics.SearchBackPressureStatsValue
+                                        .SEARCHBP_TASK_STATS_RESOURCE_CPU_USAGE_CURRENTAVG
+                                        .toString());
+                    }
+                };
+
+        metricsDB.createMetric(new Metric<>(SEARCHBP_TABLE_NAME, 0d), dims);
+
+        BatchBindStep handle = metricsDB.startBatchPut(new Metric<>(SEARCHBP_TABLE_NAME, 0d), dims);
+
+        for (Record record : searchbp_records) {
+            for (String stats_type : stats_types) {
+                Optional<Object> tmpStatsObj = Optional.ofNullable(record.get(stats_type));
+                // LOG.info(stats_type + " is: " + tmpStatsObj.map(o ->
+                // Long.parseLong(o.toString())).toString());
+
+                handle.bind(
+                        stats_type,
+                        // the rest are agg fields: sum, avg, min, max which don't make sense for
+                        // searchbackpressure
+                        tmpStatsObj.map(o -> Long.parseLong(o.toString())).orElse(0L),
+                        tmpStatsObj.map(o -> Long.parseLong(o.toString())).orElse(0L),
+                        tmpStatsObj.map(o -> Long.parseLong(o.toString())).orElse(0L),
+                        tmpStatsObj.map(o -> Long.parseLong(o.toString())).orElse(0L));
+            }
+        }
+
+        handle.execute();
+
+        long mFinalT = System.currentTimeMillis();
+        LOG.debug(
+                "Total time taken for writing Search Back Pressure info into metricsDB: {}",
+                mFinalT - mCurrT);
+        ServiceMetrics.READER_METRICS_AGGREGATOR.updateStat(
+                ReaderMetrics.SEARCH_BACK_PRESSURE_METRICS_EMITTER_EXECUTION_TIME,
+                mFinalT - mCurrT);
+    }
+
     public static void emitAdmissionControlMetrics(
             MetricsDB metricsDB, AdmissionControlSnapshot snapshot) {
         long mCurrT = System.currentTimeMillis();
