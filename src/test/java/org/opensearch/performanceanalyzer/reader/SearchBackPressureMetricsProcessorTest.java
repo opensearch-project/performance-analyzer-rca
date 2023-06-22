@@ -71,7 +71,7 @@ public class SearchBackPressureMetricsProcessorTest {
                         currTimeStamp, conn, searchBackPressureStatsMap);
     }
 
-    // Test the handleSearchBackPressureEvent() method
+    // Test valid case of the handleSearchBackPressureEvent()
     @Test
     public void testSearchBackPressureProcessEvent() throws Exception {
         // Create a SearchBackPressureEvent
@@ -90,7 +90,6 @@ public class SearchBackPressureMetricsProcessorTest {
         Result<Record> result = currSnapshot.fetchAll();
         assertEquals(1, result.size());
 
-        // test all the fields
         // SEARCHBP_SHARD_STATS_RESOURCE_HEAP_USAGE_ROLLINGAVG value is 3L according to the
         // SERIALIZED_EVENT, should EQUAL
         Assert.assertEquals(
@@ -121,12 +120,41 @@ public class SearchBackPressureMetricsProcessorTest {
                                         .toString()));
     }
 
+    @Test
+    public void testEmptySearchBackPressureProcessEvent() throws Exception {
+        // Create a SearchBackPressureEvent
+        Event testEvent = buildEmptyTestSearchBackPressureStatsEvent();
+
+        // Test the SearchBackPressureMetricsSnapShot
+        searchBackPressureMetricsProcessor.initializeProcessing(
+                this.currTimeStamp, System.currentTimeMillis());
+        assertTrue(searchBackPressureMetricsProcessor.shouldProcessEvent(testEvent));
+
+        try {
+            searchBackPressureMetricsProcessor.processEvent(testEvent);
+            Assert.assertFalse(
+                    "Negative scenario test: Should catch a RuntimeException and skip this test",
+                    true);
+        } catch (RuntimeException ex) {
+            // should catch the exception and the previous assertion should not be executed
+        }
+    }
+
     private Event buildTestSearchBackPressureStatsEvent() {
         StringBuilder str = new StringBuilder();
         str.append(PerformanceAnalyzerMetrics.getJsonCurrentMilliSeconds())
                 .append(PerformanceAnalyzerMetrics.sMetricNewLineDelimitor);
 
         str.append(SERIALIZED_EVENT).append(PerformanceAnalyzerMetrics.sMetricNewLineDelimitor);
+        return new Event(
+                SEARCH_BACK_PRESSURE_STATS_KEY, str.toString(), System.currentTimeMillis());
+    }
+
+    private Event buildEmptyTestSearchBackPressureStatsEvent() {
+        StringBuilder str = new StringBuilder();
+        str.append(PerformanceAnalyzerMetrics.getJsonCurrentMilliSeconds())
+                .append(PerformanceAnalyzerMetrics.sMetricNewLineDelimitor);
+
         return new Event(
                 SEARCH_BACK_PRESSURE_STATS_KEY, str.toString(), System.currentTimeMillis());
     }

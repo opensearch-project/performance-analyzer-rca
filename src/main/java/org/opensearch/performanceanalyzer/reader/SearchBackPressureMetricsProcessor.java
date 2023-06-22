@@ -99,8 +99,8 @@ public class SearchBackPressureMetricsProcessor implements EventProcessor {
         // 0thline is current time string (e.g. {current_time:1686952296889})
         // 1st line is the payload the metrics
         if (lines.length < 2) {
-            LOG.warn("SearchBackPressure metrics length should be at least 2");
-            return;
+            throw new RuntimeException("Missing SearchBackPressure Metrics payload and timestamp.");
+            //     return;
         }
 
         // Parse metrics payload
@@ -113,8 +113,8 @@ public class SearchBackPressureMetricsProcessor implements EventProcessor {
         LOG.info("SearchBackPressureMetricsProcessor parseJsonLine: {}", jsonString);
 
         if (map.isEmpty()) {
-            LOG.warn("Empty line in the event log for search back pressure section.");
-            return;
+            throw new RuntimeException("Missing SearchBackPressure Metrics payload.");
+            //     return;
         }
         // A list of dims to be collected
         ArrayList<String> required_searchbp_dims =
