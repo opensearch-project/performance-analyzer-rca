@@ -48,7 +48,6 @@ public class GarbageCollectorInfoProcessor implements EventProcessor {
 
     @Override
     public void initializeProcessing(long startTime, long endTime) {
-        LOG.info("GARBAGECOLLECTORINFOPROCESSOR INITIALIZED");
         this.startTime = startTime;
         this.endTime = endTime;
         this.handle = gcSnap.startBatchPut();
@@ -76,7 +75,6 @@ public class GarbageCollectorInfoProcessor implements EventProcessor {
     }
 
     private void parseJsonLine(final String jsonString) {
-        LOG.info("GarbageCollectorInfoProcessor start to parse JsonString {}", jsonString);
         Map<String, Object> map = JsonConverter.createMapFrom(jsonString);
         if (map.isEmpty()) {
             LOG.warn("Empty line in the event log for gc_info section.");

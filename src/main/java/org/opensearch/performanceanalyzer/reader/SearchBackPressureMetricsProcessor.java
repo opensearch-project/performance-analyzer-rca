@@ -36,7 +36,6 @@ public class SearchBackPressureMetricsProcessor implements EventProcessor {
 
     private SearchBackPressureMetricsProcessor(
             SearchBackPressureMetricsSnapShot searchBackPressureMetricsSnapShot) {
-        LOG.info("SearchBackPressureMetricsProcessor initialized");
         this.searchBackPressureMetricsSnapShot = searchBackPressureMetricsSnapShot;
     }
 
@@ -95,12 +94,11 @@ public class SearchBackPressureMetricsProcessor implements EventProcessor {
     // Handler method for incoming events
     private void handleSearchBackPressureEvent(String eventValue) {
         String[] lines = eventValue.split(System.lineSeparator());
-        LOG.info("handleSearchBackPressureEvent start to parse evnt: " + eventValue);
         // 0thline is current time string (e.g. {current_time:1686952296889})
         // 1st line is the payload the metrics
         if (lines.length < 2) {
             throw new RuntimeException("Missing SearchBackPressure Metrics payload and timestamp.");
-            //     return;
+            // return;
         }
 
         // Parse metrics payload
@@ -108,13 +106,11 @@ public class SearchBackPressureMetricsProcessor implements EventProcessor {
     }
 
     private void parseJsonLine(final String jsonString) {
-        //
         Map<String, Object> map = JsonConverter.createMapFrom(jsonString);
-        LOG.info("SearchBackPressureMetricsProcessor parseJsonLine: {}", jsonString);
 
         if (map.isEmpty()) {
             throw new RuntimeException("Missing SearchBackPressure Metrics payload.");
-            //     return;
+            // return;
         }
         // A list of dims to be collected
         ArrayList<String> required_searchbp_dims =
@@ -188,10 +184,6 @@ public class SearchBackPressureMetricsProcessor implements EventProcessor {
         int idx = 0;
         for (String dimension : required_searchbp_dims) {
             bindVals[idx++] = map.get(dimension);
-            LOG.info(
-                    "SearchBackPressureMetricsProcessor field {} parsed is: {}",
-                    dimension,
-                    map.get(dimension));
         }
 
         handle.bind(bindVals);
@@ -199,8 +191,7 @@ public class SearchBackPressureMetricsProcessor implements EventProcessor {
 
     @Override
     public void processEvent(Event event) {
-        // One Handler method for incoming event
-        LOG.info("SearchBP processEvent start!");
+        // Handler method for incoming event
         handleSearchBackPressureEvent(event.value);
 
         // commit Batch queries is overflow the limit
