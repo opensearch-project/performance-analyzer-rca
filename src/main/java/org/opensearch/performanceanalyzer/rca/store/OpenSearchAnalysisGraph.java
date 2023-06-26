@@ -85,6 +85,7 @@ import org.opensearch.performanceanalyzer.rca.store.rca.jvmsizing.HighOldGenOccu
 import org.opensearch.performanceanalyzer.rca.store.rca.jvmsizing.LargeHeapClusterRca;
 import org.opensearch.performanceanalyzer.rca.store.rca.jvmsizing.OldGenContendedRca;
 import org.opensearch.performanceanalyzer.rca.store.rca.jvmsizing.OldGenReclamationRca;
+import org.opensearch.performanceanalyzer.rca.store.rca.searchbackpressure.SearchBackPressureRCA;
 import org.opensearch.performanceanalyzer.rca.store.rca.temperature.NodeTemperatureRca;
 import org.opensearch.performanceanalyzer.rca.store.rca.temperature.dimension.CpuUtilDimensionTemperatureRca;
 import org.opensearch.performanceanalyzer.rca.store.rca.temperature.dimension.HeapAllocRateTemperatureRca;
@@ -183,7 +184,8 @@ public class OpenSearchAnalysisGraph extends AnalysisGraph {
         // Use EVALUATION_INTERVAL_SECONDS instead of RCA_PERIOD which resolved to 12 seconds.
         // This is resulting in this RCA not getting executed in every 5 seconds.
         Rca<ResourceFlowUnit<HotNodeSummary>> threadMetricsRca =
-                new ThreadMetricsRca(threadBlockedTime, threadWaitedTime, EVALUATION_INTERVAL_SECONDS);
+                new ThreadMetricsRca(
+                        threadBlockedTime, threadWaitedTime, EVALUATION_INTERVAL_SECONDS);
         threadMetricsRca.addTag(
                 RcaConsts.RcaTagConstants.TAG_LOCUS,
                 RcaConsts.RcaTagConstants.LOCUS_DATA_CLUSTER_MANAGER_NODE);
@@ -431,6 +433,14 @@ public class OpenSearchAnalysisGraph extends AnalysisGraph {
                         fieldDataCacheClusterRca,
                         shardRequestCacheClusterRca,
                         highHeapUsageClusterRca));
+
+        // Search Back Pressure Service RCA
+        final SearchBackPressureRCA searchBackPressureRCA =
+                new SearchBackPressureRCA(heapMax, heapUsed, gcType);
+        searchBackPressureRCA.addTag(
+                RcaConsts.RcaTagConstants.TAG_LOCUS,
+                RcaConsts.RcaTagConstants.LOCUS_DATA_CLUSTER_MANAGER_NODE);
+        searchBackPressureRCA.addAllUpstreams(Arrays.asList(heapMax, heapUsed, gcType));
 
         AdmissionControlDecider admissionControlDecider =
                 buildAdmissionControlDecider(heapUsed, heapMax);
