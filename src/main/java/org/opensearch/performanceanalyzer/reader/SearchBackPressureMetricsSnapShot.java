@@ -161,6 +161,7 @@ public class SearchBackPressureMetricsSnapShot implements Removable {
     }
 
     public BatchBindStep startBatchPut() {
+        // Add dummy values because jooq requires this to support multiple bind statements with single insert query
         List<Object> dummyValues = new ArrayList<>();
         for (int i = 0; i < columns.size(); i++) {
             dummyValues.add(null);
