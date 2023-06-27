@@ -41,6 +41,7 @@ import org.opensearch.performanceanalyzer.rca.framework.api.metrics.GC_Type;
 import org.opensearch.performanceanalyzer.rca.framework.api.metrics.Heap_Max;
 import org.opensearch.performanceanalyzer.rca.framework.api.metrics.Heap_Used;
 import org.opensearch.performanceanalyzer.rca.framework.api.metrics.IndexWriter_Memory;
+import org.opensearch.performanceanalyzer.rca.framework.api.metrics.Searchbp_Stats;
 import org.opensearch.performanceanalyzer.rca.framework.api.metrics.ThreadPool_QueueCapacity;
 import org.opensearch.performanceanalyzer.rca.framework.api.metrics.ThreadPool_RejectedReqs;
 import org.opensearch.performanceanalyzer.rca.framework.api.metrics.Thread_Blocked_Time;
@@ -119,7 +120,7 @@ public class OpenSearchAnalysisGraph extends AnalysisGraph {
                         AllMetrics.CommonDimension.OPERATION.toString());
 
         // SearchBackpressure Metric
-        // Metric searchbp_Stats = new Searchbp_Stats(EVALUATION_INTERVAL_SECONDS);
+        Metric searchbp_Stats = new Searchbp_Stats(EVALUATION_INTERVAL_SECONDS);
 
         heapUsed.addTag(
                 RcaConsts.RcaTagConstants.TAG_LOCUS,
@@ -145,9 +146,9 @@ public class OpenSearchAnalysisGraph extends AnalysisGraph {
         threadWaitedTime.addTag(
                 RcaConsts.RcaTagConstants.TAG_LOCUS,
                 RcaConsts.RcaTagConstants.LOCUS_DATA_CLUSTER_MANAGER_NODE);
-        // searchbp_Stats.addTag(
-        //         RcaConsts.RcaTagConstants.TAG_LOCUS,
-        //         RcaConsts.RcaTagConstants.LOCUS_DATA_CLUSTER_MANAGER_NODE);
+        searchbp_Stats.addTag(
+                RcaConsts.RcaTagConstants.TAG_LOCUS,
+                RcaConsts.RcaTagConstants.LOCUS_DATA_CLUSTER_MANAGER_NODE);
 
         addLeaf(heapUsed);
         addLeaf(gcEvent);
@@ -157,7 +158,7 @@ public class OpenSearchAnalysisGraph extends AnalysisGraph {
         addLeaf(cpuUtilizationGroupByOperation);
         addLeaf(threadBlockedTime);
         addLeaf(threadWaitedTime);
-        // addLeaf(searchbp_Stats);
+        addLeaf(searchbp_Stats);
 
         // add node stats metrics
         List<Metric> nodeStatsMetrics = constructNodeStatsMetrics();
@@ -443,11 +444,12 @@ public class OpenSearchAnalysisGraph extends AnalysisGraph {
 
         // Search Back Pressure Service RCA
         final SearchBackPressureRCA searchBackPressureRCA =
-                new SearchBackPressureRCA(heapMax, heapUsed, gcType);
+                new SearchBackPressureRCA(heapMax, heapUsed, gcType, searchbp_Stats);
         searchBackPressureRCA.addTag(
                 RcaConsts.RcaTagConstants.TAG_LOCUS,
                 RcaConsts.RcaTagConstants.LOCUS_DATA_CLUSTER_MANAGER_NODE);
-        searchBackPressureRCA.addAllUpstreams(Arrays.asList(heapMax, heapUsed, gcType));
+        searchBackPressureRCA.addAllUpstreams(
+                Arrays.asList(heapMax, heapUsed, gcType, searchbp_Stats));
 
         AdmissionControlDecider admissionControlDecider =
                 buildAdmissionControlDecider(heapUsed, heapMax);

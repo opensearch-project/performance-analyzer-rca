@@ -12,6 +12,8 @@ import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jooq.Field;
+import org.jooq.impl.DSL;
+import org.opensearch.performanceanalyzer.commons.metrics.AllMetrics;
 import org.opensearch.performanceanalyzer.grpc.FlowUnitMessage;
 import org.opensearch.performanceanalyzer.metricsdb.MetricsDB;
 import org.opensearch.performanceanalyzer.rca.configs.SearchBackPressureRcaConfig;
@@ -36,8 +38,7 @@ public class SearchBackPressureRCA extends OldGenRca<ResourceFlowUnit<HotNodeSum
     // Shard level max heap usage
     // total node heap usage
     private final Metric heapUsed;
-    // private final Metric searchbp_Stats;
-    // private final Metric SearchBPCancellationJVMPercentage;
+    private final Metric searchbp_Stats;
 
     private long SearchBPCancellationJVMThreshold;
 
@@ -73,10 +74,11 @@ public class SearchBackPressureRCA extends OldGenRca<ResourceFlowUnit<HotNodeSum
     // read_cancellationcount_from_sql_task
     // read_heapused_from_sql
     // for heapused, simply call getOldGenUsedOrDefault() from OldGenRca.java
-    public SearchBackPressureRCA(final Metric heapMax, final Metric heapUsed, Metric gcType) {
+    public <M extends Metric> SearchBackPressureRCA(
+            final M heapMax, final M heapUsed, M gcType, M searchbp_Stats) {
         super(EVAL_INTERVAL_IN_S, heapUsed, heapMax, null, gcType);
         this.heapUsed = heapUsed;
-        // this.searchbp_Stats = new Searchbp_Stats(5);
+        this.searchbp_Stats = searchbp_Stats;
         this.heapUsedIncreaseMaxThreshold =
                 SearchBackPressureRcaConfig.DEFAULT_MAX_HEAP_DOWNFLOW_THRESHOLD;
         this.heapCancellationIncreaseMaxThreshold =
@@ -115,6 +117,7 @@ public class SearchBackPressureRCA extends OldGenRca<ResourceFlowUnit<HotNodeSum
         double heapUsedPercentage = prevHeapUsage / maxHeapSize;
 
         // function to read cancellation count from sql
+        getSearchBackPressureShardCancellationCount();
 
         // print out oldGenUsed and maxOldGen
         LOG.info(
@@ -127,21 +130,61 @@ public class SearchBackPressureRCA extends OldGenRca<ResourceFlowUnit<HotNodeSum
     }
 
     private long getSearchBackPressureShardCancellationCount() {
+        LOG.info("getSearchBackPressureShardCancellationCount() STARTED");
+
         // Use Searchbp_Stats metrics to get the metrics value
-        // Field<String> shard_cancellation_count_field =
-        //         DSL.field(
-        //                 DSL.name(
-        //                         AllMetrics.SearchBackPressureStatsValue.SEARCHBP_TYPE_DIM
-        //                                 .toString()),
-        //                 String.class);
-        // double searchbpShardCancellationCount =
-        //         getMetric(this.searchbp_Stats, shard_cancellation_count_field, "avg");
+        // shard level cancellation count
+        Field<String> searchbp_stats_type_field =
+                DSL.field(
+                        DSL.name(
+                                AllMetrics.SearchBackPressureStatsValue.SEARCHBP_TYPE_DIM
+                                        .toString()),
+                        String.class);
 
-        // LOG searchbpShardCancellationCount
-        // LOG.info(
-        //         "SearchBackPressureRCA: searchbpShardCancellationCount: {}",
-        //         searchbpShardCancellationCount);
+        double searchbpShardCancellationCount =
+                getMetric(
+                        this.searchbp_Stats,
+                        searchbp_stats_type_field,
+                        AllMetrics.SearchBackPressureStatsValue
+                                .SEARCHBP_SHARD_STATS_CANCELLATIONCOUNT
+                                .toString());
+        double searchbpTaskCancellationCount =
+                getMetric(
+                        this.searchbp_Stats,
+                        searchbp_stats_type_field,
+                        AllMetrics.SearchBackPressureStatsValue
+                                .SEARCHBP_TASK_STATS_CANCELLATIONCOUNT
+                                .toString());
+        double searchbpJVMShardCancellationCount =
+                getMetric(
+                        this.searchbp_Stats,
+                        searchbp_stats_type_field,
+                        AllMetrics.SearchBackPressureStatsValue
+                                .SEARCHBP_SHARD_STATS_RESOURCE_HEAP_USAGE_CANCELLATIONCOUNT
+                                .toString());
+        double searchbpJVMTaskCancellationCount =
+                getMetric(
+                        this.searchbp_Stats,
+                        searchbp_stats_type_field,
+                        AllMetrics.SearchBackPressureStatsValue
+                                .SEARCHBP_TASK_STATS_RESOURCE_HEAP_USAGE_CANCELLATIONCOUNT
+                                .toString());
+        LOG.info(
+                "SearchBackPressureRCA: searchbpShardCancellationCount: {}",
+                searchbpShardCancellationCount);
+        // print out searchbpTaskCancellationCount, searchbpJVMShardCancellationCount,
+        // searchbpJVMTaskCancellationCount
+        LOG.info(
+                "SearchBackPressureRCA: searchbpTaskCancellationCount: {}",
+                searchbpTaskCancellationCount);
+        LOG.info(
+                "SearchBackPressureRCA: searchbpJVMShardCancellationCount: {}",
+                searchbpJVMShardCancellationCount);
+        LOG.info(
+                "SearchBackPressureRCA: searchbpJVMTaskCancellationCount: {}",
+                searchbpJVMTaskCancellationCount);
 
+        LOG.info("getSearchBackPressureShardCancellationCount() finished");
         return 0;
     }
 
