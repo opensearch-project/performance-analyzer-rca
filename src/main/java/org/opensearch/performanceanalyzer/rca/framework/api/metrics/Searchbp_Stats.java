@@ -10,9 +10,9 @@ import org.opensearch.performanceanalyzer.commons.metrics.AllMetrics;
 import org.opensearch.performanceanalyzer.rca.framework.api.Metric;
 
 public class Searchbp_Stats extends Metric {
-    public static final String NAME = AllMetrics.HeapValue.HEAP_USED.name();
-
-    public Heap_Used(long evaluationIntervalSeconds) {
-        super(AllMetrics.HeapValue.HEAP_USED.toString(), evaluationIntervalSeconds);
+    public Searchbp_Stats(long evaluationIntervalSeconds) {
+        super(
+                AllMetrics.SearchBackPressureStatsValue.SEARCHBP_TABLE_NAME.toString(),
+                evaluationIntervalSeconds);
     }
 }

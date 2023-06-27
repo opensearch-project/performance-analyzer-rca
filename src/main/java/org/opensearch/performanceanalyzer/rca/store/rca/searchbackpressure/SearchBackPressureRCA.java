@@ -5,6 +5,8 @@
 
 package org.opensearch.performanceanalyzer.rca.store.rca.searchbackpressure;
 
+import static org.opensearch.performanceanalyzer.rca.framework.api.persist.SQLParsingUtil.readDataFromSqlResult;
+
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.logging.log4j.LogManager;
@@ -20,7 +22,6 @@ import org.opensearch.performanceanalyzer.rca.framework.api.summaries.HotNodeSum
 import org.opensearch.performanceanalyzer.rca.framework.core.RcaConf;
 import org.opensearch.performanceanalyzer.rca.scheduler.FlowUnitOperationArgWrapper;
 import org.opensearch.performanceanalyzer.rca.store.rca.OldGenRca;
-import static org.opensearch.performanceanalyzer.rca.framework.api.persist.SQLParsingUtil.readDataFromSqlResult;
 
 public class SearchBackPressureRCA extends OldGenRca<ResourceFlowUnit<HotNodeSummary>> {
     // LOGGER for SearchBackPressureRCA
@@ -35,6 +36,7 @@ public class SearchBackPressureRCA extends OldGenRca<ResourceFlowUnit<HotNodeSum
     // Shard level max heap usage
     // total node heap usage
     private final Metric heapUsed;
+    // private final Metric searchbp_Stats;
     // private final Metric SearchBPCancellationJVMPercentage;
 
     private long SearchBPCancellationJVMThreshold;
@@ -74,6 +76,7 @@ public class SearchBackPressureRCA extends OldGenRca<ResourceFlowUnit<HotNodeSum
     public SearchBackPressureRCA(final Metric heapMax, final Metric heapUsed, Metric gcType) {
         super(EVAL_INTERVAL_IN_S, heapUsed, heapMax, null, gcType);
         this.heapUsed = heapUsed;
+        // this.searchbp_Stats = new Searchbp_Stats(5);
         this.heapUsedIncreaseMaxThreshold =
                 SearchBackPressureRcaConfig.DEFAULT_MAX_HEAP_DOWNFLOW_THRESHOLD;
         this.heapCancellationIncreaseMaxThreshold =
@@ -124,7 +127,21 @@ public class SearchBackPressureRCA extends OldGenRca<ResourceFlowUnit<HotNodeSum
     }
 
     private long getSearchBackPressureShardCancellationCount() {
-        getMetric(null, null, null)
+        // Use Searchbp_Stats metrics to get the metrics value
+        // Field<String> shard_cancellation_count_field =
+        //         DSL.field(
+        //                 DSL.name(
+        //                         AllMetrics.SearchBackPressureStatsValue.SEARCHBP_TYPE_DIM
+        //                                 .toString()),
+        //                 String.class);
+        // double searchbpShardCancellationCount =
+        //         getMetric(this.searchbp_Stats, shard_cancellation_count_field, "avg");
+
+        // LOG searchbpShardCancellationCount
+        // LOG.info(
+        //         "SearchBackPressureRCA: searchbpShardCancellationCount: {}",
+        //         searchbpShardCancellationCount);
+
         return 0;
     }
 

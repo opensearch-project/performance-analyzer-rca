@@ -756,8 +756,10 @@ public class MetricsEmitter {
         Result<Record> searchbp_records = searchBackPressureMetricsSnapShot.fetchAll();
 
         // String SEARCHBP_MODE_DIM = "searchbp_mode";
-        String SEARCHBP_TYPE_DIM = "SearchBackPressureStats";
-        String SEARCHBP_TABLE_NAME = "searchbp_stats";
+        String SEARCHBP_TYPE_DIM =
+                AllMetrics.SearchBackPressureStatsValue.SEARCHBP_TYPE_DIM.toString();
+        String SEARCHBP_TABLE_NAME =
+                AllMetrics.SearchBackPressureStatsValue.SEARCHBP_TABLE_NAME.toString();
 
         List<String> dims =
                 new ArrayList<String>() {

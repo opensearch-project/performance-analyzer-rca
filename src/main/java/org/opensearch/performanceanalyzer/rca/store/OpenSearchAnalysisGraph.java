@@ -118,6 +118,9 @@ public class OpenSearchAnalysisGraph extends AnalysisGraph {
                         MetricsDB.AVG,
                         AllMetrics.CommonDimension.OPERATION.toString());
 
+        // SearchBackpressure Metric
+        // Metric searchbp_Stats = new Searchbp_Stats(EVALUATION_INTERVAL_SECONDS);
+
         heapUsed.addTag(
                 RcaConsts.RcaTagConstants.TAG_LOCUS,
                 RcaConsts.RcaTagConstants.LOCUS_DATA_CLUSTER_MANAGER_NODE);
@@ -142,6 +145,9 @@ public class OpenSearchAnalysisGraph extends AnalysisGraph {
         threadWaitedTime.addTag(
                 RcaConsts.RcaTagConstants.TAG_LOCUS,
                 RcaConsts.RcaTagConstants.LOCUS_DATA_CLUSTER_MANAGER_NODE);
+        // searchbp_Stats.addTag(
+        //         RcaConsts.RcaTagConstants.TAG_LOCUS,
+        //         RcaConsts.RcaTagConstants.LOCUS_DATA_CLUSTER_MANAGER_NODE);
 
         addLeaf(heapUsed);
         addLeaf(gcEvent);
@@ -151,6 +157,7 @@ public class OpenSearchAnalysisGraph extends AnalysisGraph {
         addLeaf(cpuUtilizationGroupByOperation);
         addLeaf(threadBlockedTime);
         addLeaf(threadWaitedTime);
+        // addLeaf(searchbp_Stats);
 
         // add node stats metrics
         List<Metric> nodeStatsMetrics = constructNodeStatsMetrics();
