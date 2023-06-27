@@ -31,10 +31,6 @@ public class SearchBackPressureMetricsSnapShot implements Removable {
     private final String tableName;
     private List<Field<?>> columns;
 
-    // Global variables for naming
-    private static final String SEARCHBP_CONTROLLER_NAME_VALUE = "ControllerName";
-    private static final String SEARCHBP_MODE_VALUE = "searchbp_mode";
-
     // Create a table with specifed fields (columns)
     public SearchBackPressureMetricsSnapShot(Connection conn, Long windowStartTime) {
         this.create = DSL.using(conn, SQLDialect.SQLITE);
@@ -161,7 +157,8 @@ public class SearchBackPressureMetricsSnapShot implements Removable {
     }
 
     public BatchBindStep startBatchPut() {
-        // Add dummy values because jooq requires this to support multiple bind statements with single insert query
+        // Add dummy values because jooq requires this to support multiple bind statements with
+        // single insert query
         List<Object> dummyValues = new ArrayList<>();
         for (int i = 0; i < columns.size(); i++) {
             dummyValues.add(null);
