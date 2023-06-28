@@ -15,8 +15,12 @@ public class SearchBackPressureRCAMetric {
     private final double searchbpJVMTaskCancellationCount;
 
     // Constructor
-    public SearchBackPressureRCAMetric(double usedHeap, double maxHeap, double searchbpShardCancellationCount,
-            double searchbpTaskCancellationCount, double searchbpJVMShardCancellationCount,
+    public SearchBackPressureRCAMetric(
+            double usedHeap,
+            double maxHeap,
+            double searchbpShardCancellationCount,
+            double searchbpTaskCancellationCount,
+            double searchbpJVMShardCancellationCount,
             double searchbpJVMTaskCancellationCount) {
         this.usedHeap = usedHeap;
         this.maxHeap = maxHeap;
@@ -62,14 +66,18 @@ public class SearchBackPressureRCAMetric {
         if (this.getSearchbpShardCancellationCount() == 0) {
             return 0;
         }
-        return 100 * this.getSearchbpJVMShardCancellationCount() / this.getSearchbpShardCancellationCount();
+        return 100
+                * this.getSearchbpJVMShardCancellationCount()
+                / this.getSearchbpShardCancellationCount();
     }
 
     public double getTaskJVMCancellationPercent() {
         if (this.getSearchbpTaskCancellationCount() == 0) {
             return 0;
         }
-        return 100 * this.getSearchbpJVMTaskCancellationCount() / this.getSearchbpTaskCancellationCount();
+        return 100
+                * this.getSearchbpJVMTaskCancellationCount()
+                / this.getSearchbpTaskCancellationCount();
     }
 
     public boolean hasValues() {
@@ -78,6 +86,19 @@ public class SearchBackPressureRCAMetric {
 
     @Override
     public String toString() {
-        return "HeapMetric{" + "usedHeap=" + usedHeap + ", maxHeap=" + maxHeap + '}';
+        return "HeapMetric{"
+                + "usedHeap="
+                + usedHeap
+                + ", maxHeap="
+                + maxHeap
+                + ", searchbpShardCancellationCount="
+                + searchbpShardCancellationCount
+                + ", searchbpTaskCancellationCount="
+                + searchbpTaskCancellationCount
+                + ", searchbpJVMShardCancellationCount="
+                + searchbpJVMShardCancellationCount
+                + ", searchbpJVMTaskCancellationCount="
+                + searchbpJVMTaskCancellationCount
+                + '}';
     }
 }

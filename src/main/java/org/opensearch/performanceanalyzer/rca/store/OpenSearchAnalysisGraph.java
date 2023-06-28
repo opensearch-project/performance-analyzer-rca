@@ -444,7 +444,7 @@ public class OpenSearchAnalysisGraph extends AnalysisGraph {
 
         // Search Back Pressure Service RCA
         final SearchBackPressureRCA searchBackPressureRCA =
-                new SearchBackPressureRCA(heapMax, heapUsed, gcType, searchbp_Stats);
+                new SearchBackPressureRCA(RCA_PERIOD, heapMax, heapUsed, gcType, searchbp_Stats);
         searchBackPressureRCA.addTag(
                 RcaConsts.RcaTagConstants.TAG_LOCUS,
                 RcaConsts.RcaTagConstants.LOCUS_DATA_CLUSTER_MANAGER_NODE);
