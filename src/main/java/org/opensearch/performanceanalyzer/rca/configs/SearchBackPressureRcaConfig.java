@@ -4,6 +4,8 @@
  */
 
 package org.opensearch.performanceanalyzer.rca.configs;
+
+
 import org.opensearch.performanceanalyzer.rca.framework.core.RcaConf;
 
 public class SearchBackPressureRcaConfig {
@@ -31,7 +33,8 @@ public class SearchBackPressureRcaConfig {
     private Integer minHeapCancellationPercentageThreshold;
 
     public SearchBackPressureRcaConfig(final RcaConf conf) {
-        // (s) -> s > 0 is the validator, if validated, fields from conf file will be returned, else, default value gets returned
+        // (s) -> s > 0 is the validator, if validated, fields from conf file will be returned,
+        // else, default value gets returned
         maxHeapIncreasePercentageThreshold =
                 conf.readRcaConfig(
                         CONFIG_NAME,
@@ -82,9 +85,10 @@ public class SearchBackPressureRcaConfig {
     // name for the configuration field
     public static class RCA_CONF_KEY_CONSTANTS {
         public static final String MAX_HEAP_USAGE_INCREASE_FIELD = "max-heap-usage-increase";
-        public static final String MAX_HEAP_CANCELLATION_PERCENTAGE_FIELD = "max-heap-cancellation-percentage";
+        public static final String MAX_HEAP_CANCELLATION_PERCENTAGE_FIELD =
+                "max-heap-cancellation-percentage";
         public static final String MAX_HEAP_USAGE_DECREASE_FIELD = "max-heap-usage-decrease";
-        public static final String MIN_HEAP_CANCELLATION_PERCENTAGE_FIELD = "min-heap-cancellation-percentage";
+        public static final String MIN_HEAP_CANCELLATION_PERCENTAGE_FIELD =
+                "min-heap-cancellation-percentage";
     }
 }
- 

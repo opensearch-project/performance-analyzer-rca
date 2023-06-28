@@ -250,4 +250,36 @@ public abstract class OldGenRca<T extends ResourceFlowUnit<?>> extends Rca<T> {
             return Double.NaN;
         }
     }
+
+    /**
+     * Sliding window to check the max/min olg gen usage within a given time frame Previous
+     * MinGoldGenSlidingWindow should be deprecated since it modify the sliding window size in
+     * next()
+     */
+    public static class MinMaxOldGenSlidingWindow extends SlidingWindow<SlidingWindowData> {
+
+        public MinMaxOldGenSlidingWindow(int SLIDING_WINDOW_SIZE_IN_TIMESTAMP, TimeUnit timeUnit) {
+            super(SLIDING_WINDOW_SIZE_IN_TIMESTAMP, timeUnit);
+        }
+
+        public double readMax() {
+            if (!windowDeque.isEmpty()) {
+                return windowDeque.stream()
+                        .mapToDouble(SlidingWindowData::getValue)
+                        .max()
+                        .orElse(Double.NaN);
+            }
+            return Double.NaN;
+        }
+
+        public double readMin() {
+            if (!windowDeque.isEmpty()) {
+                return windowDeque.stream()
+                        .mapToDouble(SlidingWindowData::getValue)
+                        .min()
+                        .orElse(Double.NaN);
+            }
+            return Double.NaN;
+        }
+    }
 }

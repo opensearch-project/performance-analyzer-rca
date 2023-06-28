@@ -20,6 +20,7 @@ import org.opensearch.performanceanalyzer.grpc.FlowUnitMessage;
 import org.opensearch.performanceanalyzer.metricsdb.MetricsDB;
 import org.opensearch.performanceanalyzer.rca.configs.SearchBackPressureRcaConfig;
 import org.opensearch.performanceanalyzer.rca.framework.api.Metric;
+import org.opensearch.performanceanalyzer.rca.framework.api.Resources;
 import org.opensearch.performanceanalyzer.rca.framework.api.aggregators.SlidingWindow;
 import org.opensearch.performanceanalyzer.rca.framework.api.aggregators.SlidingWindowData;
 import org.opensearch.performanceanalyzer.rca.framework.api.contexts.ResourceContext;
@@ -27,6 +28,7 @@ import org.opensearch.performanceanalyzer.rca.framework.api.flow_units.MetricFlo
 import org.opensearch.performanceanalyzer.rca.framework.api.flow_units.ResourceFlowUnit;
 import org.opensearch.performanceanalyzer.rca.framework.api.summaries.HotNodeSummary;
 import org.opensearch.performanceanalyzer.rca.framework.core.RcaConf;
+import org.opensearch.performanceanalyzer.rca.framework.util.InstanceDetails;
 import org.opensearch.performanceanalyzer.rca.scheduler.FlowUnitOperationArgWrapper;
 import org.opensearch.performanceanalyzer.rca.store.rca.OldGenRca;
 import org.opensearch.performanceanalyzer.rca.store.rca.searchbackpressure.model.SearchBackPressureRCAMetric;
@@ -48,12 +50,12 @@ public class SearchBackPressureRCA extends OldGenRca<ResourceFlowUnit<HotNodeSum
     private long SearchBPCancellationJVMThreshold;
 
     // threshold to increase heap limits
-    private long heapUsedIncreaseMaxThreshold;
+    private long heapUsedIncreaseThreshold;
     private long heapCancellationIncreaseMaxThreshold;
 
     // threshold to decrease heap limits
-    private long heapUsedDecreaseMinThreshold;
-    private long heapCancellationDecreaseMaxThreashold;
+    private long heapUsedDecreaseThreshold;
+    private long heapCancellationDecreaseMinThreashold;
 
     /*
      * Sliding Window
@@ -62,7 +64,7 @@ public class SearchBackPressureRCA extends OldGenRca<ResourceFlowUnit<HotNodeSum
      */
     private final SlidingWindow<SlidingWindowData> taskJVMCancellationSlidingWindow;
     private final SlidingWindow<SlidingWindowData> shardJVMCancellationSlidingWindow;
-    private final SlidingWindow<SlidingWindowData> heapUsageSlidingWindow;
+    private final MinMaxOldGenSlidingWindow heapUsageSlidingWindow;
 
     // Sliding Window Interval
     private static final int SLIDING_WINDOW_SIZE_IN_MINS = 1;
@@ -103,18 +105,18 @@ public class SearchBackPressureRCA extends OldGenRca<ResourceFlowUnit<HotNodeSum
         this.rcaPeriod = rcaPeriod;
         this.clock = Clock.systemUTC();
         this.searchbp_Stats = searchbp_Stats;
-        this.heapUsedIncreaseMaxThreshold =
-                SearchBackPressureRcaConfig.DEFAULT_MAX_HEAP_DOWNFLOW_THRESHOLD;
+        this.heapUsedIncreaseThreshold =
+                SearchBackPressureRcaConfig.DEFAULT_MAX_HEAP_INCREASE_THRESHOLD;
         this.heapCancellationIncreaseMaxThreshold =
                 SearchBackPressureRcaConfig.DEFAULT_MAX_HEAP_CANCELLATION_THRESHOLD;
-        this.heapUsedDecreaseMinThreshold =
-                SearchBackPressureRcaConfig.DEFAULT_MIN_HEAP_OVERFLOW_THRESHOLD;
-        this.heapCancellationDecreaseMaxThreashold =
+        this.heapUsedDecreaseThreshold =
+                SearchBackPressureRcaConfig.DEFAULT_MAX_HEAP_DECREASE_THRESHOLD;
+        this.heapCancellationDecreaseMinThreashold =
                 SearchBackPressureRcaConfig.DEFAULT_MIN_HEAP_CANCELLATION_THRESHOLD;
 
         // initialize sliding window
         this.heapUsageSlidingWindow =
-                new SlidingWindow<>(SLIDING_WINDOW_SIZE_IN_MINS, TimeUnit.MINUTES);
+                new MinMaxOldGenSlidingWindow(SLIDING_WINDOW_SIZE_IN_MINS, TimeUnit.MINUTES);
         this.shardJVMCancellationSlidingWindow =
                 new SlidingWindow<>(SLIDING_WINDOW_SIZE_IN_MINS, TimeUnit.MINUTES);
         this.taskJVMCancellationSlidingWindow =
@@ -167,6 +169,9 @@ public class SearchBackPressureRCA extends OldGenRca<ResourceFlowUnit<HotNodeSum
                     new SlidingWindowData(currTimeStamp, prevheapUsagePercentage));
         }
 
+        // for testing
+        // heapUsageSlidingWindow.next(new SlidingWindowData(currTimeStamp, 80.3));
+
         double shardJVMCancellationPercentage =
                 searchBackPressureRCAMetric.getShardJVMCancellationPercent();
         if (!Double.isNaN(shardJVMCancellationPercentage)) {
@@ -186,32 +191,49 @@ public class SearchBackPressureRCA extends OldGenRca<ResourceFlowUnit<HotNodeSum
         if (counter == this.rcaPeriod) {
             ResourceContext context = null;
             LOG.info("SearchBackPressureRCA counter in rcaPeriod is {}", counter);
+            long currentTimeMillis = System.currentTimeMillis();
             counter = 0;
 
-            // TODO change to 
-            double maxHeapUsagePercentage = heapUsageSlidingWindow.readAvg();
+            double maxHeapUsagePercentage = heapUsageSlidingWindow.readMax();
+            double minHeapUsagePercentage = heapUsageSlidingWindow.readMin();
             double avgShardJVMCancellationPercentage = shardJVMCancellationSlidingWindow.readAvg();
             double avgTaskJVMCancellationPercentage = taskJVMCancellationSlidingWindow.readAvg();
+
             LOG.info(
-                    "SearchBackPressureRCA: maxHeapUsagePercentage: {}, SearchBackPressureRCA: maxHeapUsagePercentage: {}, SearchBackPressureRCA: maxHeapUsagePercentage: {}",
+                    "SearchBackPressureRCA: maxHeapUsagePercentage: {}, minHeapUsagePercentage: {}, SearchBackPressureRCA: avgShardJVMCancellationPercentage: {}, SearchBackPressureRCA: avgTaskJVMCancellationPercentage: {}",
                     maxHeapUsagePercentage,
+                    minHeapUsagePercentage,
                     avgShardJVMCancellationPercentage,
                     avgTaskJVMCancellationPercentage);
+            InstanceDetails instanceDetails = getInstanceDetails();
+            HotNodeSummary nodeSummary =
+                    new HotNodeSummary(
+                            instanceDetails.getInstanceId(), instanceDetails.getInstanceIp());
 
             // get the Configured Threshold and compare with Sliding Window Stats
-            if (maxHeapUsagePercentage > heapUsedDecreaseMinThreshold) {
+            /*
+             *  2 cases we send Unhealthy ResourceContext when we need to autotune the threshold
+             *  - (increase) node max heap usage in last 60 secs is less than 70% and cancellationCountPercentage due to heap is more than 50% of all task cancellations
+             *  - (decrease) node min heap usage in last 60 secs is more than 80% and cancellationCountPercetange due to heap is less than 30% of all task cancellations
+             */
+            if ((maxHeapUsagePercentage < heapUsedIncreaseThreshold)
+                    && (avgShardJVMCancellationPercentage > heapCancellationIncreaseMaxThreshold)) {
                 // Generate a flow unit with an Unhealthy ResourceContext
                 LOG.info(
-                        "maxHeapUsagePercentage: {} is greater than threshold: {}",
+                        "Condition 1 Meet, maxHeapUsagePercentage: {} is less than threshold: {}, avgShardJVMCancellationPercentage: {} is bigger than heapCancellationIncreaseMaxThreshold: {}",
                         maxHeapUsagePercentage,
-                        heapUsedDecreaseMinThreshold);
+                        heapUsedIncreaseThreshold,
+                        avgShardJVMCancellationPercentage,
+                        heapCancellationIncreaseMaxThreshold);
 
+                context = new ResourceContext(Resources.State.UNHEALTHY);
+                return new ResourceFlowUnit<>(
+                        currentTimeMillis,
+                        context,
+                        nodeSummary,
+                        !instanceDetails.getIsClusterManager());
             } else {
-                // Generate a flow unit with a Healthy ResourceContext
-                LOG.info(
-                        "maxHeapUsagePercentage: {} is less than threshold: {}",
-                        maxHeapUsagePercentage,
-                        heapUsedDecreaseMinThreshold);
+                LOG.info("cindition 1 is not met.");
             }
 
         } else {
