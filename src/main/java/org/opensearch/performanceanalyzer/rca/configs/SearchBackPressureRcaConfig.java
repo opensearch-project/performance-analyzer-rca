@@ -25,8 +25,8 @@ public class SearchBackPressureRcaConfig {
 
     // Decrease Threshold
     // node min heap usage in last 60 secs is more than 80%
-    public static final int DEFAULT_MAX_HEAP_DECREASE_THRESHOLD = 80;
-    private Integer maxHeapDecreasePercentageThreshold;
+    public static final int DEFAULT_MIN_HEAP_DECREASE_THRESHOLD = 80;
+    private Integer minHeapDecreasePercentageThreshold;
 
     // cancellationCount due to heap is less than 30% of all task cancellations
     public static final int DEFAULT_MIN_HEAP_CANCELLATION_THRESHOLD = 30;
@@ -49,11 +49,11 @@ public class SearchBackPressureRcaConfig {
                         DEFAULT_MAX_HEAP_CANCELLATION_THRESHOLD,
                         (s) -> s >= 0 && s <= 100,
                         Integer.class);
-        maxHeapDecreasePercentageThreshold =
+        minHeapDecreasePercentageThreshold =
                 conf.readRcaConfig(
                         CONFIG_NAME,
                         RCA_CONF_KEY_CONSTANTS.MAX_HEAP_USAGE_DECREASE_FIELD,
-                        DEFAULT_MAX_HEAP_DECREASE_THRESHOLD,
+                        DEFAULT_MIN_HEAP_DECREASE_THRESHOLD,
                         (s) -> s >= 0 && s <= 100,
                         Integer.class);
         minHeapCancellationPercentageThreshold =
@@ -74,8 +74,8 @@ public class SearchBackPressureRcaConfig {
         return maxHeapCancellationPercentageThreshold;
     }
 
-    public int getMaxHeapDecreasePercentageThreshold() {
-        return maxHeapDecreasePercentageThreshold;
+    public int getMinHeapDecreasePercentageThreshold() {
+        return minHeapDecreasePercentageThreshold;
     }
 
     public int getMinHeapCancellationPercentageThreshold() {

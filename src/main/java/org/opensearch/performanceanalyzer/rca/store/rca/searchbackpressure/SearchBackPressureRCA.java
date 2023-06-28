@@ -47,8 +47,6 @@ public class SearchBackPressureRCA extends OldGenRca<ResourceFlowUnit<HotNodeSum
      * Threshold
      * SearchBackPressureRCA Use heap usage and shard/task level searchbp cancellation count as threshold
      */
-    private long SearchBPCancellationJVMThreshold;
-
     // threshold to increase heap limits
     private long heapUsedIncreaseThreshold;
     private long heapCancellationIncreaseMaxThreshold;
@@ -80,24 +78,6 @@ public class SearchBackPressureRCA extends OldGenRca<ResourceFlowUnit<HotNodeSum
     // Current time
     protected Clock clock;
 
-    // key functions to be overriden
-    // operate(): determine whether to generate of flow unit of HEALTHY or UNHEALTHY
-    // readRcaConf(): read the key configuration metrics like heapMaxThreshold,
-    // heapMinThreshold,
-    // cancellationHeapPercentageThreshold
-    // counter to keep track of times of checking, as the default sliding window is
-    // 60 times, and
-    // interval for RCA scanning is 5s
-    // counter needs to be at least 12 to trigger operate(): 12 is the
-    // rcaSamplesBeforeEval
-
-    // generateFlowUnitListFromWite() gets wireFlowUnits() (Do we need this?)
-
-    // Not to be overriden but need to have
-    // read_cancellationcount_from_sql_shard
-    // read_cancellationcount_from_sql_task
-    // read_heapused_from_sql
-    // for heapused, simply call getOldGenUsedOrDefault() from OldGenRca.java
     public <M extends Metric> SearchBackPressureRCA(
             final int rcaPeriod, final M heapMax, final M heapUsed, M gcType, M searchbp_Stats) {
         super(EVAL_INTERVAL_IN_S, heapUsed, heapMax, null, gcType);
@@ -110,7 +90,7 @@ public class SearchBackPressureRCA extends OldGenRca<ResourceFlowUnit<HotNodeSum
         this.heapCancellationIncreaseMaxThreshold =
                 SearchBackPressureRcaConfig.DEFAULT_MAX_HEAP_CANCELLATION_THRESHOLD;
         this.heapUsedDecreaseThreshold =
-                SearchBackPressureRcaConfig.DEFAULT_MAX_HEAP_DECREASE_THRESHOLD;
+                SearchBackPressureRcaConfig.DEFAULT_MIN_HEAP_DECREASE_THRESHOLD;
         this.heapCancellationDecreaseMinThreashold =
                 SearchBackPressureRcaConfig.DEFAULT_MIN_HEAP_CANCELLATION_THRESHOLD;
 
@@ -144,9 +124,11 @@ public class SearchBackPressureRCA extends OldGenRca<ResourceFlowUnit<HotNodeSum
     @Override
     public ResourceFlowUnit<HotNodeSummary> operate() {
         LOG.info("SearchBackPressureRCA operate() intiatilized");
-        counter += 1;
 
-        long currTimeStamp = this.clock.millis();
+        counter += 1;
+        ResourceContext context = null;
+        long currentTimeMillis = System.currentTimeMillis();
+        ;
 
         // read key metrics into searchBackPressureRCAMetric for easier management
         SearchBackPressureRCAMetric searchBackPressureRCAMetric = getSearchBackPressureRCAMetric();
@@ -166,32 +148,33 @@ public class SearchBackPressureRCA extends OldGenRca<ResourceFlowUnit<HotNodeSum
         double prevheapUsagePercentage = searchBackPressureRCAMetric.getHeapUsagePercent();
         if (!Double.isNaN(prevheapUsagePercentage)) {
             heapUsageSlidingWindow.next(
-                    new SlidingWindowData(currTimeStamp, prevheapUsagePercentage));
+                    new SlidingWindowData(currentTimeMillis, prevheapUsagePercentage));
         }
 
         // for testing
-        // heapUsageSlidingWindow.next(new SlidingWindowData(currTimeStamp, 80.3));
+        // heapUsageSlidingWindow.next(new SlidingWindowData(currentTimeMillis, 65.3));
 
         double shardJVMCancellationPercentage =
                 searchBackPressureRCAMetric.getShardJVMCancellationPercent();
         if (!Double.isNaN(shardJVMCancellationPercentage)) {
             shardJVMCancellationSlidingWindow.next(
-                    new SlidingWindowData(currTimeStamp, shardJVMCancellationPercentage));
+                    new SlidingWindowData(currentTimeMillis, shardJVMCancellationPercentage));
         }
 
         double taskJVMCancellationPercentage =
                 searchBackPressureRCAMetric.getTaskJVMCancellationPercent();
         if (!Double.isNaN(taskJVMCancellationPercentage)) {
             taskJVMCancellationSlidingWindow.next(
-                    new SlidingWindowData(currTimeStamp, taskJVMCancellationPercentage));
+                    new SlidingWindowData(currentTimeMillis, taskJVMCancellationPercentage));
         }
 
         LOG.info("SearchBackPressureRCA counter is {}", counter);
         // if counter matches the rca period, emit the flow unit
         if (counter == this.rcaPeriod) {
-            ResourceContext context = null;
             LOG.info("SearchBackPressureRCA counter in rcaPeriod is {}", counter);
-            long currentTimeMillis = System.currentTimeMillis();
+            currentTimeMillis = System.currentTimeMillis();
+
+            // reset counter
             counter = 0;
 
             double maxHeapUsagePercentage = heapUsageSlidingWindow.readMax();
@@ -216,11 +199,20 @@ public class SearchBackPressureRCA extends OldGenRca<ResourceFlowUnit<HotNodeSum
              *  - (increase) node max heap usage in last 60 secs is less than 70% and cancellationCountPercentage due to heap is more than 50% of all task cancellations
              *  - (decrease) node min heap usage in last 60 secs is more than 80% and cancellationCountPercetange due to heap is less than 30% of all task cancellations
              */
-            if ((maxHeapUsagePercentage < heapUsedIncreaseThreshold)
-                    && (avgShardJVMCancellationPercentage > heapCancellationIncreaseMaxThreshold)) {
+            //     avgShardJVMCancellationPercentage = 80.0; // testing
+            boolean increaseThresholdMet =
+                    (maxHeapUsagePercentage < heapUsedIncreaseThreshold)
+                            && (avgShardJVMCancellationPercentage
+                                    > heapCancellationIncreaseMaxThreshold);
+            boolean decreaseThresholdMet =
+                    (minHeapUsagePercentage > heapUsedDecreaseThreshold)
+                            && (avgShardJVMCancellationPercentage
+                                    < heapCancellationDecreaseMinThreashold);
+
+            if (increaseThresholdMet || decreaseThresholdMet) {
                 // Generate a flow unit with an Unhealthy ResourceContext
                 LOG.info(
-                        "Condition 1 Meet, maxHeapUsagePercentage: {} is less than threshold: {}, avgShardJVMCancellationPercentage: {} is bigger than heapCancellationIncreaseMaxThreshold: {}",
+                        "Increase/Decrease Condition Meet, maxHeapUsagePercentage: {} is less than threshold: {}, avgShardJVMCancellationPercentage: {} is bigger than heapCancellationIncreaseMaxThreshold: {}",
                         maxHeapUsagePercentage,
                         heapUsedIncreaseThreshold,
                         avgShardJVMCancellationPercentage,
@@ -233,16 +225,20 @@ public class SearchBackPressureRCA extends OldGenRca<ResourceFlowUnit<HotNodeSum
                         nodeSummary,
                         !instanceDetails.getIsClusterManager());
             } else {
-                LOG.info("cindition 1 is not met.");
+                // if autotune is not triggered, return healthy state
+                context = new ResourceContext(Resources.State.HEALTHY);
+                return new ResourceFlowUnit<>(
+                        currentTimeMillis,
+                        context,
+                        nodeSummary,
+                        !instanceDetails.getIsClusterManager());
             }
-
         } else {
-            LOG.info("Empty FlowUnit returned for High Heap Usage RCA");
-            return new ResourceFlowUnit<>(this.clock.millis());
+            // return healthy state when the counter does not meet rcaPeriod
+            LOG.info("Empty Healthy FlowUnit returned for SearchbackPressureRCA");
+            currentTimeMillis = System.currentTimeMillis();
+            return new ResourceFlowUnit<>(currentTimeMillis);
         }
-
-        LOG.info("SearchBackPressureRCA operate() finished");
-        return null;
     }
 
     private SearchBackPressureRCAMetric getSearchBackPressureRCAMetric() {
@@ -322,5 +318,11 @@ public class SearchBackPressureRCA extends OldGenRca<ResourceFlowUnit<HotNodeSum
         final SearchBackPressureRcaConfig config = conf.getSearchBackPressureRcaConfig();
         // read anything from config file in runtime
         // if not just skip it
+        this.heapUsedIncreaseThreshold = config.getMaxHeapIncreasePercentageThreshold();
+        this.heapCancellationIncreaseMaxThreshold =
+                config.getMaxHeapCancellationPercentageThreshold();
+        this.heapUsedDecreaseThreshold = config.getMinHeapDecreasePercentageThreshold();
+        this.heapCancellationDecreaseMinThreashold =
+                config.getMinHeapCancellationPercentageThreshold();
     }
 }

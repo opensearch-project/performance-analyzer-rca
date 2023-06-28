@@ -86,6 +86,7 @@ import org.opensearch.performanceanalyzer.rca.store.rca.jvmsizing.HighOldGenOccu
 import org.opensearch.performanceanalyzer.rca.store.rca.jvmsizing.LargeHeapClusterRca;
 import org.opensearch.performanceanalyzer.rca.store.rca.jvmsizing.OldGenContendedRca;
 import org.opensearch.performanceanalyzer.rca.store.rca.jvmsizing.OldGenReclamationRca;
+import org.opensearch.performanceanalyzer.rca.store.rca.searchbackpressure.SearchBackPressureClusterRCA;
 import org.opensearch.performanceanalyzer.rca.store.rca.searchbackpressure.SearchBackPressureRCA;
 import org.opensearch.performanceanalyzer.rca.store.rca.temperature.NodeTemperatureRca;
 import org.opensearch.performanceanalyzer.rca.store.rca.temperature.dimension.CpuUtilDimensionTemperatureRca;
@@ -442,14 +443,28 @@ public class OpenSearchAnalysisGraph extends AnalysisGraph {
                         shardRequestCacheClusterRca,
                         highHeapUsageClusterRca));
 
-        // Search Back Pressure Service RCA
-        final SearchBackPressureRCA searchBackPressureRCA =
+        // Search Back Pressure Service RCA enabled
+        SearchBackPressureRCA searchBackPressureRCA =
                 new SearchBackPressureRCA(RCA_PERIOD, heapMax, heapUsed, gcType, searchbp_Stats);
         searchBackPressureRCA.addTag(
                 RcaConsts.RcaTagConstants.TAG_LOCUS,
                 RcaConsts.RcaTagConstants.LOCUS_DATA_CLUSTER_MANAGER_NODE);
         searchBackPressureRCA.addAllUpstreams(
                 Arrays.asList(heapMax, heapUsed, gcType, searchbp_Stats));
+
+        // Search Back Pressure Service Cluster RCA enabled
+        SearchBackPressureClusterRCA searchBackPressureClusterRCA =
+                new SearchBackPressureClusterRCA(RCA_PERIOD, searchBackPressureRCA);
+        searchBackPressureClusterRCA.addTag(
+                RcaConsts.RcaTagConstants.TAG_LOCUS,
+                RcaConsts.RcaTagConstants.LOCUS_CLUSTER_MANAGER_NODE);
+        searchBackPressureClusterRCA.addAllUpstreams(
+                Collections.singletonList(searchBackPressureRCA));
+        searchBackPressureClusterRCA.addTag(
+                RcaConsts.RcaTagConstants.TAG_AGGREGATE_UPSTREAM,
+                RcaConsts.RcaTagConstants.LOCUS_DATA_NODE);
+
+        // To Do SearchBackPressure Decider
 
         AdmissionControlDecider admissionControlDecider =
                 buildAdmissionControlDecider(heapUsed, heapMax);
