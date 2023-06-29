@@ -120,7 +120,7 @@ public class SearchBackPressureRcaTest {
 
     /*
      * Test SearchBackPressure RCA returns healthy nonempty flow units if the settings does not trigger autotune
-     * Meeting None of Increasing or Decreasing Threshold
+     * Meeting None of Increasing or Decreasing Threshold for both shard/task level
      */
     @Test
     public void testSearchBpGetHealthyFlowUnit() {
@@ -138,13 +138,31 @@ public class SearchBackPressureRcaTest {
      * Test SearchBackPressure RCA returns unhealthy nonempty flow units if the settings does trigger autotune by increasing threshold
      * Increasing threshold:
      * node max heap usage in last 60 secs is less than 70%
-     * cancellationCount due to heap is more than 50% of all task cancellations.
+     * cancellationCount due to heap is more than 50% of all task cancellations (Shard-Level)
      */
     @Test
-    public void testSearchBpGetUnHealthyFlowUnitByIncreaseThreshold() {
+    public void testSearchBpGetUnHealthyFlowUnitByShardIncreaseThreshold() {
         setupMockHeapMetric(mockHeapMax, DEFAULT_MAX_HEAP_SIZE);
         setupMockHeapMetric(mockHeapUsed, DEFAULT_MAX_HEAP_SIZE * 0.3);
-        setupMockSearchbpStats(mockSearchbpStats, 10.0, 10.0, 8.0, 7.0);
+        setupMockSearchbpStats(mockSearchbpStats, 10.0, 10.0, 8.0, 4.0);
+        IntStream.range(0, RCA_PERIOD - 1).forEach(i -> testRca.operate());
+
+        ResourceFlowUnit<HotNodeSummary> flowUnit = testRca.operate();
+        assertFalse(flowUnit.isEmpty());
+        assertFalse(flowUnit.getResourceContext().isHealthy());
+    }
+
+    /*
+     * Test SearchBackPressure RCA returns unhealthy nonempty flow units if the settings does trigger autotune by increasing threshold
+     * Increasing threshold:
+     * node max heap usage in last 60 secs is less than 70%
+     * cancellationCount due to heap is more than 50% of all task cancellations (Task-Level).
+     */
+    @Test
+    public void testSearchBpGetUnHealthyFlowUnitByTaskIncreaseThreshold() {
+        setupMockHeapMetric(mockHeapMax, DEFAULT_MAX_HEAP_SIZE);
+        setupMockHeapMetric(mockHeapUsed, DEFAULT_MAX_HEAP_SIZE * 0.3);
+        setupMockSearchbpStats(mockSearchbpStats, 10.0, 10.0, 4.0, 8.0);
         IntStream.range(0, RCA_PERIOD - 1).forEach(i -> testRca.operate());
 
         ResourceFlowUnit<HotNodeSummary> flowUnit = testRca.operate();
@@ -156,13 +174,31 @@ public class SearchBackPressureRcaTest {
      * Test SearchBackPressure RCA returns unhealthy nonempty flow units if the settings does trigger autotune by decreasing threshold
      * decreasing threshold:
      * node min heap usage in last 60 secs is more than 80%
-     * cancellationCount due to heap is less than 30% of all task cancellations
+     * cancellationCount due to heap is less than 30% of all task cancellations (Shard-Level)
      */
     @Test
-    public void testSearchBpGetUnHealthyFlowUnitByDecreaseThreshold() {
+    public void testSearchBpGetUnHealthyFlowUnitByShardDecreaseThreshold() {
         setupMockHeapMetric(mockHeapMax, DEFAULT_MAX_HEAP_SIZE);
         setupMockHeapMetric(mockHeapUsed, DEFAULT_MAX_HEAP_SIZE * 0.9);
-        setupMockSearchbpStats(mockSearchbpStats, 10.0, 10.0, 2.0, 2.0);
+        setupMockSearchbpStats(mockSearchbpStats, 10.0, 10.0, 2.0, 8.0);
+        IntStream.range(0, RCA_PERIOD - 1).forEach(i -> testRca.operate());
+
+        ResourceFlowUnit<HotNodeSummary> flowUnit = testRca.operate();
+        assertFalse(flowUnit.isEmpty());
+        assertFalse(flowUnit.getResourceContext().isHealthy());
+    }
+
+    /*
+     * Test SearchBackPressure RCA returns unhealthy nonempty flow units if the settings does trigger autotune by decreasing threshold
+     * decreasing threshold:
+     * node min heap usage in last 60 secs is more than 80%
+     * cancellationCount due to heap is less than 30% of all task cancellations (Task-Level)
+     */
+    @Test
+    public void testSearchBpGetUnHealthyFlowUnitByTaskDecreaseThreshold() {
+        setupMockHeapMetric(mockHeapMax, DEFAULT_MAX_HEAP_SIZE);
+        setupMockHeapMetric(mockHeapUsed, DEFAULT_MAX_HEAP_SIZE * 0.9);
+        setupMockSearchbpStats(mockSearchbpStats, 10.0, 10.0, 8.0, 2.0);
         IntStream.range(0, RCA_PERIOD - 1).forEach(i -> testRca.operate());
 
         ResourceFlowUnit<HotNodeSummary> flowUnit = testRca.operate();

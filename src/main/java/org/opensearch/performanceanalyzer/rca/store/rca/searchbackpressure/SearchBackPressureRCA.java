@@ -44,16 +44,24 @@ public class SearchBackPressureRCA extends OldGenRca<ResourceFlowUnit<HotNodeSum
     private final Metric searchbp_Stats;
 
     /*
-     * Threshold
-     * SearchBackPressureRCA Use heap usage and shard/task level searchbp cancellation count as threshold
+     * threshold to increase heap limits
      */
-    // threshold to increase heap limits
     private long heapUsedIncreaseThreshold;
-    private long heapCancellationIncreaseMaxThreshold;
+    // shard-level searchbp heap cancellation increase threshold
+    private long heapShardCancellationIncreaseMaxThreshold;
 
-    // threshold to decrease heap limits
+    // task-level searchbp heap cancellation increase threshold
+    private long heapTaskCancellationIncreaseMaxThreshold;
+
+    /*
+     * threshold to decrease heap limits
+     */
     private long heapUsedDecreaseThreshold;
-    private long heapCancellationDecreaseMinThreashold;
+    // shard-level searchbp heap cancellation decrease threshold
+    private long heapShardCancellationDecreaseMinThreashold;
+
+    // task-level searchbp heap cancellation decrease threshold
+    private long heapTaskCancellationDecreaseMinThreashold;
 
     /*
      * Sliding Window
@@ -87,12 +95,16 @@ public class SearchBackPressureRCA extends OldGenRca<ResourceFlowUnit<HotNodeSum
         this.searchbp_Stats = searchbp_Stats;
         this.heapUsedIncreaseThreshold =
                 SearchBackPressureRcaConfig.DEFAULT_MAX_HEAP_INCREASE_THRESHOLD;
-        this.heapCancellationIncreaseMaxThreshold =
-                SearchBackPressureRcaConfig.DEFAULT_MAX_HEAP_CANCELLATION_THRESHOLD;
+        this.heapShardCancellationIncreaseMaxThreshold =
+                SearchBackPressureRcaConfig.DEFAULT_SHARD_MAX_HEAP_CANCELLATION_THRESHOLD;
+        this.heapTaskCancellationIncreaseMaxThreshold =
+                SearchBackPressureRcaConfig.DEFAULT_TASK_MAX_HEAP_CANCELLATION_THRESHOLD;
         this.heapUsedDecreaseThreshold =
                 SearchBackPressureRcaConfig.DEFAULT_MIN_HEAP_DECREASE_THRESHOLD;
-        this.heapCancellationDecreaseMinThreashold =
-                SearchBackPressureRcaConfig.DEFAULT_MIN_HEAP_CANCELLATION_THRESHOLD;
+        this.heapShardCancellationDecreaseMinThreashold =
+                SearchBackPressureRcaConfig.DEFAULT_SHARD_MIN_HEAP_CANCELLATION_THRESHOLD;
+        this.heapTaskCancellationDecreaseMinThreashold =
+                SearchBackPressureRcaConfig.DEFAULT_TASK_MIN_HEAP_CANCELLATION_THRESHOLD;
 
         // initialize sliding window
         this.heapUsageSlidingWindow =
@@ -200,25 +212,66 @@ public class SearchBackPressureRCA extends OldGenRca<ResourceFlowUnit<HotNodeSum
              *  - (decrease) node min heap usage in last 60 secs is more than 80% and cancellationCountPercetange due to heap is less than 30% of all task cancellations
              */
             //     avgShardJVMCancellationPercentage = 80.0; // testing
-            boolean increaseThresholdMet =
+
+            // TODO: add Task CancellationCountPercentage as another criteria
+            // TODO
+            /*
+            *      HotResourceSummary resourceSummary =
+                   new HotResourceSummary(HEAP_MAX_SIZE, currentThreshold, previousThreshold, 0);
+                   nodeSummary.appendNestedSummary(resourceSummary);
+
+                   If you
+            */
+            boolean increaseThresholdMetByShard =
                     (maxHeapUsagePercentage < heapUsedIncreaseThreshold)
                             && (avgShardJVMCancellationPercentage
-                                    > heapCancellationIncreaseMaxThreshold);
-            boolean decreaseThresholdMet =
+                                    > heapShardCancellationIncreaseMaxThreshold);
+            boolean decreaseThresholdMetByShard =
                     (minHeapUsagePercentage > heapUsedDecreaseThreshold)
                             && (avgShardJVMCancellationPercentage
-                                    < heapCancellationDecreaseMinThreashold);
+                                    < heapShardCancellationDecreaseMinThreashold);
 
-            if (increaseThresholdMet || decreaseThresholdMet) {
+            boolean increaseThresholdMetByTask =
+                    (maxHeapUsagePercentage < heapUsedIncreaseThreshold)
+                            && (avgTaskJVMCancellationPercentage
+                                    > heapTaskCancellationIncreaseMaxThreshold);
+            boolean decreaseThresholdMetByTask =
+                    (minHeapUsagePercentage > heapUsedDecreaseThreshold)
+                            && (avgTaskJVMCancellationPercentage
+                                    < heapTaskCancellationDecreaseMinThreashold);
+
+            // HotResourceSummary resourceSummary =
+            //             new HotResourceSummary(HEAP_MAX_SIZE, currentThreshold,
+            // previousThreshold, 0);
+            //             nodeSummary.appendNestedSummary(resourceSummary);
+
+            if (increaseThresholdMetByShard || decreaseThresholdMetByShard) {
                 // Generate a flow unit with an Unhealthy ResourceContext
                 LOG.info(
-                        "Increase/Decrease Condition Meet, maxHeapUsagePercentage: {} is less than threshold: {}, avgShardJVMCancellationPercentage: {} is bigger than heapCancellationIncreaseMaxThreshold: {}",
+                        "Increase/Decrease Condition Meet for Shard, maxHeapUsagePercentage: {} is less than threshold: {}, avgShardJVMCancellationPercentage: {} is bigger than heapShardCancellationIncreaseMaxThreshold: {}",
                         maxHeapUsagePercentage,
                         heapUsedIncreaseThreshold,
                         avgShardJVMCancellationPercentage,
-                        heapCancellationIncreaseMaxThreshold);
+                        heapShardCancellationIncreaseMaxThreshold);
 
                 context = new ResourceContext(Resources.State.UNHEALTHY);
+                // add an additional resource with metadata: shard-level
+                return new ResourceFlowUnit<>(
+                        currentTimeMillis,
+                        context,
+                        nodeSummary,
+                        !instanceDetails.getIsClusterManager());
+            } else if (increaseThresholdMetByTask || decreaseThresholdMetByTask) {
+                // Generate a flow unit with an Unhealthy ResourceContext
+                LOG.info(
+                        "Increase/Decrease Condition Meet for Task, maxHeapUsagePercentage: {} is less than threshold: {}, avgShardJVMCancellationPercentage: {} is bigger than heapShardCancellationIncreaseMaxThreshold: {}",
+                        maxHeapUsagePercentage,
+                        heapUsedIncreaseThreshold,
+                        avgTaskJVMCancellationPercentage,
+                        heapTaskCancellationIncreaseMaxThreshold);
+
+                context = new ResourceContext(Resources.State.UNHEALTHY);
+                // add an additional resource with metadata: task-level
                 return new ResourceFlowUnit<>(
                         currentTimeMillis,
                         context,
@@ -233,6 +286,7 @@ public class SearchBackPressureRCA extends OldGenRca<ResourceFlowUnit<HotNodeSum
                         nodeSummary,
                         !instanceDetails.getIsClusterManager());
             }
+
         } else {
             // return healthy state when the counter does not meet rcaPeriod
             LOG.info("Empty Healthy FlowUnit returned for SearchbackPressureRCA");
@@ -319,10 +373,14 @@ public class SearchBackPressureRCA extends OldGenRca<ResourceFlowUnit<HotNodeSum
         // read anything from config file in runtime
         // if not just skip it
         this.heapUsedIncreaseThreshold = config.getMaxHeapIncreasePercentageThreshold();
-        this.heapCancellationIncreaseMaxThreshold =
-                config.getMaxHeapCancellationPercentageThreshold();
+        this.heapShardCancellationIncreaseMaxThreshold =
+                config.getMaxShardHeapCancellationPercentageThreshold();
+        this.heapTaskCancellationIncreaseMaxThreshold =
+                config.getMaxTaskHeapCancellationPercentageThreshold();
         this.heapUsedDecreaseThreshold = config.getMinHeapDecreasePercentageThreshold();
-        this.heapCancellationDecreaseMinThreashold =
-                config.getMinHeapCancellationPercentageThreshold();
+        this.heapShardCancellationDecreaseMinThreashold =
+                config.getMinShardHeapCancellationPercentageThreshold();
+        this.heapTaskCancellationDecreaseMinThreashold =
+                config.getMinTaskHeapCancellationPercentageThreshold();
     }
 }
