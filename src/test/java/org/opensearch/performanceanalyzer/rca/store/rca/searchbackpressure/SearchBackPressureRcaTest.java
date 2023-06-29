@@ -109,7 +109,6 @@ public class SearchBackPressureRcaTest {
         setupMockHeapMetric(mockHeapMax, DEFAULT_MAX_HEAP_SIZE);
         setupMockHeapMetric(mockHeapUsed, DEFAULT_MAX_HEAP_SIZE * 0.8);
         setupMockSearchbpStats(mockSearchbpStats, 10.0, 10.0, 8.0, 7.0);
-        System.out.println("testAdmissionControlRcaSmallMaxHeap started");
         IntStream.range(0, RCA_PERIOD - 1).forEach(i -> testRca.operate());
 
         ResourceFlowUnit<HotNodeSummary> flowUnit = testRca.operate();
@@ -121,18 +120,19 @@ public class SearchBackPressureRcaTest {
 
     /*
      * Test SearchBackPressure RCA returns healthy nonempty flow units if the settings does not trigger autotune
+     * Meeting None of Increasing or Decreasing Threshold
      */
-    //     @Test
-    //     public void testSearchBpGetHealthyFlowUnit() {
-    //         setupMockHeapMetric(mockHeapMax, DEFAULT_MAX_HEAP_SIZE);
-    //         setupMockHeapMetric(mockHeapUsed, DEFAULT_MAX_HEAP_SIZE * 0.8);
-    //         setupMockSearchbpStats(mockSearchbpStats, 10.0, 10.0, 8.0, 7.0);
-    //         System.out.println("testAdmissionControlRcaSmallMaxHeap started");
-    //         IntStream.range(0, RCA_PERIOD - 1).forEach(i -> testRca.operate());
+    @Test
+    public void testSearchBpGetHealthyFlowUnit() {
+        setupMockHeapMetric(mockHeapMax, DEFAULT_MAX_HEAP_SIZE);
+        setupMockHeapMetric(mockHeapUsed, DEFAULT_MAX_HEAP_SIZE * 0.8);
+        setupMockSearchbpStats(mockSearchbpStats, 10.0, 10.0, 8.0, 7.0);
+        IntStream.range(0, RCA_PERIOD - 1).forEach(i -> testRca.operate());
 
-    //         ResourceFlowUnit<HotNodeSummary> flowUnit = testRca.operate();
-    //         assertFalse(flowUnit.isEmpty());
-    //     }
+        ResourceFlowUnit<HotNodeSummary> flowUnit = testRca.operate();
+        assertFalse(flowUnit.isEmpty());
+        assertTrue(flowUnit.getResourceContext().isHealthy());
+    }
 
     /*
      * Test SearchBackPressure RCA returns unhealthy nonempty flow units if the settings does trigger autotune by increasing threshold
