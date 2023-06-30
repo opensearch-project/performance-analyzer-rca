@@ -756,8 +756,10 @@ public class MetricsEmitter {
         Result<Record> searchbp_records = searchBackPressureMetricsSnapShot.fetchAll();
 
         // String SEARCHBP_MODE_DIM = "searchbp_mode";
-        String SEARCHBP_TYPE_DIM = AllMetrics.SearchBackPressureStatsValue.SEARCHBP_TYPE_DIM.toString();
-        String SEARCHBP_TABLE_NAME = AllMetrics.SearchBackPressureStatsValue.SEARCHBP_TABLE_NAME.toString();
+        String SEARCHBP_TYPE_DIM =
+                AllMetrics.SearchBackPressureStatsValue.SEARCHBP_TYPE_DIM.toString();
+        String SEARCHBP_TABLE_NAME =
+                AllMetrics.SearchBackPressureStatsValue.SEARCHBP_TABLE_NAME.toString();
 
         List<String> dims =
                 new ArrayList<String>() {
@@ -838,8 +840,6 @@ public class MetricsEmitter {
         for (Record record : searchbp_records) {
             for (String stats_type : stats_types) {
                 Optional<Object> tmpStatsObj = Optional.ofNullable(record.get(stats_type));
-                // LOG.info(stats_type + " is: " + tmpStatsObj.map(o ->
-                // Long.parseLong(o.toString())).toString());
 
                 handle.bind(
                         stats_type,

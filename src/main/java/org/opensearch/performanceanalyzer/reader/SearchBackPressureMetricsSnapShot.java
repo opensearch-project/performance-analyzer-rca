@@ -28,7 +28,14 @@ public class SearchBackPressureMetricsSnapShot implements Removable {
     // entry point to interact with SQLite db
     private final DSLContext create;
 
+    /*
+     * This is a tmp table created to populate searchbp stats
+     * table name is the search_back_pressure_ + windowStartTime
+     */
     private final String tableName;
+
+    /* columns are the key metrics to be collected (e.g. shar-level search back pressure cancellation count)
+     */
     private List<Field<?>> columns;
 
     // Create a table with specifed fields (columns)
@@ -47,14 +54,14 @@ public class SearchBackPressureMetricsSnapShot implements Removable {
                                                 AllMetrics.SearchBackPressureStatsValue
                                                         .SEARCHBP_SHARD_STATS_CANCELLATIONCOUNT
                                                         .toString()),
-                                        Long.class));
+                                        Integer.class));
                         this.add(
                                 DSL.field(
                                         DSL.name(
                                                 AllMetrics.SearchBackPressureStatsValue
                                                         .SEARCHBP_TASK_STATS_CANCELLATIONCOUNT
                                                         .toString()),
-                                        Long.class));
+                                        Integer.class));
 
                         // Shard Stats Resource Heap / CPU Usage
                         this.add(
@@ -63,28 +70,28 @@ public class SearchBackPressureMetricsSnapShot implements Removable {
                                                 AllMetrics.SearchBackPressureStatsValue
                                                         .SEARCHBP_SHARD_STATS_RESOURCE_HEAP_USAGE_CANCELLATIONCOUNT
                                                         .toString()),
-                                        Long.class));
+                                        Integer.class));
                         this.add(
                                 DSL.field(
                                         DSL.name(
                                                 AllMetrics.SearchBackPressureStatsValue
                                                         .SEARCHBP_SHARD_STATS_RESOURCE_HEAP_USAGE_CURRENTMAX
                                                         .toString()),
-                                        Long.class));
+                                        Integer.class));
                         this.add(
                                 DSL.field(
                                         DSL.name(
                                                 AllMetrics.SearchBackPressureStatsValue
                                                         .SEARCHBP_SHARD_STATS_RESOURCE_HEAP_USAGE_ROLLINGAVG
                                                         .toString()),
-                                        Long.class));
+                                        Integer.class));
                         this.add(
                                 DSL.field(
                                         DSL.name(
                                                 AllMetrics.SearchBackPressureStatsValue
                                                         .SEARCHBP_SHARD_STATS_RESOURCE_CPU_USAGE_CANCELLATIONCOUNT
                                                         .toString()),
-                                        Long.class));
+                                        Integer.class));
 
                         this.add(
                                 DSL.field(
@@ -92,14 +99,14 @@ public class SearchBackPressureMetricsSnapShot implements Removable {
                                                 AllMetrics.SearchBackPressureStatsValue
                                                         .SEARCHBP_SHARD_STATS_RESOURCE_CPU_USAGE_CURRENTMAX
                                                         .toString()),
-                                        Long.class));
+                                        Integer.class));
                         this.add(
                                 DSL.field(
                                         DSL.name(
                                                 AllMetrics.SearchBackPressureStatsValue
                                                         .SEARCHBP_SHARD_STATS_RESOURCE_CPU_USAGE_CURRENTAVG
                                                         .toString()),
-                                        Long.class));
+                                        Integer.class));
 
                         // Task Stats Resource Heap / CPU Usage
                         this.add(
@@ -108,28 +115,28 @@ public class SearchBackPressureMetricsSnapShot implements Removable {
                                                 AllMetrics.SearchBackPressureStatsValue
                                                         .SEARCHBP_TASK_STATS_RESOURCE_HEAP_USAGE_CANCELLATIONCOUNT
                                                         .toString()),
-                                        Long.class));
+                                        Integer.class));
                         this.add(
                                 DSL.field(
                                         DSL.name(
                                                 AllMetrics.SearchBackPressureStatsValue
                                                         .SEARCHBP_TASK_STATS_RESOURCE_HEAP_USAGE_CURRENTMAX
                                                         .toString()),
-                                        Long.class));
+                                        Integer.class));
                         this.add(
                                 DSL.field(
                                         DSL.name(
                                                 AllMetrics.SearchBackPressureStatsValue
                                                         .SEARCHBP_TASK_STATS_RESOURCE_HEAP_USAGE_ROLLINGAVG
                                                         .toString()),
-                                        Long.class));
+                                        Integer.class));
                         this.add(
                                 DSL.field(
                                         DSL.name(
                                                 AllMetrics.SearchBackPressureStatsValue
                                                         .SEARCHBP_TASK_STATS_RESOURCE_CPU_USAGE_CANCELLATIONCOUNT
                                                         .toString()),
-                                        Long.class));
+                                        Integer.class));
 
                         this.add(
                                 DSL.field(
@@ -137,14 +144,14 @@ public class SearchBackPressureMetricsSnapShot implements Removable {
                                                 AllMetrics.SearchBackPressureStatsValue
                                                         .SEARCHBP_TASK_STATS_RESOURCE_CPU_USAGE_CURRENTMAX
                                                         .toString()),
-                                        Long.class));
+                                        Integer.class));
                         this.add(
                                 DSL.field(
                                         DSL.name(
                                                 AllMetrics.SearchBackPressureStatsValue
                                                         .SEARCHBP_TASK_STATS_RESOURCE_CPU_USAGE_CURRENTAVG
                                                         .toString()),
-                                        Long.class));
+                                        Integer.class));
                     }
                 };
 

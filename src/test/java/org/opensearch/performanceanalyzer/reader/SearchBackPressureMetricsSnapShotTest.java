@@ -109,7 +109,7 @@ public class SearchBackPressureMetricsSnapShotTest {
         assertEquals(1, result.size());
         // for 14 (length of required_searchbp_dims) fields, each assign a value from 0 to 13
         // test each field and verify the result
-        for (long i = 0; i < required_searchbp_dims.size(); i++) {
+        for (int i = 0; i < required_searchbp_dims.size(); i++) {
             Assert.assertEquals(
                     AllMetrics.SearchBackPressureStatsValue.SEARCHBP_SHARD_STATS_CANCELLATIONCOUNT
                                     .toString()
@@ -128,7 +128,7 @@ public class SearchBackPressureMetricsSnapShotTest {
     private void insertIntoTable(BatchBindStep handle) {
         Object[] bindVals = new Object[required_searchbp_dims.size()];
         for (int i = 0; i < required_searchbp_dims.size(); i++) {
-            bindVals[i] = Long.valueOf(i);
+            bindVals[i] = Integer.valueOf(i);
         }
 
         handle.bind(bindVals).execute();
