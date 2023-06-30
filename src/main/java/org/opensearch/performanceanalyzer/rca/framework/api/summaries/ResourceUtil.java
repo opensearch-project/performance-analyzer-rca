@@ -135,6 +135,26 @@ public class ResourceUtil {
                     .setResourceEnum(ResourceEnum.SHARD_REQUEST_CACHE)
                     .setMetricEnum(MetricEnum.CACHE_MAX_SIZE)
                     .build();
+    /*
+     * searchbackpressure related resource
+     * SEARCHBACKPRESSURE_SHARD resource indicate a searchbackpressure unhealthy resource unit is caused by shard level cancellation
+     * ResourceEnum.OLD_GEN and MetricEnum.UNRECOGNIZED are dummy values
+     */
+    public static final Resource SEARCHBACKPRESSURE_SHARD =
+            Resource.newBuilder()
+                    .setResourceEnum(ResourceEnum.SEARCHBP)
+                    .setMetricEnum(MetricEnum.SEARCHBP_SHARD)
+                    .build();
+
+    /*
+     *  SEARCHBACKPRESSURE_TASK resource indicate a searchbackpressure unhealthy resource unit is caused by task level cancellation
+     * ResourceEnum.OLD_GEN and MetricEnum.UNRECOGNIZED are dummy values
+     */
+    public static final Resource SEARCHBACKPRESSURE_TASK =
+            Resource.newBuilder()
+                    .setResourceEnum(ResourceEnum.SEARCHBP)
+                    .setMetricEnum(MetricEnum.SEARCHBP_TASK)
+                    .build();
 
     /**
      * Read the resourceType name from the ResourceType object

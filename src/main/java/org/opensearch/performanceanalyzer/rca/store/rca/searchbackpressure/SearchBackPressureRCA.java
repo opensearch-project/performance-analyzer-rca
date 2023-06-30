@@ -6,6 +6,8 @@
 package org.opensearch.performanceanalyzer.rca.store.rca.searchbackpressure;
 
 import static org.opensearch.performanceanalyzer.rca.framework.api.persist.SQLParsingUtil.readDataFromSqlResult;
+import static org.opensearch.performanceanalyzer.rca.framework.api.summaries.ResourceUtil.SEARCHBACKPRESSURE_SHARD;
+import static org.opensearch.performanceanalyzer.rca.framework.api.summaries.ResourceUtil.SEARCHBACKPRESSURE_TASK;
 
 import java.time.Clock;
 import java.util.ArrayList;
@@ -27,6 +29,7 @@ import org.opensearch.performanceanalyzer.rca.framework.api.contexts.ResourceCon
 import org.opensearch.performanceanalyzer.rca.framework.api.flow_units.MetricFlowUnit;
 import org.opensearch.performanceanalyzer.rca.framework.api.flow_units.ResourceFlowUnit;
 import org.opensearch.performanceanalyzer.rca.framework.api.summaries.HotNodeSummary;
+import org.opensearch.performanceanalyzer.rca.framework.api.summaries.HotResourceSummary;
 import org.opensearch.performanceanalyzer.rca.framework.core.RcaConf;
 import org.opensearch.performanceanalyzer.rca.framework.util.InstanceDetails;
 import org.opensearch.performanceanalyzer.rca.scheduler.FlowUnitOperationArgWrapper;
@@ -140,7 +143,6 @@ public class SearchBackPressureRCA extends OldGenRca<ResourceFlowUnit<HotNodeSum
         counter += 1;
         ResourceContext context = null;
         long currentTimeMillis = System.currentTimeMillis();
-        ;
 
         // read key metrics into searchBackPressureRCAMetric for easier management
         SearchBackPressureRCAMetric searchBackPressureRCAMetric = getSearchBackPressureRCAMetric();
@@ -256,6 +258,10 @@ public class SearchBackPressureRCA extends OldGenRca<ResourceFlowUnit<HotNodeSum
 
                 context = new ResourceContext(Resources.State.UNHEALTHY);
                 // add an additional resource with metadata: shard-level
+                HotResourceSummary resourceSummary =
+                        new HotResourceSummary(SEARCHBACKPRESSURE_SHARD, 0, 0, 0);
+                nodeSummary.appendNestedSummary(resourceSummary);
+
                 return new ResourceFlowUnit<>(
                         currentTimeMillis,
                         context,
@@ -272,6 +278,9 @@ public class SearchBackPressureRCA extends OldGenRca<ResourceFlowUnit<HotNodeSum
 
                 context = new ResourceContext(Resources.State.UNHEALTHY);
                 // add an additional resource with metadata: task-level
+                HotResourceSummary resourceSummary =
+                        new HotResourceSummary(SEARCHBACKPRESSURE_TASK, 0, 0, 0);
+                nodeSummary.appendNestedSummary(resourceSummary);
                 return new ResourceFlowUnit<>(
                         currentTimeMillis,
                         context,

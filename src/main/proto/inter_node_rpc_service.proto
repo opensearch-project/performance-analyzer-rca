@@ -77,6 +77,9 @@ enum ResourceEnum {
 
   // Heap
   HEAP = 20 [(additional_fields).name = "heap"];
+  // Search Back Pressure
+  SEARCHBP = 21 [(additional_fields).name = "search back pressure"];
+
 }
 
 enum MetricEnum {
@@ -106,6 +109,9 @@ enum MetricEnum {
   OLD_GEN_USAGE_AFTER_FULL_GC = 31 [(additional_fields).name = "full gc", (additional_fields).description = "old gen usage after full gc in mb"];
   // GC
   FULL_GC = 32 [(additional_fields).name = "full gc", (additional_fields).description = "full gc pause time in ms"];
+  // Searchbp
+  SEARCHBP_SHARD = 33 [(additional_fields).name = "searchbackpressure shard", (additional_fields).description = "default value to indicate an unhealthy resource unit is from shard-level cancellation"];
+  SEARCHBP_TASK = 34 [(additional_fields).name = "searchbackpressure task", (additional_fields).description = "default value to indicate an unhealthy resource unit is from task-level cancellation"];
 }
 
 /*

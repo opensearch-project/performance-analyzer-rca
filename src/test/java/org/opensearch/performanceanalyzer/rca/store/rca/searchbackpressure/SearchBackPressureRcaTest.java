@@ -206,6 +206,23 @@ public class SearchBackPressureRcaTest {
         assertFalse(flowUnit.getResourceContext().isHealthy());
     }
 
+
+     /*
+     * Test SearchBackPressure RCA returns unhealthy nonempty flow units with a HotResourceSummary of SEARCHBACKPRESSURE_SHARD Resource
+     * indicating the autotune (unhealthy resource unit) is caused by meeting the threshold in shard-level 
+     */
+    @Test
+    public void testSearchBpGetUnHealthyFlowUnitByTaskDecreaseThreshold() {
+        setupMockHeapMetric(mockHeapMax, DEFAULT_MAX_HEAP_SIZE);
+        setupMockHeapMetric(mockHeapUsed, DEFAULT_MAX_HEAP_SIZE * 0.9);
+        setupMockSearchbpStats(mockSearchbpStats, 10.0, 10.0, 8.0, 2.0);
+        IntStream.range(0, RCA_PERIOD - 1).forEach(i -> testRca.operate());
+
+        ResourceFlowUnit<HotNodeSummary> flowUnit = testRca.operate();
+        assertFalse(flowUnit.isEmpty());
+        assertFalse(flowUnit.getResourceContext().isHealthy());
+    }
+
     private void setupMockHeapMetric(final Metric metric, final double val) {
         String valString = Double.toString(val);
         List<String> data =
