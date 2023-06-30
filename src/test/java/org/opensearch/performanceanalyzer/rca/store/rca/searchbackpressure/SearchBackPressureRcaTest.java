@@ -9,6 +9,8 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
+import static org.opensearch.performanceanalyzer.rca.framework.api.summaries.ResourceUtil.SEARCHBACKPRESSURE_SHARD;
+import static org.opensearch.performanceanalyzer.rca.framework.api.summaries.ResourceUtil.SEARCHBACKPRESSURE_TASK;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -24,6 +26,7 @@ import org.opensearch.performanceanalyzer.rca.framework.api.flow_units.MetricFlo
 import org.opensearch.performanceanalyzer.rca.framework.api.flow_units.ResourceFlowUnit;
 import org.opensearch.performanceanalyzer.rca.framework.api.metrics.MetricTestHelper;
 import org.opensearch.performanceanalyzer.rca.framework.api.summaries.HotNodeSummary;
+import org.opensearch.performanceanalyzer.rca.framework.api.summaries.HotResourceSummary;
 
 public class SearchBackPressureRcaTest {
     // Mock Metrics
@@ -206,13 +209,75 @@ public class SearchBackPressureRcaTest {
         assertFalse(flowUnit.getResourceContext().isHealthy());
     }
 
-
-     /*
+    /*
      * Test SearchBackPressure RCA returns unhealthy nonempty flow units with a HotResourceSummary of SEARCHBACKPRESSURE_SHARD Resource
-     * indicating the autotune (unhealthy resource unit) is caused by meeting the threshold in shard-level 
+     * indicating the autotune (unhealthy resource unit) is caused by meeting the threshold in shard-level in decrease threshold
+     * decreasing threshold:
+     * node min heap usage in last 60 secs is more than 80%
+     * cancellationCount due to heap is less than 30% of all task cancellations (Shard-Level)
      */
     @Test
-    public void testSearchBpGetUnHealthyFlowUnitByTaskDecreaseThreshold() {
+    public void testSearchBpGetUnHealthyFlowUnitInShardLevelByDecreaseThreshold() {
+        setupMockHeapMetric(mockHeapMax, DEFAULT_MAX_HEAP_SIZE);
+        setupMockHeapMetric(mockHeapUsed, DEFAULT_MAX_HEAP_SIZE * 0.9);
+        setupMockSearchbpStats(mockSearchbpStats, 10.0, 10.0, 2.0, 8.0);
+        IntStream.range(0, RCA_PERIOD - 1).forEach(i -> testRca.operate());
+
+        ResourceFlowUnit<HotNodeSummary> flowUnit = testRca.operate();
+        assertFalse(flowUnit.isEmpty());
+        assertFalse(flowUnit.getResourceContext().isHealthy());
+
+        HotNodeSummary hotNodeSummary = flowUnit.getSummary();
+        List<HotResourceSummary> hotResourceSummaries = hotNodeSummary.getHotResourceSummaryList();
+        boolean found_shard_resource =
+                hotResourceSummaries.stream()
+                        .anyMatch(
+                                hotResourceSummary ->
+                                        hotResourceSummary.getResource()
+                                                == SEARCHBACKPRESSURE_SHARD);
+
+        assertTrue(found_shard_resource);
+    }
+
+    /*
+     * Test SearchBackPressure RCA returns unhealthy nonempty flow units with a HotResourceSummary of SEARCHBACKPRESSURE_SHARD Resource
+     * indicating the autotune (unhealthy resource unit) is caused by meeting the threshold in shard-level in increase threshold
+     * Increasing threshold:
+     * node max heap usage in last 60 secs is less than 70%
+     * cancellationCount due to heap is more than 50% of all task cancellations (Shard-Level)
+     */
+    @Test
+    public void testSearchBpGetUnHealthyFlowUnitInShardLevelByIncreaseThreshold() {
+        setupMockHeapMetric(mockHeapMax, DEFAULT_MAX_HEAP_SIZE);
+        setupMockHeapMetric(mockHeapUsed, DEFAULT_MAX_HEAP_SIZE * 0.5);
+        setupMockSearchbpStats(mockSearchbpStats, 10.0, 10.0, 8.0, 2.0);
+        IntStream.range(0, RCA_PERIOD - 1).forEach(i -> testRca.operate());
+
+        ResourceFlowUnit<HotNodeSummary> flowUnit = testRca.operate();
+        assertFalse(flowUnit.isEmpty());
+        assertFalse(flowUnit.getResourceContext().isHealthy());
+
+        HotNodeSummary hotNodeSummary = flowUnit.getSummary();
+        List<HotResourceSummary> hotResourceSummaries = hotNodeSummary.getHotResourceSummaryList();
+        boolean found_shard_resource =
+                hotResourceSummaries.stream()
+                        .anyMatch(
+                                hotResourceSummary ->
+                                        hotResourceSummary.getResource()
+                                                == SEARCHBACKPRESSURE_SHARD);
+
+        assertTrue(found_shard_resource);
+    }
+
+    /*
+     * Test SearchBackPressure RCA returns unhealthy nonempty flow units with a HotResourceSummary of SEARCHBACKPRESSURE_SHARD Resource
+     * indicating the autotune (unhealthy resource unit) is caused by meeting the threshold in task-level
+     * decreasing threshold:
+     * node min heap usage in last 60 secs is more than 80%
+     * cancellationCount due to heap is less than 30% of all task cancellations (Task-Level)
+     */
+    @Test
+    public void testSearchBpGetUnHealthyFlowUnitInTaskLevelByDecreaseThreshold() {
         setupMockHeapMetric(mockHeapMax, DEFAULT_MAX_HEAP_SIZE);
         setupMockHeapMetric(mockHeapUsed, DEFAULT_MAX_HEAP_SIZE * 0.9);
         setupMockSearchbpStats(mockSearchbpStats, 10.0, 10.0, 8.0, 2.0);
@@ -221,6 +286,47 @@ public class SearchBackPressureRcaTest {
         ResourceFlowUnit<HotNodeSummary> flowUnit = testRca.operate();
         assertFalse(flowUnit.isEmpty());
         assertFalse(flowUnit.getResourceContext().isHealthy());
+
+        HotNodeSummary hotNodeSummary = flowUnit.getSummary();
+        List<HotResourceSummary> hotResourceSummaries = hotNodeSummary.getHotResourceSummaryList();
+        boolean found_task_resource =
+                hotResourceSummaries.stream()
+                        .anyMatch(
+                                hotResourceSummary ->
+                                        hotResourceSummary.getResource()
+                                                == SEARCHBACKPRESSURE_TASK);
+
+        assertTrue(found_task_resource);
+    }
+
+    /*
+     * Test SearchBackPressure RCA returns unhealthy nonempty flow units with a HotResourceSummary of SEARCHBACKPRESSURE_SHARD Resource
+     * indicating the autotune (unhealthy resource unit) is caused by meeting the threshold in shard-level
+     * Increasing threshold:
+     * node max heap usage in last 60 secs is less than 70%
+     * cancellationCount due to heap is more than 50% of all task cancellations (Task-Level)
+     */
+    @Test
+    public void testSearchBpGetUnHealthyFlowUnitInTaskLevelByIncreaseThreshold() {
+        setupMockHeapMetric(mockHeapMax, DEFAULT_MAX_HEAP_SIZE);
+        setupMockHeapMetric(mockHeapUsed, DEFAULT_MAX_HEAP_SIZE * 0.5);
+        setupMockSearchbpStats(mockSearchbpStats, 10.0, 10.0, 2.0, 8.0);
+        IntStream.range(0, RCA_PERIOD - 1).forEach(i -> testRca.operate());
+
+        ResourceFlowUnit<HotNodeSummary> flowUnit = testRca.operate();
+        assertFalse(flowUnit.isEmpty());
+        assertFalse(flowUnit.getResourceContext().isHealthy());
+
+        HotNodeSummary hotNodeSummary = flowUnit.getSummary();
+        List<HotResourceSummary> hotResourceSummaries = hotNodeSummary.getHotResourceSummaryList();
+        boolean found_task_resource =
+                hotResourceSummaries.stream()
+                        .anyMatch(
+                                hotResourceSummary ->
+                                        hotResourceSummary.getResource()
+                                                == SEARCHBACKPRESSURE_TASK);
+
+        assertTrue(found_task_resource);
     }
 
     private void setupMockHeapMetric(final Metric metric, final double val) {
