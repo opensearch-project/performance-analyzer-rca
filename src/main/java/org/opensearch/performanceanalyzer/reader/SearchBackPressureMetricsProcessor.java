@@ -56,7 +56,6 @@ public class SearchBackPressureMetricsProcessor implements EventProcessor {
                     currentWindowStartTime, searchBackPressureMetricsSnapShot);
             return new SearchBackPressureMetricsProcessor(searchBackPressureMetricsSnapShot);
         }
-        
         return new SearchBackPressureMetricsProcessor(
                 searchBackPressureSnapshotNavigableMap.get(currentWindowStartTime));
     }

@@ -93,7 +93,7 @@ public class SearchBackPressureMetricsProcessorTest {
         // SEARCHBP_SHARD_STATS_RESOURCE_HEAP_USAGE_ROLLINGAVG value is 3L according to the
         // SERIALIZED_EVENT, should EQUAL
         Assert.assertEquals(
-                3,
+                3L,
                 result.get(0)
                         .get(
                                 AllMetrics.SearchBackPressureStatsValue

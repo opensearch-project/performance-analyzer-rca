@@ -116,7 +116,7 @@ public class SearchBackPressureMetricsSnapShotTest {
                             + " should be "
                             + String.valueOf(i),
                     i,
-                    result.get(0).get(required_searchbp_dims.get((int) i)));
+                    ((Number) result.get(0).get(required_searchbp_dims.get(i))).intValue());
         }
     }
 

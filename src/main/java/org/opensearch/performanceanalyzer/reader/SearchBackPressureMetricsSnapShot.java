@@ -84,7 +84,7 @@ public class SearchBackPressureMetricsSnapShot implements Removable {
                                                 AllMetrics.SearchBackPressureStatsValue
                                                         .SEARCHBP_SHARD_STATS_RESOURCE_HEAP_USAGE_ROLLINGAVG
                                                         .toString()),
-                                        Integer.class));
+                                        Long.class));
                         this.add(
                                 DSL.field(
                                         DSL.name(
@@ -106,7 +106,7 @@ public class SearchBackPressureMetricsSnapShot implements Removable {
                                                 AllMetrics.SearchBackPressureStatsValue
                                                         .SEARCHBP_SHARD_STATS_RESOURCE_CPU_USAGE_CURRENTAVG
                                                         .toString()),
-                                        Integer.class));
+                                        Long.class));
 
                         // Task Stats Resource Heap / CPU Usage
                         this.add(
@@ -129,7 +129,7 @@ public class SearchBackPressureMetricsSnapShot implements Removable {
                                                 AllMetrics.SearchBackPressureStatsValue
                                                         .SEARCHBP_TASK_STATS_RESOURCE_HEAP_USAGE_ROLLINGAVG
                                                         .toString()),
-                                        Integer.class));
+                                        Long.class));
                         this.add(
                                 DSL.field(
                                         DSL.name(
@@ -151,7 +151,7 @@ public class SearchBackPressureMetricsSnapShot implements Removable {
                                                 AllMetrics.SearchBackPressureStatsValue
                                                         .SEARCHBP_TASK_STATS_RESOURCE_CPU_USAGE_CURRENTAVG
                                                         .toString()),
-                                        Integer.class));
+                                        Long.class));
                     }
                 };
 
