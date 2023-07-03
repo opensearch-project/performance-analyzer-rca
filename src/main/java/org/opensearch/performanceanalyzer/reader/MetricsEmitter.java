@@ -768,64 +768,80 @@ public class MetricsEmitter {
                     }
                 };
 
+        // stats type in sqlitedb is similar to:
+        // stats_type_name | sum | avg | min | max
         List<String> stats_types =
                 new ArrayList<String>() {
                     {
                         // Shard/Task Stats Cancellation Count
+                        // searchbp_shard_stats_cancellationCount|0.0|0.0|0.0|0.0
                         this.add(
                                 AllMetrics.SearchBackPressureStatsValue
                                         .SEARCHBP_SHARD_STATS_CANCELLATIONCOUNT
                                         .toString());
+                        // searchbp_task_stats_cancellationCount|0.0|0.0|0.0|0.0
                         this.add(
                                 AllMetrics.SearchBackPressureStatsValue
                                         .SEARCHBP_TASK_STATS_CANCELLATIONCOUNT
                                         .toString());
                         // Shard Stats Resource Heap / CPU Usage
+                        // searchbp_shard_stats_resource_heap_usage_cancellationCount|0.0|0.0|0.0|0.0
                         this.add(
                                 AllMetrics.SearchBackPressureStatsValue
                                         .SEARCHBP_SHARD_STATS_RESOURCE_HEAP_USAGE_CANCELLATIONCOUNT
                                         .toString());
+                        // searchbp_shard_stats_resource_heap_usage_currentMax|0.0|0.0|0.0|0.0
                         this.add(
                                 AllMetrics.SearchBackPressureStatsValue
                                         .SEARCHBP_SHARD_STATS_RESOURCE_HEAP_USAGE_CURRENTMAX
                                         .toString());
+                        // searchbp_shard_stats_resource_heap_usage_rollingAvg|0.0|0.0|0.0|0.0
                         this.add(
                                 AllMetrics.SearchBackPressureStatsValue
                                         .SEARCHBP_SHARD_STATS_RESOURCE_HEAP_USAGE_ROLLINGAVG
                                         .toString());
+                        // searchbp_shard_stats_resource_cpu_usage_cancellationCount|0.0|0.0|0.0|0.0
                         this.add(
                                 AllMetrics.SearchBackPressureStatsValue
                                         .SEARCHBP_SHARD_STATS_RESOURCE_CPU_USAGE_CANCELLATIONCOUNT
                                         .toString());
+                        // searchbp_shard_stats_resource_cpu_usage_currentMax|0.0|0.0|0.0|0.0
                         this.add(
                                 AllMetrics.SearchBackPressureStatsValue
                                         .SEARCHBP_SHARD_STATS_RESOURCE_CPU_USAGE_CURRENTMAX
                                         .toString());
+                        // searchbp_shard_stats_resource_cpu_usage_currentAvg|0.0|0.0|0.0|0.0
                         this.add(
                                 AllMetrics.SearchBackPressureStatsValue
                                         .SEARCHBP_SHARD_STATS_RESOURCE_CPU_USAGE_CURRENTAVG
                                         .toString());
                         // Task Stats Resource Heap / CPU Usage
+                        // searchbp_task_stats_resource_heap_usage_cancellationCount|0.0|0.0|0.0|0.0
                         this.add(
                                 AllMetrics.SearchBackPressureStatsValue
                                         .SEARCHBP_TASK_STATS_RESOURCE_HEAP_USAGE_CANCELLATIONCOUNT
                                         .toString());
+                        // searchbp_task_stats_resource_heap_usage_currentMax|0.0|0.0|0.0|0.0
                         this.add(
                                 AllMetrics.SearchBackPressureStatsValue
                                         .SEARCHBP_TASK_STATS_RESOURCE_HEAP_USAGE_CURRENTMAX
                                         .toString());
+                        // searchbp_task_stats_resource_heap_usage_rollingAvg|0.0|0.0|0.0|0.0
                         this.add(
                                 AllMetrics.SearchBackPressureStatsValue
                                         .SEARCHBP_TASK_STATS_RESOURCE_HEAP_USAGE_ROLLINGAVG
                                         .toString());
+                        // searchbp_task_stats_resource_cpu_usage_cancellationCount|0.0|0.0|0.0|0.0
                         this.add(
                                 AllMetrics.SearchBackPressureStatsValue
                                         .SEARCHBP_TASK_STATS_RESOURCE_CPU_USAGE_CANCELLATIONCOUNT
                                         .toString());
+                        // searchbp_task_stats_resource_cpu_usage_currentMax|0.0|0.0|0.0|0.0
                         this.add(
                                 AllMetrics.SearchBackPressureStatsValue
                                         .SEARCHBP_TASK_STATS_RESOURCE_CPU_USAGE_CURRENTMAX
                                         .toString());
+                        // searchbp_task_stats_resource_cpu_usage_currentAvg|0.0|0.0|0.0|0.0
                         this.add(
                                 AllMetrics.SearchBackPressureStatsValue
                                         .SEARCHBP_TASK_STATS_RESOURCE_CPU_USAGE_CURRENTAVG
