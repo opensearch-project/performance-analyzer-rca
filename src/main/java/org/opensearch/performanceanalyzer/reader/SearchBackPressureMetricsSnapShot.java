@@ -20,6 +20,10 @@ import org.jooq.SQLDialect;
 import org.jooq.impl.DSL;
 import org.opensearch.performanceanalyzer.commons.metrics.AllMetrics;
 
+/*
+ * SearchBackPressure cluster/node-level RCA would consume these data in the snapshots and determine whether the search back pressure service
+ *  has cancelled too much/ too less requests, by comparing with predefined threshold.
+ */
 public class SearchBackPressureMetricsSnapShot implements Removable {
 
     // Logger for current class
