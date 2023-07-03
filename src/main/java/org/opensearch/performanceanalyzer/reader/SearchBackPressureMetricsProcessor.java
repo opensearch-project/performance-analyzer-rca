@@ -56,7 +56,6 @@ public class SearchBackPressureMetricsProcessor implements EventProcessor {
                     currentWindowStartTime, searchBackPressureMetricsSnapShot);
             return new SearchBackPressureMetricsProcessor(searchBackPressureMetricsSnapShot);
         }
-
         return new SearchBackPressureMetricsProcessor(
                 searchBackPressureSnapshotNavigableMap.get(currentWindowStartTime));
     }
@@ -91,11 +90,8 @@ public class SearchBackPressureMetricsProcessor implements EventProcessor {
     // Handler method for incoming events
     private void handleSearchBackPressureEvent(String eventValue) {
         String[] lines = eventValue.split(System.lineSeparator());
-        // 0thline is current time string (e.g. {current_time:1686952296889})
-        // 1st line is the payload the metrics
         if (lines.length < 2) {
             throw new RuntimeException("Missing SearchBackPressure Metrics payload and timestamp.");
-            // return;
         }
 
         // Parse metrics payload
@@ -107,8 +103,8 @@ public class SearchBackPressureMetricsProcessor implements EventProcessor {
 
         if (map.isEmpty()) {
             throw new RuntimeException("Missing SearchBackPressure Metrics payload.");
-            // return;
         }
+
         // A list of dims to be collected
         ArrayList<String> required_searchbp_dims =
                 new ArrayList<String>() {

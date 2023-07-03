@@ -102,7 +102,7 @@ public class SearchBackPressureMetricsProcessorTest {
         // SEARCHBP_TASK_STATS_RESOURCE_CPU_USAGE_CANCELLATIONCOUNT value is 0L according to the
         // SERIALIZED_EVENT, should EQUAL
         Assert.assertEquals(
-                0L,
+                0,
                 result.get(0)
                         .get(
                                 AllMetrics.SearchBackPressureStatsValue
@@ -112,7 +112,7 @@ public class SearchBackPressureMetricsProcessorTest {
         // SEARCHBP_TASK_STATS_RESOURCE_CPU_USAGE_CANCELLATIONCOUNT value is 0L according to the
         // SERIALIZED_EVENT, should NOT EQUAL
         Assert.assertNotEquals(
-                2L,
+                2,
                 result.get(0)
                         .get(
                                 AllMetrics.SearchBackPressureStatsValue
