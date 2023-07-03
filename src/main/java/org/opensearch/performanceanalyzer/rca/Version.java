@@ -19,14 +19,11 @@ public final class Version {
      * transferred packets should be dropped. Every increment here should be accompanied with a line
      * describing the version bump.
      *
-     * <p>Note: The RCA version is agnostic of OpenSearch version.
+     * Note: The RCA version is agnostic of OpenSearch version.
      */
     static final class Major {
-        // Bumping this post the Commons
-        // Lib(https://github.com/opensearch-project/performance-analyzer-commons/issues/2)
-        // and Service
-        // Metrics(https://github.com/opensearch-project/performance-analyzer-commons/issues/8)
-        // change
+        // Bumping this post the Commons Lib(https://github.com/opensearch-project/performance-analyzer-commons/issues/2)
+        // and Service Metrics(https://github.com/opensearch-project/performance-analyzer-commons/issues/8) change
         static final int RCA_MAJ_VERSION = 1;
     }
 
