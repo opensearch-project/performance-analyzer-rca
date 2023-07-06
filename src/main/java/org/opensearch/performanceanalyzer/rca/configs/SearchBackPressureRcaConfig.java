@@ -15,8 +15,13 @@ public class SearchBackPressureRcaConfig {
     public static final String INCREASE_THRESHOLD_BY_JVM_STR = "increase_jvm";
     public static final String DECREASE_THRESHOLD_BY_JVM_STR = "decrease_jvm";
 
+    public static final int SLIDING_WINDOW_SIZE_IN_MINS = 1;
+
     // Interval period in seconds
     public static final long DEFAULT_EVALUATION_INTERVAL_IN_S = 60;
+
+    /* interval period to call operate() */
+    public static final long EVAL_INTERVAL_IN_S = 5;
 
     /* Increase Threshold */
     // node max heap usage in last 60 secs is less than 70%
