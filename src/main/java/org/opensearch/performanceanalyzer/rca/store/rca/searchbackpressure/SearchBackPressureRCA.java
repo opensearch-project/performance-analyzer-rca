@@ -258,8 +258,15 @@ public class SearchBackPressureRCA extends OldGenRca<ResourceFlowUnit<HotNodeSum
 
                 context = new ResourceContext(Resources.State.UNHEALTHY);
                 // add an additional resource with metadata: shard-level
-                HotResourceSummary resourceSummary =
-                        new HotResourceSummary(SEARCHBACKPRESSURE_SHARD, 0, 0, 0);
+                HotResourceSummary resourceSummary;
+                if (increaseThresholdMetByShard) {
+                    resourceSummary =
+                            new HotResourceSummary(SEARCHBACKPRESSURE_SHARD, 0, 0, 0, "increase");
+                } else {
+                    resourceSummary =
+                            new HotResourceSummary(SEARCHBACKPRESSURE_SHARD, 0, 0, 0, "decrease");
+                }
+
                 nodeSummary.appendNestedSummary(resourceSummary);
 
                 return new ResourceFlowUnit<>(
@@ -278,8 +285,15 @@ public class SearchBackPressureRCA extends OldGenRca<ResourceFlowUnit<HotNodeSum
 
                 context = new ResourceContext(Resources.State.UNHEALTHY);
                 // add an additional resource with metadata: task-level
-                HotResourceSummary resourceSummary =
-                        new HotResourceSummary(SEARCHBACKPRESSURE_TASK, 0, 0, 0);
+                HotResourceSummary resourceSummary;
+                if (increaseThresholdMetByTask) {
+                    resourceSummary =
+                            new HotResourceSummary(SEARCHBACKPRESSURE_TASK, 0, 0, 0, "increase");
+                } else {
+                    resourceSummary =
+                            new HotResourceSummary(SEARCHBACKPRESSURE_TASK, 0, 0, 0, "decrease");
+                }
+
                 nodeSummary.appendNestedSummary(resourceSummary);
                 return new ResourceFlowUnit<>(
                         currentTimeMillis,

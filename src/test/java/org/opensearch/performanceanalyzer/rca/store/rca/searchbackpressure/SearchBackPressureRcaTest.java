@@ -44,6 +44,8 @@ public class SearchBackPressureRcaTest {
     private SearchBackPressureRCA testRca;
     private MetricTestHelper metricTestHelper;
     private static final double DEFAULT_MAX_HEAP_SIZE = 4294967296.0;
+    private static final String INCREASE_METADATA_STR = "increase";
+    private static final String DECREASE_METADATA_STR = "decrease";
 
     // mock heap metric columns
     private final List<String> heapTableColumns =
@@ -233,8 +235,10 @@ public class SearchBackPressureRcaTest {
                 hotResourceSummaries.stream()
                         .anyMatch(
                                 hotResourceSummary ->
-                                        hotResourceSummary.getResource()
-                                                == SEARCHBACKPRESSURE_SHARD);
+                                        (hotResourceSummary.getResource()
+                                                        == SEARCHBACKPRESSURE_SHARD)
+                                                && (hotResourceSummary.getMetaData()
+                                                        == DECREASE_METADATA_STR));
 
         assertTrue(found_shard_resource);
     }
@@ -259,14 +263,16 @@ public class SearchBackPressureRcaTest {
 
         HotNodeSummary hotNodeSummary = flowUnit.getSummary();
         List<HotResourceSummary> hotResourceSummaries = hotNodeSummary.getHotResourceSummaryList();
-        boolean found_shard_resource =
+        boolean found_shard_resource_and_increase_metadata =
                 hotResourceSummaries.stream()
                         .anyMatch(
                                 hotResourceSummary ->
-                                        hotResourceSummary.getResource()
-                                                == SEARCHBACKPRESSURE_SHARD);
+                                        (hotResourceSummary.getResource()
+                                                        == SEARCHBACKPRESSURE_SHARD)
+                                                && (hotResourceSummary.getMetaData()
+                                                        == INCREASE_METADATA_STR));
 
-        assertTrue(found_shard_resource);
+        assertTrue(found_shard_resource_and_increase_metadata);
     }
 
     /*
@@ -293,8 +299,10 @@ public class SearchBackPressureRcaTest {
                 hotResourceSummaries.stream()
                         .anyMatch(
                                 hotResourceSummary ->
-                                        hotResourceSummary.getResource()
-                                                == SEARCHBACKPRESSURE_TASK);
+                                        (hotResourceSummary.getResource()
+                                                        == SEARCHBACKPRESSURE_TASK)
+                                                && (hotResourceSummary.getMetaData()
+                                                        == DECREASE_METADATA_STR));
 
         assertTrue(found_task_resource);
     }
@@ -323,8 +331,10 @@ public class SearchBackPressureRcaTest {
                 hotResourceSummaries.stream()
                         .anyMatch(
                                 hotResourceSummary ->
-                                        hotResourceSummary.getResource()
-                                                == SEARCHBACKPRESSURE_TASK);
+                                        (hotResourceSummary.getResource()
+                                                        == SEARCHBACKPRESSURE_TASK)
+                                                && (hotResourceSummary.getMetaData()
+                                                        == INCREASE_METADATA_STR));
 
         assertTrue(found_task_resource);
     }
