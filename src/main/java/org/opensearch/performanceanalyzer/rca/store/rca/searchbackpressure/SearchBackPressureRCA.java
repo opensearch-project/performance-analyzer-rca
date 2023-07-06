@@ -96,22 +96,32 @@ public class SearchBackPressureRCA extends OldGenRca<ResourceFlowUnit<HotNodeSum
         this.rcaPeriod = rcaPeriod;
         this.clock = Clock.systemUTC();
         this.searchbp_Stats = searchbp_Stats;
+
+        // threshold for heap usage
         this.heapUsedIncreaseThreshold =
                 SearchBackPressureRcaConfig.DEFAULT_MAX_HEAP_INCREASE_THRESHOLD;
+        this.heapUsedDecreaseThreshold =
+                SearchBackPressureRcaConfig.DEFAULT_MIN_HEAP_DECREASE_THRESHOLD;
+
+        /*
+         * threshold for search back pressure service stats
+         * currently, only consider the percentage of JVM Usage cancellation count compared to the total cancellation count
+         *
+         */
         this.heapShardCancellationIncreaseMaxThreshold =
                 SearchBackPressureRcaConfig.DEFAULT_SHARD_MAX_HEAP_CANCELLATION_THRESHOLD;
         this.heapTaskCancellationIncreaseMaxThreshold =
                 SearchBackPressureRcaConfig.DEFAULT_TASK_MAX_HEAP_CANCELLATION_THRESHOLD;
-        this.heapUsedDecreaseThreshold =
-                SearchBackPressureRcaConfig.DEFAULT_MIN_HEAP_DECREASE_THRESHOLD;
+
         this.heapShardCancellationDecreaseMinThreashold =
                 SearchBackPressureRcaConfig.DEFAULT_SHARD_MIN_HEAP_CANCELLATION_THRESHOLD;
         this.heapTaskCancellationDecreaseMinThreashold =
                 SearchBackPressureRcaConfig.DEFAULT_TASK_MIN_HEAP_CANCELLATION_THRESHOLD;
 
-        // initialize sliding window
+        // sliding window for heap usage
         this.heapUsageSlidingWindow =
                 new MinMaxOldGenSlidingWindow(SLIDING_WINDOW_SIZE_IN_MINS, TimeUnit.MINUTES);
+        // sliding window for JVM
         this.shardJVMCancellationSlidingWindow =
                 new SlidingWindow<>(SLIDING_WINDOW_SIZE_IN_MINS, TimeUnit.MINUTES);
         this.taskJVMCancellationSlidingWindow =
@@ -122,7 +132,7 @@ public class SearchBackPressureRCA extends OldGenRca<ResourceFlowUnit<HotNodeSum
 
     /*
      * operate() is used for local build
-     * generateFlowUnitListFromWire simply use remote flowunits to
+     * generateFlowUnitListFromWire simply use remote flowunits to generate flow units locally
      */
     @Override
     public void generateFlowUnitListFromWire(FlowUnitOperationArgWrapper args) {
@@ -136,6 +146,11 @@ public class SearchBackPressureRCA extends OldGenRca<ResourceFlowUnit<HotNodeSum
         setFlowUnits(flowUnitList);
     }
 
+    /*
+     * operate() evaluates the current stats against threshold
+     * generate Unhealthy Flow Unit if Searchbp Service needs autotune
+     * else, generate Healthy Flow Unit
+     */
     @Override
     public ResourceFlowUnit<HotNodeSummary> operate() {
         LOG.info("SearchBackPressureRCA operate() intiatilized");
@@ -207,37 +222,27 @@ public class SearchBackPressureRCA extends OldGenRca<ResourceFlowUnit<HotNodeSum
                     new HotNodeSummary(
                             instanceDetails.getInstanceId(), instanceDetails.getInstanceIp());
 
-            // get the Configured Threshold and compare with Sliding Window Stats
             /*
              *  2 cases we send Unhealthy ResourceContext when we need to autotune the threshold
-             *  - (increase) node max heap usage in last 60 secs is less than 70% and cancellationCountPercentage due to heap is more than 50% of all task cancellations
-             *  - (decrease) node min heap usage in last 60 secs is more than 80% and cancellationCountPercetange due to heap is less than 30% of all task cancellations
+             *  (increase) node max heap usage in last 60 secs is less than 70% and cancellationCountPercentage due to heap is more than 50% of all task cancellations
+             *  (decrease) node min heap usage in last 60 secs is more than 80% and cancellationCountPercetange due to heap is less than 30% of all task cancellations
              */
-            //     avgShardJVMCancellationPercentage = 80.0; // testing
-
-            // TODO: add Task CancellationCountPercentage as another criteria
-            // TODO
-            /*
-            *      HotResourceSummary resourceSummary =
-                   new HotResourceSummary(HEAP_MAX_SIZE, currentThreshold, previousThreshold, 0);
-                   nodeSummary.appendNestedSummary(resourceSummary);
-
-                   If you
-            */
-            boolean increaseThresholdMetByShard =
+            // shard level thresholds
+            boolean increaseJVMThresholdMetByShard =
                     (maxHeapUsagePercentage < heapUsedIncreaseThreshold)
                             && (avgShardJVMCancellationPercentage
                                     > heapShardCancellationIncreaseMaxThreshold);
-            boolean decreaseThresholdMetByShard =
+            boolean decreaseJVMThresholdMetByShard =
                     (minHeapUsagePercentage > heapUsedDecreaseThreshold)
                             && (avgShardJVMCancellationPercentage
                                     < heapShardCancellationDecreaseMinThreashold);
 
-            boolean increaseThresholdMetByTask =
+            // task level thresholds
+            boolean increaseJVMThresholdMetByTask =
                     (maxHeapUsagePercentage < heapUsedIncreaseThreshold)
                             && (avgTaskJVMCancellationPercentage
                                     > heapTaskCancellationIncreaseMaxThreshold);
-            boolean decreaseThresholdMetByTask =
+            boolean decreaseJVMThresholdMetByTask =
                     (minHeapUsagePercentage > heapUsedDecreaseThreshold)
                             && (avgTaskJVMCancellationPercentage
                                     < heapTaskCancellationDecreaseMinThreashold);
@@ -247,7 +252,7 @@ public class SearchBackPressureRCA extends OldGenRca<ResourceFlowUnit<HotNodeSum
             // previousThreshold, 0);
             //             nodeSummary.appendNestedSummary(resourceSummary);
 
-            if (increaseThresholdMetByShard || decreaseThresholdMetByShard) {
+            if (increaseJVMThresholdMetByShard || decreaseJVMThresholdMetByShard) {
                 // Generate a flow unit with an Unhealthy ResourceContext
                 LOG.info(
                         "Increase/Decrease Condition Meet for Shard, maxHeapUsagePercentage: {} is less than threshold: {}, avgShardJVMCancellationPercentage: {} is bigger than heapShardCancellationIncreaseMaxThreshold: {}",
@@ -259,12 +264,22 @@ public class SearchBackPressureRCA extends OldGenRca<ResourceFlowUnit<HotNodeSum
                 context = new ResourceContext(Resources.State.UNHEALTHY);
                 // add an additional resource with metadata: shard-level
                 HotResourceSummary resourceSummary;
-                if (increaseThresholdMetByShard) {
+                if (increaseJVMThresholdMetByShard) {
                     resourceSummary =
-                            new HotResourceSummary(SEARCHBACKPRESSURE_SHARD, 0, 0, 0, "increase");
+                            new HotResourceSummary(
+                                    SEARCHBACKPRESSURE_SHARD,
+                                    0,
+                                    0,
+                                    0,
+                                    SearchBackPressureRcaConfig.INCREASE_THRESHOLD_BY_JVM_STR);
                 } else {
                     resourceSummary =
-                            new HotResourceSummary(SEARCHBACKPRESSURE_SHARD, 0, 0, 0, "decrease");
+                            new HotResourceSummary(
+                                    SEARCHBACKPRESSURE_SHARD,
+                                    0,
+                                    0,
+                                    0,
+                                    SearchBackPressureRcaConfig.DECREASE_THRESHOLD_BY_JVM_STR);
                 }
 
                 nodeSummary.appendNestedSummary(resourceSummary);
@@ -274,7 +289,7 @@ public class SearchBackPressureRCA extends OldGenRca<ResourceFlowUnit<HotNodeSum
                         context,
                         nodeSummary,
                         !instanceDetails.getIsClusterManager());
-            } else if (increaseThresholdMetByTask || decreaseThresholdMetByTask) {
+            } else if (increaseJVMThresholdMetByTask || decreaseJVMThresholdMetByTask) {
                 // Generate a flow unit with an Unhealthy ResourceContext
                 LOG.info(
                         "Increase/Decrease Condition Meet for Task, maxHeapUsagePercentage: {} is less than threshold: {}, avgShardJVMCancellationPercentage: {} is bigger than heapShardCancellationIncreaseMaxThreshold: {}",
@@ -286,12 +301,22 @@ public class SearchBackPressureRCA extends OldGenRca<ResourceFlowUnit<HotNodeSum
                 context = new ResourceContext(Resources.State.UNHEALTHY);
                 // add an additional resource with metadata: task-level
                 HotResourceSummary resourceSummary;
-                if (increaseThresholdMetByTask) {
+                if (increaseJVMThresholdMetByTask) {
                     resourceSummary =
-                            new HotResourceSummary(SEARCHBACKPRESSURE_TASK, 0, 0, 0, "increase");
+                            new HotResourceSummary(
+                                    SEARCHBACKPRESSURE_TASK,
+                                    0,
+                                    0,
+                                    0,
+                                    SearchBackPressureRcaConfig.INCREASE_THRESHOLD_BY_JVM_STR);
                 } else {
                     resourceSummary =
-                            new HotResourceSummary(SEARCHBACKPRESSURE_TASK, 0, 0, 0, "decrease");
+                            new HotResourceSummary(
+                                    SEARCHBACKPRESSURE_TASK,
+                                    0,
+                                    0,
+                                    0,
+                                    SearchBackPressureRcaConfig.DECREASE_THRESHOLD_BY_JVM_STR);
                 }
 
                 nodeSummary.appendNestedSummary(resourceSummary);
@@ -390,11 +415,10 @@ public class SearchBackPressureRCA extends OldGenRca<ResourceFlowUnit<HotNodeSum
      */
     @Override
     public void readRcaConf(RcaConf conf) {
-        // only initialized one time
         LOG.info("SearchBackPressureRCA readRcaConf() intiatilized");
         final SearchBackPressureRcaConfig config = conf.getSearchBackPressureRcaConfig();
-        // read anything from config file in runtime
-        // if not just skip it
+
+        // threshold value read from config file
         this.heapUsedIncreaseThreshold = config.getMaxHeapIncreasePercentageThreshold();
         this.heapShardCancellationIncreaseMaxThreshold =
                 config.getMaxShardHeapCancellationPercentageThreshold();

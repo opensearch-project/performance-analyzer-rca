@@ -11,6 +11,10 @@ import org.opensearch.performanceanalyzer.rca.framework.core.RcaConf;
 public class SearchBackPressureRcaConfig {
     public static final String CONFIG_NAME = "search-back-pressure-rca-policy";
 
+    /* Metadata fields for thresholds */
+    public static final String INCREASE_THRESHOLD_BY_JVM_STR = "increase_jvm";
+    public static final String DECREASE_THRESHOLD_BY_JVM_STR = "decrease_jvm";
+
     // Interval period in seconds
     public static final long DEFAULT_EVALUATION_INTERVAL_IN_S = 60;
 

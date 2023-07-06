@@ -21,6 +21,7 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.opensearch.performanceanalyzer.commons.metrics.AllMetrics;
 import org.opensearch.performanceanalyzer.metricsdb.MetricsDB;
+import org.opensearch.performanceanalyzer.rca.configs.SearchBackPressureRcaConfig;
 import org.opensearch.performanceanalyzer.rca.framework.api.Metric;
 import org.opensearch.performanceanalyzer.rca.framework.api.flow_units.MetricFlowUnit;
 import org.opensearch.performanceanalyzer.rca.framework.api.flow_units.ResourceFlowUnit;
@@ -44,8 +45,6 @@ public class SearchBackPressureRcaTest {
     private SearchBackPressureRCA testRca;
     private MetricTestHelper metricTestHelper;
     private static final double DEFAULT_MAX_HEAP_SIZE = 4294967296.0;
-    private static final String INCREASE_METADATA_STR = "increase";
-    private static final String DECREASE_METADATA_STR = "decrease";
 
     // mock heap metric columns
     private final List<String> heapTableColumns =
@@ -238,7 +237,8 @@ public class SearchBackPressureRcaTest {
                                         (hotResourceSummary.getResource()
                                                         == SEARCHBACKPRESSURE_SHARD)
                                                 && (hotResourceSummary.getMetaData()
-                                                        == DECREASE_METADATA_STR));
+                                                        == SearchBackPressureRcaConfig
+                                                                .DECREASE_THRESHOLD_BY_JVM_STR));
 
         assertTrue(found_shard_resource);
     }
@@ -270,7 +270,8 @@ public class SearchBackPressureRcaTest {
                                         (hotResourceSummary.getResource()
                                                         == SEARCHBACKPRESSURE_SHARD)
                                                 && (hotResourceSummary.getMetaData()
-                                                        == INCREASE_METADATA_STR));
+                                                        == SearchBackPressureRcaConfig
+                                                                .INCREASE_THRESHOLD_BY_JVM_STR));
 
         assertTrue(found_shard_resource_and_increase_metadata);
     }
@@ -302,7 +303,8 @@ public class SearchBackPressureRcaTest {
                                         (hotResourceSummary.getResource()
                                                         == SEARCHBACKPRESSURE_TASK)
                                                 && (hotResourceSummary.getMetaData()
-                                                        == DECREASE_METADATA_STR));
+                                                        == SearchBackPressureRcaConfig
+                                                                .DECREASE_THRESHOLD_BY_JVM_STR));
 
         assertTrue(found_task_resource);
     }
@@ -334,7 +336,8 @@ public class SearchBackPressureRcaTest {
                                         (hotResourceSummary.getResource()
                                                         == SEARCHBACKPRESSURE_TASK)
                                                 && (hotResourceSummary.getMetaData()
-                                                        == INCREASE_METADATA_STR));
+                                                        == SearchBackPressureRcaConfig
+                                                                .INCREASE_THRESHOLD_BY_JVM_STR));
 
         assertTrue(found_task_resource);
     }
