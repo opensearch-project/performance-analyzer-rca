@@ -153,7 +153,7 @@ public class SearchBackPressureRCA extends Rca<ResourceFlowUnit<HotNodeSummary>>
         final List<FlowUnitMessage> flowUnitMessages =
                 args.getWireHopper().readFromWire(args.getNode());
         final List<ResourceFlowUnit<HotNodeSummary>> flowUnitList = new ArrayList<>();
-        LOG.debug("rca: Executing fromWire: {}", this.getClass().getSimpleName());
+        LOG.info("rca: Executing fromWire: {}", this.getClass().getSimpleName());
         for (FlowUnitMessage flowUnitMessage : flowUnitMessages) {
             flowUnitList.add(ResourceFlowUnit.buildFlowUnitFromWrapper(flowUnitMessage));
         }
@@ -185,29 +185,7 @@ public class SearchBackPressureRCA extends Rca<ResourceFlowUnit<HotNodeSummary>>
                 searchBackPressureRCAMetric.getSearchbpJVMShardCancellationCount(),
                 searchBackPressureRCAMetric.getSearchbpJVMTaskCancellationCount());
 
-        // update sliding window if the value is NOT NaN
-        // TO DO
-        double prevheapUsagePercentage = searchBackPressureRCAMetric.getHeapUsagePercent();
-        if (!Double.isNaN(prevheapUsagePercentage)) {
-            minHeapUsageSlidingWindow.next(
-                    new SlidingWindowData(currentTimeMillis, prevheapUsagePercentage));
-            maxHeapUsageSlidingWindow.next(
-                    new SlidingWindowData(currentTimeMillis, prevheapUsagePercentage));
-        }
-
-        double shardJVMCancellationPercentage =
-                searchBackPressureRCAMetric.getShardJVMCancellationPercent();
-        if (!Double.isNaN(shardJVMCancellationPercentage)) {
-            shardJVMCancellationSlidingWindow.next(
-                    new SlidingWindowData(currentTimeMillis, shardJVMCancellationPercentage));
-        }
-
-        double taskJVMCancellationPercentage =
-                searchBackPressureRCAMetric.getTaskJVMCancellationPercent();
-        if (!Double.isNaN(taskJVMCancellationPercentage)) {
-            taskJVMCancellationSlidingWindow.next(
-                    new SlidingWindowData(currentTimeMillis, taskJVMCancellationPercentage));
-        }
+        updateAllSlidingWindows(searchBackPressureRCAMetric, currentTimeMillis);
 
         LOG.info("SearchBackPressureRCA currentIterationNumber is {}", currentIterationNumber);
         // if currentIterationNumber matches the rca period, emit the flow unit
@@ -241,28 +219,30 @@ public class SearchBackPressureRCA extends Rca<ResourceFlowUnit<HotNodeSummary>>
              *  (increase) node max heap usage in last 60 secs is less than 70% and cancellationCountPercentage due to heap is more than 50% of all task cancellations
              *  (decrease) node min heap usage in last 60 secs is more than 80% and cancellationCountPercetange due to heap is less than 30% of all task cancellations
              */
-            boolean maxHeapBelowIncreaseThreshold = maxHeapUsagePercentage < heapUsedIncreaseThreshold;
-            boolean minHeapAboveDecreaseThreshold = minHeapUsagePercentage > heapUsedDecreaseThreshold;
-            
+            boolean maxHeapBelowIncreaseThreshold =
+                    maxHeapUsagePercentage < heapUsedIncreaseThreshold;
+            boolean minHeapAboveDecreaseThreshold =
+                    minHeapUsagePercentage > heapUsedDecreaseThreshold;
+            boolean shardHeapCancellationPercentageAboveThreshold =
+                    avgShardJVMCancellationPercentage > heapShardCancellationIncreaseMaxThreshold;
+            boolean shardHeapCancellationPercentageBelowThreshold =
+                    avgShardJVMCancellationPercentage < heapShardCancellationDecreaseMinThreashold;
+            boolean taskHeapCancellationPercentageAboveThreshold =
+                    avgTaskJVMCancellationPercentage > heapTaskCancellationIncreaseMaxThreshold;
+            boolean taskHeapCancellationPercentageBelowThreshold =
+                    avgTaskJVMCancellationPercentage < heapTaskCancellationDecreaseMinThreashold;
+
             // shard level thresholds
             boolean increaseJVMThresholdMetByShard =
-                    maxHeapBelowIncreaseThreshold
-                            && (avgShardJVMCancellationPercentage
-                                    > heapShardCancellationIncreaseMaxThreshold);
+                    maxHeapBelowIncreaseThreshold && shardHeapCancellationPercentageAboveThreshold;
             boolean decreaseJVMThresholdMetByShard =
-                    minHeapAboveDecreaseThreshold
-                            && (avgShardJVMCancellationPercentage
-                                    < heapShardCancellationDecreaseMinThreashold);
+                    minHeapAboveDecreaseThreshold && shardHeapCancellationPercentageBelowThreshold;
 
             // task level thresholds
             boolean increaseJVMThresholdMetByTask =
-                    maxHeapBelowIncreaseThreshold
-                            && (avgTaskJVMCancellationPercentage
-                                    > heapTaskCancellationIncreaseMaxThreshold);
+                    maxHeapBelowIncreaseThreshold && taskHeapCancellationPercentageAboveThreshold;
             boolean decreaseJVMThresholdMetByTask =
-                    minHeapAboveDecreaseThreshold
-                            && (avgTaskJVMCancellationPercentage
-                                    < heapTaskCancellationDecreaseMinThreashold);
+                    minHeapAboveDecreaseThreshold && taskHeapCancellationPercentageBelowThreshold;
 
             // Generate a flow unit with an Unhealthy ResourceContext
             LOG.info(
@@ -274,8 +254,8 @@ public class SearchBackPressureRCA extends Rca<ResourceFlowUnit<HotNodeSummary>>
 
             if (increaseJVMThresholdMetByShard || decreaseJVMThresholdMetByShard) {
                 context = new ResourceContext(Resources.State.UNHEALTHY);
-                // add an additional resource with metadata: shard-level
                 HotResourceSummary resourceSummary;
+                // metadata fields indicate the reason for Unhealthy Resource Unit
                 if (increaseJVMThresholdMetByShard) {
                     resourceSummary =
                             new HotResourceSummary(
@@ -295,14 +275,12 @@ public class SearchBackPressureRCA extends Rca<ResourceFlowUnit<HotNodeSummary>>
                 }
 
                 nodeSummary.appendNestedSummary(resourceSummary);
-
                 return new ResourceFlowUnit<>(
                         currentTimeMillis,
                         context,
                         nodeSummary,
                         !instanceDetails.getIsClusterManager());
             } else if (increaseJVMThresholdMetByTask || decreaseJVMThresholdMetByTask) {
-                // Generate a flow unit with an Unhealthy ResourceContext
                 LOG.info(
                         "Increase/Decrease Condition Meet for Task, maxHeapUsagePercentage: {} is less than threshold: {}, avgShardJVMCancellationPercentage: {} is bigger than heapShardCancellationIncreaseMaxThreshold: {}",
                         maxHeapUsagePercentage,
@@ -311,7 +289,6 @@ public class SearchBackPressureRCA extends Rca<ResourceFlowUnit<HotNodeSummary>>
                         heapTaskCancellationIncreaseMaxThreshold);
 
                 context = new ResourceContext(Resources.State.UNHEALTHY);
-                // add an additional resource with metadata: task-level
                 HotResourceSummary resourceSummary;
                 if (increaseJVMThresholdMetByTask) {
                     resourceSummary =
@@ -348,8 +325,8 @@ public class SearchBackPressureRCA extends Rca<ResourceFlowUnit<HotNodeSummary>>
             }
 
         } else {
-            // return healthy state when the currentIterationNumber does not meet rcaPeriod
-            LOG.info("Empty Healthy FlowUnit returned for SearchbackPressureRCA");
+            // Return Empty ResourceFlowUnit if none of the thresholds is met
+            LOG.info("Empty FlowUnit returned for SearchbackPressureRCA");
             currentTimeMillis = System.currentTimeMillis();
             return new ResourceFlowUnit<>(currentTimeMillis);
         }
@@ -479,8 +456,7 @@ public class SearchBackPressureRCA extends Rca<ResourceFlowUnit<HotNodeSummary>>
             if (!flowUnit.isEmpty()) {
                 double metricResponse =
                         readDataFromSqlResult(flowUnit.getData(), field, fieldName, MetricsDB.MAX);
-                // // print out the metricResponse
-                // LOG.info("Searchbp metricResponse is: {}", metricResponse);
+                LOG.info("Searchbp metricResponse is: {}", metricResponse);
                 if (!Double.isNaN(metricResponse) && metricResponse >= 0.0) {
                     response = metricResponse;
                 }
@@ -497,7 +473,6 @@ public class SearchBackPressureRCA extends Rca<ResourceFlowUnit<HotNodeSummary>>
      */
     @Override
     public void readRcaConf(RcaConf conf) {
-        LOG.info("SearchBackPressureRCA readRcaConf() intiatilized");
         final SearchBackPressureRcaConfig config = conf.getSearchBackPressureRcaConfig();
 
         // threshold read from config file
@@ -514,5 +489,33 @@ public class SearchBackPressureRCA extends Rca<ResourceFlowUnit<HotNodeSummary>>
                 config.getMinShardHeapCancellationPercentageThreshold();
         this.heapTaskCancellationDecreaseMinThreashold =
                 config.getMinTaskHeapCancellationPercentageThreshold();
+    }
+
+    /*
+     * Update Stats for all Sliding Windows
+     */
+    private void updateAllSlidingWindows(
+            SearchBackPressureRCAMetric searchBackPressureRCAMetric, long currentTimeMillis) {
+        double prevheapUsagePercentage = searchBackPressureRCAMetric.getHeapUsagePercent();
+        if (!Double.isNaN(prevheapUsagePercentage)) {
+            minHeapUsageSlidingWindow.next(
+                    new SlidingWindowData(currentTimeMillis, prevheapUsagePercentage));
+            maxHeapUsageSlidingWindow.next(
+                    new SlidingWindowData(currentTimeMillis, prevheapUsagePercentage));
+        }
+
+        double shardJVMCancellationPercentage =
+                searchBackPressureRCAMetric.getShardJVMCancellationPercent();
+        if (!Double.isNaN(shardJVMCancellationPercentage)) {
+            shardJVMCancellationSlidingWindow.next(
+                    new SlidingWindowData(currentTimeMillis, shardJVMCancellationPercentage));
+        }
+
+        double taskJVMCancellationPercentage =
+                searchBackPressureRCAMetric.getTaskJVMCancellationPercent();
+        if (!Double.isNaN(taskJVMCancellationPercentage)) {
+            taskJVMCancellationSlidingWindow.next(
+                    new SlidingWindowData(currentTimeMillis, taskJVMCancellationPercentage));
+        }
     }
 }
