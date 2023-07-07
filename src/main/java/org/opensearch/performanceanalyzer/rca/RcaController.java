@@ -177,7 +177,8 @@ public class RcaController {
                 return;
             }
 
-            subscriptionManager.setCurrentLocus(rcaConf.getTagMap().get("locus"));
+            String currentLocus = RcaUtil.getPriorityLocus(rcaConf.getTagMap().get("locus"));
+            subscriptionManager.setCurrentLocus(currentLocus);
             this.connectedComponents = getRcaGraphComponents(rcaConf);
 
             // Mute the rca nodes after the graph creation and before the scheduler start
