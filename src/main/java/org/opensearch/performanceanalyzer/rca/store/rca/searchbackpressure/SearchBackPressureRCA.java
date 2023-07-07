@@ -28,6 +28,7 @@ import org.opensearch.performanceanalyzer.rca.framework.api.aggregators.SlidingW
 import org.opensearch.performanceanalyzer.rca.framework.api.contexts.ResourceContext;
 import org.opensearch.performanceanalyzer.rca.framework.api.flow_units.MetricFlowUnit;
 import org.opensearch.performanceanalyzer.rca.framework.api.flow_units.ResourceFlowUnit;
+import org.opensearch.performanceanalyzer.rca.framework.api.persist.SQLParsingUtil;
 import org.opensearch.performanceanalyzer.rca.framework.api.summaries.HotNodeSummary;
 import org.opensearch.performanceanalyzer.rca.framework.api.summaries.HotResourceSummary;
 import org.opensearch.performanceanalyzer.rca.framework.core.RcaConf;
@@ -40,10 +41,15 @@ public class SearchBackPressureRCA extends OldGenRca<ResourceFlowUnit<HotNodeSum
     private static final Logger LOG = LogManager.getLogger(SearchBackPressureRCA.class);
     private static final double BYTES_TO_GIGABYTES = Math.pow(1024, 3);
     private static final long EVAL_INTERVAL_IN_S = SearchBackPressureRcaConfig.EVAL_INTERVAL_IN_S;
+    private static final double CONVERT_BYTES_TO_MEGABYTES = Math.pow(1024, 2);
 
     // Key metrics used to determine RCA Flow Unit health status
     private final Metric heapUsed;
+    private final Metric heapMax;
     private final Metric searchbp_Stats;
+
+    // default value for heapUsed and heapMax
+    private static final double DEFAULT_HEAP_VAL = 0.0;
 
     /*
      * threshold to increase heap limits
@@ -96,6 +102,7 @@ public class SearchBackPressureRCA extends OldGenRca<ResourceFlowUnit<HotNodeSum
         // metric gcType is needed to construct OldGenRca Class (Parent Class)
         super(EVAL_INTERVAL_IN_S, heapUsed, heapMax, null, gcType);
         this.heapUsed = heapUsed;
+        this.heapMax = heapMax;
         this.rcaPeriod = rcaPeriod;
         this.clock = Clock.systemUTC();
         this.searchbp_Stats = searchbp_Stats;
@@ -344,10 +351,67 @@ public class SearchBackPressureRCA extends OldGenRca<ResourceFlowUnit<HotNodeSum
         }
     }
 
+    /**
+     * Get the Heap Related Stats (Heap Used and Heap Size in gigabytes)
+     *
+     * @param isHeapUsed is true meaning get the value of used heap in gigabytes otherwise, meaning
+     *     get the value of max heap in gigabytes
+     */
+    public double getHeapStats(boolean isHeapUsed) {
+        double heapStats = DEFAULT_HEAP_VAL;
+        List<MetricFlowUnit> heapStatsMetrics;
+        if (isHeapUsed == true) {
+            if (heap_Used == null) {
+                throw new IllegalStateException(
+                        "RCA: "
+                                + this.name()
+                                + "was not configured in the graph to "
+                                + "take heap_Used as a metric. Please check the analysis graph!");
+            }
+
+            heapStatsMetrics = heap_Used.getFlowUnits();
+        } else {
+            if (heap_Max == null) {
+                throw new IllegalStateException(
+                        "RCA: "
+                                + this.name()
+                                + "was not configured in the graph to "
+                                + "take heap_Max as a metric. Please check the analysis graph!");
+            }
+
+            heapStatsMetrics = heap_Max.getFlowUnits();
+        }
+
+        for (MetricFlowUnit heapStatsMetric : heapStatsMetrics) {
+            if (heapStatsMetric.isEmpty()) {
+                continue;
+            }
+
+            double ret =
+                    SQLParsingUtil.readDataFromSqlResult(
+                            heapStatsMetric.getData(),
+                            AllMetrics.HeapDimension.MEM_TYPE.getField(),
+                            AllMetrics.GCType.HEAP.toString(),
+                            MetricsDB.MAX);
+            if (Double.isNaN(ret)) {
+                LOG.error(
+                        "Failed to parse metric in FlowUnit from {}",
+                        heap_Used.getClass().getName());
+            } else {
+                heapStats = ret / CONVERT_BYTES_TO_MEGABYTES;
+            }
+        }
+
+        return heapStats;
+    }
+
     private SearchBackPressureRCAMetric getSearchBackPressureRCAMetric() {
         // Get Heap Usage related metrics
-        double prevHeapUsage = getOldGenUsedOrDefault(0d);
-        double maxHeapSize = getMaxOldGenSizeOrDefault(Double.MAX_VALUE);
+        double prevHeapUsage = getHeapStats(true);
+        double maxHeapSize = getHeapStats(false);
+
+        // Log prevHeapUsage and maxHeapSize
+        LOG.info("prevHeapUsage: {}, maxHeapSize: {}", prevHeapUsage, maxHeapSize);
 
         // Get SearchBack Pressure related metrics from stats type field
         Field<String> searchbp_stats_type_field =
