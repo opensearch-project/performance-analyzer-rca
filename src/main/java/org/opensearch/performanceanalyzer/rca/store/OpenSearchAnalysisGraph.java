@@ -445,12 +445,11 @@ public class OpenSearchAnalysisGraph extends AnalysisGraph {
 
         // Search Back Pressure Service RCA enabled
         SearchBackPressureRCA searchBackPressureRCA =
-                new SearchBackPressureRCA(RCA_PERIOD, heapMax, heapUsed, gcType, searchbp_Stats);
+                new SearchBackPressureRCA(RCA_PERIOD, heapMax, heapUsed, searchbp_Stats);
         searchBackPressureRCA.addTag(
                 RcaConsts.RcaTagConstants.TAG_LOCUS,
                 RcaConsts.RcaTagConstants.LOCUS_DATA_CLUSTER_MANAGER_NODE);
-        searchBackPressureRCA.addAllUpstreams(
-                Arrays.asList(heapMax, heapUsed, gcType, searchbp_Stats));
+        searchBackPressureRCA.addAllUpstreams(Arrays.asList(heapMax, heapUsed, searchbp_Stats));
 
         // Search Back Pressure Service Cluster RCA enabled
         SearchBackPressureClusterRCA searchBackPressureClusterRCA =

@@ -77,16 +77,12 @@ public class SearchBackPressureRcaTest {
         this.metricTestHelper = new MetricTestHelper(RCA_PERIOD);
         setupMockHeapMetric(mockHeapUsed, 80.0);
         setupMockHeapMetric(mockHeapMax, 100.0);
-        // gcType is required for constructor of SearchBackPressureRCA but the exact type of gcType
-        // does not matter
-        setupMockGcType(CMS_COLLECTOR);
 
         // set up SearchBp_Stats table
         setupMockSearchbpStats(mockSearchbpStats, 10.0, 10.0, 8.0, 7.0);
 
         this.testRca =
-                new SearchBackPressureRCA(
-                        RCA_PERIOD, mockHeapMax, mockHeapUsed, mockGcType, mockSearchbpStats);
+                new SearchBackPressureRCA(RCA_PERIOD, mockHeapMax, mockHeapUsed, mockSearchbpStats);
     }
 
     /*
@@ -220,7 +216,7 @@ public class SearchBackPressureRcaTest {
     @Test
     public void testSearchBpGetUnHealthyFlowUnitInShardLevelByDecreaseThreshold() {
         setupMockHeapMetric(mockHeapMax, DEFAULT_MAX_HEAP_SIZE);
-        setupMockHeapMetric(mockHeapUsed, DEFAULT_MAX_HEAP_SIZE * 0.9);
+        setupMockHeapMetric(mockHeapUsed, DEFAULT_MAX_HEAP_SIZE * 0.95);
         setupMockSearchbpStats(mockSearchbpStats, 10.0, 10.0, 2.0, 8.0);
         IntStream.range(0, RCA_PERIOD - 1).forEach(i -> testRca.operate());
 
@@ -346,7 +342,7 @@ public class SearchBackPressureRcaTest {
         String valString = Double.toString(val);
         List<String> data =
                 Arrays.asList(
-                        AllMetrics.GCType.OLD_GEN.toString(),
+                        AllMetrics.GCType.HEAP.toString(),
                         valString,
                         valString,
                         valString,
@@ -358,21 +354,6 @@ public class SearchBackPressureRcaTest {
                                         0,
                                         metricTestHelper.createTestResult(
                                                 heapTableColumns, data))));
-    }
-
-    private void setupMockGcType(final String collector) {
-        List<String> gcInfoTableColumns =
-                Arrays.asList(
-                        AllMetrics.GCInfoDimension.MEMORY_POOL.toString(),
-                        AllMetrics.GCInfoDimension.COLLECTOR_NAME.toString());
-        List<String> data = Arrays.asList(AllMetrics.GCType.OLD_GEN.toString(), collector);
-        when(mockGcType.getFlowUnits())
-                .thenReturn(
-                        Collections.singletonList(
-                                new MetricFlowUnit(
-                                        0,
-                                        metricTestHelper.createTestResult(
-                                                gcInfoTableColumns, data))));
     }
 
     private void setupMockSearchbpStats(

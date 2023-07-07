@@ -22,6 +22,7 @@ import org.opensearch.performanceanalyzer.grpc.FlowUnitMessage;
 import org.opensearch.performanceanalyzer.metricsdb.MetricsDB;
 import org.opensearch.performanceanalyzer.rca.configs.SearchBackPressureRcaConfig;
 import org.opensearch.performanceanalyzer.rca.framework.api.Metric;
+import org.opensearch.performanceanalyzer.rca.framework.api.Rca;
 import org.opensearch.performanceanalyzer.rca.framework.api.Resources;
 import org.opensearch.performanceanalyzer.rca.framework.api.aggregators.SlidingWindow;
 import org.opensearch.performanceanalyzer.rca.framework.api.aggregators.SlidingWindowData;
@@ -34,10 +35,10 @@ import org.opensearch.performanceanalyzer.rca.framework.api.summaries.HotResourc
 import org.opensearch.performanceanalyzer.rca.framework.core.RcaConf;
 import org.opensearch.performanceanalyzer.rca.framework.util.InstanceDetails;
 import org.opensearch.performanceanalyzer.rca.scheduler.FlowUnitOperationArgWrapper;
-import org.opensearch.performanceanalyzer.rca.store.rca.OldGenRca;
+import org.opensearch.performanceanalyzer.rca.store.rca.OldGenRca.MinMaxSlidingWindow;
 import org.opensearch.performanceanalyzer.rca.store.rca.searchbackpressure.model.SearchBackPressureRCAMetric;
 
-public class SearchBackPressureRCA extends OldGenRca<ResourceFlowUnit<HotNodeSummary>> {
+public class SearchBackPressureRCA extends Rca<ResourceFlowUnit<HotNodeSummary>> {
     private static final Logger LOG = LogManager.getLogger(SearchBackPressureRCA.class);
     private static final double BYTES_TO_GIGABYTES = Math.pow(1024, 3);
     private static final long EVAL_INTERVAL_IN_S = SearchBackPressureRcaConfig.EVAL_INTERVAL_IN_S;
@@ -98,9 +99,8 @@ public class SearchBackPressureRCA extends OldGenRca<ResourceFlowUnit<HotNodeSum
     protected Clock clock;
 
     public <M extends Metric> SearchBackPressureRCA(
-            final int rcaPeriod, final M heapMax, final M heapUsed, M gcType, M searchbp_Stats) {
-        // metric gcType is needed to construct OldGenRca Class (Parent Class)
-        super(EVAL_INTERVAL_IN_S, heapUsed, heapMax, null, gcType);
+            final int rcaPeriod, final M heapMax, final M heapUsed, M searchbp_Stats) {
+        super(EVAL_INTERVAL_IN_S);
         this.heapUsed = heapUsed;
         this.heapMax = heapMax;
         this.rcaPeriod = rcaPeriod;
@@ -361,7 +361,7 @@ public class SearchBackPressureRCA extends OldGenRca<ResourceFlowUnit<HotNodeSum
         double heapStats = DEFAULT_HEAP_VAL;
         List<MetricFlowUnit> heapStatsMetrics;
         if (isHeapUsed == true) {
-            if (heap_Used == null) {
+            if (heapUsed == null) {
                 throw new IllegalStateException(
                         "RCA: "
                                 + this.name()
@@ -369,9 +369,9 @@ public class SearchBackPressureRCA extends OldGenRca<ResourceFlowUnit<HotNodeSum
                                 + "take heap_Used as a metric. Please check the analysis graph!");
             }
 
-            heapStatsMetrics = heap_Used.getFlowUnits();
+            heapStatsMetrics = heapUsed.getFlowUnits();
         } else {
-            if (heap_Max == null) {
+            if (heapMax == null) {
                 throw new IllegalStateException(
                         "RCA: "
                                 + this.name()
@@ -379,7 +379,7 @@ public class SearchBackPressureRCA extends OldGenRca<ResourceFlowUnit<HotNodeSum
                                 + "take heap_Max as a metric. Please check the analysis graph!");
             }
 
-            heapStatsMetrics = heap_Max.getFlowUnits();
+            heapStatsMetrics = heapMax.getFlowUnits();
         }
 
         for (MetricFlowUnit heapStatsMetric : heapStatsMetrics) {
@@ -396,7 +396,7 @@ public class SearchBackPressureRCA extends OldGenRca<ResourceFlowUnit<HotNodeSum
             if (Double.isNaN(ret)) {
                 LOG.error(
                         "Failed to parse metric in FlowUnit from {}",
-                        heap_Used.getClass().getName());
+                        heapUsed.getClass().getName());
             } else {
                 heapStats = ret / CONVERT_BYTES_TO_MEGABYTES;
             }
@@ -471,19 +471,12 @@ public class SearchBackPressureRCA extends OldGenRca<ResourceFlowUnit<HotNodeSum
         }
 
         double response = 0.0;
-        // LOG.info(
-        //         " metric.getFlowUnits() length is: {}, and  metric name is {}",
-        //         metric.getFlowUnits().size(),
-        //         metric.name());
         for (MetricFlowUnit flowUnit : metric.getFlowUnits()) {
             if (!flowUnit.isEmpty()) {
-                LOG.info(
-                        "flowUnit.getData() rows size is {}",
-                        flowUnit.getData().getValues("SearchBackPressureStats").size());
                 double metricResponse =
                         readDataFromSqlResult(flowUnit.getData(), field, fieldName, MetricsDB.MAX);
-                // print out the metricResponse
-                LOG.info("Searchbp metricResponse is: {}", metricResponse);
+                // // print out the metricResponse
+                // LOG.info("Searchbp metricResponse is: {}", metricResponse);
                 if (!Double.isNaN(metricResponse) && metricResponse >= 0.0) {
                     response = metricResponse;
                 }
