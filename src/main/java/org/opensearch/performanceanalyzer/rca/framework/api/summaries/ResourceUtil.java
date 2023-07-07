@@ -138,7 +138,6 @@ public class ResourceUtil {
     /*
      * searchbackpressure related resource
      * SEARCHBACKPRESSURE_SHARD resource indicate a searchbackpressure unhealthy resource unit is caused by shard level cancellation
-     * ResourceEnum.OLD_GEN and MetricEnum.UNRECOGNIZED are dummy values
      */
     public static final Resource SEARCHBACKPRESSURE_SHARD =
             Resource.newBuilder()
@@ -148,7 +147,6 @@ public class ResourceUtil {
 
     /*
      *  SEARCHBACKPRESSURE_TASK resource indicate a searchbackpressure unhealthy resource unit is caused by task level cancellation
-     * ResourceEnum.OLD_GEN and MetricEnum.UNRECOGNIZED are dummy values
      */
     public static final Resource SEARCHBACKPRESSURE_TASK =
             Resource.newBuilder()

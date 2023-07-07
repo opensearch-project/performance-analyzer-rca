@@ -252,32 +252,57 @@ public abstract class OldGenRca<T extends ResourceFlowUnit<?>> extends Rca<T> {
     }
 
     /**
-     * Sliding window to check the max/min olg gen usage within a given time frame Previous
-     * MinGoldGenSlidingWindow should be deprecated since it modify the sliding window size in
-     * next()
+     * Sliding window to check the max/min olg gen usage within a given time frame
+     *
+     * @param isMinSlidingWindow true if the sliding window is for min usage, false for max usage
+     *     Provides a more general framework than MinOldGenSlidingWindow as this sliding window can
+     *     be implemented as minSlidingWindow or maxSlidingWindow depending on the need.
      */
-    public static class MinMaxOldGenSlidingWindow extends SlidingWindow<SlidingWindowData> {
+    public static class MinMaxSlidingWindow extends SlidingWindow<SlidingWindowData> {
+        boolean isMinSlidingWindow;
 
-        public MinMaxOldGenSlidingWindow(int SLIDING_WINDOW_SIZE_IN_TIMESTAMP, TimeUnit timeUnit) {
+        public MinMaxSlidingWindow(
+                int SLIDING_WINDOW_SIZE_IN_TIMESTAMP,
+                TimeUnit timeUnit,
+                boolean isMinSlidingWindow) {
             super(SLIDING_WINDOW_SIZE_IN_TIMESTAMP, timeUnit);
+            this.isMinSlidingWindow = isMinSlidingWindow;
         }
 
-        public double readMax() {
-            if (!windowDeque.isEmpty()) {
-                return windowDeque.stream()
-                        .mapToDouble(SlidingWindowData::getValue)
-                        .max()
-                        .orElse(Double.NaN);
+        @Override
+        public void next(SlidingWindowData e) {
+            boolean pollFirstCondition;
+            if (isMinSlidingWindow) {
+                // monotonically decreasing sliding window
+                while (!windowDeque.isEmpty()
+                        && windowDeque.peekFirst().getValue() >= e.getValue()) {
+                    windowDeque.pollFirst();
+                }
+            } else {
+                // monotonically increasing sliding window
+                while (!windowDeque.isEmpty()
+                        && windowDeque.peekFirst().getValue() < e.getValue()) {
+                    windowDeque.pollFirst();
+                }
             }
-            return Double.NaN;
+
+            windowDeque.addFirst(e);
+            while (!windowDeque.isEmpty()
+                    && TimeUnit.MILLISECONDS.toSeconds(
+                                    e.getTimeStamp() - windowDeque.peekLast().getTimeStamp())
+                            > SLIDING_WINDOW_SIZE) {
+                windowDeque.pollLast();
+            }
         }
 
-        public double readMin() {
+        /*
+         * read last element in the window
+         * if the sliding window is MinSlidingWindow then returns the min element
+         * else return the max element in the deque
+         */
+        public double readLastElementInWindow() {
             if (!windowDeque.isEmpty()) {
-                return windowDeque.stream()
-                        .mapToDouble(SlidingWindowData::getValue)
-                        .min()
-                        .orElse(Double.NaN);
+                return windowDeque.peekLast().getValue();
             }
             return Double.NaN;
         }

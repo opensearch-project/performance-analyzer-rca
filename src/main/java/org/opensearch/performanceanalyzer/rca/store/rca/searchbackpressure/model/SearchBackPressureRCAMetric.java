@@ -5,7 +5,6 @@
 
 package org.opensearch.performanceanalyzer.rca.store.rca.searchbackpressure.model;
 
-/** Represents used heap and max heap in gigabytes */
 public class SearchBackPressureRCAMetric {
     private final double usedHeap;
     private final double maxHeap;
@@ -14,7 +13,6 @@ public class SearchBackPressureRCAMetric {
     private final double searchbpJVMShardCancellationCount;
     private final double searchbpJVMTaskCancellationCount;
 
-    // Constructor
     public SearchBackPressureRCAMetric(
             double usedHeap,
             double maxHeap,
@@ -30,7 +28,6 @@ public class SearchBackPressureRCAMetric {
         this.searchbpJVMTaskCancellationCount = searchbpJVMTaskCancellationCount;
     }
 
-    // Getters
     public double getUsedHeap() {
         return usedHeap;
     }
