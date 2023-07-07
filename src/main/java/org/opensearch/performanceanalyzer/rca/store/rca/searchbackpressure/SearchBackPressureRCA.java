@@ -186,6 +186,7 @@ public class SearchBackPressureRCA extends Rca<ResourceFlowUnit<HotNodeSummary>>
                 searchBackPressureRCAMetric.getSearchbpJVMTaskCancellationCount());
 
         // update sliding window if the value is NOT NaN
+        // TO DO
         double prevheapUsagePercentage = searchBackPressureRCAMetric.getHeapUsagePercent();
         if (!Double.isNaN(prevheapUsagePercentage)) {
             minHeapUsageSlidingWindow.next(
@@ -240,23 +241,26 @@ public class SearchBackPressureRCA extends Rca<ResourceFlowUnit<HotNodeSummary>>
              *  (increase) node max heap usage in last 60 secs is less than 70% and cancellationCountPercentage due to heap is more than 50% of all task cancellations
              *  (decrease) node min heap usage in last 60 secs is more than 80% and cancellationCountPercetange due to heap is less than 30% of all task cancellations
              */
+            boolean maxHeapBelowIncreaseThreshold = maxHeapUsagePercentage < heapUsedIncreaseThreshold;
+            boolean minHeapAboveDecreaseThreshold = minHeapUsagePercentage > heapUsedDecreaseThreshold;
+            
             // shard level thresholds
             boolean increaseJVMThresholdMetByShard =
-                    (maxHeapUsagePercentage < heapUsedIncreaseThreshold)
+                    maxHeapBelowIncreaseThreshold
                             && (avgShardJVMCancellationPercentage
                                     > heapShardCancellationIncreaseMaxThreshold);
             boolean decreaseJVMThresholdMetByShard =
-                    (minHeapUsagePercentage > heapUsedDecreaseThreshold)
+                    minHeapAboveDecreaseThreshold
                             && (avgShardJVMCancellationPercentage
                                     < heapShardCancellationDecreaseMinThreashold);
 
             // task level thresholds
             boolean increaseJVMThresholdMetByTask =
-                    (maxHeapUsagePercentage < heapUsedIncreaseThreshold)
+                    maxHeapBelowIncreaseThreshold
                             && (avgTaskJVMCancellationPercentage
                                     > heapTaskCancellationIncreaseMaxThreshold);
             boolean decreaseJVMThresholdMetByTask =
-                    (minHeapUsagePercentage > heapUsedDecreaseThreshold)
+                    minHeapAboveDecreaseThreshold
                             && (avgTaskJVMCancellationPercentage
                                     < heapTaskCancellationDecreaseMinThreashold);
 
