@@ -13,6 +13,7 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.util.Collections;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -36,7 +37,7 @@ public class QueryRcaRequestHandlerTest {
                         new ClusterDetailsEventProcessor.NodeDetails(
                                 isClusterManager
                                         ? AllMetrics.NodeRole.ELECTED_CLUSTER_MANAGER
-                                        : AllMetrics.NodeRole.UNKNOWN,
+                                        : AllMetrics.NodeRole.DATA,
                                 "test_node",
                                 "127.0.0.1",
                                 isClusterManager)));
@@ -60,6 +61,12 @@ public class QueryRcaRequestHandlerTest {
         appContext = new AppContext();
         handler = new QueryRcaRequestHandler(appContext);
         setClusterManagerContext(false);
+        Stats.getInstance().getConnectedComponents(); // Initializes muted graph nodes
+    }
+
+    @After
+    public void undo() {
+        Stats.getInstance().getConnectedComponents();
     }
 
     @Test
@@ -105,5 +112,33 @@ public class QueryRcaRequestHandlerTest {
                         ArgumentMatchers.anyLong());
 
         Assert.assertTrue(exchangeOutputStream.toString().contains("muted"));
+    }
+
+    @Test
+    public void testInvalidParams() throws Exception {
+        setClusterManagerContext(true);
+        OutputStream exchangeOutputStream = new ByteArrayOutputStream();
+        HttpExchange exchange =
+                sendQuery(queryPrefix + "?name=NonExistingClusterRCA", "GET", exchangeOutputStream);
+        Mockito.verify(exchange)
+                .sendResponseHeaders(
+                        ArgumentMatchers.eq(HttpURLConnection.HTTP_BAD_REQUEST),
+                        ArgumentMatchers.anyLong());
+
+        Assert.assertTrue(exchangeOutputStream.toString().contains("Invalid RCA"));
+    }
+
+    @Test
+    public void mutedClusterRCA() throws Exception {
+        setClusterManagerContext(true);
+        Stats.getInstance().addToMutedGraphNodes("HotShardClusterRca");
+        OutputStream exchangeOutputStream = new ByteArrayOutputStream();
+        HttpExchange exchange =
+                sendQuery(queryPrefix + "?name=HotShardClusterRca", "GET", exchangeOutputStream);
+        Mockito.verify(exchange)
+                .sendResponseHeaders(
+                        ArgumentMatchers.eq(HttpURLConnection.HTTP_OK), ArgumentMatchers.anyLong());
+
+        Assert.assertEquals("{}", exchangeOutputStream.toString());
     }
 }
