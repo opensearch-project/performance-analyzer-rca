@@ -87,10 +87,10 @@ public class SearchBackPressureAction extends SuppressibleAction {
                 .collect(Collectors.toList());
     }
 
-    /* TO DO: Discuss the impact of SearchBackPressureAction  
+    /* TO DO: Discuss the impact of SearchBackPressureAction
      * since our action only modify the threhsold settings of Search Back Pressure Service instead of actual Resource
      * No Impact should be put as the Impact Vector for this action so other actions would not be affected by Searchbp-specific actions
-    */
+     */
     @Override
     public Map<NodeKey, ImpactVector> impact() {
         Map<NodeKey, ImpactVector> impact = new HashMap<>();
@@ -155,7 +155,7 @@ public class SearchBackPressureAction extends SuppressibleAction {
 
         public SearchBackPressureAction build() {
             Boolean canUpdate = false;
-            /* 
+            /*
              * if desiredValue is between 0 and 100 then canUpdate is true
              * since desiredValue is valid */
             if (desiredValue != null) {
@@ -163,16 +163,20 @@ public class SearchBackPressureAction extends SuppressibleAction {
             }
 
             return new SearchBackPressureAction(
-                    appContext, canUpdate, coolOffPeriodInMillis, searchbpDimension, desiredValue, currentValue);
+                    appContext,
+                    canUpdate,
+                    coolOffPeriodInMillis,
+                    searchbpDimension,
+                    desiredValue,
+                    currentValue);
         }
     }
-
 
     /* Write Static Class Summary to conver the Searchbp Action POJO to JSON Object
      * Key fields to be included
      *  1. Dimension (name) of the Searchbp setting to be modified
-     *  2. CurrentValue of the setting 
-     *  2. DesiredValue of the setting 
+     *  2. CurrentValue of the setting
+     *  2. DesiredValue of the setting
      *  3. CoolOffPeriodInMillis for the action
      *  4. canUpdate (whether the action should be emitted)
      */

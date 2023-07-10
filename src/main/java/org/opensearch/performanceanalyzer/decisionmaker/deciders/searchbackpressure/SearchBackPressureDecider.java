@@ -6,21 +6,15 @@
 package org.opensearch.performanceanalyzer.decisionmaker.deciders.searchbackpressure;
 
 
-import java.util.List;
-import org.opensearch.performanceanalyzer.AppContext;
-import org.opensearch.performanceanalyzer.decisionmaker.actions.Action;
-import org.opensearch.performanceanalyzer.decisionmaker.deciders.Decider;
-import org.opensearch.performanceanalyzer.decisionmaker.deciders.Decision;
-import org.opensearch.performanceanalyzer.decisionmaker.deciders.jvm.old_gen.OldGenDecisionPolicy;
-import org.opensearch.performanceanalyzer.decisionmaker.deciders.jvm.sizing.HeapSizeIncreasePolicy;
-import org.opensearch.performanceanalyzer.rca.framework.core.RcaConf;
-import org.opensearch.performanceanalyzer.rca.store.rca.HighHeapUsageClusterRca;
-import org.opensearch.performanceanalyzer.rca.store.rca.jvmsizing.LargeHeapClusterRca;
-import org.opensearch.performanceanalyzer.rca.store.rca.searchbackpressure.SearchBackPressureClusterRCA;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.opensearch.performanceanalyzer.AppContext;
+import org.opensearch.performanceanalyzer.decisionmaker.deciders.Decider;
+import org.opensearch.performanceanalyzer.decisionmaker.deciders.Decision;
+import org.opensearch.performanceanalyzer.rca.framework.core.RcaConf;
+import org.opensearch.performanceanalyzer.rca.store.rca.searchbackpressure.SearchBackPressureClusterRCA;
 
-/** decider to change the dynamic settings of SearchBackPressure In-flight Cancellation*/
+/** decider to change the dynamic settings of SearchBackPressure In-flight Cancellation */
 public class SearchBackPressureDecider extends Decider {
     private static final Logger LOG = LogManager.getLogger(SearchBackPressureDecider.class);
     public static final String NAME = "SearchBackPressureDecider";
@@ -31,11 +25,10 @@ public class SearchBackPressureDecider extends Decider {
     private SearchBackPressureClusterRCA searchBackPressureClusterRCA;
 
     public SearchBackPressureDecider(
-        long evalIntervalSeconds,
-        int decisionFrequency, 
-        SearchBackPressureClusterRCA searchBackPressureClusterRCA
-    ){
-        super(evalIntervalSeconds, decisionFrequency, searchBackPressureClusterRCA);
+            long evalIntervalSeconds,
+            int decisionFrequency,
+            SearchBackPressureClusterRCA searchBackPressureClusterRCA) {
+        super(evalIntervalSeconds, decisionFrequency);
         this.searchBackPressureClusterRCA = searchBackPressureClusterRCA;
         LOG.info("SearchBackPressureDecider created");
     }
@@ -76,5 +69,4 @@ public class SearchBackPressureDecider extends Decider {
         super.setAppContext(appContext);
         // oldGenDecisionPolicy.setAppContext(appContext);
     }
-
 }
