@@ -368,7 +368,11 @@ dependencies {
     // JDK9+ has to run powermock 2+. https://github.com/powermock/powermock/issues/888
     testImplementation group: 'org.powermock', name: 'powermock-api-mockito2', version: '2.0.0'
     testImplementation group: 'org.powermock', name: 'powermock-module-junit4', version: '2.0.0'
-    testImplementation group: 'org.mockito', name: 'mockito-core', version: '2.23.0'
+    implementation("org.mockito:mockito-core") {
+        version {
+            strictly "2.23.0"
+        }
+    }
     testImplementation group: 'org.powermock', name: 'powermock-core', version: '2.0.0'
     testImplementation group: 'org.powermock', name: 'powermock-api-support', version: '2.0.0'
     testImplementation group: 'org.powermock', name: 'powermock-module-junit4-common', version: '2.0.0'
