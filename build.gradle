@@ -307,8 +307,8 @@ project.afterEvaluate {
 }
 
 repositories {
-    mavenCentral()
     mavenLocal()
+    mavenCentral()
     maven { url "https://aws.oss.sonatype.org/content/repositories/snapshots" }
 }
 
