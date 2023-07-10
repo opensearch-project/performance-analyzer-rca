@@ -19,6 +19,7 @@ import org.opensearch.performanceanalyzer.decisionmaker.deciders.Publisher;
 import org.opensearch.performanceanalyzer.decisionmaker.deciders.QueueHealthDecider;
 import org.opensearch.performanceanalyzer.decisionmaker.deciders.collator.Collator;
 import org.opensearch.performanceanalyzer.decisionmaker.deciders.jvm.HeapHealthDecider;
+import org.opensearch.performanceanalyzer.decisionmaker.deciders.searchbackpressure.SearchBackPressureDecider;
 import org.opensearch.performanceanalyzer.metricsdb.MetricsDB;
 import org.opensearch.performanceanalyzer.plugins.PluginController;
 import org.opensearch.performanceanalyzer.plugins.PluginControllerConfig;
@@ -463,8 +464,17 @@ public class OpenSearchAnalysisGraph extends AnalysisGraph {
                 RcaConsts.RcaTagConstants.TAG_AGGREGATE_UPSTREAM,
                 RcaConsts.RcaTagConstants.LOCUS_DATA_NODE);
 
-        // To Do SearchBackPressure Decider
+        // SearchBackPressure Decider
+        SearchBackPressureDecider searchBackPressureDecider =
+                new SearchBackPressureDecider(
+                        EVALUATION_INTERVAL_SECONDS, 12, searchBackPressureClusterRCA);
+        searchBackPressureDecider.addTag(
+                RcaConsts.RcaTagConstants.TAG_LOCUS,
+                RcaConsts.RcaTagConstants.LOCUS_CLUSTER_MANAGER_NODE);
+        searchBackPressureDecider.addAllUpstreams(
+                Collections.singletonList(searchBackPressureClusterRCA));
 
+        // AdmissionControl RCA Decider
         AdmissionControlDecider admissionControlDecider =
                 buildAdmissionControlDecider(heapUsed, heapMax);
 
@@ -478,7 +488,8 @@ public class OpenSearchAnalysisGraph extends AnalysisGraph {
                         queueHealthDecider,
                         cacheHealthDecider,
                         heapHealthDecider,
-                        admissionControlDecider);
+                        admissionControlDecider,
+                        searchBackPressureDecider);
         collator.addTag(
                 RcaConsts.RcaTagConstants.TAG_LOCUS,
                 RcaConsts.RcaTagConstants.LOCUS_CLUSTER_MANAGER_NODE);
@@ -487,7 +498,8 @@ public class OpenSearchAnalysisGraph extends AnalysisGraph {
                         queueHealthDecider,
                         cacheHealthDecider,
                         heapHealthDecider,
-                        admissionControlDecider));
+                        admissionControlDecider,
+                        searchBackPressureDecider));
 
         // Publisher - Executes decisions output from collator
         Publisher publisher = new Publisher(EVALUATION_INTERVAL_SECONDS, collator);
