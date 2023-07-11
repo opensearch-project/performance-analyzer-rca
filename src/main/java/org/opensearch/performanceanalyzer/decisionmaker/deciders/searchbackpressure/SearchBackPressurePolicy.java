@@ -7,6 +7,8 @@ package org.opensearch.performanceanalyzer.decisionmaker.deciders.searchbackpres
 
 
 import java.util.List;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.opensearch.performanceanalyzer.decisionmaker.actions.Action;
 import org.opensearch.performanceanalyzer.decisionmaker.deciders.DecisionPolicy;
 
@@ -15,6 +17,12 @@ import org.opensearch.performanceanalyzer.decisionmaker.deciders.DecisionPolicy;
  * achieve improved performance.
  */
 public class SearchBackPressurePolicy implements DecisionPolicy {
+    private static final Logger LOG = LogManager.getLogger(SearchBackPressurePolicy.class);
+
+    /* Specify a path to store SearchBackpressurePolicy_Autotune Stats */
+
+    /* TO DO: Check which settings should be modifed based on search heap shard/task cancellation stats */
+    boolean searchTaskHeapThresholdShouldChange;
 
     @Override
     public List<Action> evaluate() {
