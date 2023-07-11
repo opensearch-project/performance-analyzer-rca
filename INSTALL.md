@@ -67,7 +67,7 @@ This package uses the [Gradle](https://docs.gradle.org/current/userguide/usergui
 
 2. Clone the Performance Analyzer plugin repository as follows:
  
-    `git clone -b main --single-branch https://github.com/opensearch-project/performance-analyzer.git`
+    `git clone -b 2.9 --single-branch https://github.com/opensearch-project/performance-analyzer.git`
    
 3. `cd performance-analyzer`
     
@@ -114,7 +114,7 @@ You can use the packaged Dockerfile and docker-compose.yml files [here](./docker
  
  2. Build and tag the Docker image with our RCA framework.
 
-    `docker build -t opensearch/pa-rca:2.8 .`
+    `docker build -t opensearch/pa-rca:2.9 .`
 
  3. Spin up a two node cluster as follows:
  
