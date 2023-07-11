@@ -74,7 +74,7 @@ public class SearchBpActionsAlarmMonitor implements AlarmMonitor {
             hourMonitor =
                     new BucketizedSlidingWindow(
                             (int) TimeUnit.HOURS.toMinutes(1),
-                            5,
+                            1,
                             TimeUnit.MINUTES,
                             hourMonitorPath);
         } else {
@@ -109,6 +109,7 @@ public class SearchBpActionsAlarmMonitor implements AlarmMonitor {
     @Override
     public void recordIssue(long timeStamp, double value) {
         SlidingWindowData dataPoint = new SlidingWindowData(timeStamp, value);
+        LOG.info("Search Backpressure Actions Alarm is recording a new issue at {}", timeStamp);
         hourMonitor.next(dataPoint);
         // // If we've breached the day threshold, record it as a bad day this week.
         // if (dayMonitor.size() >= dayBreachThreshold) {
@@ -119,6 +120,7 @@ public class SearchBpActionsAlarmMonitor implements AlarmMonitor {
 
     private void evaluateAlarm() {
         if (alarmHealthy) {
+            LOG.info("Alarm healthy with hourMonitor.size() = {}", hourMonitor.size());
             if (hourMonitor.size() >= hourBreachThreshold) {
                 LOG.info(
                         "Search Backpressure Actions Alarm is Unhealthy because hourMonitor.size() is {}, and threshold is {}",
@@ -127,7 +129,9 @@ public class SearchBpActionsAlarmMonitor implements AlarmMonitor {
                 alarmHealthy = false;
             }
         } else {
+            LOG.info("Alarm not healthy");
             if (hourMonitor.size() == 0) {
+                LOG.info("SearchBackpressure Hour Monitor is healthy for zero capacity");
                 alarmHealthy = true;
             }
         }

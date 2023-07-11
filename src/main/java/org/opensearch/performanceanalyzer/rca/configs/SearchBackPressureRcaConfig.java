@@ -21,7 +21,7 @@ public class SearchBackPressureRcaConfig {
     public static final long DEFAULT_EVALUATION_INTERVAL_IN_S = 60;
 
     /* interval period to call operate() */
-    public static final long EVAL_INTERVAL_IN_S = 5;
+    public static final long EVAL_INTERVAL_IN_S = 2;
 
     /* Increase Threshold */
     // node max heap usage in last 60 secs is less than 70%

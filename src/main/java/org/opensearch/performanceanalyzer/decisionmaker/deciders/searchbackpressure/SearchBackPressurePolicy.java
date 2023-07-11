@@ -94,6 +94,8 @@ public class SearchBackPressurePolicy implements DecisionPolicy {
         LOG.info("SearchBackPressurePolicy#recordIssues()");
 
         if (searchBackPressureClusterRCA.getFlowUnits().isEmpty()) {
+            LOG.info(
+                    "SearchBackPressurePolicy#recordIssues() No flow units in searchBackPressureClusterRCA");
             return;
         }
         int test_counter = 0;
@@ -148,7 +150,6 @@ public class SearchBackPressurePolicy implements DecisionPolicy {
 
     @Override
     public List<Action> evaluate() {
-        LOG.info("---------------evaluate() called");
         List<Action> actions = new ArrayList<>();
         if (rcaConf == null || appContext == null) {
             LOG.error("rca conf/app context is null, return empty action list");
