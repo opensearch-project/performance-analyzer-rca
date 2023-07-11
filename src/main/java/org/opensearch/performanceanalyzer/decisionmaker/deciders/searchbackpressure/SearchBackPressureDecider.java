@@ -19,7 +19,7 @@ public class SearchBackPressureDecider extends Decider {
     private static final Logger LOG = LogManager.getLogger(SearchBackPressureDecider.class);
     public static final String NAME = "SearchBackPressureDecider";
 
-    /* TO ADD: SearchBackPressureDecider should have SeachBackPressurePolicy able to evaluate the search back pressure */
+    /* TO ADD: SearchBackPressureDecider should have SeachBackPressurePolicy able to evaluate the search back pressure actions */
 
     private int currentIteration = 0;
     private SearchBackPressureClusterRCA searchBackPressureClusterRCA;
