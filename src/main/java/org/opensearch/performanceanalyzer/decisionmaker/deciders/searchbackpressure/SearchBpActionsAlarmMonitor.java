@@ -11,12 +11,15 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.concurrent.TimeUnit;
 import javax.annotation.Nullable;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.opensearch.performanceanalyzer.decisionmaker.deciders.AlarmMonitor;
 import org.opensearch.performanceanalyzer.rca.framework.api.aggregators.BucketizedSlidingWindow;
 import org.opensearch.performanceanalyzer.rca.framework.api.aggregators.BucketizedSlidingWindowConfig;
 import org.opensearch.performanceanalyzer.rca.framework.api.aggregators.SlidingWindowData;
 
 public class SearchBpActionsAlarmMonitor implements AlarmMonitor {
+    private static final Logger LOG = LogManager.getLogger(SearchBpActionsAlarmMonitor.class);
     /* Current design only uses hour monitor to evaluate the health of the searchbackpressure service
      * if there are more than 30 bad units in one hour, then the alarm shows a Unhealthy Signal
      */
@@ -117,6 +120,10 @@ public class SearchBpActionsAlarmMonitor implements AlarmMonitor {
     private void evaluateAlarm() {
         if (alarmHealthy) {
             if (hourMonitor.size() >= hourBreachThreshold) {
+                LOG.info(
+                        "Search Backpressure Actions Alarm is Unhealthy because hourMonitor.size() is {}, and threshold is {}",
+                        hourMonitor.size(),
+                        hourBreachThreshold);
                 alarmHealthy = false;
             }
         } else {

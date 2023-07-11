@@ -20,6 +20,7 @@ public class SearchBackPressureDecider extends Decider {
     public static final String NAME = "SearchBackPressureDecider";
 
     /* TO ADD: SearchBackPressureDecider should have SeachBackPressurePolicy able to evaluate the search back pressure actions */
+    // SearchBackPressurePolicy searchBackPressurePolicy;
 
     private int currentIteration = 0;
     private SearchBackPressureClusterRCA searchBackPressureClusterRCA;
@@ -30,7 +31,9 @@ public class SearchBackPressureDecider extends Decider {
             SearchBackPressureClusterRCA searchBackPressureClusterRCA) {
         super(evalIntervalSeconds, decisionFrequency);
         this.searchBackPressureClusterRCA = searchBackPressureClusterRCA;
-        LOG.info("SearchBackPressureDecider created");
+        // this.searchBackPressurePolicy = new
+        // SearchBackPressurePolicy(searchBackPressureClusterRCA);
+        LOG.info("SearchBackPressureDecider created#2");
     }
 
     @Override
@@ -51,7 +54,7 @@ public class SearchBackPressureDecider extends Decider {
         currentIteration = 0;
 
         // SearchBackPressure Policy is always accepted
-        // List<Action> searchBackPressureActions = seart.evaluate();
+        // List<Action> searchBackPressureActions = searchBackPressurePolicy.evaluate();
         // oldGenPolicyActions.forEach(decision::addAction);
         return decision;
     }

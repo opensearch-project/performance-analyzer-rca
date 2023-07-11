@@ -6,7 +6,10 @@
 package org.opensearch.performanceanalyzer.decisionmaker.deciders.configs.searchbackpressure;
 
 
+import java.util.concurrent.TimeUnit;
 import org.opensearch.performanceanalyzer.decisionmaker.deciders.searchbackpressure.SearchBackPressurePolicy;
+import org.opensearch.performanceanalyzer.rca.framework.core.Config;
+import org.opensearch.performanceanalyzer.rca.framework.core.NestedConfig;
 
 /**
  * Configures various thresholds for the {@link SearchBackPressurePolicy}
@@ -24,4 +27,69 @@ import org.opensearch.performanceanalyzer.decisionmaker.deciders.searchbackpress
  * search_task_stepsize_in_percentage: Defines the step size to change heap usage threshold (in
  * percentage) for an individual task before it is considered for cancellation.
  */
-public class SearchBackPressurePolicyConfig {}
+public class SearchBackPressurePolicyConfig {
+    // Field Names
+    private static final String ENABLED = "enabled";
+    private static final String HOUR_BREACH_THRESHOLD = "hour-threshold";
+    private static final String THRESHOLD_COUNT = "threshold_count";
+    private static final String HOUR_MONITOR_WINDOW_SIZE_MINUTES =
+            "hour-monitor-window-size-minutes";
+    private static final String HOUR_MONITOR_BUCKET_SIZE_MINUTES =
+            "hour-monitor-bucket-size-minutes";
+
+    // Default values
+    public static final boolean DEFAULT_ENABLED = true;
+    public static final int DEFAULT_HOUR_BREACH_THRESHOLD = 30;
+    public static final int DEFAULT_HOUR_MONITOR_WINDOW_SIZE_MINUTES =
+            (int) TimeUnit.HOURS.toMinutes(1);
+    public static final int DEFAULT_HOUR_MONITOR_BUCKET_SIZE_MINUTES = 5;
+
+    private Config<Integer> hourBreachThreshold;
+    private Config<Boolean> enabled;
+    private Config<Integer> hourMonitorWindowSizeMinutes;
+    private Config<Integer> hourMonitorBucketSizeMinutes;
+
+    public SearchBackPressurePolicyConfig(NestedConfig config) {
+        enabled = new Config<>(ENABLED, config.getValue(), DEFAULT_ENABLED, Boolean.class);
+        hourBreachThreshold =
+                new Config<>(
+                        HOUR_BREACH_THRESHOLD,
+                        config.getValue(),
+                        DEFAULT_HOUR_BREACH_THRESHOLD,
+                        Integer.class);
+        hourMonitorWindowSizeMinutes =
+                new Config<>(
+                        HOUR_MONITOR_WINDOW_SIZE_MINUTES,
+                        config.getValue(),
+                        DEFAULT_HOUR_MONITOR_WINDOW_SIZE_MINUTES,
+                        Integer.class);
+
+        hourMonitorBucketSizeMinutes =
+                new Config<>(
+                        HOUR_MONITOR_BUCKET_SIZE_MINUTES,
+                        config.getValue(),
+                        DEFAULT_HOUR_MONITOR_BUCKET_SIZE_MINUTES,
+                        Integer.class);
+    }
+
+    /**
+     * Whether or not to enable the policy. A disabled policy will not emit any actions.
+     *
+     * @return Whether or not to enable the policy
+     */
+    public boolean isEnabled() {
+        return enabled.getValue();
+    }
+
+    public int getHourBreachThreshold() {
+        return hourBreachThreshold.getValue();
+    }
+
+    public int getHourMonitorWindowSizeMinutes() {
+        return hourMonitorWindowSizeMinutes.getValue();
+    }
+
+    public int getHourMonitorBucketSizeMinutes() {
+        return hourMonitorBucketSizeMinutes.getValue();
+    }
+}
