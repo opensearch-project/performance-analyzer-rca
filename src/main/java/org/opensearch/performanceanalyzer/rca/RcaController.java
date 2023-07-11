@@ -366,7 +366,8 @@ public class RcaController {
         }
     }
 
-    private boolean updateMutedComponents() {
+    @VisibleForTesting
+    public boolean updateMutedComponents() {
         try {
             Set<String> allNodes =
                     ConnectedComponent.getNodesForAllComponents(this.connectedComponents);
@@ -545,6 +546,16 @@ public class RcaController {
     @VisibleForTesting
     public void setDbProvider(Queryable dbProvider) throws InterruptedException {
         this.dbProvider = dbProvider;
+    }
+
+    @VisibleForTesting
+    public void setRcaConf(RcaConf rcaConf) {
+        this.rcaConf = rcaConf;
+    }
+
+    @VisibleForTesting
+    public void setConnectedComponents(List<ConnectedComponent> connectedComponents) {
+        this.connectedComponents = connectedComponents;
     }
 
     @VisibleForTesting

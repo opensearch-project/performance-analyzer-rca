@@ -20,14 +20,25 @@ import org.junit.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 import org.opensearch.performanceanalyzer.AppContext;
+import org.opensearch.performanceanalyzer.PerformanceAnalyzerApp;
 import org.opensearch.performanceanalyzer.commons.metrics.AllMetrics;
+import org.opensearch.performanceanalyzer.rca.RcaController;
+import org.opensearch.performanceanalyzer.rca.framework.core.ConnectedComponent;
+import org.opensearch.performanceanalyzer.rca.framework.core.RcaConf;
 import org.opensearch.performanceanalyzer.rca.framework.core.Stats;
+import org.opensearch.performanceanalyzer.rca.store.rca.hotshard.HotShardClusterRca;
+import org.opensearch.performanceanalyzer.rca.store.rca.temperature.NodeTemperatureRca;
 import org.opensearch.performanceanalyzer.reader.ClusterDetailsEventProcessor;
 
 public class QueryRcaRequestHandlerTest {
     private QueryRcaRequestHandler handler;
     private AppContext appContext;
-    private final String queryPrefix = "http://localhost:9600/_plugins/_performanceanalyzer/rca";
+    private RcaController rcaController;
+    private static final String queryPrefix =
+            "http://localhost:9600/_plugins/_performanceanalyzer/rca";
+    private static final String mutedConfPath =
+            "./src/test/resources/rca/rca_query_muted_test.conf";
+    private static final String nonMutedConfPath = "./src/test/resources/rca/rca_query_test.conf";
 
     private void setClusterManagerContext(boolean isClusterManager) {
         ClusterDetailsEventProcessor clusterDetailsEventProcessor =
@@ -44,6 +55,11 @@ public class QueryRcaRequestHandlerTest {
         appContext.setClusterDetailsEventProcessor(clusterDetailsEventProcessor);
     }
 
+    private void setConfPath(String rcaConfPath) {
+        rcaController.setRcaConf(new RcaConf(rcaConfPath));
+        rcaController.updateMutedComponents();
+    }
+
     private HttpExchange sendQuery(String query, String requestMethod, OutputStream os)
             throws Exception {
         HttpExchange exchange = Mockito.mock(HttpExchange.class);
@@ -58,15 +74,25 @@ public class QueryRcaRequestHandlerTest {
 
     @Before
     public void setUp() {
+        /* Prepares RcaController for with nodes and config files for testing */
         appContext = new AppContext();
+        rcaController = new RcaController();
+        ConnectedComponent connectedComponent = new ConnectedComponent(1);
+        connectedComponent.addLeafNode(new HotShardClusterRca(0, null));
+        connectedComponent.addLeafNode(new NodeTemperatureRca(null, null, null));
+        rcaController.setConnectedComponents(Collections.singletonList(connectedComponent));
+        connectedComponent.getAllNodes(); // Initializes node names
+        Stats.getInstance().getConnectedComponents(); // Initializes muted graph nodes structure
+        setConfPath(nonMutedConfPath);
+        PerformanceAnalyzerApp.setRcaController(rcaController);
         handler = new QueryRcaRequestHandler(appContext);
         setClusterManagerContext(false);
-        Stats.getInstance().getConnectedComponents(); // Initializes muted graph nodes
     }
 
     @After
-    public void undo() {
+    public void reset() {
         Stats.getInstance().getConnectedComponents();
+        PerformanceAnalyzerApp.setRcaController(null);
     }
 
     @Test
@@ -97,9 +123,9 @@ public class QueryRcaRequestHandlerTest {
     }
 
     @Test
-    public void mutedLocalTemperatureRCA() throws Exception {
-        Stats.getInstance().getConnectedComponents(); // Initializes muted graph nodes
-        Stats.getInstance().addToMutedGraphNodes("NodeTemperatureRca");
+    public void testMutedLocalTemperatureRCA() throws Exception {
+        setConfPath(mutedConfPath);
+        Assert.assertTrue(Stats.getInstance().getMutedGraphNodes().contains("NodeTemperatureRca"));
         OutputStream exchangeOutputStream = new ByteArrayOutputStream();
         HttpExchange exchange =
                 sendQuery(
@@ -129,9 +155,10 @@ public class QueryRcaRequestHandlerTest {
     }
 
     @Test
-    public void mutedClusterRCA() throws Exception {
+    public void testMutedClusterRCA() throws Exception {
         setClusterManagerContext(true);
-        Stats.getInstance().addToMutedGraphNodes("HotShardClusterRca");
+        setConfPath(mutedConfPath);
+        Assert.assertTrue(Stats.getInstance().getMutedGraphNodes().contains("NodeTemperatureRca"));
         OutputStream exchangeOutputStream = new ByteArrayOutputStream();
         HttpExchange exchange =
                 sendQuery(queryPrefix + "?name=HotShardClusterRca", "GET", exchangeOutputStream);
