@@ -23,7 +23,7 @@ public class SearchBpActionsAlarmMonitor implements AlarmMonitor {
     /* Current design only uses hour monitor to evaluate the health of the searchbackpressure service
      * if there are more than 30 bad units in one hour, then the alarm shows a Unhealthy Signal
      */
-    private static final int DEFAULT_HOUR_BREACH_THRESHOLD = 30;
+    private static final int DEFAULT_HOUR_BREACH_THRESHOLD = 2;
     // private static final int DEFAULT_DAY_BREACH_THRESHOLD = 1;
     // private static final int DEFAULT_WEEK_BREACH_THRESHOLD = 1;
     private static final String HOUR_PREFIX = "hour-";

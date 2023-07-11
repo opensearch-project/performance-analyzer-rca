@@ -6,9 +6,11 @@
 package org.opensearch.performanceanalyzer.decisionmaker.deciders.searchbackpressure;
 
 
+import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.opensearch.performanceanalyzer.AppContext;
+import org.opensearch.performanceanalyzer.decisionmaker.actions.Action;
 import org.opensearch.performanceanalyzer.decisionmaker.deciders.Decider;
 import org.opensearch.performanceanalyzer.decisionmaker.deciders.Decision;
 import org.opensearch.performanceanalyzer.rca.framework.core.RcaConf;
@@ -20,7 +22,7 @@ public class SearchBackPressureDecider extends Decider {
     public static final String NAME = "SearchBackPressureDecider";
 
     /* TO ADD: SearchBackPressureDecider should have SeachBackPressurePolicy able to evaluate the search back pressure actions */
-    // SearchBackPressurePolicy searchBackPressurePolicy;
+    SearchBackPressurePolicy searchBackPressurePolicy;
 
     private int currentIteration = 0;
     private SearchBackPressureClusterRCA searchBackPressureClusterRCA;
@@ -31,8 +33,7 @@ public class SearchBackPressureDecider extends Decider {
             SearchBackPressureClusterRCA searchBackPressureClusterRCA) {
         super(evalIntervalSeconds, decisionFrequency);
         this.searchBackPressureClusterRCA = searchBackPressureClusterRCA;
-        // this.searchBackPressurePolicy = new
-        // SearchBackPressurePolicy(searchBackPressureClusterRCA);
+        this.searchBackPressurePolicy = new SearchBackPressurePolicy(searchBackPressureClusterRCA);
         LOG.info("SearchBackPressureDecider created#2");
     }
 
@@ -43,7 +44,9 @@ public class SearchBackPressureDecider extends Decider {
 
     @Override
     public Decision operate() {
-        LOG.info("SearchBackPressureDecider operate() with currentIteration: {}", currentIteration);
+        LOG.info(
+                "SearchBackPressureDecider#2 operate() with currentIteration: {}",
+                currentIteration);
 
         Decision decision = new Decision(System.currentTimeMillis(), NAME);
         currentIteration += 1;
@@ -54,7 +57,7 @@ public class SearchBackPressureDecider extends Decider {
         currentIteration = 0;
 
         // SearchBackPressure Policy is always accepted
-        // List<Action> searchBackPressureActions = searchBackPressurePolicy.evaluate();
+        List<Action> searchBackPressureActions = searchBackPressurePolicy.evaluate();
         // oldGenPolicyActions.forEach(decision::addAction);
         return decision;
     }
@@ -63,13 +66,13 @@ public class SearchBackPressureDecider extends Decider {
     @Override
     public void readRcaConf(RcaConf conf) {
         super.readRcaConf(conf);
-        // oldGenDecisionPolicy.setRcaConf(conf);
+        searchBackPressurePolicy.setRcaConf(conf);
     }
 
     /* Set AppContext for SearchBackPressurePolicy */
     @Override
     public void setAppContext(final AppContext appContext) {
         super.setAppContext(appContext);
-        // oldGenDecisionPolicy.setAppContext(appContext);
+        searchBackPressurePolicy.setAppContext(appContext);
     }
 }

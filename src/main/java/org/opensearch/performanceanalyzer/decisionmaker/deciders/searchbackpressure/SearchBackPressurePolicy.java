@@ -68,6 +68,7 @@ public class SearchBackPressurePolicy implements DecisionPolicy {
             SearchBpActionsAlarmMonitor searchBackPressureHeapAlarm) {
         this.searchBackPressureClusterRCA = searchBackPressureClusterRCA;
         this.searchBackPressureHeapAlarm = searchBackPressureHeapAlarm;
+        LOG.info("SearchBackPressurePolicy#SearchBackPressurePolicy() initialize");
     }
 
     public SearchBackPressurePolicy(SearchBackPressureClusterRCA searchBackPressureClusterRCA) {
@@ -95,14 +96,20 @@ public class SearchBackPressurePolicy implements DecisionPolicy {
         if (searchBackPressureClusterRCA.getFlowUnits().isEmpty()) {
             return;
         }
+        int test_counter = 0;
         for (ResourceFlowUnit<HotClusterSummary> flowUnit :
                 searchBackPressureClusterRCA.getFlowUnits()) {
             if (!flowUnit.hasResourceSummary()) {
                 continue;
             }
+            // print out the total number of flow units in length
             HotClusterSummary clusterSummary = flowUnit.getSummary();
             for (HotNodeSummary nodeSummary : clusterSummary.getHotNodeSummaryList()) {
                 for (HotResourceSummary summary : nodeSummary.getHotResourceSummaryList()) {
+                    test_counter += 1;
+                    LOG.info(
+                            "SearchBackPressurePolicy#recordIssues() Summary test_counter: "
+                                    + test_counter);
                     record(summary);
                 }
             }
@@ -141,7 +148,7 @@ public class SearchBackPressurePolicy implements DecisionPolicy {
 
     @Override
     public List<Action> evaluate() {
-        LOG.info("Evaluating SearchBackPressurePolicy Evaluate() called");
+        LOG.info("---------------evaluate() called");
         List<Action> actions = new ArrayList<>();
         if (rcaConf == null || appContext == null) {
             LOG.error("rca conf/app context is null, return empty action list");
@@ -150,7 +157,7 @@ public class SearchBackPressurePolicy implements DecisionPolicy {
 
         policyConfig = rcaConf.getDeciderConfig().getSearchBackPressurePolicyConfig();
         if (!policyConfig.isEnabled()) {
-            LOG.debug("SearchBackPressurePolicy is disabled");
+            LOG.info("SearchBackPressurePolicy is disabled");
             return actions;
         }
 
