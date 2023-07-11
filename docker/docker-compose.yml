@@ -13,7 +13,7 @@ version: '2.1'
 services:
   opensearch1:
     container_name: opensearch1
-    image: opensearch/pa-rca:2.8
+    image: opensearch/pa-rca:2.9
     mem_limit: 4g
     networks:
       opensearchnet:
@@ -34,7 +34,7 @@ services:
     container_name: opensearch2
     environment:
       - node.master=false
-    image: opensearch/pa-rca:2.8
+    image: opensearch/pa-rca:2.9
     mem_limit: 4g
     networks:
       - opensearchnet
