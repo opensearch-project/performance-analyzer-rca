@@ -21,5 +21,6 @@ public class SearchBackPressureClusterRCA extends BaseClusterRca {
     public <R extends Rca<ResourceFlowUnit<HotNodeSummary>>> SearchBackPressureClusterRCA(
             final int rcaPeriod, final R SearchBackPressureRCA) {
         super(rcaPeriod, SearchBackPressureRCA);
+        LOG.info("SearchBackPressureClusterRCA created");
     }
 }
