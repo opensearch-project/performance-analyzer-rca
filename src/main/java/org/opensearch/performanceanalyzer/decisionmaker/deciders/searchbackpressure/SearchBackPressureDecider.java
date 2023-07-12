@@ -58,7 +58,9 @@ public class SearchBackPressureDecider extends Decider {
 
         // SearchBackPressure Policy is always accepted
         List<Action> searchBackPressureActions = searchBackPressurePolicy.evaluate();
-        // oldGenPolicyActions.forEach(decision::addAction);
+        searchBackPressureActions.forEach(decision::addAction);
+
+        LOG.info("decision action size is {}", decision.getActions().size());
         return decision;
     }
 
