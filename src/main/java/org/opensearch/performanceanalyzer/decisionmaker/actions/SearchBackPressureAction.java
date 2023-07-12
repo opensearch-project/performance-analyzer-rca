@@ -22,12 +22,6 @@ import org.opensearch.performanceanalyzer.rca.store.rca.cluster.NodeKey;
 public class SearchBackPressureAction extends SuppressibleAction {
     private static final Logger LOG = LogManager.getLogger(SearchBackPressureAction.class);
     public static final String NAME = "SearchBackPressureAction";
-    private static final String ID_KEY = "Id";
-    private static final String IP_KEY = "Ip";
-
-    /* placeholder for dummy impactVector
-     * TODO: Remove
-     */
     private static final ImpactVector NO_IMPACT = new ImpactVector();
 
     /* TO DO: Discuss the default cool off period for SearchBackPressureAction
@@ -36,11 +30,11 @@ public class SearchBackPressureAction extends SuppressibleAction {
      */
     private static final long DEFAULT_COOL_OFF_PERIOD_IN_MILLIS = TimeUnit.HOURS.toMillis(1);
 
-    // step size in percent
     /* From Config Per Diumension Type
+     * TO DO: what to put in the config file
      *  Dimension should include all the settings dimension (e.g. node_duress.cpu_threshold, search_heap_threshold)
      *  Step Size in percentage
-     *  NOT to Node Level but for whole service (so all data node instances)
+     *  cool off period
      *  canUpdate means whether the action should be emitted
      */
     private final String searchbpDimension;
@@ -95,8 +89,9 @@ public class SearchBackPressureAction extends SuppressibleAction {
     public Map<NodeKey, ImpactVector> impact() {
         Map<NodeKey, ImpactVector> impact = new HashMap<>();
         for (NodeKey key : impactedNodes()) {
-            /* TODO: Impact Logic for SearchBackPressureAction */
-            // ImpactVector impactVector = new ImpactVector();
+            // Since SearchBackPressure Service only modify the threshold rather than general
+            // resources like CPU/Heap
+            // So there is no impact on the dimensions
             impact.put(key, NO_IMPACT);
         }
         return impact;

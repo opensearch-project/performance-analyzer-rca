@@ -72,7 +72,8 @@ public class SearchBpActionsAlarmMonitor implements AlarmMonitor {
         // initialize hour Monitor
         if (hourMonitorConfig == null) {
             // Bucket Window Size means the number of issues can exists in a bucket
-            // when you consider about the size of the BucketizedSlidingWindow, the size is the number of buckets, not issues
+            // when you consider about the size of the BucketizedSlidingWindow, the size is the
+            // number of buckets, not issues
             hourMonitor =
                     new BucketizedSlidingWindow(
                             (int) TimeUnit.HOURS.toMinutes(1),
