@@ -39,7 +39,8 @@ import org.opensearch.performanceanalyzer.rca.store.rca.searchbackpressure.Searc
 public class SearchBackPressurePolicy implements DecisionPolicy {
     private static final Logger LOG = LogManager.getLogger(SearchBackPressurePolicy.class);
 
-    // TO DO READ THE cool off period from the config file of the action
+    // TO DO
+    // Decide the Cooloff Period for the action
     private static final long DEAFULT_COOLOFF_PERIOD_IN_MILLIS = 60L * 60L * 1000L;
 
     private static final Path SEARCHBP_DATA_FILE_PATH =
@@ -48,8 +49,6 @@ public class SearchBackPressurePolicy implements DecisionPolicy {
     /* Specify a path to store SearchBackpressurePolicy_Autotune Stats */
 
     /* TO DO: Check which settings should be modifed based on search heap shard/task cancellation stats */
-    boolean searchTaskHeapThresholdShouldChange;
-
     private AppContext appContext;
     private RcaConf rcaConf;
     private SearchBackPressurePolicyConfig policyConfig;
@@ -62,14 +61,15 @@ public class SearchBackPressurePolicy implements DecisionPolicy {
     static final List<Resource> HEAP_SEARCHBP_SIGNALS =
             Lists.newArrayList(SEARCHBACKPRESSURE_SHARD, SEARCHBACKPRESSURE_TASK);
 
-    /* Hourly heap used threshold */
-    @VisibleForTesting SearchBpActionsAlarmMonitor searchBackPressureHeapAlarm;
+    /* alarm monitor per threshold per increase/decrease */
+    @VisibleForTesting SearchBpActionsAlarmMonitor searchBackPressureHeapIncreaseAlarm;
+    @VisibleForTesting SearchBpActionsAlarmMonitor searchBackPressureHeapDecreaseAlarm;
 
     public SearchBackPressurePolicy(
             SearchBackPressureClusterRCA searchBackPressureClusterRCA,
-            SearchBpActionsAlarmMonitor searchBackPressureHeapAlarm) {
+            SearchBpActionsAlarmMonitor searchBackPressureHeapIncreaseAlarm) {
         this.searchBackPressureClusterRCA = searchBackPressureClusterRCA;
-        this.searchBackPressureHeapAlarm = searchBackPressureHeapAlarm;
+        this.searchBackPressureHeapIncreaseAlarm = searchBackPressureHeapIncreaseAlarm;
         LOG.info("SearchBackPressurePolicy#SearchBackPressurePolicy() initialize");
     }
 
@@ -86,8 +86,8 @@ public class SearchBackPressurePolicy implements DecisionPolicy {
         LOG.info("SearchBackPressurePolicy#record()");
         if (HEAP_SEARCHBP_SIGNALS.contains(issue.getResource())) {
             LOG.info(
-                    "Recording issue in searchBackPressureHeapAlarm since Resource Searchbp Shard or Task appears");
-            searchBackPressureHeapAlarm.recordIssue();
+                    "Recording issue in searchBackPressureHeapIncreaseAlarm since Resource Searchbp Shard or Task appears");
+            searchBackPressureHeapIncreaseAlarm.recordIssue();
         }
     }
 
@@ -115,6 +115,7 @@ public class SearchBackPressurePolicy implements DecisionPolicy {
                             "SearchBackPressurePolicy#recordIssues() Summary test_counter: "
                                     + test_counter);
                     record(summary);
+                    // TO DO: Check if we need to increase or decrease the heap threshold
                 }
             }
         }
@@ -122,12 +123,12 @@ public class SearchBackPressurePolicy implements DecisionPolicy {
 
     /* TO DO: Change the logic of heapThresholdIsTooSmall */
     public boolean heapThresholdIsTooSmall() {
-        return !searchBackPressureHeapAlarm.isHealthy();
+        return !searchBackPressureHeapIncreaseAlarm.isHealthy();
     }
 
     /* TO DO: Change the logic of heapThresholdIsTooLarge */
     public boolean heapThresholdIsTooLarge() {
-        return !searchBackPressureHeapAlarm.isHealthy();
+        return !searchBackPressureHeapIncreaseAlarm.isHealthy();
     }
 
     // create alarm monitor from config
@@ -154,8 +155,8 @@ public class SearchBackPressurePolicy implements DecisionPolicy {
     // initalize all alarm monitors
     public void initialize() {
         LOG.info("Initializing alarms with dummy path");
-        if (searchBackPressureHeapAlarm == null) {
-            searchBackPressureHeapAlarm = createAlarmMonitor(SEARCHBP_DATA_FILE_PATH);
+        if (searchBackPressureHeapIncreaseAlarm == null) {
+            searchBackPressureHeapIncreaseAlarm = createAlarmMonitor(SEARCHBP_DATA_FILE_PATH);
         }
     }
 
@@ -176,14 +177,14 @@ public class SearchBackPressurePolicy implements DecisionPolicy {
 
         initialize();
         LOG.info(
-                "searchBackPressureHeapAlarm#hour breach threshold is {}",
-                searchBackPressureHeapAlarm.getHourBreachThreshold());
+                "searchBackPressureHeapIncreaseAlarm#hour breach threshold is {}",
+                searchBackPressureHeapIncreaseAlarm.getHourBreachThreshold());
 
         recordIssues();
 
         if (heapThresholdIsTooSmall()) {
             LOG.info(
-                    "SearchBackPressurePolicy#evaluate() heap usage need to be autotuned. Action Added!");
+                    "SearchBackPressurePolicy#evaluate() heap usage need to be autotuned. raise heap suage threshold action Added!");
             // suggest the downstream cls to modify heap usgae threshold
             actions.add(
                     new SearchBackPressureAction(
@@ -192,6 +193,20 @@ public class SearchBackPressurePolicy implements DecisionPolicy {
                             DEAFULT_COOLOFF_PERIOD_IN_MILLIS,
                             "heap_usage",
                             75.0,
+                            70));
+        }
+
+        if (heapThresholdIsTooLarge()) {
+            LOG.info(
+                    "SearchBackPressurePolicy#evaluate() heap usage need to be autotuned. drop heap suage threshold action Added!");
+            // suggest the downstream cls to modify heap usgae threshold
+            actions.add(
+                    new SearchBackPressureAction(
+                            appContext,
+                            true,
+                            DEAFULT_COOLOFF_PERIOD_IN_MILLIS,
+                            "heap_usage",
+                            65.0,
                             70));
         }
 
