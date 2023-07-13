@@ -14,6 +14,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.opensearch.performanceanalyzer.AppContext;
@@ -22,6 +23,7 @@ import org.opensearch.performanceanalyzer.decisionmaker.actions.SearchBackPressu
 import org.opensearch.performanceanalyzer.decisionmaker.deciders.DecisionPolicy;
 import org.opensearch.performanceanalyzer.decisionmaker.deciders.configs.searchbackpressure.SearchBackPressurePolicyConfig;
 import org.opensearch.performanceanalyzer.grpc.Resource;
+import org.opensearch.performanceanalyzer.rca.framework.api.aggregators.BucketizedSlidingWindowConfig;
 import org.opensearch.performanceanalyzer.rca.framework.api.flow_units.ResourceFlowUnit;
 import org.opensearch.performanceanalyzer.rca.framework.api.summaries.HotClusterSummary;
 import org.opensearch.performanceanalyzer.rca.framework.api.summaries.HotNodeSummary;
@@ -130,14 +132,23 @@ public class SearchBackPressurePolicy implements DecisionPolicy {
 
     // create alarm monitor from config
     public SearchBpActionsAlarmMonitor createAlarmMonitor(Path persistenceBasePath) {
-        // BucketizedSlidingWindowConfig hourMonitorConfig =
-        //         new BucketizedSlidingWindowConfig(
-        //                 policyConfig.getDayMonitorWindowSizeMinutes(),
-        //                 policyConfig.getDayMonitorBucketSizeMinutes(),
-        //                 TimeUnit.MINUTES,
-        //                 persistenceBasePath);
+        // LOG the policyConfig.getHourMonitorWindowSizeMinutes() BuketSize and dahy breanch
+        // threhsold
+        LOG.info(
+                "createAlarmMonitor with hour window: {}, bucket size: {}, hour threshold: {}",
+                policyConfig.getHourMonitorWindowSizeMinutes(),
+                policyConfig.getHourMonitorBucketSizeMinutes(),
+                policyConfig.getHourBreachThreshold());
+        BucketizedSlidingWindowConfig hourMonitorConfig =
+                new BucketizedSlidingWindowConfig(
+                        policyConfig.getHourMonitorWindowSizeMinutes(),
+                        policyConfig.getHourMonitorBucketSizeMinutes(),
+                        TimeUnit.MINUTES,
+                        persistenceBasePath);
 
-        return new SearchBpActionsAlarmMonitor();
+        // TODO: Check whether we need a persistence path to write our data
+        //
+        return new SearchBpActionsAlarmMonitor(policyConfig.getHourBreachThreshold());
     }
 
     // initalize all alarm monitors
@@ -161,6 +172,7 @@ public class SearchBackPressurePolicy implements DecisionPolicy {
             LOG.info("SearchBackPressurePolicy is disabled");
             return actions;
         }
+        LOG.info("Evaluate() of SearchBackpressurePolicy.");
 
         initialize();
         LOG.info(

@@ -7,6 +7,8 @@ package org.opensearch.performanceanalyzer.decisionmaker.deciders.configs.search
 
 
 import java.util.concurrent.TimeUnit;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.opensearch.performanceanalyzer.decisionmaker.deciders.searchbackpressure.SearchBackPressurePolicy;
 import org.opensearch.performanceanalyzer.rca.framework.core.Config;
 import org.opensearch.performanceanalyzer.rca.framework.core.NestedConfig;
@@ -28,9 +30,11 @@ import org.opensearch.performanceanalyzer.rca.framework.core.NestedConfig;
  * percentage) for an individual task before it is considered for cancellation.
  */
 public class SearchBackPressurePolicyConfig {
+    private static final Logger LOG = LogManager.getLogger(SearchBackPressurePolicyConfig.class);
+
     // Field Names
     private static final String ENABLED = "enabled";
-    private static final String HOUR_BREACH_THRESHOLD = "hour-threshold";
+    private static final String HOUR_BREACH_THRESHOLD = "hour-breach-threshold";
     private static final String THRESHOLD_COUNT = "threshold_count";
     private static final String HOUR_MONITOR_WINDOW_SIZE_MINUTES =
             "hour-monitor-window-size-minutes";
@@ -39,7 +43,8 @@ public class SearchBackPressurePolicyConfig {
 
     // Default values
     public static final boolean DEFAULT_ENABLED = true;
-    public static final int DEFAULT_HOUR_BREACH_THRESHOLD = 30;
+    // TO DO Decide the Defauilt Hour breach threshold
+    public static final int DEFAULT_HOUR_BREACH_THRESHOLD = 2;
     public static final int DEFAULT_HOUR_MONITOR_WINDOW_SIZE_MINUTES =
             (int) TimeUnit.HOURS.toMinutes(1);
     public static final int DEFAULT_HOUR_MONITOR_BUCKET_SIZE_MINUTES = 5;
@@ -57,13 +62,16 @@ public class SearchBackPressurePolicyConfig {
                         config.getValue(),
                         DEFAULT_HOUR_BREACH_THRESHOLD,
                         Integer.class);
+        LOG.info(
+                "SearchBackPressurePolicyConfig hour breach threshold is: {}",
+                hourBreachThreshold.getValue());
         hourMonitorWindowSizeMinutes =
                 new Config<>(
                         HOUR_MONITOR_WINDOW_SIZE_MINUTES,
                         config.getValue(),
                         DEFAULT_HOUR_MONITOR_WINDOW_SIZE_MINUTES,
                         Integer.class);
-
+        LOG.info("hourMonitorWindowSizeMinutes is: {}", hourMonitorWindowSizeMinutes.getValue());
         hourMonitorBucketSizeMinutes =
                 new Config<>(
                         HOUR_MONITOR_BUCKET_SIZE_MINUTES,

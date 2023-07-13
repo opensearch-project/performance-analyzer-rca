@@ -22,8 +22,10 @@ public class SearchBpActionsAlarmMonitor implements AlarmMonitor {
     private static final Logger LOG = LogManager.getLogger(SearchBpActionsAlarmMonitor.class);
     /* Current design only uses hour monitor to evaluate the health of the searchbackpressure service
      * if there are more than 30 bad units in one hour, then the alarm shows a Unhealthy Signal
+     * TODO: Remove 2 for testing, replace with 30
      */
     private static final int DEFAULT_HOUR_BREACH_THRESHOLD = 2;
+    private static final int DEFAULT_BUCKET_WINDOW_SIZE = 1;
     // private static final int DEFAULT_DAY_BREACH_THRESHOLD = 1;
     // private static final int DEFAULT_WEEK_BREACH_THRESHOLD = 1;
     private static final String HOUR_PREFIX = "hour-";
@@ -71,13 +73,15 @@ public class SearchBpActionsAlarmMonitor implements AlarmMonitor {
         }
         // initialize hour Monitor
         if (hourMonitorConfig == null) {
-            // Bucket Window Size means the number of issues can exists in a bucket
-            // when you consider about the size of the BucketizedSlidingWindow, the size is the
-            // number of buckets, not issues
+            /*
+             * Bucket Window Size means the number of issues can exist in a bucket
+             * when you consider about the size of the BucketizedSlidingWindow, the size is the
+             * number of buckets, not issues
+             */
             hourMonitor =
                     new BucketizedSlidingWindow(
                             (int) TimeUnit.HOURS.toMinutes(1),
-                            1,
+                            DEFAULT_BUCKET_WINDOW_SIZE,
                             TimeUnit.MINUTES,
                             hourMonitorPath);
         } else {
@@ -115,9 +119,10 @@ public class SearchBpActionsAlarmMonitor implements AlarmMonitor {
         SlidingWindowData dataPoint = new SlidingWindowData(timeStamp, value);
         LOG.info("Search Backpressure Actions Alarm is recording a new issue at {}", timeStamp);
         hourMonitor.next(dataPoint);
-        // // If we've breached the day threshold, record it as a bad day this week.
-        // if (dayMonitor.size() >= dayBreachThreshold) {
-        //     weekMonitor.next(new SlidingWindowData(dataPoint.getTimeStamp(),
+
+        // // If we've breached the hour threshold, record it as a bad day/
+        // if (hourMonitor.size() >= hourBreachThreshold) {
+        //     dayMonitor.next(new SlidingWindowData(dataPoint.getTimeStamp(),
         // dataPoint.getValue()));
         // }
     }

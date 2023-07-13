@@ -31,7 +31,7 @@ public class SearchBackPressureAction extends SuppressibleAction {
     private static final long DEFAULT_COOL_OFF_PERIOD_IN_MILLIS = TimeUnit.HOURS.toMillis(1);
 
     /* From Config Per Diumension Type
-     * TO DO: what to put in the config file
+     *  TO DO: what to put in the config file
      *  Dimension should include all the settings dimension (e.g. node_duress.cpu_threshold, search_heap_threshold)
      *  Step Size in percentage
      *  cool off period
@@ -210,6 +210,10 @@ public class SearchBackPressureAction extends SuppressibleAction {
             this.canUpdate = canUpdate;
         }
 
+        /*
+         * Dimension is the name of the setting to be modified
+         * e.g. node_duress.cpu_threshold, node_duress.search_heap_threshold
+         */
         public String getSearchbpSettingDimension() {
             return this.searchbpSettingDimension;
         }
