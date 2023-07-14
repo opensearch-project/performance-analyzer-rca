@@ -200,18 +200,22 @@ public class SearchBackPressurePolicy implements DecisionPolicy {
     // initalize all alarm monitors
     public void initialize() {
         LOG.info("Initializing alarms with dummy path");
+        // initialize shard level alarm for resounce unit that suggests to increase jvm threshold
         if (searchBackPressureShardHeapIncreaseAlarm == null) {
             searchBackPressureShardHeapIncreaseAlarm = createAlarmMonitor(SEARCHBP_DATA_FILE_PATH);
         }
 
+        // initialize shard level alarm for resounce unit that suggests to decrease jvm threshold
         if (searchBackPressureShardHeapDecreaseAlarm == null) {
             searchBackPressureShardHeapDecreaseAlarm = createAlarmMonitor(SEARCHBP_DATA_FILE_PATH);
         }
 
+        // initialize task level alarm for resounce unit that suggests to increase jvm threshold
         if (searchBackPressureTaskHeapIncreaseAlarm == null) {
             searchBackPressureTaskHeapIncreaseAlarm = createAlarmMonitor(SEARCHBP_DATA_FILE_PATH);
         }
 
+        // initialize task level alarm for resounce unit that suggests to decrease jvm threhsold
         if (searchBackPressureTaskHeapDecreaseAlarm == null) {
             searchBackPressureTaskHeapDecreaseAlarm = createAlarmMonitor(SEARCHBP_DATA_FILE_PATH);
         }
