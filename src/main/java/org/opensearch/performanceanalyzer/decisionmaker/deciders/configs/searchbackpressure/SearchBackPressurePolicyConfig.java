@@ -18,7 +18,7 @@ import org.opensearch.performanceanalyzer.rca.framework.core.NestedConfig;
  *
  * <p>The config follows the format below "decider-config-settings": {
  * "search-back-pressure-policy-config": { "enabled": true, // whether the
- * serch-back-pressure-policy should be enabled "hour-threshold": 30, // threshold for hourly
+ * serch-back-pressure-policy should be enabled "hour-breach-threshold": 30, // threshold for hourly
  * received unhealthy cluster level rca flow units, if above, then the below thresholds should be
  * modified "threshold_count": 2, // how many thresholds to be changed, in this case
  * search-heap-threshold and search-task-heap-threshold "search_task_heap_stepsize_in_percentage":

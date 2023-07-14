@@ -24,7 +24,7 @@ public class SearchBpActionsAlarmMonitor implements AlarmMonitor {
      * if there are more than 30 bad units in one hour, then the alarm shows a Unhealthy Signal
      * TODO: Remove 2 for testing, replace with 30
      */
-    private static final int DEFAULT_HOUR_BREACH_THRESHOLD = 2;
+    private static final int DEFAULT_HOUR_BREACH_THRESHOLD = 3;
     private static final int DEFAULT_BUCKET_WINDOW_SIZE = 1;
     // private static final int DEFAULT_DAY_BREACH_THRESHOLD = 1;
     // private static final int DEFAULT_WEEK_BREACH_THRESHOLD = 1;

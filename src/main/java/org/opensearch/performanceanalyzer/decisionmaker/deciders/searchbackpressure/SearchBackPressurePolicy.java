@@ -23,6 +23,7 @@ import org.opensearch.performanceanalyzer.decisionmaker.actions.SearchBackPressu
 import org.opensearch.performanceanalyzer.decisionmaker.deciders.DecisionPolicy;
 import org.opensearch.performanceanalyzer.decisionmaker.deciders.configs.searchbackpressure.SearchBackPressurePolicyConfig;
 import org.opensearch.performanceanalyzer.grpc.Resource;
+import org.opensearch.performanceanalyzer.rca.configs.SearchBackPressureRcaConfig;
 import org.opensearch.performanceanalyzer.rca.framework.api.aggregators.BucketizedSlidingWindowConfig;
 import org.opensearch.performanceanalyzer.rca.framework.api.flow_units.ResourceFlowUnit;
 import org.opensearch.performanceanalyzer.rca.framework.api.summaries.HotClusterSummary;
@@ -39,16 +40,18 @@ import org.opensearch.performanceanalyzer.rca.store.rca.searchbackpressure.Searc
 public class SearchBackPressurePolicy implements DecisionPolicy {
     private static final Logger LOG = LogManager.getLogger(SearchBackPressurePolicy.class);
 
-    // TO DO
-    // Decide the Cooloff Period for the action
-    private static final long DEAFULT_COOLOFF_PERIOD_IN_MILLIS = 60L * 60L * 1000L;
+    // Default COOLOFF Period for the action (1 DAY)
+    private static final long DEAFULT_COOLOFF_PERIOD_IN_MILLIS = 24L * 60L * 60L * 1000L;
+    private static final String HEAP_THRESHOLD_STR = "heap_usage";
+    private static final String SHARD_DIMENSION_STR = "SHARD";
+    private static final String TASK_DIMENSION_STR = "TASK";
+    private static final double DEFAULT_HEAP_CHANGE_IN_PERCENTAGE = 5.0;
 
     private static final Path SEARCHBP_DATA_FILE_PATH =
             Paths.get(RcaConsts.CONFIG_DIR_PATH, "SearchBackPressurePolicy_heap");
 
     /* Specify a path to store SearchBackpressurePolicy_Autotune Stats */
 
-    /* TO DO: Check which settings should be modifed based on search heap shard/task cancellation stats */
     private AppContext appContext;
     private RcaConf rcaConf;
     private SearchBackPressurePolicyConfig policyConfig;
@@ -58,23 +61,36 @@ public class SearchBackPressurePolicy implements DecisionPolicy {
     private int hourlyAlarmThreshold;
 
     /* Alarm for heap usage */
-    static final List<Resource> HEAP_SEARCHBP_SIGNALS =
-            Lists.newArrayList(SEARCHBACKPRESSURE_SHARD, SEARCHBACKPRESSURE_TASK);
+    static final List<Resource> HEAP_SEARCHBP_SHARD_SIGNALS =
+            Lists.newArrayList(SEARCHBACKPRESSURE_SHARD);
+    static final List<Resource> HEAP_SEARCHBP_TASK_SIGNALS =
+            Lists.newArrayList(SEARCHBACKPRESSURE_TASK);
 
-    /* alarm monitor per threshold per increase/decrease */
-    @VisibleForTesting SearchBpActionsAlarmMonitor searchBackPressureHeapIncreaseAlarm;
-    @VisibleForTesting SearchBpActionsAlarmMonitor searchBackPressureHeapDecreaseAlarm;
+    /* alarm monitors per threshold */
+    // shard-level alarms
+    @VisibleForTesting SearchBpActionsAlarmMonitor searchBackPressureShardHeapIncreaseAlarm;
+    @VisibleForTesting SearchBpActionsAlarmMonitor searchBackPressureShardHeapDecreaseAlarm;
+
+    // task-level alarms
+    @VisibleForTesting SearchBpActionsAlarmMonitor searchBackPressureTaskHeapIncreaseAlarm;
+    @VisibleForTesting SearchBpActionsAlarmMonitor searchBackPressureTaskHeapDecreaseAlarm;
 
     public SearchBackPressurePolicy(
             SearchBackPressureClusterRCA searchBackPressureClusterRCA,
-            SearchBpActionsAlarmMonitor searchBackPressureHeapIncreaseAlarm) {
+            SearchBpActionsAlarmMonitor searchBackPressureShardHeapIncreaseAlarm,
+            SearchBpActionsAlarmMonitor searchBackPressureShardHeapDecreaseAlarm,
+            SearchBpActionsAlarmMonitor searchBackPressureTaskHeapIncreaseAlarm,
+            SearchBpActionsAlarmMonitor searchBackPressureTaskHeapDecreaseAlarm) {
         this.searchBackPressureClusterRCA = searchBackPressureClusterRCA;
-        this.searchBackPressureHeapIncreaseAlarm = searchBackPressureHeapIncreaseAlarm;
-        LOG.info("SearchBackPressurePolicy#SearchBackPressurePolicy() initialize");
+        this.searchBackPressureShardHeapIncreaseAlarm = searchBackPressureShardHeapIncreaseAlarm;
+        this.searchBackPressureShardHeapDecreaseAlarm = searchBackPressureShardHeapDecreaseAlarm;
+        this.searchBackPressureTaskHeapIncreaseAlarm = searchBackPressureTaskHeapIncreaseAlarm;
+        this.searchBackPressureTaskHeapDecreaseAlarm = searchBackPressureTaskHeapDecreaseAlarm;
+        LOG.info("SearchBackPressurePolicy#SearchBackPressurePolicy() initialized");
     }
 
     public SearchBackPressurePolicy(SearchBackPressureClusterRCA searchBackPressureClusterRCA) {
-        this(searchBackPressureClusterRCA, null);
+        this(searchBackPressureClusterRCA, null, null, null, null);
     }
 
     /**
@@ -84,10 +100,34 @@ public class SearchBackPressurePolicy implements DecisionPolicy {
      */
     private void record(HotResourceSummary issue) {
         LOG.info("SearchBackPressurePolicy#record()");
-        if (HEAP_SEARCHBP_SIGNALS.contains(issue.getResource())) {
-            LOG.info(
-                    "Recording issue in searchBackPressureHeapIncreaseAlarm since Resource Searchbp Shard or Task appears");
-            searchBackPressureHeapIncreaseAlarm.recordIssue();
+        if (HEAP_SEARCHBP_SHARD_SIGNALS.contains(issue.getResource())) {
+            LOG.info("Recording shard-level issue");
+            // increase alarm for heap-related threshold (shard-level)
+            if (issue.getMetaData() == SearchBackPressureRcaConfig.INCREASE_THRESHOLD_BY_JVM_STR) {
+                LOG.info("recording increase-level issue for shard");
+                searchBackPressureShardHeapIncreaseAlarm.recordIssue();
+            }
+
+            // decrease alarm for heap-related threshold (shard-level)
+            if (issue.getMetaData() == SearchBackPressureRcaConfig.DECREASE_THRESHOLD_BY_JVM_STR) {
+                LOG.info("recording decrease-level issue for shard");
+                searchBackPressureShardHeapDecreaseAlarm.recordIssue();
+            }
+
+        } else if (HEAP_SEARCHBP_TASK_SIGNALS.contains(issue.getResource())) {
+            LOG.info("Recording Task-Level issue");
+
+            // increase alarm for heap-related threshold (task-level)
+            if (issue.getMetaData() == SearchBackPressureRcaConfig.INCREASE_THRESHOLD_BY_JVM_STR) {
+                LOG.info("recording increase-level issue for task");
+                searchBackPressureTaskHeapIncreaseAlarm.recordIssue();
+            }
+
+            // decrease alarm for heap-related threshold (task-level)
+            if (issue.getMetaData() == SearchBackPressureRcaConfig.DECREASE_THRESHOLD_BY_JVM_STR) {
+                LOG.info("recording decrease-level issue for task");
+                searchBackPressureTaskHeapDecreaseAlarm.recordIssue();
+            }
         }
     }
 
@@ -115,20 +155,25 @@ public class SearchBackPressurePolicy implements DecisionPolicy {
                             "SearchBackPressurePolicy#recordIssues() Summary test_counter: "
                                     + test_counter);
                     record(summary);
-                    // TO DO: Check if we need to increase or decrease the heap threshold
                 }
             }
         }
     }
 
-    /* TO DO: Change the logic of heapThresholdIsTooSmall */
-    public boolean heapThresholdIsTooSmall() {
-        return !searchBackPressureHeapIncreaseAlarm.isHealthy();
+    public boolean shardHeapThresholdIsTooSmall() {
+        return !searchBackPressureShardHeapIncreaseAlarm.isHealthy();
     }
 
-    /* TO DO: Change the logic of heapThresholdIsTooLarge */
-    public boolean heapThresholdIsTooLarge() {
-        return !searchBackPressureHeapIncreaseAlarm.isHealthy();
+    public boolean shardHeapThresholdIsTooLarge() {
+        return !searchBackPressureShardHeapDecreaseAlarm.isHealthy();
+    }
+
+    public boolean taskHeapThresholdIsTooSmall() {
+        return !searchBackPressureTaskHeapIncreaseAlarm.isHealthy();
+    }
+
+    public boolean taskHeapThresholdIsTooLarge() {
+        return !searchBackPressureTaskHeapDecreaseAlarm.isHealthy();
     }
 
     // create alarm monitor from config
@@ -155,13 +200,26 @@ public class SearchBackPressurePolicy implements DecisionPolicy {
     // initalize all alarm monitors
     public void initialize() {
         LOG.info("Initializing alarms with dummy path");
-        if (searchBackPressureHeapIncreaseAlarm == null) {
-            searchBackPressureHeapIncreaseAlarm = createAlarmMonitor(SEARCHBP_DATA_FILE_PATH);
+        if (searchBackPressureShardHeapIncreaseAlarm == null) {
+            searchBackPressureShardHeapIncreaseAlarm = createAlarmMonitor(SEARCHBP_DATA_FILE_PATH);
+        }
+
+        if (searchBackPressureShardHeapDecreaseAlarm == null) {
+            searchBackPressureShardHeapDecreaseAlarm = createAlarmMonitor(SEARCHBP_DATA_FILE_PATH);
+        }
+
+        if (searchBackPressureTaskHeapIncreaseAlarm == null) {
+            searchBackPressureTaskHeapIncreaseAlarm = createAlarmMonitor(SEARCHBP_DATA_FILE_PATH);
+        }
+
+        if (searchBackPressureTaskHeapDecreaseAlarm == null) {
+            searchBackPressureTaskHeapDecreaseAlarm = createAlarmMonitor(SEARCHBP_DATA_FILE_PATH);
         }
     }
 
     @Override
     public List<Action> evaluate() {
+        LOG.info("Evaluate() of SearchBackpressurePolicy.");
         List<Action> actions = new ArrayList<>();
         if (rcaConf == null || appContext == null) {
             LOG.error("rca conf/app context is null, return empty action list");
@@ -173,52 +231,59 @@ public class SearchBackPressurePolicy implements DecisionPolicy {
             LOG.info("SearchBackPressurePolicy is disabled");
             return actions;
         }
-        LOG.info("Evaluate() of SearchBackpressurePolicy.");
 
         initialize();
         LOG.info(
-                "searchBackPressureHeapIncreaseAlarm#hour breach threshold is {}",
-                searchBackPressureHeapIncreaseAlarm.getHourBreachThreshold());
+                "searchBackPressureShardHeapIncreaseAlarm#hour breach threshold is {}",
+                searchBackPressureShardHeapIncreaseAlarm.getHourBreachThreshold());
 
         recordIssues();
 
-        if (heapThresholdIsTooSmall()) {
-            LOG.info(
-                    "SearchBackPressurePolicy#evaluate() heap usage need to be autotuned. raise heap suage threshold action Added!");
+        if (shardHeapThresholdIsTooSmall()) {
+            LOG.info("shardHeapThresholdIsTooSmall action Added!");
             // suggest the downstream cls to modify heap usgae threshold
             actions.add(
                     new SearchBackPressureAction(
                             appContext,
                             true,
                             DEAFULT_COOLOFF_PERIOD_IN_MILLIS,
-                            "heap_usage",
-                            75.0,
-                            70));
-        }
-
-        if (heapThresholdIsTooLarge()) {
-            LOG.info(
-                    "SearchBackPressurePolicy#evaluate() heap usage need to be autotuned. drop heap suage threshold action Added!");
+                            HEAP_THRESHOLD_STR,
+                            SHARD_DIMENSION_STR,
+                            DEFAULT_HEAP_CHANGE_IN_PERCENTAGE));
+        } else if (shardHeapThresholdIsTooLarge()) {
+            LOG.info("shardHeapThresholdIsTooLarge action Added!");
             // suggest the downstream cls to modify heap usgae threshold
             actions.add(
                     new SearchBackPressureAction(
                             appContext,
                             true,
                             DEAFULT_COOLOFF_PERIOD_IN_MILLIS,
-                            "heap_usage",
-                            65.0,
-                            70));
+                            HEAP_THRESHOLD_STR,
+                            SHARD_DIMENSION_STR,
+                            DEFAULT_HEAP_CHANGE_IN_PERCENTAGE));
+        } else if (taskHeapThresholdIsTooSmall()) {
+            LOG.info("taskHeapThresholdIsTooSmall action Added!");
+            // suggest the downstream cls to modify heap usgae threshold
+            actions.add(
+                    new SearchBackPressureAction(
+                            appContext,
+                            true,
+                            DEAFULT_COOLOFF_PERIOD_IN_MILLIS,
+                            HEAP_THRESHOLD_STR,
+                            TASK_DIMENSION_STR,
+                            DEFAULT_HEAP_CHANGE_IN_PERCENTAGE));
+        } else if (taskHeapThresholdIsTooLarge()) {
+            LOG.info("taskHeapThresholdIsTooLarge action Added!");
+            // suggest the downstream cls to modify heap usgae threshold
+            actions.add(
+                    new SearchBackPressureAction(
+                            appContext,
+                            true,
+                            DEAFULT_COOLOFF_PERIOD_IN_MILLIS,
+                            HEAP_THRESHOLD_STR,
+                            TASK_DIMENSION_STR,
+                            DEFAULT_HEAP_CHANGE_IN_PERCENTAGE));
         }
-
-        // else if (youngGenerationIsTooSmall()) {
-        //     LOG.debug("The young generation is too small!");
-        //     int newRatio = computeIncrease(getCurrentRatio());
-        //     if (newRatio >= 1) {
-        //         LOG.debug("Adding new JvmGenAction with ratio {}", newRatio);
-        //         actions.add(new JvmGenAction(appContext, newRatio, COOLOFF_PERIOD_IN_MILLIS,
-        // true));
-        //     }
-        // }
 
         return actions;
     }

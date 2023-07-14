@@ -28,34 +28,34 @@ public class SearchBackPressureAction extends SuppressibleAction {
      * Time to wait since last recommendation, before suggesting this action again
      * Needs the action config to have the cool off period for all dimension
      */
-    private static final long DEFAULT_COOL_OFF_PERIOD_IN_MILLIS = TimeUnit.HOURS.toMillis(1);
+    private static final long DEFAULT_COOL_OFF_PERIOD_IN_MILLIS = TimeUnit.DAYS.toMillis(1);
 
     /* From Config Per Diumension Type
-     *  TO DO: what to put in the config file
-     *  Dimension should include all the settings dimension (e.g. node_duress.cpu_threshold, search_heap_threshold)
-     *  Step Size in percentage
-     *  cool off period
-     *  canUpdate means whether the action should be emitted
+     *  canUpdate: whether the action should be emitted
+     *  coolOffPeriodInMillis: how long the CoolOffPeriod the action should before reemit
+     *  thresholdname: the name of threshold we are tuning  (e.g. node_duress.cpu_threshold, search_heap_threshold)
+     *  dimension: shard/task (String)
+     *  Step Size in percentage: how much should the threshold change in percentage
      */
-    private final String searchbpDimension;
-    private final double desiredValue;
-    private final double currentValue;
     private boolean canUpdate;
     private long coolOffPeriodInMillis;
+    private String thresholdName;
+    private String dimension;
+    private double stepSizeInPercentage;
 
     public SearchBackPressureAction(
             final AppContext appContext,
             final boolean canUpdate,
             final long coolOffPeriodInMillis,
-            final String searchbpDimension,
-            final double desiredValue,
-            final double currentValue) {
+            final String thresholdName,
+            final String dimension,
+            final double stepSizeInPercentage) {
         super(appContext);
         this.canUpdate = canUpdate;
         this.coolOffPeriodInMillis = coolOffPeriodInMillis;
-        this.searchbpDimension = searchbpDimension;
-        this.desiredValue = desiredValue;
-        this.currentValue = currentValue;
+        this.thresholdName = thresholdName;
+        this.dimension = dimension;
+        this.stepSizeInPercentage = stepSizeInPercentage;
     }
 
     @Override
@@ -97,49 +97,54 @@ public class SearchBackPressureAction extends SuppressibleAction {
         return impact;
     }
 
-    public double getCurrentValue() {
-        return this.currentValue;
+    public String getThresholdName() {
+        return thresholdName;
     }
 
-    public double getDesiredValue() {
-        return this.desiredValue;
+    public String getDimension() {
+        return dimension;
+    }
+
+    public double getStepSizeInPercentage() {
+        return stepSizeInPercentage;
     }
 
     @Override
     public String summary() {
         Summary summary =
                 new Summary(
-                        searchbpDimension,
-                        desiredValue,
-                        currentValue,
+                        thresholdName,
+                        dimension,
+                        stepSizeInPercentage,
                         DEFAULT_COOL_OFF_PERIOD_IN_MILLIS,
                         canUpdate);
         return summary.toJson();
     }
 
     public static final class Builder {
+        public static final boolean DEFAULT_CAN_UPDATE = true;
+
         private final AppContext appContext;
-        private final String searchbpDimension;
-        private Double currentValue;
-        private Double desiredValue;
+        private final String thresholdName;
+        private final String dimension;
+        private boolean canUpdate;
+        private double stepSizeInPercentage;
         private long coolOffPeriodInMillis;
 
         private Builder(
                 final AppContext appContext,
-                final String searchbp_dimension,
+                final String thresholdName,
+                final String dimension,
                 final long coolOffPeriodInMillis) {
             this.appContext = appContext;
-            this.searchbpDimension = searchbp_dimension;
+            this.thresholdName = thresholdName;
+            this.dimension = dimension;
             this.coolOffPeriodInMillis = coolOffPeriodInMillis;
+            this.canUpdate = DEFAULT_CAN_UPDATE;
         }
 
-        public Builder currentValue(Double currentValue) {
-            this.currentValue = currentValue;
-            return this;
-        }
-
-        public Builder desiredValue(Double desiredValue) {
-            this.desiredValue = desiredValue;
+        public Builder stepSizeInPercentage(double stepSizeInPercentage) {
+            this.stepSizeInPercentage = stepSizeInPercentage;
             return this;
         }
 
@@ -149,47 +154,39 @@ public class SearchBackPressureAction extends SuppressibleAction {
         }
 
         public SearchBackPressureAction build() {
-            Boolean canUpdate = false;
-            /*
-             * if desiredValue is between 0 and 100 then canUpdate is true
-             * since desiredValue is valid */
-            if (desiredValue != null) {
-                canUpdate = ((desiredValue >= 0) && (desiredValue <= 100));
-            }
-
             return new SearchBackPressureAction(
                     appContext,
                     canUpdate,
                     coolOffPeriodInMillis,
-                    searchbpDimension,
-                    desiredValue,
-                    currentValue);
+                    thresholdName,
+                    dimension,
+                    stepSizeInPercentage);
         }
     }
 
     /* Write Static Class Summary to conver the Searchbp Action POJO to JSON Object
      * Key fields to be included
-     *  1. Dimension (name) of the Searchbp setting to be modified
-     *  2. CurrentValue of the setting
-     *  2. DesiredValue of the setting
-     *  3. CoolOffPeriodInMillis for the action
-     *  4. canUpdate (whether the action should be emitted)
+     *  1. ThresholdName of the Searchbp setting to be modified
+     *  2. Dimension of the action (Shard/Task)
+     *  3. StepSizeInPercentage to change the threshold
+     *  4. CoolOffPeriodInMillis for the action
+     *  5. canUpdate (whether the action should be emitted)
      */
     public static class Summary {
-        public static final String SEARCHBP_SETTING_DIMENSION = "searchbp_setting_dimension";
-        public static final String DESIRED_VALUE = "desiredValue";
-        public static final String CURRENT_VALUE = "currentValue";
+        public static final String THRESHOLD_NAME = "thresholdName";
+        public static final String SEARCHBP_DIMENSION = "searchbpDimension";
+        public static final String STEP_SIZE_IN_PERCENTAGE = "stepSizeInPercentage";
         public static final String COOL_OFF_PERIOD = "coolOffPeriodInMillis";
         public static final String CAN_UPDATE = "canUpdate";
 
-        @SerializedName(value = SEARCHBP_SETTING_DIMENSION)
+        @SerializedName(value = THRESHOLD_NAME)
+        private String thresholdName;
+
+        @SerializedName(value = SEARCHBP_DIMENSION)
         private String searchbpSettingDimension;
 
-        @SerializedName(value = DESIRED_VALUE)
-        private double desiredValue;
-
-        @SerializedName(value = CURRENT_VALUE)
-        private double currentValue;
+        @SerializedName(value = STEP_SIZE_IN_PERCENTAGE)
+        private double stepSizeInPercentage;
 
         @SerializedName(value = COOL_OFF_PERIOD)
         private long coolOffPeriodInMillis;
@@ -198,32 +195,32 @@ public class SearchBackPressureAction extends SuppressibleAction {
         private boolean canUpdate;
 
         public Summary(
+                String thresholdName,
                 String searchbpSettingDimension,
-                double desiredValue,
-                double currentValue,
+                double stepSizeInPercentage,
                 long coolOffPeriodInMillis,
                 boolean canUpdate) {
+            this.thresholdName = thresholdName;
             this.searchbpSettingDimension = searchbpSettingDimension;
-            this.desiredValue = desiredValue;
-            this.currentValue = currentValue;
+            this.stepSizeInPercentage = stepSizeInPercentage;
             this.coolOffPeriodInMillis = coolOffPeriodInMillis;
             this.canUpdate = canUpdate;
         }
 
         /*
-         * Dimension is the name of the setting to be modified
+         * ThresholdName is the name of the setting to be modified
          * e.g. node_duress.cpu_threshold, node_duress.search_heap_threshold
          */
+        public String getThresholdName() {
+            return thresholdName;
+        }
+
         public String getSearchbpSettingDimension() {
-            return this.searchbpSettingDimension;
+            return searchbpSettingDimension;
         }
 
-        public double getCurrentValue() {
-            return this.currentValue;
-        }
-
-        public double getDesiredValue() {
-            return this.desiredValue;
+        public double getStepSizeInPercentage() {
+            return stepSizeInPercentage;
         }
 
         public long getCoolOffPeriodInMillis() {
