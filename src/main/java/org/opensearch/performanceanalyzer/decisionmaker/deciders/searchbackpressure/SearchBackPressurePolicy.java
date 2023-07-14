@@ -50,15 +50,12 @@ public class SearchBackPressurePolicy implements DecisionPolicy {
     private static final Path SEARCHBP_DATA_FILE_PATH =
             Paths.get(RcaConsts.CONFIG_DIR_PATH, "SearchBackPressurePolicy_heap");
 
-    /* Specify a path to store SearchBackpressurePolicy_Autotune Stats */
+    /* TO DO: Specify a path to store SearchBackpressurePolicy_Autotune Stats */
 
     private AppContext appContext;
     private RcaConf rcaConf;
     private SearchBackPressurePolicyConfig policyConfig;
     private SearchBackPressureClusterRCA searchBackPressureClusterRCA;
-
-    /* Hourly Alarm frequency threshold */
-    private int hourlyAlarmThreshold;
 
     /* Alarm for heap usage */
     static final List<Resource> HEAP_SEARCHBP_SHARD_SIGNALS =
@@ -223,7 +220,7 @@ public class SearchBackPressurePolicy implements DecisionPolicy {
 
     @Override
     public List<Action> evaluate() {
-        LOG.info("Evaluate() of SearchBackpressurePolicy.");
+        LOG.info("Evaluate() of SearchBackpressurePolicy started");
         List<Action> actions = new ArrayList<>();
         if (rcaConf == null || appContext == null) {
             LOG.error("rca conf/app context is null, return empty action list");
@@ -245,7 +242,6 @@ public class SearchBackPressurePolicy implements DecisionPolicy {
 
         if (shardHeapThresholdIsTooSmall()) {
             LOG.info("shardHeapThresholdIsTooSmall action Added!");
-            // suggest the downstream cls to modify heap usgae threshold
             actions.add(
                     new SearchBackPressureAction(
                             appContext,
@@ -256,7 +252,6 @@ public class SearchBackPressurePolicy implements DecisionPolicy {
                             policyConfig.getSearchbpHeapStepsizeInPercentage()));
         } else if (shardHeapThresholdIsTooLarge()) {
             LOG.info("shardHeapThresholdIsTooLarge action Added!");
-            // suggest the downstream cls to modify heap usgae threshold
             actions.add(
                     new SearchBackPressureAction(
                             appContext,
@@ -267,7 +262,6 @@ public class SearchBackPressurePolicy implements DecisionPolicy {
                             policyConfig.getSearchbpHeapStepsizeInPercentage()));
         } else if (taskHeapThresholdIsTooSmall()) {
             LOG.info("taskHeapThresholdIsTooSmall action Added!");
-            // suggest the downstream cls to modify heap usgae threshold
             actions.add(
                     new SearchBackPressureAction(
                             appContext,
@@ -278,7 +272,6 @@ public class SearchBackPressurePolicy implements DecisionPolicy {
                             policyConfig.getSearchbpHeapStepsizeInPercentage()));
         } else if (taskHeapThresholdIsTooLarge()) {
             LOG.info("taskHeapThresholdIsTooLarge action Added!");
-            // suggest the downstream cls to modify heap usgae threshold
             actions.add(
                     new SearchBackPressureAction(
                             appContext,

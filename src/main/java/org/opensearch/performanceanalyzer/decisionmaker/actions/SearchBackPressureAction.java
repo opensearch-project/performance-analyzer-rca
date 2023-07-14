@@ -32,7 +32,7 @@ public class SearchBackPressureAction extends SuppressibleAction {
     /* From Config Per Diumension Type
      *  canUpdate: whether the action should be emitted
      *  coolOffPeriodInMillis: how long the CoolOffPeriod the action should before reemit
-     *  thresholdname: the name of threshold we are tuning  (e.g. node_duress.cpu_threshold, search_heap_threshold)
+     *  thresholdName: the name of threshold we are tuning  (e.g. node_duress.cpu_threshold, search_heap_threshold)
      *  dimension: indicates whether the resource unit is caused by shard/task level searchbackpressure cancellation stats
      *  Step Size in percentage: how much should the threshold change in percentage
      */
