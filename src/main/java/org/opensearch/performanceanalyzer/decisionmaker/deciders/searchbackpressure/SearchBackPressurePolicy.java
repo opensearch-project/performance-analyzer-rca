@@ -181,10 +181,11 @@ public class SearchBackPressurePolicy implements DecisionPolicy {
         // LOG the policyConfig.getHourMonitorWindowSizeMinutes() BuketSize and dahy breanch
         // threhsold
         LOG.info(
-                "createAlarmMonitor with hour window: {}, bucket size: {}, hour threshold: {}",
+                "createAlarmMonitor with hour window: {}, bucket size: {}, hour threshold: {}, stepsize: {}",
                 policyConfig.getHourMonitorWindowSizeMinutes(),
                 policyConfig.getHourMonitorBucketSizeMinutes(),
-                policyConfig.getHourBreachThreshold());
+                policyConfig.getHourBreachThreshold(),
+                policyConfig.getSearchbpHeapStepsizeInPercentage());
         BucketizedSlidingWindowConfig hourMonitorConfig =
                 new BucketizedSlidingWindowConfig(
                         policyConfig.getHourMonitorWindowSizeMinutes(),
@@ -193,7 +194,6 @@ public class SearchBackPressurePolicy implements DecisionPolicy {
                         persistenceBasePath);
 
         // TODO: Check whether we need a persistence path to write our data
-        //
         return new SearchBpActionsAlarmMonitor(policyConfig.getHourBreachThreshold());
     }
 
@@ -249,7 +249,7 @@ public class SearchBackPressurePolicy implements DecisionPolicy {
                             DEAFULT_COOLOFF_PERIOD_IN_MILLIS,
                             HEAP_THRESHOLD_STR,
                             SHARD_DIMENSION_STR,
-                            DEFAULT_HEAP_CHANGE_IN_PERCENTAGE));
+                            policyConfig.getSearchbpHeapStepsizeInPercentage()));
         } else if (shardHeapThresholdIsTooLarge()) {
             LOG.info("shardHeapThresholdIsTooLarge action Added!");
             // suggest the downstream cls to modify heap usgae threshold
@@ -260,7 +260,7 @@ public class SearchBackPressurePolicy implements DecisionPolicy {
                             DEAFULT_COOLOFF_PERIOD_IN_MILLIS,
                             HEAP_THRESHOLD_STR,
                             SHARD_DIMENSION_STR,
-                            DEFAULT_HEAP_CHANGE_IN_PERCENTAGE));
+                            policyConfig.getSearchbpHeapStepsizeInPercentage()));
         } else if (taskHeapThresholdIsTooSmall()) {
             LOG.info("taskHeapThresholdIsTooSmall action Added!");
             // suggest the downstream cls to modify heap usgae threshold
@@ -271,7 +271,7 @@ public class SearchBackPressurePolicy implements DecisionPolicy {
                             DEAFULT_COOLOFF_PERIOD_IN_MILLIS,
                             HEAP_THRESHOLD_STR,
                             TASK_DIMENSION_STR,
-                            DEFAULT_HEAP_CHANGE_IN_PERCENTAGE));
+                            policyConfig.getSearchbpHeapStepsizeInPercentage()));
         } else if (taskHeapThresholdIsTooLarge()) {
             LOG.info("taskHeapThresholdIsTooLarge action Added!");
             // suggest the downstream cls to modify heap usgae threshold
@@ -282,7 +282,7 @@ public class SearchBackPressurePolicy implements DecisionPolicy {
                             DEAFULT_COOLOFF_PERIOD_IN_MILLIS,
                             HEAP_THRESHOLD_STR,
                             TASK_DIMENSION_STR,
-                            DEFAULT_HEAP_CHANGE_IN_PERCENTAGE));
+                            policyConfig.getSearchbpHeapStepsizeInPercentage()));
         }
 
         return actions;

@@ -40,6 +40,8 @@ public class SearchBackPressurePolicyConfig {
             "hour-monitor-window-size-minutes";
     private static final String HOUR_MONITOR_BUCKET_SIZE_MINUTES =
             "hour-monitor-bucket-size-minutes";
+    private static final String SEARCHBP_HEAP_STEPSIZE_IN_PERCENTAGE =
+            "searchbp-heap-stepsize-in-percentage";
 
     // Default values
     public static final boolean DEFAULT_ENABLED = true;
@@ -48,11 +50,13 @@ public class SearchBackPressurePolicyConfig {
     public static final int DEFAULT_HOUR_MONITOR_WINDOW_SIZE_MINUTES =
             (int) TimeUnit.HOURS.toMinutes(1);
     public static final int DEFAULT_HOUR_MONITOR_BUCKET_SIZE_MINUTES = 5;
+    public static final double DEFAULT_SEARCHBP_HEAP_STEPSIZE_IN_PERCENTAGE = 5;
 
     private Config<Integer> hourBreachThreshold;
     private Config<Boolean> enabled;
     private Config<Integer> hourMonitorWindowSizeMinutes;
     private Config<Integer> hourMonitorBucketSizeMinutes;
+    private Config<Double> searchbpHeapStepsizeInPercentage;
 
     public SearchBackPressurePolicyConfig(NestedConfig config) {
         enabled = new Config<>(ENABLED, config.getValue(), DEFAULT_ENABLED, Boolean.class);
@@ -78,6 +82,15 @@ public class SearchBackPressurePolicyConfig {
                         config.getValue(),
                         DEFAULT_HOUR_MONITOR_BUCKET_SIZE_MINUTES,
                         Integer.class);
+        searchbpHeapStepsizeInPercentage =
+                new Config<>(
+                        SEARCHBP_HEAP_STEPSIZE_IN_PERCENTAGE,
+                        config.getValue(),
+                        DEFAULT_SEARCHBP_HEAP_STEPSIZE_IN_PERCENTAGE,
+                        Double.class);
+        LOG.info(
+                "searchbpHeapStepsizeInPercentage is {}",
+                searchbpHeapStepsizeInPercentage.getValue());
     }
 
     /**
@@ -99,5 +112,9 @@ public class SearchBackPressurePolicyConfig {
 
     public int getHourMonitorBucketSizeMinutes() {
         return hourMonitorBucketSizeMinutes.getValue();
+    }
+
+    public double getSearchbpHeapStepsizeInPercentage() {
+        return searchbpHeapStepsizeInPercentage.getValue();
     }
 }

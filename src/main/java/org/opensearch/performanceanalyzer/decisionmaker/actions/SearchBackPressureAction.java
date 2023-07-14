@@ -24,9 +24,8 @@ public class SearchBackPressureAction extends SuppressibleAction {
     public static final String NAME = "SearchBackPressureAction";
     private static final ImpactVector NO_IMPACT = new ImpactVector();
 
-    /* TO DO: Discuss the default cool off period for SearchBackPressureAction
+    /*
      * Time to wait since last recommendation, before suggesting this action again
-     * Needs the action config to have the cool off period for all dimension
      */
     private static final long DEFAULT_COOL_OFF_PERIOD_IN_MILLIS = TimeUnit.DAYS.toMillis(1);
 
@@ -89,9 +88,6 @@ public class SearchBackPressureAction extends SuppressibleAction {
     public Map<NodeKey, ImpactVector> impact() {
         Map<NodeKey, ImpactVector> impact = new HashMap<>();
         for (NodeKey key : impactedNodes()) {
-            // Since SearchBackPressure Service only modify the threshold rather than general
-            // resources like CPU/Heap
-            // So there is no impact on the dimensions
             impact.put(key, NO_IMPACT);
         }
         return impact;
@@ -166,7 +162,7 @@ public class SearchBackPressureAction extends SuppressibleAction {
 
     /* Write Static Class Summary to conver the Searchbp Action POJO to JSON Object
      * Key fields to be included
-     *  1. ThresholdName of the Searchbp setting to be modified
+     *  1. ThresholdName: name of the SearchBackPressure threshold to be tuned
      *  2. Dimension of the action (Shard/Task)
      *  3. StepSizeInPercentage to change the threshold
      *  4. CoolOffPeriodInMillis for the action
