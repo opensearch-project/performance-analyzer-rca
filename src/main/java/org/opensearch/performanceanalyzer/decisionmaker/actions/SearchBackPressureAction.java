@@ -40,6 +40,7 @@ public class SearchBackPressureAction extends SuppressibleAction {
     private long coolOffPeriodInMillis;
     private String thresholdName;
     private String dimension;
+    private String direction;
     private double stepSizeInPercentage;
 
     public SearchBackPressureAction(
@@ -48,12 +49,14 @@ public class SearchBackPressureAction extends SuppressibleAction {
             final long coolOffPeriodInMillis,
             final String thresholdName,
             final String dimension,
+            final String direction,
             final double stepSizeInPercentage) {
         super(appContext);
         this.canUpdate = canUpdate;
         this.coolOffPeriodInMillis = coolOffPeriodInMillis;
         this.thresholdName = thresholdName;
         this.dimension = dimension;
+        this.direction = direction;
         this.stepSizeInPercentage = stepSizeInPercentage;
     }
 
@@ -101,6 +104,10 @@ public class SearchBackPressureAction extends SuppressibleAction {
         return dimension;
     }
 
+    public String getDirection() {
+        return direction;
+    }
+
     public double getStepSizeInPercentage() {
         return stepSizeInPercentage;
     }
@@ -111,6 +118,7 @@ public class SearchBackPressureAction extends SuppressibleAction {
                 new Summary(
                         thresholdName,
                         dimension,
+                        direction,
                         stepSizeInPercentage,
                         DEFAULT_COOL_OFF_PERIOD_IN_MILLIS,
                         canUpdate);
@@ -123,6 +131,7 @@ public class SearchBackPressureAction extends SuppressibleAction {
         private final AppContext appContext;
         private final String thresholdName;
         private final String dimension;
+        private final String direction;
         private boolean canUpdate;
         private double stepSizeInPercentage;
         private long coolOffPeriodInMillis;
@@ -131,10 +140,12 @@ public class SearchBackPressureAction extends SuppressibleAction {
                 final AppContext appContext,
                 final String thresholdName,
                 final String dimension,
+                final String direction,
                 final long coolOffPeriodInMillis) {
             this.appContext = appContext;
             this.thresholdName = thresholdName;
             this.dimension = dimension;
+            this.direction = direction;
             this.coolOffPeriodInMillis = coolOffPeriodInMillis;
             this.canUpdate = DEFAULT_CAN_UPDATE;
         }
@@ -156,6 +167,7 @@ public class SearchBackPressureAction extends SuppressibleAction {
                     coolOffPeriodInMillis,
                     thresholdName,
                     dimension,
+                    direction,
                     stepSizeInPercentage);
         }
     }
@@ -164,6 +176,7 @@ public class SearchBackPressureAction extends SuppressibleAction {
      * Key fields to be included
      *  1. ThresholdName: name of the SearchBackPressure threshold to be tuned
      *  2. Dimension of the action (Shard/Task)
+     *  3. Direction of the action (Increase/Decrease)
      *  3. StepSizeInPercentage to change the threshold
      *  4. CoolOffPeriodInMillis for the action
      *  5. canUpdate (whether the action should be emitted)
@@ -171,6 +184,7 @@ public class SearchBackPressureAction extends SuppressibleAction {
     public static class Summary {
         public static final String THRESHOLD_NAME = "thresholdName";
         public static final String SEARCHBP_DIMENSION = "searchbpDimension";
+        public static final String DIRECTION = "direction";
         public static final String STEP_SIZE_IN_PERCENTAGE = "stepSizeInPercentage";
         public static final String COOL_OFF_PERIOD = "coolOffPeriodInMillis";
         public static final String CAN_UPDATE = "canUpdate";
@@ -180,6 +194,9 @@ public class SearchBackPressureAction extends SuppressibleAction {
 
         @SerializedName(value = SEARCHBP_DIMENSION)
         private String searchbpSettingDimension;
+
+        @SerializedName(value = DIRECTION)
+        private String direction;
 
         @SerializedName(value = STEP_SIZE_IN_PERCENTAGE)
         private double stepSizeInPercentage;
@@ -193,11 +210,13 @@ public class SearchBackPressureAction extends SuppressibleAction {
         public Summary(
                 String thresholdName,
                 String searchbpSettingDimension,
+                String direction,
                 double stepSizeInPercentage,
                 long coolOffPeriodInMillis,
                 boolean canUpdate) {
             this.thresholdName = thresholdName;
             this.searchbpSettingDimension = searchbpSettingDimension;
+            this.direction = direction;
             this.stepSizeInPercentage = stepSizeInPercentage;
             this.coolOffPeriodInMillis = coolOffPeriodInMillis;
             this.canUpdate = canUpdate;
@@ -215,6 +234,10 @@ public class SearchBackPressureAction extends SuppressibleAction {
             return searchbpSettingDimension;
         }
 
+        public String getDirection() {
+            return direction;
+        }
+
         public double getStepSizeInPercentage() {
             return stepSizeInPercentage;
         }
@@ -230,6 +253,28 @@ public class SearchBackPressureAction extends SuppressibleAction {
         public String toJson() {
             Gson gson = new GsonBuilder().disableHtmlEscaping().create();
             return gson.toJson(this);
+        }
+    }
+
+    // enum to indicate to increase/decrease the threshold
+    public enum SearchbpThresholdActionDirection {
+        INCREASE(SearchbpThresholdActionDirection.Constants.INCREASE_STR),
+        DECREASE(SearchbpThresholdActionDirection.Constants.DECREASE_STR);
+
+        private final String value;
+
+        SearchbpThresholdActionDirection(String value) {
+            this.value = value;
+        }
+
+        @Override
+        public String toString() {
+            return value;
+        }
+
+        public static class Constants {
+            public static final String INCREASE_STR = "increase";
+            public static final String DECREASE_STR = "decrease";
         }
     }
 }

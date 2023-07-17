@@ -11,6 +11,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.opensearch.performanceanalyzer.AppContext;
 import org.opensearch.performanceanalyzer.decisionmaker.actions.Action;
+import org.opensearch.performanceanalyzer.decisionmaker.actions.SearchBackPressureAction;
 import org.opensearch.performanceanalyzer.decisionmaker.deciders.Decider;
 import org.opensearch.performanceanalyzer.decisionmaker.deciders.Decision;
 import org.opensearch.performanceanalyzer.rca.framework.core.RcaConf;
@@ -58,6 +59,19 @@ public class SearchBackPressureDecider extends Decider {
 
         // SearchBackPressure Policy is always accepted
         List<Action> searchBackPressureActions = searchBackPressurePolicy.evaluate();
+        // loop through the actions and print the action threshold name, dimension,
+        // increase/decrease
+        for (int i = 0; i < searchBackPressureActions.size(); i++) {
+            LOG.info(
+                    "Action details, threshold name: {}, dimension: {}, increase/decrease: {}, stepsize: {}",
+                    ((SearchBackPressureAction) searchBackPressureActions.get(i))
+                            .getThresholdName(),
+                    ((SearchBackPressureAction) searchBackPressureActions.get(i)).getDimension(),
+                    ((SearchBackPressureAction) searchBackPressureActions.get(i)).getDirection(),
+                    ((SearchBackPressureAction) searchBackPressureActions.get(i))
+                            .getStepSizeInPercentage());
+        }
+
         searchBackPressureActions.forEach(decision::addAction);
 
         LOG.info("decision action size is {}", decision.getActions().size());
