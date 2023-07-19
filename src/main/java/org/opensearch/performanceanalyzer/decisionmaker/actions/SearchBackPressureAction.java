@@ -258,8 +258,8 @@ public class SearchBackPressureAction extends SuppressibleAction {
 
     // enum to indicate to increase/decrease the threshold
     public enum SearchbpThresholdActionDirection {
-        INCREASE(SearchbpThresholdActionDirection.Constants.INCREASE_STR),
-        DECREASE(SearchbpThresholdActionDirection.Constants.DECREASE_STR);
+        INCREASE(SearchbpThresholdActionDirection.Constants.INCREASE),
+        DECREASE(SearchbpThresholdActionDirection.Constants.DECREASE);
 
         private final String value;
 
@@ -273,8 +273,8 @@ public class SearchBackPressureAction extends SuppressibleAction {
         }
 
         public static class Constants {
-            public static final String INCREASE_STR = "increase";
-            public static final String DECREASE_STR = "decrease";
+            public static final String INCREASE = "increase";
+            public static final String DECREASE = "decrease";
         }
     }
 }
