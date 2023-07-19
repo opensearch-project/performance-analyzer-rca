@@ -463,7 +463,7 @@ public class OpenSearchAnalysisGraph extends AnalysisGraph {
                 RcaConsts.RcaTagConstants.TAG_AGGREGATE_UPSTREAM,
                 RcaConsts.RcaTagConstants.LOCUS_DATA_NODE);
 
-        // To Do SearchBackPressure Decider
+        // ToDo SearchBackPressure Decider
 
         AdmissionControlDecider admissionControlDecider =
                 buildAdmissionControlDecider(heapUsed, heapMax);
