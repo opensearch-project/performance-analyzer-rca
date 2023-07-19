@@ -191,7 +191,8 @@ public class SearchBackPressurePolicy implements DecisionPolicy {
                         persistenceBasePath);
 
         // TODO: Check whether we need a persistence path to write our data
-        return new SearchBpActionsAlarmMonitor(policyConfig.getHourBreachThreshold());
+        return new SearchBpActionsAlarmMonitor(
+                policyConfig.getHourBreachThreshold(), null, hourMonitorConfig);
     }
 
     // initalize all alarm monitors
