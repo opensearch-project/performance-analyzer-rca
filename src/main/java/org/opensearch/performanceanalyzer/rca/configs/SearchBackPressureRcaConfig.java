@@ -55,42 +55,46 @@ public class SearchBackPressureRcaConfig {
         maxHeapIncreasePercentageThreshold =
                 conf.readRcaConfig(
                         CONFIG_NAME,
-                        RCA_CONF_KEY_CONSTANTS.MAX_HEAP_USAGE_INCREASE_FIELD,
+                        SearchBackPressureRcaConfigKeys.MAX_HEAP_USAGE_INCREASE_FIELD.toString(),
                         DEFAULT_MAX_HEAP_INCREASE_THRESHOLD,
                         (s) -> s >= 0 && s <= 100,
                         Integer.class);
         maxShardHeapCancellationPercentageThreshold =
                 conf.readRcaConfig(
                         CONFIG_NAME,
-                        RCA_CONF_KEY_CONSTANTS.MAX_SHARD_HEAP_CANCELLATION_PERCENTAGE_FIELD,
+                        SearchBackPressureRcaConfigKeys.MAX_SHARD_HEAP_CANCELLATION_PERCENTAGE_FIELD
+                                .toString(),
                         DEFAULT_SHARD_MAX_HEAP_CANCELLATION_THRESHOLD,
                         (s) -> s >= 0 && s <= 100,
                         Integer.class);
         maxTaskHeapCancellationPercentageThreshold =
                 conf.readRcaConfig(
                         CONFIG_NAME,
-                        RCA_CONF_KEY_CONSTANTS.MAX_TASK_HEAP_CANCELLATION_PERCENTAGE_FIELD,
+                        SearchBackPressureRcaConfigKeys.MAX_TASK_HEAP_CANCELLATION_PERCENTAGE_FIELD
+                                .toString(),
                         DEFAULT_TASK_MAX_HEAP_CANCELLATION_THRESHOLD,
                         (s) -> s >= 0 && s <= 100,
                         Integer.class);
         minHeapDecreasePercentageThreshold =
                 conf.readRcaConfig(
                         CONFIG_NAME,
-                        RCA_CONF_KEY_CONSTANTS.MAX_HEAP_USAGE_DECREASE_FIELD,
+                        SearchBackPressureRcaConfigKeys.MAX_HEAP_USAGE_DECREASE_FIELD.toString(),
                         DEFAULT_MIN_HEAP_DECREASE_THRESHOLD,
                         (s) -> s >= 0 && s <= 100,
                         Integer.class);
         minShardHeapCancellationPercentageThreshold =
                 conf.readRcaConfig(
                         CONFIG_NAME,
-                        RCA_CONF_KEY_CONSTANTS.MIN_SHARD_HEAP_CANCELLATION_PERCENTAGE_FIELD,
+                        SearchBackPressureRcaConfigKeys.MIN_SHARD_HEAP_CANCELLATION_PERCENTAGE_FIELD
+                                .toString(),
                         DEFAULT_SHARD_MIN_HEAP_CANCELLATION_THRESHOLD,
                         (s) -> s >= 0 && s <= 100,
                         Integer.class);
         minTaskHeapCancellationPercentageThreshold =
                 conf.readRcaConfig(
                         CONFIG_NAME,
-                        RCA_CONF_KEY_CONSTANTS.MIN_TASK_HEAP_CANCELLATION_PERCENTAGE_FIELD,
+                        SearchBackPressureRcaConfigKeys.MIN_TASK_HEAP_CANCELLATION_PERCENTAGE_FIELD
+                                .toString(),
                         DEFAULT_TASK_MIN_HEAP_CANCELLATION_THRESHOLD,
                         (s) -> s >= 0 && s <= 100,
                         Integer.class);
@@ -122,16 +126,23 @@ public class SearchBackPressureRcaConfig {
     }
 
     // name for the configuration field
-    public static class RCA_CONF_KEY_CONSTANTS {
-        public static final String MAX_HEAP_USAGE_INCREASE_FIELD = "max-heap-usage-increase";
-        public static final String MAX_SHARD_HEAP_CANCELLATION_PERCENTAGE_FIELD =
-                "max-shard-heap-cancellation-percentage";
-        public static final String MAX_TASK_HEAP_CANCELLATION_PERCENTAGE_FIELD =
-                "max-task-heap-cancellation-percentage";
-        public static final String MAX_HEAP_USAGE_DECREASE_FIELD = "max-heap-usage-decrease";
-        public static final String MIN_SHARD_HEAP_CANCELLATION_PERCENTAGE_FIELD =
-                "min-shard-heap-cancellation-percentage";
-        public static final String MIN_TASK_HEAP_CANCELLATION_PERCENTAGE_FIELD =
-                "min-task-heap-cancellation-percentage";
+    public enum SearchBackPressureRcaConfigKeys {
+        MAX_HEAP_USAGE_INCREASE_FIELD("max-heap-usage-increase"),
+        MAX_SHARD_HEAP_CANCELLATION_PERCENTAGE_FIELD("max-shard-heap-cancellation-percentage"),
+        MAX_TASK_HEAP_CANCELLATION_PERCENTAGE_FIELD("max-task-heap-cancellation-percentage"),
+        MAX_HEAP_USAGE_DECREASE_FIELD("max-heap-usage-decrease"),
+        MIN_SHARD_HEAP_CANCELLATION_PERCENTAGE_FIELD("min-shard-heap-cancellation-percentage"),
+        MIN_TASK_HEAP_CANCELLATION_PERCENTAGE_FIELD("min-task-heap-cancellation-percentage");
+
+        private final String value;
+
+        SearchBackPressureRcaConfigKeys(final String value) {
+            this.value = value;
+        }
+
+        @Override
+        public String toString() {
+            return this.value;
+        }
     }
 }
