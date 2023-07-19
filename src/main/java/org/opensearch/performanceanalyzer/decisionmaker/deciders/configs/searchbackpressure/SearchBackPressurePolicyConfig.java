@@ -36,10 +36,6 @@ public class SearchBackPressurePolicyConfig {
     private static final String ENABLED = "enabled";
     private static final String HOUR_BREACH_THRESHOLD = "hour-breach-threshold";
     private static final String THRESHOLD_COUNT = "threshold_count";
-    private static final String HOUR_MONITOR_WINDOW_SIZE_MINUTES =
-            "hour-monitor-window-size-minutes";
-    private static final String HOUR_MONITOR_BUCKET_SIZE_MINUTES =
-            "hour-monitor-bucket-size-minutes";
     private static final String SEARCHBP_HEAP_STEPSIZE_IN_PERCENTAGE =
             "searchbp-heap-stepsize-in-percentage";
 
@@ -49,13 +45,11 @@ public class SearchBackPressurePolicyConfig {
     public static final int DEFAULT_HOUR_BREACH_THRESHOLD = 2;
     public static final int DEFAULT_HOUR_MONITOR_WINDOW_SIZE_MINUTES =
             (int) TimeUnit.HOURS.toMinutes(1);
-    public static final int DEFAULT_HOUR_MONITOR_BUCKET_SIZE_MINUTES = 5;
+    public static final int DEFAULT_HOUR_MONITOR_BUCKET_SIZE_MINUTES = 1;
     public static final double DEFAULT_SEARCHBP_HEAP_STEPSIZE_IN_PERCENTAGE = 5;
 
     private Config<Integer> hourBreachThreshold;
     private Config<Boolean> enabled;
-    private Config<Integer> hourMonitorWindowSizeMinutes;
-    private Config<Integer> hourMonitorBucketSizeMinutes;
     private Config<Double> searchbpHeapStepsizeInPercentage;
 
     public SearchBackPressurePolicyConfig(NestedConfig config) {
@@ -69,19 +63,7 @@ public class SearchBackPressurePolicyConfig {
         LOG.info(
                 "SearchBackPressurePolicyConfig hour breach threshold is: {}",
                 hourBreachThreshold.getValue());
-        hourMonitorWindowSizeMinutes =
-                new Config<>(
-                        HOUR_MONITOR_WINDOW_SIZE_MINUTES,
-                        config.getValue(),
-                        DEFAULT_HOUR_MONITOR_WINDOW_SIZE_MINUTES,
-                        Integer.class);
-        LOG.info("hourMonitorWindowSizeMinutes is: {}", hourMonitorWindowSizeMinutes.getValue());
-        hourMonitorBucketSizeMinutes =
-                new Config<>(
-                        HOUR_MONITOR_BUCKET_SIZE_MINUTES,
-                        config.getValue(),
-                        DEFAULT_HOUR_MONITOR_BUCKET_SIZE_MINUTES,
-                        Integer.class);
+
         searchbpHeapStepsizeInPercentage =
                 new Config<>(
                         SEARCHBP_HEAP_STEPSIZE_IN_PERCENTAGE,
@@ -107,11 +89,11 @@ public class SearchBackPressurePolicyConfig {
     }
 
     public int getHourMonitorWindowSizeMinutes() {
-        return hourMonitorWindowSizeMinutes.getValue();
+        return DEFAULT_HOUR_MONITOR_WINDOW_SIZE_MINUTES;
     }
 
     public int getHourMonitorBucketSizeMinutes() {
-        return hourMonitorBucketSizeMinutes.getValue();
+        return DEFAULT_HOUR_MONITOR_BUCKET_SIZE_MINUTES;
     }
 
     public double getSearchbpHeapStepsizeInPercentage() {
