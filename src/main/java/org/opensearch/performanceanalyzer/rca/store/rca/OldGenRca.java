@@ -271,7 +271,6 @@ public abstract class OldGenRca<T extends ResourceFlowUnit<?>> extends Rca<T> {
 
         @Override
         public void next(SlidingWindowData e) {
-            boolean pollFirstCondition;
             if (isMinSlidingWindow) {
                 // monotonically decreasing sliding window
                 while (!windowDeque.isEmpty()
