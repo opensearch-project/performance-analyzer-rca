@@ -222,7 +222,7 @@ public abstract class OldGenRca<T extends ResourceFlowUnit<?>> extends Rca<T> {
         return true;
     }
 
-    /** Sliding window to check the minimal olg gen usage within a given time frame */
+    /** Sliding window to check the minimal old gen usage within a given time frame */
     public static class MinOldGenSlidingWindow extends SlidingWindow<SlidingWindowData> {
 
         public MinOldGenSlidingWindow(int SLIDING_WINDOW_SIZE_IN_TIMESTAMP, TimeUnit timeUnit) {
@@ -252,7 +252,7 @@ public abstract class OldGenRca<T extends ResourceFlowUnit<?>> extends Rca<T> {
     }
 
     /**
-     * Sliding window to check the max/min olg gen usage within a given time frame
+     * Sliding window to check the max/min old gen usage within a given time frame
      *
      * @param isMinSlidingWindow true if the sliding window is for min usage, false for max usage
      *     Provides a more general framework than MinOldGenSlidingWindow as this sliding window can
