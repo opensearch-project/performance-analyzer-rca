@@ -143,8 +143,7 @@ public class SearchBackPressureRCA extends Rca<ResourceFlowUnit<HotNodeSummary>>
     }
 
     /*
-     * operate() is used for local build
-     * This will compute the flow units from other hosts in the cluster
+     * generateFlowUnitListFromWire() compute the flow units from other hosts in the cluster
      * for a given Metric and try to send the subscription requests
      * to stale or new hosts in cluster if need be
      */
