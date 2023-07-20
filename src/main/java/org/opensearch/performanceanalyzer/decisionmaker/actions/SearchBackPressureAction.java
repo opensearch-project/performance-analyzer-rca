@@ -38,9 +38,13 @@ public class SearchBackPressureAction extends SuppressibleAction {
      */
     private boolean canUpdate;
     private long coolOffPeriodInMillis;
+    // TODO: change, dimension, direction as enums
+    //
     private String thresholdName;
+
     private String dimension;
     private String direction;
+
     private double stepSizeInPercentage;
 
     public SearchBackPressureAction(

@@ -260,6 +260,7 @@ public abstract class OldGenRca<T extends ResourceFlowUnit<?>> extends Rca<T> {
      */
     public static class MinMaxSlidingWindow extends SlidingWindow<SlidingWindowData> {
         boolean isMinSlidingWindow;
+        // change the boolean to the Biconsumer
 
         public MinMaxSlidingWindow(
                 int SLIDING_WINDOW_SIZE_IN_TIMESTAMP,
@@ -267,10 +268,17 @@ public abstract class OldGenRca<T extends ResourceFlowUnit<?>> extends Rca<T> {
                 boolean isMinSlidingWindow) {
             super(SLIDING_WINDOW_SIZE_IN_TIMESTAMP, timeUnit);
             this.isMinSlidingWindow = isMinSlidingWindow;
+
+            // get the Biconsumer from the client
         }
 
         @Override
         public void next(SlidingWindowData e) {
+            // TODO: refactored into a lambda function and have that lambda as a member variable?
+            // () => {}
+
+            // Biconsumer to add based on conditions
+
             if (isMinSlidingWindow) {
                 // monotonically decreasing sliding window
                 while (!windowDeque.isEmpty()

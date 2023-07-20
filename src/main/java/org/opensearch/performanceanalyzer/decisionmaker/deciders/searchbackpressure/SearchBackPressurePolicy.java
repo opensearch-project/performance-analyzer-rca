@@ -50,7 +50,7 @@ public class SearchBackPressurePolicy implements DecisionPolicy {
     private static final Path SEARCHBP_DATA_FILE_PATH =
             Paths.get(RcaConsts.CONFIG_DIR_PATH, "SearchBackPressurePolicy_heap");
 
-    /* TO DO: Specify a path to store SearchBackpressurePolicy_Autotune Stats */
+    /* TODO: Specify a path to store SearchBackpressurePolicy_Autotune Stats */
 
     private AppContext appContext;
     private RcaConf rcaConf;
@@ -96,35 +96,44 @@ public class SearchBackPressurePolicy implements DecisionPolicy {
      * @param issue an issue with the application
      */
     private void record(HotResourceSummary issue) {
+        // TODO: change nested if into menaing methods like recordSearchBpShardjIssue()
+        // recordSearchBpTaskIssue()
+
         LOG.info("SearchBackPressurePolicy#record()");
         if (HEAP_SEARCHBP_SHARD_SIGNALS.contains(issue.getResource())) {
             LOG.info("Recording shard-level issue");
-            // increase alarm for heap-related threshold (shard-level)
-            if (issue.getMetaData() == SearchBackPressureRcaConfig.INCREASE_THRESHOLD_BY_JVM_STR) {
-                LOG.info("recording increase-level issue for shard");
-                searchBackPressureShardHeapIncreaseAlarm.recordIssue();
-            }
-
-            // decrease alarm for heap-related threshold (shard-level)
-            if (issue.getMetaData() == SearchBackPressureRcaConfig.DECREASE_THRESHOLD_BY_JVM_STR) {
-                LOG.info("recording decrease-level issue for shard");
-                searchBackPressureShardHeapDecreaseAlarm.recordIssue();
-            }
-
+            recordSearchBackPressureShardIssue(issue);
         } else if (HEAP_SEARCHBP_TASK_SIGNALS.contains(issue.getResource())) {
             LOG.info("Recording Task-Level issue");
+            recordSearchBackPressureTaskIssue(issue);
+        }
+    }
 
-            // increase alarm for heap-related threshold (task-level)
-            if (issue.getMetaData() == SearchBackPressureRcaConfig.INCREASE_THRESHOLD_BY_JVM_STR) {
-                LOG.info("recording increase-level issue for task");
-                searchBackPressureTaskHeapIncreaseAlarm.recordIssue();
-            }
+    private void recordSearchBackPressureShardIssue(HotResourceSummary issue) {
+        // increase alarm for heap-related threshold (shard-level)
+        if (issue.getMetaData() == SearchBackPressureRcaConfig.INCREASE_THRESHOLD_BY_JVM_STR) {
+            LOG.info("recording increase-level issue for shard");
+            searchBackPressureShardHeapIncreaseAlarm.recordIssue();
+        }
 
-            // decrease alarm for heap-related threshold (task-level)
-            if (issue.getMetaData() == SearchBackPressureRcaConfig.DECREASE_THRESHOLD_BY_JVM_STR) {
-                LOG.info("recording decrease-level issue for task");
-                searchBackPressureTaskHeapDecreaseAlarm.recordIssue();
-            }
+        // decrease alarm for heap-related threshold (shard-level)
+        if (issue.getMetaData() == SearchBackPressureRcaConfig.DECREASE_THRESHOLD_BY_JVM_STR) {
+            LOG.info("recording decrease-level issue for shard");
+            searchBackPressureShardHeapDecreaseAlarm.recordIssue();
+        }
+    }
+
+    private void recordSearchBackPressureTaskIssue(HotResourceSummary issue) {
+        // increase alarm for heap-related threshold (task-level)
+        if (issue.getMetaData() == SearchBackPressureRcaConfig.INCREASE_THRESHOLD_BY_JVM_STR) {
+            LOG.info("recording increase-level issue for task");
+            searchBackPressureTaskHeapIncreaseAlarm.recordIssue();
+        }
+
+        // decrease alarm for heap-related threshold (task-level)
+        if (issue.getMetaData() == SearchBackPressureRcaConfig.DECREASE_THRESHOLD_BY_JVM_STR) {
+            LOG.info("recording decrease-level issue for task");
+            searchBackPressureTaskHeapDecreaseAlarm.recordIssue();
         }
     }
 
@@ -233,7 +242,20 @@ public class SearchBackPressurePolicy implements DecisionPolicy {
         initialize();
 
         recordIssues();
+        // TODO: Search Task and Shard Alarm Should be seperated
+        // checkShardAlamr() and but first 2 ifs inside?
+        // checkTaskAlarms() and but last 2 ifs inside?
 
+        checkShardAlarms(actions);
+        checkTaskAlarms(actions);
+
+        // print current size of the actions
+        LOG.info("SearchBackPressurePolicy#evaluate() action size: {}", actions.size());
+
+        return actions;
+    }
+
+    private void checkShardAlarms(List<Action> actions) {
         if (isShardHeapThresholdTooSmall()) {
             LOG.info("isShardHeapThresholdTooSmall action Added!");
             actions.add(
@@ -258,7 +280,11 @@ public class SearchBackPressurePolicy implements DecisionPolicy {
                             SearchBackPressureAction.SearchbpThresholdActionDirection.DECREASE
                                     .toString(),
                             policyConfig.getSearchbpHeapStepsizeInPercentage()));
-        } else if (isTaskHeapThresholdTooSmall()) {
+        }
+    }
+
+    private void checkTaskAlarms(List<Action> actions) {
+        if (isTaskHeapThresholdTooSmall()) {
             LOG.info("isTaskHeapThresholdTooSmall action Added!");
             actions.add(
                     new SearchBackPressureAction(
@@ -283,8 +309,6 @@ public class SearchBackPressurePolicy implements DecisionPolicy {
                                     .toString(),
                             policyConfig.getSearchbpHeapStepsizeInPercentage()));
         }
-
-        return actions;
     }
 
     public void setAppContext(AppContext appContext) {
