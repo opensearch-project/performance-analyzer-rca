@@ -20,14 +20,10 @@ import org.opensearch.performanceanalyzer.rca.framework.core.NestedConfig;
  * "search-back-pressure-policy-config": { "enabled": true, // whether the
  * serch-back-pressure-policy should be enabled "hour-breach-threshold": 30, // threshold for hourly
  * received unhealthy cluster level rca flow units, if above, then the below thresholds should be
- * modified "threshold_count": 2, // how many thresholds to be changed, in this case
- * search-heap-threshold and search-task-heap-threshold "search_task_heap_stepsize_in_percentage":
- * 5, "search_task_stepsize_in_percentage": 0.5" } } Explanation of thresholds that are being
- * configured and modified based on current RCA flowunits: search_task_heap_stepsize_in_percentage:
- * Defines the step size to change heap usage threshold (in percentage). for the sum of heap usages
- * across all search tasks before in-flight cancellation is applied.
- * search_task_stepsize_in_percentage: Defines the step size to change heap usage threshold (in
- * percentage) for an individual task before it is considered for cancellation.
+ * modified, "threshold_count": 1, // how many thresholds to be changed, in this case
+ * search-heap-threshold, "searchbp-heap-stepsize-in-percentage": 5, } }
+ * "searchbp-heap-stepsize-in-percentage" defines the step size to change heap related threshold (in
+ * percentage).
  */
 public class SearchBackPressurePolicyConfig {
     private static final Logger LOG = LogManager.getLogger(SearchBackPressurePolicyConfig.class);
