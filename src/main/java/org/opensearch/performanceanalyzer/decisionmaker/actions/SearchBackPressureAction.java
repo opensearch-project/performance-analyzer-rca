@@ -38,13 +38,11 @@ public class SearchBackPressureAction extends SuppressibleAction {
      */
     private boolean canUpdate;
     private long coolOffPeriodInMillis;
-    // TODO: change, dimension, direction as enums
-    //
     private String thresholdName;
 
+    // TODO: change dimension, direction as enum
     private String dimension;
     private String direction;
-
     private double stepSizeInPercentage;
 
     public SearchBackPressureAction(
@@ -135,7 +133,7 @@ public class SearchBackPressureAction extends SuppressibleAction {
         private final AppContext appContext;
         private final String thresholdName;
         private final String dimension;
-        private final String direction;
+        private String direction;
         private boolean canUpdate;
         private double stepSizeInPercentage;
         private long coolOffPeriodInMillis;
@@ -279,6 +277,29 @@ public class SearchBackPressureAction extends SuppressibleAction {
         public static class Constants {
             public static final String INCREASE = "increase";
             public static final String DECREASE = "decrease";
+        }
+    }
+
+    // enum to indicate to whether the action is caused by shard/task level searchbackpressure
+    // cancellation
+    public enum SearchbpDimension {
+        SHARD(SearchbpDimension.Constants.SHARD),
+        TASK(SearchbpDimension.Constants.TASK);
+
+        private final String value;
+
+        SearchbpDimension(String value) {
+            this.value = value;
+        }
+
+        @Override
+        public String toString() {
+            return value;
+        }
+
+        public static class Constants {
+            public static final String SHARD = "shard";
+            public static final String TASK = "task";
         }
     }
 }

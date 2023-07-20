@@ -264,7 +264,7 @@ public class SearchBackPressurePolicy implements DecisionPolicy {
                             true,
                             DEAFULT_COOLOFF_PERIOD_IN_MILLIS,
                             HEAP_THRESHOLD_STR,
-                            SHARD_DIMENSION_STR,
+                            SearchBackPressureAction.SearchbpDimension.SHARD.toString(),
                             SearchBackPressureAction.SearchbpThresholdActionDirection.INCREASE
                                     .toString(),
                             policyConfig.getSearchbpHeapStepsizeInPercentage()));
@@ -276,7 +276,7 @@ public class SearchBackPressurePolicy implements DecisionPolicy {
                             true,
                             DEAFULT_COOLOFF_PERIOD_IN_MILLIS,
                             HEAP_THRESHOLD_STR,
-                            SHARD_DIMENSION_STR,
+                            SearchBackPressureAction.SearchbpDimension.SHARD.toString(),
                             SearchBackPressureAction.SearchbpThresholdActionDirection.DECREASE
                                     .toString(),
                             policyConfig.getSearchbpHeapStepsizeInPercentage()));
@@ -292,7 +292,7 @@ public class SearchBackPressurePolicy implements DecisionPolicy {
                             true,
                             DEAFULT_COOLOFF_PERIOD_IN_MILLIS,
                             HEAP_THRESHOLD_STR,
-                            TASK_DIMENSION_STR,
+                            SearchBackPressureAction.SearchbpDimension.TASK.toString(),
                             SearchBackPressureAction.SearchbpThresholdActionDirection.INCREASE
                                     .toString(),
                             policyConfig.getSearchbpHeapStepsizeInPercentage()));
@@ -304,7 +304,7 @@ public class SearchBackPressurePolicy implements DecisionPolicy {
                             true,
                             DEAFULT_COOLOFF_PERIOD_IN_MILLIS,
                             HEAP_THRESHOLD_STR,
-                            TASK_DIMENSION_STR,
+                            SearchBackPressureAction.SearchbpDimension.TASK.toString(),
                             SearchBackPressureAction.SearchbpThresholdActionDirection.DECREASE
                                     .toString(),
                             policyConfig.getSearchbpHeapStepsizeInPercentage()));
