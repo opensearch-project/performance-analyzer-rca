@@ -51,6 +51,7 @@ import org.opensearch.performanceanalyzer.rca.configs.HotShardClusterRcaConfig;
 import org.opensearch.performanceanalyzer.rca.configs.HotShardRcaConfig;
 import org.opensearch.performanceanalyzer.rca.configs.OldGenContendedRcaConfig;
 import org.opensearch.performanceanalyzer.rca.configs.QueueRejectionRcaConfig;
+import org.opensearch.performanceanalyzer.rca.configs.SearchBackPressureRcaConfig;
 import org.opensearch.performanceanalyzer.rca.configs.ShardRequestCacheRcaConfig;
 import org.opensearch.performanceanalyzer.rca.framework.api.summaries.bucket.BasicBucketCalculator;
 import org.opensearch.performanceanalyzer.rca.framework.api.summaries.bucket.BucketCalculator;
@@ -230,6 +231,10 @@ public class RcaConf {
 
     public OldGenContendedRcaConfig getOldGenContendedRcaConfig() {
         return new OldGenContendedRcaConfig(this);
+    }
+
+    public SearchBackPressureRcaConfig getSearchBackPressureRcaConfig() {
+        return new SearchBackPressureRcaConfig(this);
     }
 
     public <T> T readRcaConfig(
