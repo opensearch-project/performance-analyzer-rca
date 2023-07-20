@@ -137,7 +137,7 @@ public class SearchBackPressurePolicy implements DecisionPolicy {
                     "SearchBackPressurePolicy#recordIssues() No flow units in searchBackPressureClusterRCA");
             return;
         }
-        int test_counter = 0;
+
         for (ResourceFlowUnit<HotClusterSummary> flowUnit :
                 searchBackPressureClusterRCA.getFlowUnits()) {
             if (!flowUnit.hasResourceSummary()) {
@@ -147,29 +147,25 @@ public class SearchBackPressurePolicy implements DecisionPolicy {
             HotClusterSummary clusterSummary = flowUnit.getSummary();
             for (HotNodeSummary nodeSummary : clusterSummary.getHotNodeSummaryList()) {
                 for (HotResourceSummary summary : nodeSummary.getHotResourceSummaryList()) {
-                    test_counter += 1;
-                    LOG.info(
-                            "SearchBackPressurePolicy#recordIssues() Summary test_counter: "
-                                    + test_counter);
                     record(summary);
                 }
             }
         }
     }
 
-    public boolean shardHeapThresholdIsTooSmall() {
+    public boolean isShardHeapThresholdTooSmall() {
         return !searchBackPressureShardHeapIncreaseAlarm.isHealthy();
     }
 
-    public boolean shardHeapThresholdIsTooLarge() {
+    public boolean isShardHeapThresholdTooLarge() {
         return !searchBackPressureShardHeapDecreaseAlarm.isHealthy();
     }
 
-    public boolean taskHeapThresholdIsTooSmall() {
+    public boolean isTaskHeapThresholdTooSmall() {
         return !searchBackPressureTaskHeapIncreaseAlarm.isHealthy();
     }
 
-    public boolean taskHeapThresholdIsTooLarge() {
+    public boolean isTaskHeapThresholdTooLarge() {
         return !searchBackPressureTaskHeapDecreaseAlarm.isHealthy();
     }
 
@@ -235,14 +231,11 @@ public class SearchBackPressurePolicy implements DecisionPolicy {
         }
 
         initialize();
-        LOG.info(
-                "searchBackPressureShardHeapIncreaseAlarm#hour breach threshold is {}",
-                searchBackPressureShardHeapIncreaseAlarm.getHourBreachThreshold());
 
         recordIssues();
 
-        if (shardHeapThresholdIsTooSmall()) {
-            LOG.info("shardHeapThresholdIsTooSmall action Added!");
+        if (isShardHeapThresholdTooSmall()) {
+            LOG.info("isShardHeapThresholdTooSmall action Added!");
             actions.add(
                     new SearchBackPressureAction(
                             appContext,
@@ -253,8 +246,8 @@ public class SearchBackPressurePolicy implements DecisionPolicy {
                             SearchBackPressureAction.SearchbpThresholdActionDirection.INCREASE
                                     .toString(),
                             policyConfig.getSearchbpHeapStepsizeInPercentage()));
-        } else if (shardHeapThresholdIsTooLarge()) {
-            LOG.info("shardHeapThresholdIsTooLarge action Added!");
+        } else if (isShardHeapThresholdTooLarge()) {
+            LOG.info("isShardHeapThresholdTooLarge action Added!");
             actions.add(
                     new SearchBackPressureAction(
                             appContext,
@@ -265,8 +258,8 @@ public class SearchBackPressurePolicy implements DecisionPolicy {
                             SearchBackPressureAction.SearchbpThresholdActionDirection.DECREASE
                                     .toString(),
                             policyConfig.getSearchbpHeapStepsizeInPercentage()));
-        } else if (taskHeapThresholdIsTooSmall()) {
-            LOG.info("taskHeapThresholdIsTooSmall action Added!");
+        } else if (isTaskHeapThresholdTooSmall()) {
+            LOG.info("isTaskHeapThresholdTooSmall action Added!");
             actions.add(
                     new SearchBackPressureAction(
                             appContext,
@@ -277,8 +270,8 @@ public class SearchBackPressurePolicy implements DecisionPolicy {
                             SearchBackPressureAction.SearchbpThresholdActionDirection.INCREASE
                                     .toString(),
                             policyConfig.getSearchbpHeapStepsizeInPercentage()));
-        } else if (taskHeapThresholdIsTooLarge()) {
-            LOG.info("taskHeapThresholdIsTooLarge action Added!");
+        } else if (isTaskHeapThresholdTooLarge()) {
+            LOG.info("isTaskHeapThresholdTooLarge action Added!");
             actions.add(
                     new SearchBackPressureAction(
                             appContext,
