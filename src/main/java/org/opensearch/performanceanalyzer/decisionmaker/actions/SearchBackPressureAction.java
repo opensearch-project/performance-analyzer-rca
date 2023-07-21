@@ -41,8 +41,8 @@ public class SearchBackPressureAction extends SuppressibleAction {
     private String thresholdName;
 
     // TODO: change dimension, direction as enum
-    private String dimension;
-    private String direction;
+    private SearchbpDimension dimension;
+    private SearchbpThresholdActionDirection direction;
     private double stepSizeInPercentage;
 
     public SearchBackPressureAction(
@@ -50,8 +50,8 @@ public class SearchBackPressureAction extends SuppressibleAction {
             final boolean canUpdate,
             final long coolOffPeriodInMillis,
             final String thresholdName,
-            final String dimension,
-            final String direction,
+            final SearchbpDimension dimension,
+            final SearchbpThresholdActionDirection direction,
             final double stepSizeInPercentage) {
         super(appContext);
         this.canUpdate = canUpdate;
@@ -103,11 +103,11 @@ public class SearchBackPressureAction extends SuppressibleAction {
     }
 
     public String getDimension() {
-        return dimension;
+        return dimension.toString();
     }
 
     public String getDirection() {
-        return direction;
+        return direction.toString();
     }
 
     public double getStepSizeInPercentage() {
@@ -119,8 +119,8 @@ public class SearchBackPressureAction extends SuppressibleAction {
         Summary summary =
                 new Summary(
                         thresholdName,
-                        dimension,
-                        direction,
+                        dimension.toString(),
+                        direction.toString(),
                         stepSizeInPercentage,
                         DEFAULT_COOL_OFF_PERIOD_IN_MILLIS,
                         canUpdate);
@@ -132,8 +132,8 @@ public class SearchBackPressureAction extends SuppressibleAction {
 
         private final AppContext appContext;
         private final String thresholdName;
-        private final String dimension;
-        private String direction;
+        private final SearchbpDimension dimension;
+        private final SearchbpThresholdActionDirection direction;
         private boolean canUpdate;
         private double stepSizeInPercentage;
         private long coolOffPeriodInMillis;
@@ -141,8 +141,8 @@ public class SearchBackPressureAction extends SuppressibleAction {
         private Builder(
                 final AppContext appContext,
                 final String thresholdName,
-                final String dimension,
-                final String direction,
+                final SearchbpDimension dimension,
+                final SearchbpThresholdActionDirection direction,
                 final long coolOffPeriodInMillis) {
             this.appContext = appContext;
             this.thresholdName = thresholdName;

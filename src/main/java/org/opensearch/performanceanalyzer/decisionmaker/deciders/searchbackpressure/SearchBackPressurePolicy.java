@@ -264,9 +264,8 @@ public class SearchBackPressurePolicy implements DecisionPolicy {
                             true,
                             DEAFULT_COOLOFF_PERIOD_IN_MILLIS,
                             HEAP_THRESHOLD_STR,
-                            SearchBackPressureAction.SearchbpDimension.SHARD.toString(),
-                            SearchBackPressureAction.SearchbpThresholdActionDirection.INCREASE
-                                    .toString(),
+                            SearchBackPressureAction.SearchbpDimension.SHARD,
+                            SearchBackPressureAction.SearchbpThresholdActionDirection.INCREASE,
                             policyConfig.getSearchbpHeapStepsizeInPercentage()));
         } else if (isShardHeapThresholdTooLarge()) {
             LOG.info("isShardHeapThresholdTooLarge action Added!");
@@ -276,9 +275,8 @@ public class SearchBackPressurePolicy implements DecisionPolicy {
                             true,
                             DEAFULT_COOLOFF_PERIOD_IN_MILLIS,
                             HEAP_THRESHOLD_STR,
-                            SearchBackPressureAction.SearchbpDimension.SHARD.toString(),
-                            SearchBackPressureAction.SearchbpThresholdActionDirection.DECREASE
-                                    .toString(),
+                            SearchBackPressureAction.SearchbpDimension.SHARD,
+                            SearchBackPressureAction.SearchbpThresholdActionDirection.DECREASE,
                             policyConfig.getSearchbpHeapStepsizeInPercentage()));
         }
     }
@@ -292,9 +290,8 @@ public class SearchBackPressurePolicy implements DecisionPolicy {
                             true,
                             DEAFULT_COOLOFF_PERIOD_IN_MILLIS,
                             HEAP_THRESHOLD_STR,
-                            SearchBackPressureAction.SearchbpDimension.TASK.toString(),
-                            SearchBackPressureAction.SearchbpThresholdActionDirection.INCREASE
-                                    .toString(),
+                            SearchBackPressureAction.SearchbpDimension.TASK,
+                            SearchBackPressureAction.SearchbpThresholdActionDirection.INCREASE,
                             policyConfig.getSearchbpHeapStepsizeInPercentage()));
         } else if (isTaskHeapThresholdTooLarge()) {
             LOG.info("isTaskHeapThresholdTooLarge action Added!");
@@ -304,9 +301,8 @@ public class SearchBackPressurePolicy implements DecisionPolicy {
                             true,
                             DEAFULT_COOLOFF_PERIOD_IN_MILLIS,
                             HEAP_THRESHOLD_STR,
-                            SearchBackPressureAction.SearchbpDimension.TASK.toString(),
-                            SearchBackPressureAction.SearchbpThresholdActionDirection.DECREASE
-                                    .toString(),
+                            SearchBackPressureAction.SearchbpDimension.TASK,
+                            SearchBackPressureAction.SearchbpThresholdActionDirection.DECREASE,
                             policyConfig.getSearchbpHeapStepsizeInPercentage()));
         }
     }
