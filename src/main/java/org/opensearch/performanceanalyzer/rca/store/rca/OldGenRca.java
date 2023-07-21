@@ -224,7 +224,7 @@ public abstract class OldGenRca<T extends ResourceFlowUnit<?>> extends Rca<T> {
         return true;
     }
 
-    /** Sliding window to check the minimal olg gen usage within a given time frame */
+    /** Sliding window to check the minimal old gen usage within a given time frame */
     public static class MinOldGenSlidingWindow extends SlidingWindow<SlidingWindowData> {
 
         public MinOldGenSlidingWindow(int SLIDING_WINDOW_SIZE_IN_TIMESTAMP, TimeUnit timeUnit) {

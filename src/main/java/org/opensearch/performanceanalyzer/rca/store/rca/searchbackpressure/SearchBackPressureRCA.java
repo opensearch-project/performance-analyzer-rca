@@ -165,12 +165,11 @@ public class SearchBackPressureRCA extends Rca<ResourceFlowUnit<HotNodeSummary>>
         this.taskJVMCancellationSlidingWindow =
                 new SlidingWindow<>(SLIDING_WINDOW_SIZE_IN_MINS, TimeUnit.MINUTES);
 
-        LOG.info("SearchBackPressureRCA initialized");
+        LOG.debug("SearchBackPressureRCA initialized");
     }
 
     /*
-     * operate() is used for local build
-     * This will compute the flow units from other hosts in the cluster
+     * generateFlowUnitListFromWire() compute the flow units from other hosts in the cluster
      * for a given Metric and try to send the subscription requests
      * to stale or new hosts in cluster if need be
      */
@@ -201,7 +200,7 @@ public class SearchBackPressureRCA extends Rca<ResourceFlowUnit<HotNodeSummary>>
         SearchBackPressureRCAMetric searchBackPressureRCAMetric = getSearchBackPressureRCAMetric();
 
         // print out oldGenUsed and maxOldGen
-        LOG.info(
+        LOG.debug(
                 "SearchBackPressureRCA: oldGenUsed: {} maxOldGen: {}, heapUsedPercentage: {}, searchbpShardCancellationCount: {}, searchbpTaskCancellationCount: {}, searchbpJVMShardCancellationCount: {}, searchbpJVMTaskCancellationCount: {}",
                 searchBackPressureRCAMetric.getUsedHeap(),
                 searchBackPressureRCAMetric.getMaxHeap(),
@@ -213,10 +212,10 @@ public class SearchBackPressureRCA extends Rca<ResourceFlowUnit<HotNodeSummary>>
 
         updateAllSlidingWindows(searchBackPressureRCAMetric, currentTimeMillis);
 
-        LOG.info("SearchBackPressureRCA currentIterationNumber is {}", currentIterationNumber);
+        LOG.debug("SearchBackPressureRCA currentIterationNumber is {}", currentIterationNumber);
         // if currentIterationNumber matches the rca period, emit the flow unit
         if (currentIterationNumber == this.rcaPeriod) {
-            LOG.info(
+            LOG.debug(
                     "SearchBackPressureRCA currentIterationNumber in rcaPeriod is {}",
                     currentIterationNumber);
             currentTimeMillis = System.currentTimeMillis();
@@ -229,7 +228,7 @@ public class SearchBackPressureRCA extends Rca<ResourceFlowUnit<HotNodeSummary>>
             double avgShardJVMCancellationPercentage = shardJVMCancellationSlidingWindow.readAvg();
             double avgTaskJVMCancellationPercentage = taskJVMCancellationSlidingWindow.readAvg();
 
-            LOG.info(
+            LOG.debug(
                     "SearchBackPressureRCA: maxHeapUsagePercentage: {}, minHeapUsagePercentage: {}, SearchBackPressureRCA: avgShardJVMCancellationPercentage: {}, SearchBackPressureRCA: avgTaskJVMCancellationPercentage: {}",
                     maxHeapUsagePercentage,
                     minHeapUsagePercentage,
@@ -271,7 +270,7 @@ public class SearchBackPressureRCA extends Rca<ResourceFlowUnit<HotNodeSummary>>
                     minHeapAboveDecreaseThreshold && taskHeapCancellationPercentageBelowThreshold;
 
             // Generate a flow unit with an Unhealthy ResourceContext
-            LOG.info(
+            LOG.debug(
                     "Increase/Decrease Condition Meet for Shard, maxHeapUsagePercentage: {} is less than threshold: {}, avgShardJVMCancellationPercentage: {} is bigger than heapShardCancellationIncreaseMaxThreshold: {}",
                     maxHeapUsagePercentage,
                     heapUsedIncreaseThreshold,
@@ -307,7 +306,7 @@ public class SearchBackPressureRCA extends Rca<ResourceFlowUnit<HotNodeSummary>>
                         nodeSummary,
                         !instanceDetails.getIsClusterManager());
             } else if (increaseJVMThresholdMetByTask || decreaseJVMThresholdMetByTask) {
-                LOG.info(
+                LOG.debug(
                         "Increase/Decrease Condition Meet for Task, maxHeapUsagePercentage: {} is less than threshold: {}, avgShardJVMCancellationPercentage: {} is bigger than heapShardCancellationIncreaseMaxThreshold: {}",
                         maxHeapUsagePercentage,
                         heapUsedIncreaseThreshold,
@@ -352,7 +351,7 @@ public class SearchBackPressureRCA extends Rca<ResourceFlowUnit<HotNodeSummary>>
 
         } else {
             // Return Empty ResourceFlowUnit if none of the thresholds is met
-            LOG.info("Empty FlowUnit returned for SearchbackPressureRCA");
+            LOG.debug("Empty FlowUnit returned for SearchbackPressureRCA");
             currentTimeMillis = System.currentTimeMillis();
             return new ResourceFlowUnit<>(currentTimeMillis);
         }
@@ -418,7 +417,7 @@ public class SearchBackPressureRCA extends Rca<ResourceFlowUnit<HotNodeSummary>>
         double maxHeapSize = getHeapStats(false);
 
         // Log prevHeapUsage and maxHeapSize
-        LOG.info("prevHeapUsage: {}, maxHeapSize: {}", prevHeapUsage, maxHeapSize);
+        LOG.debug("prevHeapUsage: {}, maxHeapSize: {}", prevHeapUsage, maxHeapSize);
 
         // Get SearchBack Pressure related metrics from stats type field
         Field<String> searchbp_stats_type_field =
@@ -482,13 +481,13 @@ public class SearchBackPressureRCA extends Rca<ResourceFlowUnit<HotNodeSummary>>
             if (!flowUnit.isEmpty()) {
                 double metricResponse =
                         readDataFromSqlResult(flowUnit.getData(), field, fieldName, MetricsDB.MAX);
-                LOG.info("Searchbp metricResponse is: {}", metricResponse);
+                LOG.debug("Searchbp metricResponse is: {}", metricResponse);
                 if (!Double.isNaN(metricResponse) && metricResponse >= 0.0) {
                     response = metricResponse;
                 }
             }
         }
-        LOG.info("Searchbp response is: {}", response);
+        LOG.debug("Searchbp response is: {}", response);
         return response;
     }
 
@@ -503,7 +502,7 @@ public class SearchBackPressureRCA extends Rca<ResourceFlowUnit<HotNodeSummary>>
 
         // threshold read from config file
         this.heapUsedIncreaseThreshold = config.getMaxHeapIncreasePercentageThreshold();
-        LOG.info(
+        LOG.debug(
                 "SearchBackPressureRCA heapUsedIncreaseThreshold is set to {}",
                 this.heapUsedIncreaseThreshold);
         this.heapShardCancellationIncreaseMaxThreshold =
