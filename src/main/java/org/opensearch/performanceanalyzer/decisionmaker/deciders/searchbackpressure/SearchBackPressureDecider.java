@@ -22,8 +22,7 @@ public class SearchBackPressureDecider extends Decider {
     private static final Logger LOG = LogManager.getLogger(SearchBackPressureDecider.class);
     public static final String NAME = "SearchBackPressureDecider";
 
-    /* TO ADD: SearchBackPressureDecider should have SeachBackPressurePolicy able to evaluate the search back pressure actions */
-    SearchBackPressurePolicy searchBackPressurePolicy;
+    private final SearchBackPressurePolicy searchBackPressurePolicy;
 
     private int currentIteration = 0;
     private SearchBackPressureClusterRCA searchBackPressureClusterRCA;
@@ -55,10 +54,12 @@ public class SearchBackPressureDecider extends Decider {
             return decision;
         }
 
+        // reset the currentIteration for next action emitting cycle
         currentIteration = 0;
 
-        // SearchBackPressure Policy is always accepted
+        // SearchBackPressure Policy is always accepted since Searchbp Decider only use the actions suggested by Searchbp Policy
         List<Action> searchBackPressureActions = searchBackPressurePolicy.evaluate();
+
         // loop through the actions and print the action threshold name, dimension,
         // increase/decrease
         for (int i = 0; i < searchBackPressureActions.size(); i++) {
