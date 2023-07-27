@@ -57,7 +57,8 @@ public class SearchBackPressureDecider extends Decider {
         // reset the currentIteration for next action emitting cycle
         currentIteration = 0;
 
-        // SearchBackPressure Policy is always accepted since Searchbp Decider only use the actions suggested by Searchbp Policy
+        // SearchBackPressure Policy is always accepted since Searchbp Decider only use the actions
+        // suggested by Searchbp Policy
         List<Action> searchBackPressureActions = searchBackPressurePolicy.evaluate();
 
         // loop through the actions and print the action threshold name, dimension,
