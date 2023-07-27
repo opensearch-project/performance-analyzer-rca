@@ -63,16 +63,16 @@ public class SearchBackPressureDecider extends Decider {
 
         // loop through the actions and print the action threshold name, dimension,
         // increase/decrease
-        for (int i = 0; i < searchBackPressureActions.size(); i++) {
-            LOG.info(
-                    "Action details, threshold name: {}, dimension: {}, increase/decrease: {}, stepsize: {}",
-                    ((SearchBackPressureAction) searchBackPressureActions.get(i))
-                            .getThresholdName(),
-                    ((SearchBackPressureAction) searchBackPressureActions.get(i)).getDimension(),
-                    ((SearchBackPressureAction) searchBackPressureActions.get(i)).getDirection(),
-                    ((SearchBackPressureAction) searchBackPressureActions.get(i))
-                            .getStepSizeInPercentage());
-        }
+        searchBackPressureActions.stream()
+                .forEach(
+                        (action) -> {
+                            LOG.info(
+                                    "searchBackPressureActions details, threshold name: {}, dimension: {}, increase/decrease: {}, stepsize: {}",
+                                    ((SearchBackPressureAction) action).getThresholdName(),
+                                    ((SearchBackPressureAction) action).getDimension(),
+                                    ((SearchBackPressureAction) action).getDirection(),
+                                    ((SearchBackPressureAction) action).getStepSizeInPercentage());
+                        });
 
         searchBackPressureActions.forEach(decision::addAction);
 

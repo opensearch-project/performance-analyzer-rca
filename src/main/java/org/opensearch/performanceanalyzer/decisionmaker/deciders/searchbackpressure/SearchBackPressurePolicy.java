@@ -27,7 +27,6 @@ import org.opensearch.performanceanalyzer.rca.configs.SearchBackPressureRcaConfi
 import org.opensearch.performanceanalyzer.rca.framework.api.aggregators.BucketizedSlidingWindowConfig;
 import org.opensearch.performanceanalyzer.rca.framework.api.flow_units.ResourceFlowUnit;
 import org.opensearch.performanceanalyzer.rca.framework.api.summaries.HotClusterSummary;
-import org.opensearch.performanceanalyzer.rca.framework.api.summaries.HotNodeSummary;
 import org.opensearch.performanceanalyzer.rca.framework.api.summaries.HotResourceSummary;
 import org.opensearch.performanceanalyzer.rca.framework.core.RcaConf;
 import org.opensearch.performanceanalyzer.rca.framework.util.RcaConsts;
@@ -152,13 +151,11 @@ public class SearchBackPressurePolicy implements DecisionPolicy {
             if (!flowUnit.hasResourceSummary()) {
                 continue;
             }
-            // print out the total number of flow units in length
+
             HotClusterSummary clusterSummary = flowUnit.getSummary();
-            for (HotNodeSummary nodeSummary : clusterSummary.getHotNodeSummaryList()) {
-                for (HotResourceSummary summary : nodeSummary.getHotResourceSummaryList()) {
-                    record(summary);
-                }
-            }
+            clusterSummary.getHotNodeSummaryList().stream()
+                    .flatMap((nodeSummary) -> nodeSummary.getHotResourceSummaryList().stream())
+                    .forEach((resourceSummary) -> record(resourceSummary));
         }
     }
 
