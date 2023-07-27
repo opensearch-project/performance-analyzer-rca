@@ -95,39 +95,35 @@ public class SearchBackPressurePolicy implements DecisionPolicy {
      */
     private void record(HotResourceSummary issue) {
         if (HEAP_SEARCHBP_SHARD_SIGNALS.contains(issue.getResource())) {
-            LOG.debug("Recording shard-level issue");
-            recordSearchBackPressureShardIssue(issue);
-        } else if (HEAP_SEARCHBP_TASK_SIGNALS.contains(issue.getResource())) {
-            LOG.debug("Recording Task-Level issue");
-            recordSearchBackPressureTaskIssue(issue);
+            recordSearchBackPressureIssue(issue, true);
+        }
+
+        if (HEAP_SEARCHBP_TASK_SIGNALS.contains(issue.getResource())) {
+            recordSearchBackPressureIssue(issue, false);
         }
     }
 
-    private void recordSearchBackPressureShardIssue(HotResourceSummary issue) {
-        // increase alarm for heap-related threshold (shard-level)
+    private void recordSearchBackPressureIssue(HotResourceSummary issue, boolean isShard) {
+        // increase alarm for heap-related threshold
         if (issue.getMetaData() == SearchBackPressureRcaConfig.INCREASE_THRESHOLD_BY_JVM_STR) {
-            LOG.debug("recording increase-level issue for shard");
-            searchBackPressureShardHeapIncreaseAlarm.recordIssue();
+            if (isShard) {
+                LOG.debug("recording increase-level issue for shard");
+                searchBackPressureShardHeapIncreaseAlarm.recordIssue();
+            } else {
+                LOG.debug("recording increase-level issue for task");
+                searchBackPressureTaskHeapIncreaseAlarm.recordIssue();
+            }
         }
 
-        // decrease alarm for heap-related threshold (shard-level)
+        // decrease alarm for heap-related threshold
         if (issue.getMetaData() == SearchBackPressureRcaConfig.DECREASE_THRESHOLD_BY_JVM_STR) {
-            LOG.debug("recording decrease-level issue for shard");
-            searchBackPressureShardHeapDecreaseAlarm.recordIssue();
-        }
-    }
-
-    private void recordSearchBackPressureTaskIssue(HotResourceSummary issue) {
-        // increase alarm for heap-related threshold (task-level)
-        if (issue.getMetaData() == SearchBackPressureRcaConfig.INCREASE_THRESHOLD_BY_JVM_STR) {
-            LOG.debug("recording increase-level issue for task");
-            searchBackPressureTaskHeapIncreaseAlarm.recordIssue();
-        }
-
-        // decrease alarm for heap-related threshold (task-level)
-        if (issue.getMetaData() == SearchBackPressureRcaConfig.DECREASE_THRESHOLD_BY_JVM_STR) {
-            LOG.debug("recording decrease-level issue for task");
-            searchBackPressureTaskHeapDecreaseAlarm.recordIssue();
+            if (isShard) {
+                LOG.debug("recording decrease-level issue for shard");
+                searchBackPressureShardHeapDecreaseAlarm.recordIssue();
+            } else {
+                LOG.debug("recording decrease-level issue for task");
+                searchBackPressureTaskHeapDecreaseAlarm.recordIssue();
+            }
         }
     }
 
