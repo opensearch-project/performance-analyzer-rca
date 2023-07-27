@@ -34,7 +34,7 @@ public class SearchBackPressureDecider extends Decider {
         super(evalIntervalSeconds, decisionFrequency);
         this.searchBackPressureClusterRCA = searchBackPressureClusterRCA;
         this.searchBackPressurePolicy = new SearchBackPressurePolicy(searchBackPressureClusterRCA);
-        LOG.info("SearchBackPressureDecider created#2");
+        LOG.debug("SearchBackPressureDecider created");
     }
 
     @Override
@@ -44,7 +44,7 @@ public class SearchBackPressureDecider extends Decider {
 
     @Override
     public Decision operate() {
-        LOG.info(
+        LOG.debug(
                 "SearchBackPressureDecider#2 operate() with currentIteration: {}",
                 currentIteration);
 
@@ -66,7 +66,7 @@ public class SearchBackPressureDecider extends Decider {
         searchBackPressureActions.stream()
                 .forEach(
                         (action) -> {
-                            LOG.info(
+                            LOG.debug(
                                     "searchBackPressureActions details, threshold name: {}, dimension: {}, increase/decrease: {}, stepsize: {}",
                                     ((SearchBackPressureAction) action).getThresholdName(),
                                     ((SearchBackPressureAction) action).getDimension(),
@@ -76,7 +76,7 @@ public class SearchBackPressureDecider extends Decider {
 
         searchBackPressureActions.forEach(decision::addAction);
 
-        LOG.info("decision action size is {}", decision.getActions().size());
+        LOG.debug("decision action size is {}", decision.getActions().size());
         return decision;
     }
 

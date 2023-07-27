@@ -56,7 +56,7 @@ public class SearchBackPressurePolicyConfig {
                         config.getValue(),
                         DEFAULT_HOUR_BREACH_THRESHOLD,
                         Integer.class);
-        LOG.info(
+        LOG.debug(
                 "SearchBackPressurePolicyConfig hour breach threshold is: {}",
                 hourBreachThreshold.getValue());
 
@@ -66,7 +66,7 @@ public class SearchBackPressurePolicyConfig {
                         config.getValue(),
                         DEFAULT_SEARCHBP_HEAP_STEPSIZE_IN_PERCENTAGE,
                         Double.class);
-        LOG.info(
+        LOG.debug(
                 "searchbpHeapStepsizeInPercentage is {}",
                 searchbpHeapStepsizeInPercentage.getValue());
     }

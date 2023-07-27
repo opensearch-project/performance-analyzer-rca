@@ -96,14 +96,14 @@ public class SearchBpActionsAlarmMonitor implements AlarmMonitor {
     @Override
     public void recordIssue(long timeStamp, double value) {
         SlidingWindowData dataPoint = new SlidingWindowData(timeStamp, value);
-        LOG.info("Search Backpressure Actions Alarm is recording a new issue at {}", timeStamp);
+        LOG.debug("Search Backpressure Actions Alarm is recording a new issue at {}", timeStamp);
         hourMonitor.next(dataPoint);
     }
 
     private void evaluateAlarm() {
         if (alarmHealthy) {
             if (hourMonitor.size() >= hourBreachThreshold) {
-                LOG.info(
+                LOG.debug(
                         "Search Backpressure Actions Alarm is Unhealthy because hourMonitor.size() is {}, and threshold is {}",
                         hourMonitor.size(),
                         hourBreachThreshold);
@@ -111,7 +111,7 @@ public class SearchBpActionsAlarmMonitor implements AlarmMonitor {
             }
         } else {
             if (hourMonitor.size() == 0) {
-                LOG.info("SearchBackpressure Hour Monitor is now healthy for zero capacity");
+                LOG.debug("SearchBackpressure Hour Monitor is now healthy for zero capacity");
                 alarmHealthy = true;
             }
         }
