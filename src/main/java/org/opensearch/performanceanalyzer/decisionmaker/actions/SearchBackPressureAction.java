@@ -40,7 +40,6 @@ public class SearchBackPressureAction extends SuppressibleAction {
     private long coolOffPeriodInMillis;
     private String thresholdName;
 
-    // TODO: change dimension, direction as enum
     private SearchbpDimension dimension;
     private SearchbpThresholdActionDirection direction;
     private double stepSizeInPercentage;

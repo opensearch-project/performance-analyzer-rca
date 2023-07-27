@@ -37,11 +37,11 @@ public class SearchBackPressurePolicyConfig {
 
     // Default values
     public static final boolean DEFAULT_ENABLED = true;
-    // TO DO Decide the Defauilt Hour breach threshold
+
+    // TO DO: Decide the Default Hour breach threshold
     public static final int DEFAULT_HOUR_BREACH_THRESHOLD = 2;
-    public static final int DEFAULT_HOUR_MONITOR_WINDOW_SIZE_MINUTES =
-            (int) TimeUnit.HOURS.toMinutes(1);
-    public static final int DEFAULT_HOUR_MONITOR_BUCKET_SIZE_MINUTES = 1;
+    public static final int HOUR_MONITOR_WINDOW_SIZE_MINUTES = (int) TimeUnit.HOURS.toMinutes(1);
+    public static final int HOUR_MONITOR_BUCKET_SIZE_MINUTES = 1;
     public static final double DEFAULT_SEARCHBP_HEAP_STEPSIZE_IN_PERCENTAGE = 5;
 
     private Config<Integer> hourBreachThreshold;
@@ -85,11 +85,11 @@ public class SearchBackPressurePolicyConfig {
     }
 
     public int getHourMonitorWindowSizeMinutes() {
-        return DEFAULT_HOUR_MONITOR_WINDOW_SIZE_MINUTES;
+        return HOUR_MONITOR_WINDOW_SIZE_MINUTES;
     }
 
     public int getHourMonitorBucketSizeMinutes() {
-        return DEFAULT_HOUR_MONITOR_BUCKET_SIZE_MINUTES;
+        return HOUR_MONITOR_BUCKET_SIZE_MINUTES;
     }
 
     public double getSearchbpHeapStepsizeInPercentage() {
