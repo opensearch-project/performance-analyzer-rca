@@ -201,23 +201,28 @@ public class SearchBackPressurePolicy implements DecisionPolicy {
     public void initialize() {
         LOG.info("Initializing alarms with dummy path");
         // initialize shard level alarm for resounce unit that suggests to increase jvm threshold
-        if (searchBackPressureShardHeapIncreaseAlarm == null) {
-            searchBackPressureShardHeapIncreaseAlarm = createAlarmMonitor(SEARCHBP_DATA_FILE_PATH);
-        }
+        searchBackPressureShardHeapIncreaseAlarm =
+                initializeAlarmMonitor(searchBackPressureShardHeapIncreaseAlarm);
 
         // initialize shard level alarm for resounce unit that suggests to decrease jvm threshold
-        if (searchBackPressureShardHeapDecreaseAlarm == null) {
-            searchBackPressureShardHeapDecreaseAlarm = createAlarmMonitor(SEARCHBP_DATA_FILE_PATH);
-        }
+        searchBackPressureShardHeapDecreaseAlarm =
+                initializeAlarmMonitor(searchBackPressureShardHeapDecreaseAlarm);
 
         // initialize task level alarm for resounce unit that suggests to increase jvm threshold
-        if (searchBackPressureTaskHeapIncreaseAlarm == null) {
-            searchBackPressureTaskHeapIncreaseAlarm = createAlarmMonitor(SEARCHBP_DATA_FILE_PATH);
-        }
+        searchBackPressureTaskHeapIncreaseAlarm =
+                initializeAlarmMonitor(searchBackPressureTaskHeapIncreaseAlarm);
 
         // initialize task level alarm for resounce unit that suggests to decrease jvm threhsold
-        if (searchBackPressureTaskHeapDecreaseAlarm == null) {
-            searchBackPressureTaskHeapDecreaseAlarm = createAlarmMonitor(SEARCHBP_DATA_FILE_PATH);
+        searchBackPressureTaskHeapDecreaseAlarm =
+                initializeAlarmMonitor(searchBackPressureTaskHeapDecreaseAlarm);
+    }
+
+    private SearchBpActionsAlarmMonitor initializeAlarmMonitor(
+            SearchBpActionsAlarmMonitor alarmMonitor) {
+        if (alarmMonitor == null) {
+            return createAlarmMonitor(SEARCHBP_DATA_FILE_PATH);
+        } else {
+            return alarmMonitor;
         }
     }
 
@@ -239,9 +244,6 @@ public class SearchBackPressurePolicy implements DecisionPolicy {
         initialize();
 
         recordIssues();
-        // TODO: Search Task and Shard Alarm Should be seperated
-        // checkShardAlamr() and but first 2 ifs inside?
-        // checkTaskAlarms() and but last 2 ifs inside?
 
         checkShardAlarms(actions);
         checkTaskAlarms(actions);
