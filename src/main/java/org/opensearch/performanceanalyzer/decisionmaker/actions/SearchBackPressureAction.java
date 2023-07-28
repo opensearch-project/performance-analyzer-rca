@@ -84,9 +84,13 @@ public class SearchBackPressureAction extends SuppressibleAction {
                 .collect(Collectors.toList());
     }
 
-    /* TO DO: Discuss the impact of SearchBackPressureAction
-     * since our action only modify the threhsold settings of Search Back Pressure Service instead of actual Resource
-     * No Impact should be put as the Impact Vector for this action so other actions would not be affected by Searchbp-specific actions
+    /* Search Back Pressure Decider/Policy only tunes searchbackpressure related thresholds (e.g. search_backpressure.search_task_heap_threshold)
+     * and it does not correlate directly with any current dimension in the ImpactVector (e.g. CPU/HEAP).
+     * And the current Searchbp actions only adjust heap related Searchbp Thresholds for now.
+     * Dimensions in ImpactVector is used by collator to determine which action should be emitted to Publisher,
+     * eventually which actions should the downstream class execute. So if there are 2 actions emitting in the same time, one increase CPU and one decrease it, the collator cancel out the actions.
+     * However, since for Searchbp Actions we only tune the searchbp threshold once per time (it's impossible for 2 actions emitting in the same time that increase and decrease searchbackpressure heap usage threshold).
+     * Therefore, we put no Impact for ImpactVector for Searchbp Actions.
      */
     @Override
     public Map<NodeKey, ImpactVector> impact() {
