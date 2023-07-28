@@ -13,6 +13,7 @@ import com.google.common.collect.Lists;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import org.apache.logging.log4j.LogManager;
@@ -22,8 +23,12 @@ import org.opensearch.performanceanalyzer.decisionmaker.actions.Action;
 import org.opensearch.performanceanalyzer.decisionmaker.actions.SearchBackPressureAction;
 import org.opensearch.performanceanalyzer.decisionmaker.deciders.DecisionPolicy;
 import org.opensearch.performanceanalyzer.decisionmaker.deciders.configs.searchbackpressure.SearchBackPressurePolicyConfig;
+import org.opensearch.performanceanalyzer.decisionmaker.deciders.searchbackpressure.model.SearchBackPressureIssue;
+import org.opensearch.performanceanalyzer.decisionmaker.deciders.searchbackpressure.model.SearchBackPressureSearchTaskIssue;
+import org.opensearch.performanceanalyzer.decisionmaker.deciders.searchbackpressure.model.SearchBackPressureSearchTaskIssue.SearchbpTaskAlarmMonitorMapKeys;
+import org.opensearch.performanceanalyzer.decisionmaker.deciders.searchbackpressure.model.SearchBackPressureShardIssue;
+import org.opensearch.performanceanalyzer.decisionmaker.deciders.searchbackpressure.model.SearchBackPressureShardIssue.SearchbpShardAlarmMonitorMapKeys;
 import org.opensearch.performanceanalyzer.grpc.Resource;
-import org.opensearch.performanceanalyzer.rca.configs.SearchBackPressureRcaConfig;
 import org.opensearch.performanceanalyzer.rca.framework.api.aggregators.BucketizedSlidingWindowConfig;
 import org.opensearch.performanceanalyzer.rca.framework.api.flow_units.ResourceFlowUnit;
 import org.opensearch.performanceanalyzer.rca.framework.api.summaries.HotClusterSummary;
@@ -62,14 +67,18 @@ public class SearchBackPressurePolicy implements DecisionPolicy {
     static final List<Resource> HEAP_SEARCHBP_TASK_SIGNALS =
             Lists.newArrayList(SEARCHBACKPRESSURE_TASK);
 
+    SearchBackPressureIssue searchBackPressureIssue;
+
     /* alarm monitors per threshold */
     // shard-level alarms
     @VisibleForTesting SearchBpActionsAlarmMonitor searchBackPressureShardHeapIncreaseAlarm;
     @VisibleForTesting SearchBpActionsAlarmMonitor searchBackPressureShardHeapDecreaseAlarm;
+    HashMap<String, SearchBpActionsAlarmMonitor> searchBackPressureShardAlarmMonitorMap;
 
     // task-level alarms
     @VisibleForTesting SearchBpActionsAlarmMonitor searchBackPressureTaskHeapIncreaseAlarm;
     @VisibleForTesting SearchBpActionsAlarmMonitor searchBackPressureTaskHeapDecreaseAlarm;
+    HashMap<String, SearchBpActionsAlarmMonitor> searchBackPressureTaskAlarmMonitorMap;
 
     public SearchBackPressurePolicy(
             SearchBackPressureClusterRCA searchBackPressureClusterRCA,
@@ -93,39 +102,46 @@ public class SearchBackPressurePolicy implements DecisionPolicy {
      *
      * @param issue an issue with the application
      */
-    private void record(HotResourceSummary issue) {
-        if (HEAP_SEARCHBP_SHARD_SIGNALS.contains(issue.getResource())) {
-            recordSearchBackPressureIssue(issue, true);
+    private void record(HotResourceSummary summary) {
+        if (HEAP_SEARCHBP_SHARD_SIGNALS.contains(summary.getResource())) {
+            // recordSearchBackPressureIssue(issue, true);
+            searchBackPressureIssue =
+                    new SearchBackPressureShardIssue(
+                            summary, searchBackPressureShardAlarmMonitorMap);
+            searchBackPressureIssue.recordIssueBySummaryType(summary);
         }
 
-        if (HEAP_SEARCHBP_TASK_SIGNALS.contains(issue.getResource())) {
-            recordSearchBackPressureIssue(issue, false);
+        if (HEAP_SEARCHBP_TASK_SIGNALS.contains(summary.getResource())) {
+            searchBackPressureIssue =
+                    new SearchBackPressureSearchTaskIssue(
+                            summary, searchBackPressureTaskAlarmMonitorMap);
+            searchBackPressureIssue.recordIssueBySummaryType(summary);
         }
     }
 
-    private void recordSearchBackPressureIssue(HotResourceSummary issue, boolean isShard) {
-        // increase alarm for heap-related threshold
-        if (issue.getMetaData() == SearchBackPressureRcaConfig.INCREASE_THRESHOLD_BY_JVM_STR) {
-            if (isShard) {
-                LOG.debug("recording increase-level issue for shard");
-                searchBackPressureShardHeapIncreaseAlarm.recordIssue();
-            } else {
-                LOG.debug("recording increase-level issue for task");
-                searchBackPressureTaskHeapIncreaseAlarm.recordIssue();
-            }
-        }
+    // private void recordSearchBackPressureIssue(HotResourceSummary issue, boolean isShard) {
+    //     // increase alarm for heap-related threshold
+    //     if (issue.getMetaData() == SearchBackPressureRcaConfig.INCREASE_THRESHOLD_BY_JVM_STR) {
+    //         if (isShard) {
+    //             LOG.debug("recording increase-level issue for shard");
+    //             searchBackPressureShardHeapIncreaseAlarm.recordIssue();
+    //         } else {
+    //             LOG.debug("recording increase-level issue for task");
+    //             searchBackPressureTaskHeapIncreaseAlarm.recordIssue();
+    //         }
+    //     }
 
-        // decrease alarm for heap-related threshold
-        if (issue.getMetaData() == SearchBackPressureRcaConfig.DECREASE_THRESHOLD_BY_JVM_STR) {
-            if (isShard) {
-                LOG.debug("recording decrease-level issue for shard");
-                searchBackPressureShardHeapDecreaseAlarm.recordIssue();
-            } else {
-                LOG.debug("recording decrease-level issue for task");
-                searchBackPressureTaskHeapDecreaseAlarm.recordIssue();
-            }
-        }
-    }
+    //     // decrease alarm for heap-related threshold
+    //     if (issue.getMetaData() == SearchBackPressureRcaConfig.DECREASE_THRESHOLD_BY_JVM_STR) {
+    //         if (isShard) {
+    //             LOG.debug("recording decrease-level issue for shard");
+    //             searchBackPressureShardHeapDecreaseAlarm.recordIssue();
+    //         } else {
+    //             LOG.debug("recording decrease-level issue for task");
+    //             searchBackPressureTaskHeapDecreaseAlarm.recordIssue();
+    //         }
+    //     }
+    // }
 
     /** gathers and records all issues observed in the application */
     private void recordIssues() {
@@ -202,6 +218,8 @@ public class SearchBackPressurePolicy implements DecisionPolicy {
         // initialize task level alarm for resounce unit that suggests to decrease jvm threhsold
         searchBackPressureTaskHeapDecreaseAlarm =
                 initializeAlarmMonitor(searchBackPressureTaskHeapDecreaseAlarm);
+
+        initializeAlarmMonitorMap();
     }
 
     private SearchBpActionsAlarmMonitor initializeAlarmMonitor(
@@ -211,6 +229,26 @@ public class SearchBackPressurePolicy implements DecisionPolicy {
         } else {
             return alarmMonitor;
         }
+    }
+
+    private void initializeAlarmMonitorMap() {
+        // add shard level monitors to shardAlarmMonitorMap
+        searchBackPressureShardAlarmMonitorMap = new HashMap<String, SearchBpActionsAlarmMonitor>();
+        searchBackPressureShardAlarmMonitorMap.put(
+                SearchbpShardAlarmMonitorMapKeys.SHARD_HEAP_INCREASE_ALARM.toString(),
+                searchBackPressureShardHeapIncreaseAlarm);
+        searchBackPressureShardAlarmMonitorMap.put(
+                SearchbpShardAlarmMonitorMapKeys.SHARD_HEAP_DECREASE_ALARM.toString(),
+                searchBackPressureShardHeapDecreaseAlarm);
+
+        // add task level monitors to taskAlarmMonitorMap
+        searchBackPressureTaskAlarmMonitorMap = new HashMap<String, SearchBpActionsAlarmMonitor>();
+        searchBackPressureTaskAlarmMonitorMap.put(
+                SearchbpTaskAlarmMonitorMapKeys.TASK_HEAP_INCREASE_ALARM.toString(),
+                searchBackPressureTaskHeapIncreaseAlarm);
+        searchBackPressureTaskAlarmMonitorMap.put(
+                SearchbpTaskAlarmMonitorMapKeys.TASK_HEAP_DECREASE_ALARM.toString(),
+                searchBackPressureTaskHeapDecreaseAlarm);
     }
 
     @Override
