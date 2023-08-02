@@ -104,7 +104,6 @@ public class SearchBackPressurePolicy implements DecisionPolicy {
      */
     private void record(HotResourceSummary summary) {
         if (HEAP_SEARCHBP_SHARD_SIGNALS.contains(summary.getResource())) {
-            // recordSearchBackPressureIssue(issue, true);
             searchBackPressureIssue =
                     new SearchBackPressureShardIssue(
                             summary, searchBackPressureShardAlarmMonitorMap);
@@ -118,30 +117,6 @@ public class SearchBackPressurePolicy implements DecisionPolicy {
             searchBackPressureIssue.recordIssueBySummaryType(summary);
         }
     }
-
-    // private void recordSearchBackPressureIssue(HotResourceSummary issue, boolean isShard) {
-    //     // increase alarm for heap-related threshold
-    //     if (issue.getMetaData() == SearchBackPressureRcaConfig.INCREASE_THRESHOLD_BY_JVM_STR) {
-    //         if (isShard) {
-    //             LOG.debug("recording increase-level issue for shard");
-    //             searchBackPressureShardHeapIncreaseAlarm.recordIssue();
-    //         } else {
-    //             LOG.debug("recording increase-level issue for task");
-    //             searchBackPressureTaskHeapIncreaseAlarm.recordIssue();
-    //         }
-    //     }
-
-    //     // decrease alarm for heap-related threshold
-    //     if (issue.getMetaData() == SearchBackPressureRcaConfig.DECREASE_THRESHOLD_BY_JVM_STR) {
-    //         if (isShard) {
-    //             LOG.debug("recording decrease-level issue for shard");
-    //             searchBackPressureShardHeapDecreaseAlarm.recordIssue();
-    //         } else {
-    //             LOG.debug("recording decrease-level issue for task");
-    //             searchBackPressureTaskHeapDecreaseAlarm.recordIssue();
-    //         }
-    //     }
-    // }
 
     /** gathers and records all issues observed in the application */
     private void recordIssues() {
