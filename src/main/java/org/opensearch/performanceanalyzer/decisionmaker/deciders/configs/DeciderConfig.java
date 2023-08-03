@@ -8,6 +8,7 @@ package org.opensearch.performanceanalyzer.decisionmaker.deciders.configs;
 
 import org.opensearch.performanceanalyzer.decisionmaker.deciders.configs.jvm.OldGenDecisionPolicyConfig;
 import org.opensearch.performanceanalyzer.decisionmaker.deciders.configs.jvm.young_gen.JvmGenTuningPolicyConfig;
+import org.opensearch.performanceanalyzer.decisionmaker.deciders.configs.searchbackpressure.SearchBackPressurePolicyConfig;
 import org.opensearch.performanceanalyzer.rca.framework.core.NestedConfig;
 import org.opensearch.performanceanalyzer.rca.framework.core.RcaConf;
 
@@ -28,11 +29,14 @@ public class DeciderConfig {
     private static final String OLD_GEN_DECISION_POLICY_CONFIG_NAME =
             "old-gen-decision-policy-config";
     private static final String JVM_GEN_TUNING_POLICY_CONFIG_NAME = "jvm-gen-tuning-policy-config";
+    private static final String SEARCH_BACK_PRESSURE_POLICY_CONFIG_NAME =
+            "search-back-pressure-policy-config";
 
     private final CachePriorityOrderConfig cachePriorityOrderConfig;
     private final WorkLoadTypeConfig workLoadTypeConfig;
     private final OldGenDecisionPolicyConfig oldGenDecisionPolicyConfig;
     private final JvmGenTuningPolicyConfig jvmGenTuningPolicyConfig;
+    private final SearchBackPressurePolicyConfig searchBackPressurePolicyConfig;
 
     public DeciderConfig(final RcaConf rcaConf) {
         cachePriorityOrderConfig =
@@ -51,6 +55,11 @@ public class DeciderConfig {
                         new NestedConfig(
                                 JVM_GEN_TUNING_POLICY_CONFIG_NAME,
                                 rcaConf.getDeciderConfigSettings()));
+        searchBackPressurePolicyConfig =
+                new SearchBackPressurePolicyConfig(
+                        new NestedConfig(
+                                SEARCH_BACK_PRESSURE_POLICY_CONFIG_NAME,
+                                rcaConf.getDeciderConfigSettings()));
     }
 
     public CachePriorityOrderConfig getCachePriorityOrderConfig() {
@@ -67,5 +76,9 @@ public class DeciderConfig {
 
     public JvmGenTuningPolicyConfig getJvmGenTuningPolicyConfig() {
         return jvmGenTuningPolicyConfig;
+    }
+
+    public SearchBackPressurePolicyConfig getSearchBackPressurePolicyConfig() {
+        return searchBackPressurePolicyConfig;
     }
 }
