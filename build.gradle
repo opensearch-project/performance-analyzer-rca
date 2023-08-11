@@ -354,8 +354,8 @@ dependencies {
     implementation group: 'commons-io', name: 'commons-io', version: '2.7'
     implementation group: 'com.google.errorprone', name: 'error_prone_annotations', version: '2.9.0'
     implementation group: 'com.google.protobuf', name: 'protobuf-java', version: "${protobufVersion}"
-    implementation 'io.grpc:grpc-netty:1.52.1'
-    implementation 'io.grpc:grpc-protobuf:1.52.1'
+    implementation 'io.grpc:grpc-netty:1.56.1'
+    implementation 'io.grpc:grpc-protobuf:1.56.1'
     implementation("io.netty:netty-codec-http2:${nettyVersion}") {
         force = 'true'
     }
