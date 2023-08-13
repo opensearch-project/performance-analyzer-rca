@@ -34,7 +34,6 @@ buildscript {
 
     dependencies {
         classpath "org.opensearch.gradle:build-tools:${opensearch_version}"
-        classpath group: 'com.google.guava', name: 'guava', version: '31.1-jre'
     }
 }
 
@@ -186,7 +185,7 @@ jacocoTestCoverageVerification {
                 }
             }
         }
-    } 
+    }
     else {
         violationRules {
             rule {
@@ -194,7 +193,7 @@ jacocoTestCoverageVerification {
                     minimum = 0.6
                 }
             }
-        }    
+        }
     }
 }
 
@@ -373,16 +372,17 @@ dependencies {
             strictly "2.23.0"
         }
     }
-    testImplementation group: 'org.powermock', name: 'powermock-core', version: '2.0.0'
-    testImplementation group: 'org.powermock', name: 'powermock-api-support', version: '2.0.0'
-    testImplementation group: 'org.powermock', name: 'powermock-module-junit4-common', version: '2.0.0'
-    testImplementation group: 'org.javassist', name: 'javassist', version: '3.24.0-GA'
-    testImplementation group: 'org.powermock', name: 'powermock-reflect', version: '2.0.0'
+    testImplementation group: 'org.powermock', name: 'powermock-core', version: '2.0.2'
+    testImplementation group: 'org.powermock', name: 'powermock-api-support', version: '2.0.2'
+    testImplementation group: 'org.powermock', name: 'powermock-module-junit4-common', version: '2.0.2'
+    testImplementation group: 'org.javassist', name: 'javassist', version: '3.28.0-GA'
+    testImplementation group: 'org.powermock', name: 'powermock-reflect', version: '2.0.2'
     testImplementation group: 'net.bytebuddy', name: 'byte-buddy', version: '1.9.3'
     testImplementation group: 'org.objenesis', name: 'objenesis', version: '3.0.1'
     testImplementation group: 'org.hamcrest', name: 'hamcrest-library', version: '2.1'
     testImplementation group: 'org.hamcrest', name: 'hamcrest', version: '2.1'
     testImplementation group: 'junit', name: 'junit', version: "${junitVersion}"
+    testImplementation group: 'com.github.stefanbirkner', name: 'system-rules', version: '1.19.0'
 
     // Required for Docker build
     dockerBuild group: 'org.opensearch.plugin', name:'performance-analyzer', version: "${opensearch_build}"
