@@ -44,6 +44,7 @@ public class PerformanceAnalyzerAppTest {
     @Before
     public void setup() {
         System.setProperty("performanceanalyzer.metrics.log.enabled", "False");
+        RcaTestHelper.cleanUpLogs();
     }
 
     @Test
