@@ -79,8 +79,17 @@ public class PerformanceAnalyzerAppTest {
         ThreadProvider threadProvider = new ThreadProvider();
         AppContext appContext = new AppContext();
 
-        Thread readerThread = PerformanceAnalyzerApp.startReaderThread(appContext, threadProvider);
-        readerThread.interrupt();
+        PowerMockito.mockStatic(ESLocalhostConnection.class);
+        ReaderMetricsProcessor readerMetricsProcessor = mock(ReaderMetricsProcessor.class);
+        doThrow(new RuntimeException("Force Crashing Reader Thread"))
+                .doNothing()
+                .when(readerMetricsProcessor)
+                .run();
+        PowerMockito.whenNew(ReaderMetricsProcessor.class)
+                .withAnyArguments()
+                .thenReturn(readerMetricsProcessor);
+
+        PerformanceAnalyzerApp.startReaderThread(appContext, threadProvider);
         Assert.assertTrue(
                 "READER_RESTART_PROCESSING metric missing",
                 RcaTestHelper.verifyStatException(
@@ -112,12 +121,15 @@ public class PerformanceAnalyzerAppTest {
                 .thenReturn(200);
         PerformanceAnalyzerApp.startReaderThread(appContext, threadProvider);
         Assert.assertTrue(
+                "READER_RESTART_PROCESSING metric missing",
                 RcaTestHelper.verifyStatException(
                         StatExceptionCode.READER_RESTART_PROCESSING.toString()));
         Assert.assertTrue(
+                "READER_ERROR_PA_DISABLE_SUCCESS metric missing",
                 RcaTestHelper.verifyStatException(
                         StatExceptionCode.READER_ERROR_PA_DISABLE_SUCCESS.toString()));
         Assert.assertTrue(
+                "READER_ERROR_RCA_AGENT_STOPPED metric missing",
                 RcaTestHelper.verifyStatException(
                         StatExceptionCode.READER_ERROR_RCA_AGENT_STOPPED.toString()));
         exit.expectSystemExitWithStatus(1);
@@ -129,12 +141,15 @@ public class PerformanceAnalyzerAppTest {
                 .thenReturn(500);
         PerformanceAnalyzerApp.startReaderThread(appContext, threadProvider);
         Assert.assertTrue(
+                "READER_RESTART_PROCESSING metric missing",
                 RcaTestHelper.verifyStatException(
                         StatExceptionCode.READER_RESTART_PROCESSING.toString()));
         Assert.assertTrue(
+                "READER_ERROR_PA_DISABLE_FAILED metric missing",
                 RcaTestHelper.verifyStatException(
                         StatExceptionCode.READER_ERROR_PA_DISABLE_FAILED.toString()));
         Assert.assertTrue(
+                "READER_ERROR_RCA_AGENT_STOPPED metric missing",
                 RcaTestHelper.verifyStatException(
                         StatExceptionCode.READER_ERROR_RCA_AGENT_STOPPED.toString()));
         exit.expectSystemExitWithStatus(1);
