@@ -79,17 +79,8 @@ public class PerformanceAnalyzerAppTest {
         ThreadProvider threadProvider = new ThreadProvider();
         AppContext appContext = new AppContext();
 
-        PowerMockito.mockStatic(ESLocalhostConnection.class);
-        ReaderMetricsProcessor readerMetricsProcessor = mock(ReaderMetricsProcessor.class);
-        doThrow(new RuntimeException("Force Crashing Reader Thread"))
-                .doNothing()
-                .when(readerMetricsProcessor)
-                .run();
-        PowerMockito.whenNew(ReaderMetricsProcessor.class)
-                .withAnyArguments()
-                .thenReturn(readerMetricsProcessor);
-
-        PerformanceAnalyzerApp.startReaderThread(appContext, threadProvider);
+        Thread readerThread = PerformanceAnalyzerApp.startReaderThread(appContext, threadProvider);
+        readerThread.interrupt();
         Assert.assertTrue(
                 "READER_RESTART_PROCESSING metric missing",
                 RcaTestHelper.verifyStatException(

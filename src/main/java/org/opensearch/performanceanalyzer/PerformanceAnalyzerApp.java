@@ -237,7 +237,7 @@ public class PerformanceAnalyzerApp {
         return grpcServerThread;
     }
 
-    public static void startReaderThread(
+    public static Thread startReaderThread(
             final AppContext appContext, final ThreadProvider threadProvider) {
         PluginSettings settings = PluginSettings.instance();
         final Thread readerThread =
@@ -273,6 +273,7 @@ public class PerformanceAnalyzerApp {
                         },
                         PerformanceAnalyzerThreads.PA_READER);
         readerThread.start();
+        return readerThread;
     }
 
     private static void handleReaderThreadFailed() {
