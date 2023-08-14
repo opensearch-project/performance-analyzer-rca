@@ -12,8 +12,6 @@ import static org.powermock.api.mockito.PowerMockito.mock;
 
 import io.netty.handler.codec.http.HttpMethod;
 import java.util.concurrent.ArrayBlockingQueue;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -41,8 +39,6 @@ import org.powermock.modules.junit4.PowerMockRunner;
     "org.w3c.*"
 })
 public class PerformanceAnalyzerAppTest {
-    private static final Logger LOG = LogManager.getLogger(PerformanceAnalyzerAppTest.class);
-
     @Rule public final ExpectedSystemExit exit = ExpectedSystemExit.none();
 
     @Before

@@ -382,6 +382,7 @@ dependencies {
     testImplementation group: 'org.hamcrest', name: 'hamcrest-library', version: '2.1'
     testImplementation group: 'org.hamcrest', name: 'hamcrest', version: '2.1'
     testImplementation group: 'junit', name: 'junit', version: "${junitVersion}"
+    testImplementation group: 'org.xerial', name: 'sqlite-jdbc', version: '3.41.2.2'
     testImplementation group: 'com.github.stefanbirkner', name: 'system-rules', version: '1.19.0'
 
     // Required for Docker build
