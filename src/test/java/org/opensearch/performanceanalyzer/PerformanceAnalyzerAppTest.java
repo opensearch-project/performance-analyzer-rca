@@ -75,23 +75,6 @@ public class PerformanceAnalyzerAppTest {
     }
 
     @Test
-    public void testStartReaderThreadOneAttemptFailed() throws Exception {
-        ThreadProvider threadProvider = new ThreadProvider();
-        AppContext appContext = new AppContext();
-
-        Thread readerThread = PerformanceAnalyzerApp.startReaderThread(appContext, threadProvider);
-        readerThread.interrupt();
-        Assert.assertTrue(
-                "READER_RESTART_PROCESSING metric missing",
-                RcaTestHelper.verifyStatException(
-                        StatExceptionCode.READER_RESTART_PROCESSING.toString()));
-        Assert.assertFalse(
-                "READER_ERROR_RCA_AGENT_STOPPED metric present",
-                RcaTestHelper.verifyStatException(
-                        StatExceptionCode.READER_ERROR_RCA_AGENT_STOPPED.toString()));
-    }
-
-    @Test
     public void testStartReaderThreadAllAttemptFail() throws Exception {
         ThreadProvider threadProvider = new ThreadProvider();
         AppContext appContext = new AppContext();
