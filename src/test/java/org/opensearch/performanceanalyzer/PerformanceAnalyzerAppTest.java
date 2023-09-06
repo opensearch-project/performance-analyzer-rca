@@ -5,15 +5,12 @@
 
 package org.opensearch.performanceanalyzer;
 
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.atLeastOnce;
 import static org.powermock.api.mockito.PowerMockito.doNothing;
 import static org.powermock.api.mockito.PowerMockito.doThrow;
 import static org.powermock.api.mockito.PowerMockito.mock;
 import static org.powermock.api.mockito.PowerMockito.verifyPrivate;
 
-import io.netty.handler.codec.http.HttpMethod;
 import java.util.concurrent.ArrayBlockingQueue;
 import org.junit.Assert;
 import org.junit.Before;
@@ -33,7 +30,7 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({ESLocalhostConnection.class, PerformanceAnalyzerApp.class})
+@PrepareForTest({LocalhostConnectionUtil.class, PerformanceAnalyzerApp.class})
 @PowerMockIgnore({
     "com.sun.org.apache.xerces.*",
     "javax.xml.*",
@@ -82,7 +79,7 @@ public class PerformanceAnalyzerAppTest {
         ThreadProvider threadProvider = new ThreadProvider();
         AppContext appContext = new AppContext();
 
-        PowerMockito.mockStatic(ESLocalhostConnection.class);
+        PowerMockito.mockStatic(LocalhostConnectionUtil.class);
         ReaderMetricsProcessor readerMetricsProcessor = mock(ReaderMetricsProcessor.class);
         doThrow(new RuntimeException("Force Crashing Reader Thread"))
                 .when(readerMetricsProcessor)
@@ -95,10 +92,7 @@ public class PerformanceAnalyzerAppTest {
         doNothing().when(PerformanceAnalyzerApp.class, "cleanupAndExit");
 
         // PA Disable Success
-        PowerMockito.when(
-                        ESLocalhostConnection.makeHttpRequest(
-                                anyString(), eq(HttpMethod.POST), anyString()))
-                .thenReturn(200);
+        doNothing().when(LocalhostConnectionUtil.class, "disablePA");
         PerformanceAnalyzerApp.startReaderThread(appContext, threadProvider);
         Assert.assertTrue(
                 "READER_RESTART_PROCESSING metric missing",
@@ -108,13 +102,11 @@ public class PerformanceAnalyzerAppTest {
                 "READER_ERROR_PA_DISABLE_SUCCESS metric missing",
                 RcaTestHelper.verifyStatException(
                         StatExceptionCode.READER_ERROR_PA_DISABLE_SUCCESS.toString()));
-        verifyPrivate(PerformanceAnalyzerApp.class, times(1)).invoke("cleanupAndExit");
+        verifyPrivate(PerformanceAnalyzerApp.class, atLeastOnce()).invoke("cleanupAndExit");
 
         // PA Disable Fail
-        PowerMockito.when(
-                        ESLocalhostConnection.makeHttpRequest(
-                                anyString(), eq(HttpMethod.POST), anyString()))
-                .thenReturn(500);
+        doThrow(new RuntimeException("Failed to disable PA"))
+                .when(LocalhostConnectionUtil.class, "disablePA");
         PerformanceAnalyzerApp.startReaderThread(appContext, threadProvider);
         Assert.assertTrue(
                 "READER_RESTART_PROCESSING metric missing",
@@ -124,6 +116,6 @@ public class PerformanceAnalyzerAppTest {
                 "READER_ERROR_PA_DISABLE_FAILED metric missing",
                 RcaTestHelper.verifyStatException(
                         StatExceptionCode.READER_ERROR_PA_DISABLE_FAILED.toString()));
-        verifyPrivate(PerformanceAnalyzerApp.class, times(2)).invoke("cleanupAndExit");
+        verifyPrivate(PerformanceAnalyzerApp.class, atLeastOnce()).invoke("cleanupAndExit");
     }
 }

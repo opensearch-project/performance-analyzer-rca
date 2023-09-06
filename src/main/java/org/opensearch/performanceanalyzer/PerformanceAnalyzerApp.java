@@ -9,8 +9,6 @@ package org.opensearch.performanceanalyzer;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.sun.net.httpserver.HttpServer;
-import io.netty.handler.codec.http.HttpMethod;
-import java.net.HttpURLConnection;
 import java.util.*;
 import java.util.concurrent.*;
 import org.apache.logging.log4j.LogManager;
@@ -53,7 +51,7 @@ public class PerformanceAnalyzerApp {
 
     private static final Logger LOG = LogManager.getLogger(PerformanceAnalyzerApp.class);
 
-    public static final int READER_RESTART_MAX_ATTEMPTS = 3;
+    public static final int READER_RESTART_MAX_ATTEMPTS = 12;
     private static final int EXCEPTION_QUEUE_LENGTH = 1;
     private static final ScheduledMetricCollectorsExecutor METRIC_COLLECTOR_EXECUTOR =
             new ScheduledMetricCollectorsExecutor(1, false);
@@ -286,28 +284,16 @@ public class PerformanceAnalyzerApp {
             LOG.info(
                     "Exhausted {} attempts - unable to start Reader Thread successfully; disable PA",
                     READER_RESTART_MAX_ATTEMPTS);
-            disablePA();
-            LOG.info("Attempt to disable PA succeeded.");
+            LocalhostConnectionUtil.disablePA();
+            LOG.info("PA disable succeeded. ");
             StatsCollector.instance()
                     .logException(StatExceptionCode.READER_ERROR_PA_DISABLE_SUCCESS);
         } catch (Throwable e) {
-            LOG.info("Attempt to disable PA failing: {}", e.getMessage());
+            LOG.info(e.getMessage());
             StatsCollector.instance()
                     .logException(StatExceptionCode.READER_ERROR_PA_DISABLE_FAILED);
         } finally {
             cleanupAndExit();
-        }
-    }
-
-    private static void disablePA() {
-        String PA_CONFIG_PATH = Util.PA_BASE_URL + "/cluster/config";
-        String PA_DISABLE_PAYLOAD = "{\"enabled\": false}";
-
-        int resCode =
-                ESLocalhostConnection.makeHttpRequest(
-                        PA_CONFIG_PATH, HttpMethod.POST, PA_DISABLE_PAYLOAD);
-        if (resCode != HttpURLConnection.HTTP_OK) {
-            throw new RuntimeException("Failed to disable PA");
         }
     }
 
