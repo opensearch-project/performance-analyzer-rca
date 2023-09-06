@@ -33,11 +33,16 @@ public class LocalhostConnectionUtil {
                 stream.writeBytes(PA_DISABLE_PAYLOAD);
                 stream.flush();
                 stream.close();
+                LOG.info(
+                        "PA Disable Response: "
+                                + connection.getResponseCode()
+                                + " "
+                                + connection.getResponseMessage());
                 if (connection.getResponseCode() == HttpURLConnection.HTTP_OK) {
                     return;
                 }
             } catch (Exception e) {
-                LOG.info("PA Disable Request failed: " + e.getMessage(), e);
+                LOG.error("PA Disable Request failed: " + e.getMessage(), e);
             } finally {
                 if (connection != null) {
                     connection.disconnect();
@@ -46,15 +51,16 @@ public class LocalhostConnectionUtil {
             --retryCount;
             Thread.sleep((int) (5000 * (Math.random() * 2) + 100));
         }
-        throw new RuntimeException("Failed to disable PA after " + retryCount + " attempts");
+        throw new RuntimeException("Failed to disable PA after 3 attempts");
     }
 
     private static HttpURLConnection createHTTPConnection(String path, HttpMethod httpMethod) {
         try {
-            String endPoint = "https://localhost:9200" + path;
+            String endPoint = "http://localhost:9200" + path;
             URL endpointUrl = new URL(endPoint);
             HttpURLConnection connection = (HttpURLConnection) endpointUrl.openConnection();
             connection.setRequestMethod(httpMethod.toString());
+            connection.setRequestProperty("Content-Type", "application/json");
 
             connection.setConnectTimeout(TIMEOUT_MILLIS);
             connection.setReadTimeout(TIMEOUT_MILLIS);

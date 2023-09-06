@@ -289,7 +289,7 @@ public class PerformanceAnalyzerApp {
             StatsCollector.instance()
                     .logException(StatExceptionCode.READER_ERROR_PA_DISABLE_SUCCESS);
         } catch (Throwable e) {
-            LOG.info(e.getMessage());
+            LOG.error(e.getMessage());
             StatsCollector.instance()
                     .logException(StatExceptionCode.READER_ERROR_PA_DISABLE_FAILED);
         } finally {
@@ -298,7 +298,7 @@ public class PerformanceAnalyzerApp {
     }
 
     private static void cleanupAndExit() {
-        LOG.info("Reader thread not coming up successfully - Shutting down RCA Runtime");
+        LOG.error("Reader thread not coming up successfully - Shutting down RCA Runtime");
         StatsCollector.instance().logException(StatExceptionCode.READER_ERROR_RCA_AGENT_STOPPED);
 
         // Terminate Java Runtime, executes {@link #shutDownGracefully(ClientServers clientServers)}
