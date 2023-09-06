@@ -23,7 +23,7 @@ public class LocalhostConnectionUtil {
     public static void disablePA() throws InterruptedException {
         String PA_CONFIG_PATH = Util.PA_BASE_URL + "/cluster/config";
         String PA_DISABLE_PAYLOAD = "{\"enabled\": false}";
-        int retryCount = 3;
+        int retryCount = 5;
 
         while (retryCount > 0) {
             HttpURLConnection connection = null;
@@ -49,9 +49,9 @@ public class LocalhostConnectionUtil {
                 }
             }
             --retryCount;
-            Thread.sleep((int) (5000 * (Math.random() * 2) + 100));
+            Thread.sleep((int) (60000 * (Math.random() * 2) + 100));
         }
-        throw new RuntimeException("Failed to disable PA after 3 attempts");
+        throw new RuntimeException("Failed to disable PA after 5 attempts");
     }
 
     private static HttpURLConnection createHTTPConnection(String path, HttpMethod httpMethod) {
