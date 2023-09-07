@@ -51,6 +51,7 @@ public class PerformanceAnalyzerApp {
 
     private static final Logger LOG = LogManager.getLogger(PerformanceAnalyzerApp.class);
 
+    public static final int READER_RESTART_MAX_ATTEMPTS = 12;
     private static final int EXCEPTION_QUEUE_LENGTH = 1;
     private static final ScheduledMetricCollectorsExecutor METRIC_COLLECTOR_EXECUTOR =
             new ScheduledMetricCollectorsExecutor(1, false);
@@ -234,13 +235,14 @@ public class PerformanceAnalyzerApp {
         return grpcServerThread;
     }
 
-    private static void startReaderThread(
+    public static void startReaderThread(
             final AppContext appContext, final ThreadProvider threadProvider) {
         PluginSettings settings = PluginSettings.instance();
         final Thread readerThread =
                 threadProvider.createThreadForRunnable(
                         () -> {
-                            while (true) {
+                            int retryAttemptLeft = READER_RESTART_MAX_ATTEMPTS;
+                            while (retryAttemptLeft > 0) {
                                 try {
                                     ReaderMetricsProcessor mp =
                                             new ReaderMetricsProcessor(
@@ -250,21 +252,57 @@ public class PerformanceAnalyzerApp {
                                     ReaderMetricsProcessor.setCurrentInstance(mp);
                                     mp.run();
                                 } catch (Throwable e) {
-                                    if (TroubleshootingConfig.getEnableDevAssert()) {
-                                        break;
-                                    }
+                                    retryAttemptLeft--;
                                     LOG.error(
-                                            "Error in ReaderMetricsProcessor...restarting, ExceptionCode: {}",
-                                            StatExceptionCode.READER_RESTART_PROCESSING.toString());
+                                            "Error in ReaderMetricsProcessor...restarting, retryCount left: {}."
+                                                    + "Exception: {}",
+                                            retryAttemptLeft,
+                                            e.getMessage());
                                     StatsCollector.instance()
                                             .logException(
                                                     StatExceptionCode.READER_RESTART_PROCESSING);
+
+                                    if (TroubleshootingConfig.getEnableDevAssert()) break;
+
+                                    // All retry attempts exhausted; handle thread failure
+                                    if (retryAttemptLeft <= 0) handleReaderThreadFailed();
                                 }
                             }
                         },
                         PerformanceAnalyzerThreads.PA_READER);
-
         readerThread.start();
+    }
+
+    private static void handleReaderThreadFailed() {
+        // Reader subcomponent is responsible for processing, cleaning metrics written by PA.
+        // Since Reader thread fails to start successfully, execute following:
+        //
+        // 1. Disable PA - Stop collecting OpenSearch metrics
+        // 2. Terminate RCA Process - Gracefully shutdown all
+        //    existing resources/channels, including Reader.
+        try {
+            LOG.info(
+                    "Exhausted {} attempts - unable to start Reader Thread successfully; disable PA",
+                    READER_RESTART_MAX_ATTEMPTS);
+            LocalhostConnectionUtil.disablePA();
+            LOG.info("PA disable succeeded. ");
+            StatsCollector.instance()
+                    .logException(StatExceptionCode.READER_ERROR_PA_DISABLE_SUCCESS);
+        } catch (Throwable e) {
+            LOG.error(e.getMessage());
+            StatsCollector.instance()
+                    .logException(StatExceptionCode.READER_ERROR_PA_DISABLE_FAILED);
+        } finally {
+            cleanupAndExit();
+        }
+    }
+
+    private static void cleanupAndExit() {
+        LOG.error("Reader thread not coming up successfully - Shutting down RCA Runtime");
+        StatsCollector.instance().logException(StatExceptionCode.READER_ERROR_RCA_AGENT_STOPPED);
+
+        // Terminate Java Runtime, executes {@link #shutDownGracefully(ClientServers clientServers)}
+        System.exit(1);
     }
 
     /**
