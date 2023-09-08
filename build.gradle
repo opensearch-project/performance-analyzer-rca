@@ -34,7 +34,6 @@ buildscript {
 
     dependencies {
         classpath "org.opensearch.gradle:build-tools:${opensearch_version}"
-        classpath group: 'com.google.guava', name: 'guava', version: '31.1-jre'
     }
 }
 
@@ -329,6 +328,7 @@ dependencies {
     }
     def versions = VersionProperties.versions
 
+    def commonslangVersion = "${versions.commonslang}"
     def jacksonVersion = "${versions.jackson}"
     def jacksonDataBindVersion = "${versions.jackson_databind}"
     def nettyVersion = "${versions.netty}"
@@ -350,7 +350,7 @@ dependencies {
     implementation "org.opensearch:performance-analyzer-commons:1.1.0-SNAPSHOT"
     implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: "${log4jVersion}"
     implementation group: 'org.apache.logging.log4j', name: 'log4j-core', version: "${log4jVersion}"
-    implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.9'
+    implementation group: 'org.apache.commons', name: 'commons-lang3', version: "${commonslangVersion}"
     implementation group: 'commons-io', name: 'commons-io', version: '2.7'
     implementation group: 'com.google.errorprone', name: 'error_prone_annotations', version: '2.9.0'
     implementation group: 'com.google.protobuf', name: 'protobuf-java', version: "${protobufVersion}"
@@ -373,16 +373,18 @@ dependencies {
             strictly "2.23.0"
         }
     }
-    testImplementation group: 'org.powermock', name: 'powermock-core', version: '2.0.0'
-    testImplementation group: 'org.powermock', name: 'powermock-api-support', version: '2.0.0'
-    testImplementation group: 'org.powermock', name: 'powermock-module-junit4-common', version: '2.0.0'
-    testImplementation group: 'org.javassist', name: 'javassist', version: '3.24.0-GA'
-    testImplementation group: 'org.powermock', name: 'powermock-reflect', version: '2.0.0'
+    testImplementation group: 'org.powermock', name: 'powermock-core', version: '2.0.2'
+    testImplementation group: 'org.powermock', name: 'powermock-api-support', version: '2.0.2'
+    testImplementation group: 'org.powermock', name: 'powermock-module-junit4-common', version: '2.0.2'
+    testImplementation group: 'org.javassist', name: 'javassist', version: '3.28.0-GA'
+    testImplementation group: 'org.powermock', name: 'powermock-reflect', version: '2.0.2'
     testImplementation group: 'net.bytebuddy', name: 'byte-buddy', version: '1.9.3'
     testImplementation group: 'org.objenesis', name: 'objenesis', version: '3.0.1'
     testImplementation group: 'org.hamcrest', name: 'hamcrest-library', version: '2.1'
     testImplementation group: 'org.hamcrest', name: 'hamcrest', version: '2.1'
     testImplementation group: 'junit', name: 'junit', version: "${junitVersion}"
+    testImplementation group: 'org.xerial', name: 'sqlite-jdbc', version: '3.41.2.2'
+    testImplementation group: 'com.github.stefanbirkner', name: 'system-rules', version: '1.19.0'
 
     // Required for Docker build
     dockerBuild group: 'org.opensearch.plugin', name:'performance-analyzer', version: "${opensearch_build}"
