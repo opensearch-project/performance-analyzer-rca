@@ -327,7 +327,7 @@ dependencies {
     compile 'org.bouncycastle:bcpkix-jdk15to18:1.74'
     compile 'org.xerial:sqlite-jdbc:3.41.2.2'
     compile 'com.google.guava:guava:32.0.1-jre'
-    compile 'com.google.code.gson:gson:2.9.0'
+    compile 'com.google.code.gson:gson:2.10.1'
     compile 'org.checkerframework:checker-qual:3.33.0'
     compile "com.fasterxml.jackson.core:jackson-annotations:${jacksonVersion}"
     compile "com.fasterxml.jackson.core:jackson-databind:${jacksonDataBindVersion}"
