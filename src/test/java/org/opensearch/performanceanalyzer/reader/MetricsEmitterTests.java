@@ -25,7 +25,9 @@ import org.jooq.Result;
 import org.jooq.SQLDialect;
 import org.jooq.impl.DSL;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
+import org.opensearch.performanceanalyzer.PerformanceAnalyzerApp;
 import org.opensearch.performanceanalyzer.commons.metrics.AllMetrics;
 import org.opensearch.performanceanalyzer.commons.metrics.PerformanceAnalyzerMetrics;
 import org.opensearch.performanceanalyzer.config.TroubleshootingConfig;
@@ -43,6 +45,11 @@ public class MetricsEmitterTests extends AbstractReaderTests {
     }
 
     private static final String DB_URL = "jdbc:sqlite:";
+
+    @Before
+    public void setup() {
+        PerformanceAnalyzerApp.initAggregators();
+    }
 
     @Test
     public void testMetricsEmitter() throws Exception {
