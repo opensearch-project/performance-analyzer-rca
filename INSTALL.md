@@ -67,7 +67,7 @@ This package uses the [Gradle](https://docs.gradle.org/current/userguide/usergui
 
 2. Clone the Performance Analyzer plugin repository as follows:
  
-    `git clone -b 2.10 --single-branch https://github.com/opensearch-project/performance-analyzer.git`
+    `git clone -b 2.11 --single-branch https://github.com/opensearch-project/performance-analyzer.git`
    
 3. `cd performance-analyzer`
     
