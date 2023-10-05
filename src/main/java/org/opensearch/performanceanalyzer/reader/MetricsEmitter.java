@@ -784,7 +784,6 @@ public class MetricsEmitter {
             if (controllerObj.isPresent() && rejectionCountObj.isPresent()) {
                 handle.bind(
                         controllerObj.orElseGet(Object::new).toString(),
-                        rejectionCountObj.map(o -> Long.parseLong(o.toString())).orElse(0L),
                         // the rest are agg fields: sum, avg, min, max
                         rejectionCountObj.map(o -> Long.parseLong(o.toString())).orElse(0L),
                         rejectionCountObj.map(o -> Long.parseLong(o.toString())).orElse(0L),

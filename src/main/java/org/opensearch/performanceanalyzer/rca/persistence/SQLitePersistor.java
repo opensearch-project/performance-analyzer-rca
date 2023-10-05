@@ -126,9 +126,7 @@ class SQLitePersistor extends PersistorBase {
     // It is needed during SQLite file rotation
     @Override
     synchronized void createNewDSLContext() {
-        if (create != null) {
-            create.close();
-        }
+        // No need to close DSL Context in Jooq 3.16+, see https://github.com/jOOQ/jOOQ/issues/10512
         create = DSL.using(super.conn, SQLDialect.SQLITE);
         jooqTableColumns = new HashMap<>();
         tableNameToJavaClassMap = new HashMap<>();
@@ -413,7 +411,7 @@ class SQLitePersistor extends PersistorBase {
 
                     // This gives the type of the setter parameter.
                     Class<?> setterType = setter.getParameterTypes()[0];
-                    int nestedRowId = jooqField.cast(Integer.class).getValue(record);
+                    int nestedRowId = record.getValue(jooqField, Integer.class);
 
                     // Now that we have the Type of the parameter and the rowID specifying the data
                     // the object
