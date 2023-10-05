@@ -11,8 +11,10 @@ import static org.opensearch.performanceanalyzer.rca.framework.api.summaries.Res
 
 import java.time.Clock;
 import java.util.ArrayList;
+import java.util.Deque;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.function.BiConsumer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jooq.Field;
@@ -98,6 +100,28 @@ public class SearchBackPressureRCA extends Rca<ResourceFlowUnit<HotNodeSummary>>
     // Current time
     protected Clock clock;
 
+    // lambda function to add nextElement to monotonically decreasing sliding window
+    BiConsumer<Deque<SlidingWindowData>, SlidingWindowData> minSlidingWindowNextElement =
+            (windowDeque, nextElement) -> {
+                while (!windowDeque.isEmpty()
+                        && windowDeque.peekFirst().getValue() >= nextElement.getValue()) {
+                    windowDeque.pollFirst();
+                }
+
+                windowDeque.addFirst(nextElement);
+            };
+
+    // lambda function to add nextElement to monotonically increasing sliding window
+    BiConsumer<Deque<SlidingWindowData>, SlidingWindowData> maxSlidingWindowNextElement =
+            (windowDeque, nextElement) -> {
+                while (!windowDeque.isEmpty()
+                        && windowDeque.peekFirst().getValue() < nextElement.getValue()) {
+                    windowDeque.pollFirst();
+                }
+
+                windowDeque.addFirst(nextElement);
+            };
+
     public <M extends Metric> SearchBackPressureRCA(
             final int rcaPeriod, final M heapMax, final M heapUsed, M searchbp_Stats) {
         super(EVAL_INTERVAL_IN_S);
@@ -129,9 +153,11 @@ public class SearchBackPressureRCA extends Rca<ResourceFlowUnit<HotNodeSummary>>
 
         // sliding window for heap usage
         this.minHeapUsageSlidingWindow =
-                new MinMaxSlidingWindow(SLIDING_WINDOW_SIZE_IN_MINS, TimeUnit.MINUTES, true);
+                new MinMaxSlidingWindow(
+                        SLIDING_WINDOW_SIZE_IN_MINS, TimeUnit.MINUTES, minSlidingWindowNextElement);
         this.maxHeapUsageSlidingWindow =
-                new MinMaxSlidingWindow(SLIDING_WINDOW_SIZE_IN_MINS, TimeUnit.MINUTES, false);
+                new MinMaxSlidingWindow(
+                        SLIDING_WINDOW_SIZE_IN_MINS, TimeUnit.MINUTES, maxSlidingWindowNextElement);
 
         // sliding window for JVM
         this.shardJVMCancellationSlidingWindow =
