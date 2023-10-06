@@ -6,7 +6,7 @@
 
 <img src="https://opensearch.org/assets/brand/SVG/Logo/opensearch_logo_default.svg" height="64px"/>
 
-<!-- TOC --> 
+<!-- TOC -->
 
 - [OpenSearch Performance Analyzer RCA](#opensearch-performace-analyzer-rca)
 - [RCA Overview](#rca-overview)
