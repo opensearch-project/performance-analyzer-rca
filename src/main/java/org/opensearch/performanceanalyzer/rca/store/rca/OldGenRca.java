@@ -6,10 +6,8 @@
 package org.opensearch.performanceanalyzer.rca.store.rca;
 
 
-import java.util.Deque;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-import java.util.function.BiConsumer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jooq.Field;
@@ -261,24 +259,33 @@ public abstract class OldGenRca<T extends ResourceFlowUnit<?>> extends Rca<T> {
      *     be implemented as minSlidingWindow or maxSlidingWindow depending on the need.
      */
     public static class MinMaxSlidingWindow extends SlidingWindow<SlidingWindowData> {
-        BiConsumer<Deque<SlidingWindowData>, SlidingWindowData> nextElementFunc;
+        boolean isMinSlidingWindow;
 
         public MinMaxSlidingWindow(
                 int SLIDING_WINDOW_SIZE_IN_TIMESTAMP,
                 TimeUnit timeUnit,
-                BiConsumer<Deque<SlidingWindowData>, SlidingWindowData> nextElementFunc) {
+                boolean isMinSlidingWindow) {
             super(SLIDING_WINDOW_SIZE_IN_TIMESTAMP, timeUnit);
-
-            // get the Biconsumer lambda function passed in
-            this.nextElementFunc = nextElementFunc;
+            this.isMinSlidingWindow = isMinSlidingWindow;
         }
 
         @Override
         public void next(SlidingWindowData e) {
-            // use the passed in lambda function to accept next element
-            nextElementFunc.accept(windowDeque, e);
+            if (isMinSlidingWindow) {
+                // monotonically decreasing sliding window
+                while (!windowDeque.isEmpty()
+                        && windowDeque.peekFirst().getValue() >= e.getValue()) {
+                    windowDeque.pollFirst();
+                }
+            } else {
+                // monotonically increasing sliding window
+                while (!windowDeque.isEmpty()
+                        && windowDeque.peekFirst().getValue() < e.getValue()) {
+                    windowDeque.pollFirst();
+                }
+            }
 
-            // evict elements in sliding window outside the sliding window size
+            windowDeque.addFirst(e);
             while (!windowDeque.isEmpty()
                     && TimeUnit.MILLISECONDS.toSeconds(
                                     e.getTimeStamp() - windowDeque.peekLast().getTimeStamp())
