@@ -86,13 +86,7 @@ public enum ReaderMetrics implements MeasurementSet {
             "FaultDetectionMetricsEmitterExecutionTime",
             "millis",
             StatsType.LATENCIES,
-            Statistics.SUM),
-    SEARCH_BACK_PRESSURE_METRICS_EMITTER_EXECUTION_TIME(
-            "SearchBackPressureMetricsEmitterExecutionTime",
-            "millis",
-            StatsType.LATENCIES,
-            Statistics.SUM),
-    ;
+            Statistics.SUM);
 
     /** What we want to appear as the metric name. */
     private String name;
