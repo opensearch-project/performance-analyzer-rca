@@ -32,7 +32,7 @@ services:
 
   opensearch2:
     container_name: opensearch2
-    image: opensearch/pa-rca:2.10
+    image: opensearch/pa-rca:2.11
     mem_limit: 4g
     networks:
       - opensearchnet
