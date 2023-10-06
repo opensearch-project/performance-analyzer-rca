@@ -20,7 +20,7 @@ buildscript {
         if (isSnapshot) {
             opensearch_build += "-SNAPSHOT"
         }
-        gitPaBranch = '2.10'
+        gitPaBranch = '2.11'
         gitPaRepo = "https://github.com/opensearch-project/performance-analyzer.git"
         runGauntletTests = "true" == System.getProperty("run.gauntlet.tests", "false")
     }
