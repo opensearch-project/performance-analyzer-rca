@@ -479,7 +479,7 @@ task copyReaderMetricsFiles(type: Copy) {
 task buildDocker(type: Exec) {
     dependsOn(copyAllArtifacts)
     workingDir(dockerArtifactsDir)
-    commandLine 'docker', 'build', '-t', 'opensearch/pa-rca:2.10', '.', '--build-arg', "JDK_VER=${buildDockerJdkVersion}"
+    commandLine 'docker', 'build', '-t', 'opensearch/pa-rca:2.11', '.', '--build-arg', "JDK_VER=${buildDockerJdkVersion}"
 }
 
 task runDocker(type: Exec) {

@@ -114,7 +114,7 @@ You can use the packaged Dockerfile and docker-compose.yml files [here](./docker
  
  2. Build and tag the Docker image with our RCA framework.
 
-    `docker build -t opensearch/pa-rca:2.10 .`
+    `docker build -t opensearch/pa-rca:2.11 .`
 
  3. Spin up a two node cluster as follows:
  
