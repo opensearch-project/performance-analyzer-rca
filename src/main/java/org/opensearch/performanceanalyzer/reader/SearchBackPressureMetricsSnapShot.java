@@ -66,6 +66,18 @@ public class SearchBackPressureMetricsSnapShot implements Removable {
                                                         .SEARCHBP_TASK_STATS_CANCELLATIONCOUNT
                                                         .toString()),
                                         Integer.class));
+                        this.add(
+                                DSL.field(
+                                        DSL.name(
+                                                AllMetrics.SearchBackPressureStatsValue
+                                                        .SEARCHBP_SHARD_STATS_COMPLETIONCOUNT
+                                                        .toString())));
+                        this.add(
+                                DSL.field(
+                                        DSL.name(
+                                                AllMetrics.SearchBackPressureStatsValue
+                                                        .SEARCHBP_TASK_STATS_COMPLETIONCOUNT
+                                                        .toString())));
 
                         // Shard Stats Resource Heap / CPU Usage
                         this.add(

@@ -36,6 +36,14 @@ public class SearchBackPressureMetricsSnapShotTest {
                             AllMetrics.SearchBackPressureStatsValue
                                     .SEARCHBP_TASK_STATS_CANCELLATIONCOUNT
                                     .toString());
+                    this.add(
+                            AllMetrics.SearchBackPressureStatsValue
+                                    .SEARCHBP_SHARD_STATS_COMPLETIONCOUNT
+                                    .toString());
+                    this.add(
+                            AllMetrics.SearchBackPressureStatsValue
+                                    .SEARCHBP_TASK_STATS_COMPLETIONCOUNT
+                                    .toString());
 
                     // Shard Stats Resource Heap / CPU Usage
                     this.add(

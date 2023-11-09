@@ -36,6 +36,7 @@ public class SearchBackPressureMetricsProcessorTest {
     private static final String SERIALIZED_EVENT =
             "{\"searchbp_shard_stats_cancellationCount\":2,"
                     + "\"searchbp_shard_stats_limitReachedCount\":2,"
+                    + "\"searchbp_shard_stats_completionCount\": 10,"
                     + "\"searchbp_shard_stats_resource_heap_usage_cancellationCount\":3,"
                     + "\"searchbp_shard_stats_resource_heap_usage_currentMax\":3,"
                     + "\"searchbp_shard_stats_resource_heap_usage_rollingAvg\":3,"
@@ -47,6 +48,7 @@ public class SearchBackPressureMetricsProcessorTest {
                     + "\"searchbp_shard_stats_resource_elaspedtime_usage_currentAvg\":2,"
                     + "\"searchbp_task_stats_cancellationCount\":0,"
                     + "\"searchbp_task_stats_limitReachedCount\":0,"
+                    + "\"searchbp_task_stats_completionCount\": 5,"
                     + "\"searchbp_task_stats_resource_heap_usage_cancellationCount\":0,"
                     + "\"searchbp_task_stats_resource_heap_usage_currentMax\":0,"
                     + "\"searchbp_task_stats_resource_heap_usage_rollingAvg\":0,"

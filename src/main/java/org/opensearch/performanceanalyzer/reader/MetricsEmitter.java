@@ -784,6 +784,14 @@ public class MetricsEmitter {
                                 AllMetrics.SearchBackPressureStatsValue
                                         .SEARCHBP_TASK_STATS_CANCELLATIONCOUNT
                                         .toString());
+                        this.add(
+                                AllMetrics.SearchBackPressureStatsValue
+                                        .SEARCHBP_SHARD_STATS_COMPLETIONCOUNT
+                                        .toString());
+                        this.add(
+                                AllMetrics.SearchBackPressureStatsValue
+                                        .SEARCHBP_TASK_STATS_COMPLETIONCOUNT
+                                        .toString());
                         // Shard Stats Resource Heap / CPU Usage
                         // searchbp_shard_stats_resource_heap_usage_cancellationCount|0.0|0.0|0.0|0.0
                         this.add(

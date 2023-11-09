@@ -41,8 +41,8 @@ WORKDIR /usr/share/opensearch
 ENV BUST_CACHE 1576286189
 
 # Download and extract defined OpenSearch version.
-RUN curl -fsSL https://artifacts.opensearch.org/snapshots/core/opensearch/3.0.0-SNAPSHOT/opensearch-min-3.0.0-SNAPSHOT-linux-x64-latest.tar.gz | \
-    tar zx --strip-components=1
+COPY opensearch-min-3.0.0-linux-x64.tar.gz ./
+RUN tar -zxvf opensearch-min-3.0.0-linux-x64.tar.gz --strip-components=1
 
 RUN set -ex && for opensearchdirs in config data logs; do \
         mkdir -p "$opensearchdirs"; \

@@ -72,7 +72,7 @@ public class ReaderMetricsProcessor implements Runnable {
     private NavigableMap<Long, AdmissionControlSnapshot> admissionControlMetricsMap;
     private NavigableMap<Long, SearchBackPressureMetricsSnapShot> searchBackPressureMetricsMap;
 
-    private static final int MAX_DATABASES = 2;
+    private static final int MAX_DATABASES = 400;
     private static final int OS_SNAPSHOTS = 4;
     private static final int SHARD_STATE_SNAPSHOTS = 2;
     private static final int RQ_SNAPSHOTS = 4;

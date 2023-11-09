@@ -10,6 +10,8 @@ public class SearchBackPressureRCAMetric {
     private final double maxHeap;
     private final double searchbpShardCancellationCount;
     private final double searchbpTaskCancellationCount;
+    private final double searchShardTaskCompletionCount;
+    private final double searchTaskCompletionCount;
     private final double searchbpJVMShardCancellationCount;
     private final double searchbpJVMTaskCancellationCount;
 
@@ -18,12 +20,16 @@ public class SearchBackPressureRCAMetric {
             double maxHeap,
             double searchbpShardCancellationCount,
             double searchbpTaskCancellationCount,
+            double searchShardTaskCompletionCount,
+            double searchTaskCompletionCount,
             double searchbpJVMShardCancellationCount,
             double searchbpJVMTaskCancellationCount) {
         this.usedHeap = usedHeap;
         this.maxHeap = maxHeap;
         this.searchbpShardCancellationCount = searchbpShardCancellationCount;
         this.searchbpTaskCancellationCount = searchbpTaskCancellationCount;
+        this.searchTaskCompletionCount = searchTaskCompletionCount;
+        this.searchShardTaskCompletionCount = searchShardTaskCompletionCount;
         this.searchbpJVMShardCancellationCount = searchbpJVMShardCancellationCount;
         this.searchbpJVMTaskCancellationCount = searchbpJVMTaskCancellationCount;
     }
@@ -52,6 +58,14 @@ public class SearchBackPressureRCAMetric {
         return searchbpJVMTaskCancellationCount;
     }
 
+    public double getSearchShardTaskCompletionCount() {
+        return searchShardTaskCompletionCount;
+    }
+
+    public double getSearchTaskCompletionCount() {
+        return searchTaskCompletionCount;
+    }
+
     public double getHeapUsagePercent() {
         if (this.getMaxHeap() == 0) {
             return 0;
@@ -60,21 +74,21 @@ public class SearchBackPressureRCAMetric {
     }
 
     public double getShardJVMCancellationPercent() {
-        if (this.getSearchbpShardCancellationCount() == 0) {
+        if (this.getSearchShardTaskCompletionCount() == 0) {
             return 0;
         }
         return 100
                 * this.getSearchbpJVMShardCancellationCount()
-                / this.getSearchbpShardCancellationCount();
+                / this.getSearchShardTaskCompletionCount();
     }
 
     public double getTaskJVMCancellationPercent() {
-        if (this.getSearchbpTaskCancellationCount() == 0) {
+        if (this.getSearchTaskCompletionCount() == 0) {
             return 0;
         }
         return 100
                 * this.getSearchbpJVMTaskCancellationCount()
-                / this.getSearchbpTaskCancellationCount();
+                / this.getSearchTaskCompletionCount();
     }
 
     public boolean hasValues() {
@@ -88,6 +102,10 @@ public class SearchBackPressureRCAMetric {
                 + usedHeap
                 + ", maxHeap="
                 + maxHeap
+                + ", searchShardTaskCompletionCount="
+                + searchShardTaskCompletionCount
+                + ", searchTaskCompletionCount="
+                + searchTaskCompletionCount
                 + ", searchbpShardCancellationCount="
                 + searchbpShardCancellationCount
                 + ", searchbpTaskCancellationCount="

@@ -201,14 +201,17 @@ public class SearchBackPressureRCA extends Rca<ResourceFlowUnit<HotNodeSummary>>
 
         // print out oldGenUsed and maxOldGen
         LOG.debug(
-                "SearchBackPressureRCA: oldGenUsed: {} maxOldGen: {}, heapUsedPercentage: {}, searchbpShardCancellationCount: {}, searchbpTaskCancellationCount: {}, searchbpJVMShardCancellationCount: {}, searchbpJVMTaskCancellationCount: {}",
+                "SearchBackPressureRCA: oldGenUsed: {} maxOldGen: {}, heapUsedPercentage: {}, searchbpShardCancellationCount: {}, searchbpTaskCancellationCount: {}, searchbpJVMShardCancellationCount: {}, searchbpJVMTaskCancellationCount: {}"
+                        + ", searchShardTaskCompletionCount: {}, searchTaskCompletionCount: {}",
                 searchBackPressureRCAMetric.getUsedHeap(),
                 searchBackPressureRCAMetric.getMaxHeap(),
                 searchBackPressureRCAMetric.getHeapUsagePercent(),
                 searchBackPressureRCAMetric.getSearchbpShardCancellationCount(),
                 searchBackPressureRCAMetric.getSearchbpTaskCancellationCount(),
                 searchBackPressureRCAMetric.getSearchbpJVMShardCancellationCount(),
-                searchBackPressureRCAMetric.getSearchbpJVMTaskCancellationCount());
+                searchBackPressureRCAMetric.getSearchbpJVMTaskCancellationCount(),
+                searchBackPressureRCAMetric.getSearchShardTaskCompletionCount(),
+                searchBackPressureRCAMetric.getSearchTaskCompletionCount());
 
         updateAllSlidingWindows(searchBackPressureRCAMetric, currentTimeMillis);
 
@@ -241,8 +244,8 @@ public class SearchBackPressureRCA extends Rca<ResourceFlowUnit<HotNodeSummary>>
 
             /*
              *  2 cases we send Unhealthy ResourceContext when we need to autotune the threshold
-             *  (increase) node max heap usage in last 60 secs is less than 70% and cancellationCountPercentage due to heap is more than 50% of all task cancellations
-             *  (decrease) node min heap usage in last 60 secs is more than 80% and cancellationCountPercetange due to heap is less than 30% of all task cancellations
+             *  (increase) node max heap usage in last 60 secs is less than 70% and cancellationCountPercentage due to heap is more than 5% of all task completions
+             *  (decrease) node min heap usage in last 60 secs is more than 80% and cancellationCountPercetange due to heap is less than 3% of all task completions
              */
             boolean maxHeapBelowIncreaseThreshold =
                     maxHeapUsagePercentage < heapUsedIncreaseThreshold;
@@ -441,6 +444,18 @@ public class SearchBackPressureRCA extends Rca<ResourceFlowUnit<HotNodeSummary>>
                         AllMetrics.SearchBackPressureStatsValue
                                 .SEARCHBP_TASK_STATS_CANCELLATIONCOUNT
                                 .toString());
+        double searchShardTaskCompletionCount =
+                getMetric(
+                        this.searchbp_Stats,
+                        searchbp_stats_type_field,
+                        AllMetrics.SearchBackPressureStatsValue.SEARCHBP_SHARD_STATS_COMPLETIONCOUNT
+                                .toString());
+        double searchTaskCompletionCount =
+                getMetric(
+                        this.searchbp_Stats,
+                        searchbp_stats_type_field,
+                        AllMetrics.SearchBackPressureStatsValue.SEARCHBP_TASK_STATS_COMPLETIONCOUNT
+                                .toString());
         double searchbpJVMShardCancellationCount =
                 getMetric(
                         this.searchbp_Stats,
@@ -461,6 +476,8 @@ public class SearchBackPressureRCA extends Rca<ResourceFlowUnit<HotNodeSummary>>
                 maxHeapSize,
                 searchbpShardCancellationCount,
                 searchbpTaskCancellationCount,
+                searchShardTaskCompletionCount,
+                searchTaskCompletionCount,
                 searchbpJVMShardCancellationCount,
                 searchbpJVMTaskCancellationCount);
     }
@@ -521,12 +538,12 @@ public class SearchBackPressureRCA extends Rca<ResourceFlowUnit<HotNodeSummary>>
      */
     private void updateAllSlidingWindows(
             SearchBackPressureRCAMetric searchBackPressureRCAMetric, long currentTimeMillis) {
-        double prevheapUsagePercentage = searchBackPressureRCAMetric.getHeapUsagePercent();
-        if (!Double.isNaN(prevheapUsagePercentage)) {
+        double prevHeapUsagePercentage = searchBackPressureRCAMetric.getHeapUsagePercent();
+        if (!Double.isNaN(prevHeapUsagePercentage)) {
             minHeapUsageSlidingWindow.next(
-                    new SlidingWindowData(currentTimeMillis, prevheapUsagePercentage));
+                    new SlidingWindowData(currentTimeMillis, prevHeapUsagePercentage));
             maxHeapUsageSlidingWindow.next(
-                    new SlidingWindowData(currentTimeMillis, prevheapUsagePercentage));
+                    new SlidingWindowData(currentTimeMillis, prevHeapUsagePercentage));
         }
 
         double shardJVMCancellationPercentage =

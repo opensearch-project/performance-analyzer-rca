@@ -9,7 +9,7 @@ package org.opensearch.performanceanalyzer.rca.configs;
 import org.opensearch.performanceanalyzer.rca.framework.core.RcaConf;
 
 public class SearchBackPressureRcaConfig {
-    public static final String CONFIG_NAME = "search-back-pressure-rca-policy";
+    public static final String CONFIG_NAME = "search-back-pressure-rca";
 
     /* Metadata fields for thresholds */
     public static final String INCREASE_THRESHOLD_BY_JVM_STR = "increase_jvm";
@@ -28,12 +28,15 @@ public class SearchBackPressureRcaConfig {
     public static final int DEFAULT_MAX_HEAP_INCREASE_THRESHOLD = 70;
     private Integer maxHeapIncreasePercentageThreshold;
 
-    // cancellationCount due to heap is more than 50% of all task cancellations in shard level
-    public static final int DEFAULT_SHARD_MAX_HEAP_CANCELLATION_THRESHOLD = 50;
+    // cancellation percent due to heap is more than 3% of all task completions in shard level
+    // (Taking 3 because we don't cancel more than 10% of all completions at any time)
+    public static final int DEFAULT_SHARD_MAX_HEAP_CANCELLATION_THRESHOLD = 5;
     private Integer maxShardHeapCancellationPercentageThreshold;
 
-    // cancellationCount due to heap is more than 50% of all task cancellations in task level
-    public static final int DEFAULT_TASK_MAX_HEAP_CANCELLATION_THRESHOLD = 50;
+    //  cancellation percent due to heap is more than 5% of all task completions in
+    // SearchTask(co-ordinator) level (Taking 3 because we don't cancel more than 10% of all
+    // completions at any time)
+    public static final int DEFAULT_TASK_MAX_HEAP_CANCELLATION_THRESHOLD = 5;
     private Integer maxTaskHeapCancellationPercentageThreshold;
 
     /* Decrease Threshold */
@@ -41,12 +44,12 @@ public class SearchBackPressureRcaConfig {
     public static final int DEFAULT_MIN_HEAP_DECREASE_THRESHOLD = 80;
     private Integer minHeapDecreasePercentageThreshold;
 
-    // cancellationCount due to heap is less than 30% of all task cancellations in shard level
-    public static final int DEFAULT_SHARD_MIN_HEAP_CANCELLATION_THRESHOLD = 30;
+    // cancellationCount due to heap is less than 3% of all task completions in shard level
+    public static final int DEFAULT_SHARD_MIN_HEAP_CANCELLATION_THRESHOLD = 3;
     private Integer minShardHeapCancellationPercentageThreshold;
 
-    // cancellationCount due to heap is less than 30% of all task cancellations in task level
-    public static final int DEFAULT_TASK_MIN_HEAP_CANCELLATION_THRESHOLD = 30;
+    // cancellationCount due to heap is less than 3% of all task completions in task level
+    public static final int DEFAULT_TASK_MIN_HEAP_CANCELLATION_THRESHOLD = 3;
     private Integer minTaskHeapCancellationPercentageThreshold;
 
     public SearchBackPressureRcaConfig(final RcaConf conf) {
