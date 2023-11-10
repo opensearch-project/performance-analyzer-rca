@@ -178,7 +178,10 @@ public class SearchBackPressureRCA extends Rca<ResourceFlowUnit<HotNodeSummary>>
         final List<FlowUnitMessage> flowUnitMessages =
                 args.getWireHopper().readFromWire(args.getNode());
         final List<ResourceFlowUnit<HotNodeSummary>> flowUnitList = new ArrayList<>();
-        LOG.info("rca: Executing fromWire: {}", this.getClass().getSimpleName());
+        LOG.info(
+                "rca: Executing fromWire: {}, remoteFlowUnits: {}",
+                this.getClass().getSimpleName(),
+                flowUnitMessages);
         for (FlowUnitMessage flowUnitMessage : flowUnitMessages) {
             flowUnitList.add(ResourceFlowUnit.buildFlowUnitFromWrapper(flowUnitMessage));
         }
@@ -273,14 +276,13 @@ public class SearchBackPressureRCA extends Rca<ResourceFlowUnit<HotNodeSummary>>
                     minHeapAboveDecreaseThreshold && taskHeapCancellationPercentageBelowThreshold;
 
             // Generate a flow unit with an Unhealthy ResourceContext
-            LOG.debug(
-                    "Increase/Decrease Condition Meet for Shard, maxHeapUsagePercentage: {} is less than threshold: {}, avgShardJVMCancellationPercentage: {} is bigger than heapShardCancellationIncreaseMaxThreshold: {}",
-                    maxHeapUsagePercentage,
-                    heapUsedIncreaseThreshold,
-                    avgShardJVMCancellationPercentage,
-                    heapShardCancellationIncreaseMaxThreshold);
-
             if (increaseJVMThresholdMetByShard || decreaseJVMThresholdMetByShard) {
+                LOG.debug(
+                        "Increase/Decrease Condition Meet for Shard, maxHeapUsagePercentage: {} is less than threshold: {}, avgShardJVMCancellationPercentage: {} is bigger than heapShardCancellationIncreaseMaxThreshold: {}",
+                        maxHeapUsagePercentage,
+                        heapUsedIncreaseThreshold,
+                        avgShardJVMCancellationPercentage,
+                        heapShardCancellationIncreaseMaxThreshold);
                 context = new ResourceContext(Resources.State.UNHEALTHY);
                 HotResourceSummary resourceSummary;
                 // metadata fields indicate the reason for Unhealthy Resource Unit

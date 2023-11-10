@@ -103,7 +103,10 @@ public class SearchBackPressurePolicy implements DecisionPolicy {
      * @param issue an issue with the application
      */
     private void record(HotResourceSummary summary) {
+        LOG.debug("SearchBackPressurePolicy Capturing resource summary: {}", summary);
+
         if (HEAP_SEARCHBP_SHARD_SIGNALS.contains(summary.getResource())) {
+            LOG.debug("[SearchBackPressurePolicy] shard signal in issue...");
             searchBackPressureIssue =
                     new SearchBackPressureShardIssue(
                             summary, searchBackPressureShardAlarmMonitorMap);
@@ -126,7 +129,9 @@ public class SearchBackPressurePolicy implements DecisionPolicy {
             LOG.debug("No flow units in searchBackPressureClusterRCA");
             return;
         }
-
+        LOG.debug(
+                "SearchBackPressurePolicy flow units: {}",
+                searchBackPressureClusterRCA.getFlowUnits());
         for (ResourceFlowUnit<HotClusterSummary> flowUnit :
                 searchBackPressureClusterRCA.getFlowUnits()) {
             if (!flowUnit.hasResourceSummary()) {
@@ -248,7 +253,10 @@ public class SearchBackPressurePolicy implements DecisionPolicy {
         checkTaskAlarms(actions);
 
         // print current size of the actions
-        LOG.debug("SearchBackPressurePolicy#evaluate() action size: {}", actions.size());
+        LOG.debug(
+                "SearchBackPressurePolicy#evaluate() action size: {} actions: {}",
+                actions.size(),
+                actions);
 
         return actions;
     }
