@@ -14,7 +14,6 @@ services:
   opensearch1:
     container_name: opensearch1
     image: opensearch/pa-rca:3.0
-    platform: linux/x86_64
     mem_limit: 4g
     networks:
       opensearchnet:
@@ -34,7 +33,6 @@ services:
   opensearch2:
     container_name: opensearch2
     image: opensearch/pa-rca:3.0
-    platform: linux/x86_64
     mem_limit: 4g
     networks:
       - opensearchnet
