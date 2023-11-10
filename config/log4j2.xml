@@ -40,7 +40,7 @@
         <Logger name="stats_log" level="debug" additivity="false">
             <AppenderRef ref="StatsLog"/>
         </Logger>
-        <Root level="debug">
+        <Root level="error">
             <AppenderRef ref="Console" />
             <AppenderRef ref="PerformanceAnalyzerLog"/>
         </Root>
