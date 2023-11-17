@@ -11,6 +11,10 @@ buildscript {
         buildVersionQualifier = System.getProperty("build.version_qualifier", "")
         buildDockerJdkVersion = System.getProperty("build.docker_jdk_ver", "11")
 
+	// The PA Commons (https://github.com/opensearch-project/performance-analyzer-commons)
+        // is a library dependency with hardcoded versioning in PA and RCA repos.
+        paCommonsVersion = "1.2.0"
+
         // 2.x.0-SNAPSHOT -> 2.x.0.0-SNAPSHOT
         version_tokens = opensearch_version.tokenize('-')
         opensearch_build = version_tokens[0] + '.0'
@@ -19,6 +23,7 @@ buildscript {
         }
         if (isSnapshot) {
             opensearch_build += "-SNAPSHOT"
+	    paCommonsVersion += "-SNAPSHOT"
         }
         gitPaBranch = '2.11'
         gitPaRepo = "https://github.com/opensearch-project/performance-analyzer.git"
@@ -353,7 +358,7 @@ dependencies {
     implementation 'org.checkerframework:checker-qual:3.29.0'
     implementation "com.fasterxml.jackson.core:jackson-annotations:${jacksonVersion}"
     implementation "com.fasterxml.jackson.core:jackson-databind:${jacksonDataBindVersion}"
-    implementation "org.opensearch:performance-analyzer-commons:1.2.0-SNAPSHOT"
+    implementation "org.opensearch:performance-analyzer-commons:${paCommonsVersion}"
     implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: "${log4jVersion}"
     implementation group: 'org.apache.logging.log4j', name: 'log4j-core', version: "${log4jVersion}"
     implementation group: 'org.apache.commons', name: 'commons-lang3', version: "${commonslangVersion}"
