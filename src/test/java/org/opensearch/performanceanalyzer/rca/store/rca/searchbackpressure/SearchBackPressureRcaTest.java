@@ -377,7 +377,7 @@ public class SearchBackPressureRcaTest {
         List<String> searchbpShardCancellationCountRow =
                 Arrays.asList(
                         AllMetrics.SearchBackPressureStatsValue
-                                .SEARCHBP_SHARD_STATS_CANCELLATIONCOUNT
+                                .SEARCHBP_SHARD_TASK_STATS_CANCELLATION_COUNT
                                 .toString(),
                         searchbpShardCancellationCountStr,
                         searchbpShardCancellationCountStr,
@@ -388,7 +388,7 @@ public class SearchBackPressureRcaTest {
         List<String> searchbpTaskCancellationCountRow =
                 Arrays.asList(
                         AllMetrics.SearchBackPressureStatsValue
-                                .SEARCHBP_TASK_STATS_CANCELLATIONCOUNT
+                                .SEARCHBP_SEARCH_TASK_STATS_CANCELLATION_COUNT
                                 .toString(),
                         searchbpTaskCancellationCountStr,
                         searchbpTaskCancellationCountStr,
@@ -397,7 +397,8 @@ public class SearchBackPressureRcaTest {
 
         List<String> searchShardTaskCompletionCountRow =
                 Arrays.asList(
-                        AllMetrics.SearchBackPressureStatsValue.SEARCHBP_SHARD_STATS_COMPLETIONCOUNT
+                        AllMetrics.SearchBackPressureStatsValue
+                                .SEARCHBP_SHARD_TASK_STATS_COMPLETION_COUNT
                                 .toString(),
                         searchShardTaskCompletionCountStr,
                         searchShardTaskCompletionCountStr,
@@ -406,7 +407,8 @@ public class SearchBackPressureRcaTest {
 
         List<String> searchTaskCompletionCountRow =
                 Arrays.asList(
-                        AllMetrics.SearchBackPressureStatsValue.SEARCHBP_TASK_STATS_COMPLETIONCOUNT
+                        AllMetrics.SearchBackPressureStatsValue
+                                .SEARCHBP_SEARCH_TASK_STATS_COMPLETION_COUNT
                                 .toString(),
                         searchTaskCompletionCountStr,
                         searchTaskCompletionCountStr,
@@ -417,7 +419,7 @@ public class SearchBackPressureRcaTest {
         List<String> searchbpJVMShardCancellationCountRow =
                 Arrays.asList(
                         AllMetrics.SearchBackPressureStatsValue
-                                .SEARCHBP_SHARD_STATS_RESOURCE_HEAP_USAGE_CANCELLATIONCOUNT
+                                .SEARCHBP_SHARD_TASK_STATS_RESOURCE_HEAP_USAGE_CANCELLATION_COUNT
                                 .toString(),
                         searchbpJVMShardCancellationCountStr,
                         searchbpJVMShardCancellationCountStr,
@@ -428,7 +430,7 @@ public class SearchBackPressureRcaTest {
         List<String> searchbpJVMTaskCancellationCountRow =
                 Arrays.asList(
                         AllMetrics.SearchBackPressureStatsValue
-                                .SEARCHBP_TASK_STATS_RESOURCE_HEAP_USAGE_CANCELLATIONCOUNT
+                                .SEARCHBP_SEARCH_TASK_STATS_RESOURCE_HEAP_USAGE_CANCELLATION_COUNT
                                 .toString(),
                         searchbpJVMTaskCancellationCountStr,
                         searchbpJVMTaskCancellationCountStr,

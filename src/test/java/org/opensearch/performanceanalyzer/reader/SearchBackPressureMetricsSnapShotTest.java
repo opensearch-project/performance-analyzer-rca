@@ -30,71 +30,71 @@ public class SearchBackPressureMetricsSnapShotTest {
                     // Shard/Task Stats Cancellation Count
                     this.add(
                             AllMetrics.SearchBackPressureStatsValue
-                                    .SEARCHBP_SHARD_STATS_CANCELLATIONCOUNT
+                                    .SEARCHBP_SHARD_TASK_STATS_CANCELLATION_COUNT
                                     .toString());
                     this.add(
                             AllMetrics.SearchBackPressureStatsValue
-                                    .SEARCHBP_TASK_STATS_CANCELLATIONCOUNT
+                                    .SEARCHBP_SEARCH_TASK_STATS_CANCELLATION_COUNT
                                     .toString());
                     this.add(
                             AllMetrics.SearchBackPressureStatsValue
-                                    .SEARCHBP_SHARD_STATS_COMPLETIONCOUNT
+                                    .SEARCHBP_SHARD_TASK_STATS_COMPLETION_COUNT
                                     .toString());
                     this.add(
                             AllMetrics.SearchBackPressureStatsValue
-                                    .SEARCHBP_TASK_STATS_COMPLETIONCOUNT
+                                    .SEARCHBP_SEARCH_TASK_STATS_COMPLETION_COUNT
                                     .toString());
 
                     // Shard Stats Resource Heap / CPU Usage
                     this.add(
                             AllMetrics.SearchBackPressureStatsValue
-                                    .SEARCHBP_SHARD_STATS_RESOURCE_HEAP_USAGE_CANCELLATIONCOUNT
+                                    .SEARCHBP_SHARD_TASK_STATS_RESOURCE_HEAP_USAGE_CANCELLATION_COUNT
                                     .toString());
                     this.add(
                             AllMetrics.SearchBackPressureStatsValue
-                                    .SEARCHBP_SHARD_STATS_RESOURCE_HEAP_USAGE_CURRENTMAX
+                                    .SEARCHBP_SHARD_TASK_STATS_RESOURCE_HEAP_USAGE_CURRENT_MAX
                                     .toString());
                     this.add(
                             AllMetrics.SearchBackPressureStatsValue
-                                    .SEARCHBP_SHARD_STATS_RESOURCE_HEAP_USAGE_ROLLINGAVG
+                                    .SEARCHBP_SHARD_TASK_STATS_RESOURCE_HEAP_USAGE_ROLLING_AVG
                                     .toString());
                     this.add(
                             AllMetrics.SearchBackPressureStatsValue
-                                    .SEARCHBP_SHARD_STATS_RESOURCE_CPU_USAGE_CANCELLATIONCOUNT
+                                    .SEARCHBP_SHARD_TASK_STATS_RESOURCE_CPU_USAGE_CANCELLATION_COUNT
                                     .toString());
                     this.add(
                             AllMetrics.SearchBackPressureStatsValue
-                                    .SEARCHBP_SHARD_STATS_RESOURCE_CPU_USAGE_CURRENTMAX
+                                    .SEARCHBP_SHARD_TASK_STATS_RESOURCE_CPU_USAGE_CURRENT_MAX
                                     .toString());
                     this.add(
                             AllMetrics.SearchBackPressureStatsValue
-                                    .SEARCHBP_SHARD_STATS_RESOURCE_CPU_USAGE_CURRENTAVG
+                                    .SEARCHBP_SHARD_TASK_STATS_RESOURCE_CPU_USAGE_CURRENT_AVG
                                     .toString());
 
                     // Task Stats Resource Heap / CPU Usage
                     this.add(
                             AllMetrics.SearchBackPressureStatsValue
-                                    .SEARCHBP_TASK_STATS_RESOURCE_HEAP_USAGE_CANCELLATIONCOUNT
+                                    .SEARCHBP_SEARCH_TASK_STATS_RESOURCE_HEAP_USAGE_CANCELLATION_COUNT
                                     .toString());
                     this.add(
                             AllMetrics.SearchBackPressureStatsValue
-                                    .SEARCHBP_TASK_STATS_RESOURCE_HEAP_USAGE_CURRENTMAX
+                                    .SEARCHBP_SEARCH_TASK_STATS_RESOURCE_HEAP_USAGE_CURRENT_MAX
                                     .toString());
                     this.add(
                             AllMetrics.SearchBackPressureStatsValue
-                                    .SEARCHBP_TASK_STATS_RESOURCE_HEAP_USAGE_ROLLINGAVG
+                                    .SEARCHBP_SEARCH_TASK_STATS_RESOURCE_HEAP_USAGE_ROLLING_AVG
                                     .toString());
                     this.add(
                             AllMetrics.SearchBackPressureStatsValue
-                                    .SEARCHBP_TASK_STATS_RESOURCE_CPU_USAGE_CANCELLATIONCOUNT
+                                    .SEARCHBP_SEARCH_TASK_STATS_RESOURCE_CPU_USAGE_CANCELLATION_COUNT
                                     .toString());
                     this.add(
                             AllMetrics.SearchBackPressureStatsValue
-                                    .SEARCHBP_TASK_STATS_RESOURCE_CPU_USAGE_CURRENTMAX
+                                    .SEARCHBP_SEARCH_TASK_STATS_RESOURCE_CPU_USAGE_CURRENT_MAX
                                     .toString());
                     this.add(
                             AllMetrics.SearchBackPressureStatsValue
-                                    .SEARCHBP_TASK_STATS_RESOURCE_CPU_USAGE_CURRENTAVG
+                                    .SEARCHBP_SEARCH_TASK_STATS_RESOURCE_CPU_USAGE_CURRENT_AVG
                                     .toString());
                 }
             };
@@ -119,7 +119,8 @@ public class SearchBackPressureMetricsSnapShotTest {
         // test each field and verify the result
         for (int i = 0; i < required_searchbp_dims.size(); i++) {
             Assert.assertEquals(
-                    AllMetrics.SearchBackPressureStatsValue.SEARCHBP_SHARD_STATS_CANCELLATIONCOUNT
+                    AllMetrics.SearchBackPressureStatsValue
+                                    .SEARCHBP_SHARD_TASK_STATS_CANCELLATION_COUNT
                                     .toString()
                             + " should be "
                             + String.valueOf(i),

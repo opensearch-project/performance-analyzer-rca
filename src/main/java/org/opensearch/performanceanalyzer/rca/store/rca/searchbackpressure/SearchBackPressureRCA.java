@@ -437,40 +437,42 @@ public class SearchBackPressureRCA extends Rca<ResourceFlowUnit<HotNodeSummary>>
                         this.searchbp_Stats,
                         searchbp_stats_type_field,
                         AllMetrics.SearchBackPressureStatsValue
-                                .SEARCHBP_SHARD_STATS_CANCELLATIONCOUNT
+                                .SEARCHBP_SHARD_TASK_STATS_CANCELLATION_COUNT
                                 .toString());
         double searchbpTaskCancellationCount =
                 getMetric(
                         this.searchbp_Stats,
                         searchbp_stats_type_field,
                         AllMetrics.SearchBackPressureStatsValue
-                                .SEARCHBP_TASK_STATS_CANCELLATIONCOUNT
+                                .SEARCHBP_SEARCH_TASK_STATS_CANCELLATION_COUNT
                                 .toString());
         double searchShardTaskCompletionCount =
                 getMetric(
                         this.searchbp_Stats,
                         searchbp_stats_type_field,
-                        AllMetrics.SearchBackPressureStatsValue.SEARCHBP_SHARD_STATS_COMPLETIONCOUNT
+                        AllMetrics.SearchBackPressureStatsValue
+                                .SEARCHBP_SHARD_TASK_STATS_COMPLETION_COUNT
                                 .toString());
         double searchTaskCompletionCount =
                 getMetric(
                         this.searchbp_Stats,
                         searchbp_stats_type_field,
-                        AllMetrics.SearchBackPressureStatsValue.SEARCHBP_TASK_STATS_COMPLETIONCOUNT
+                        AllMetrics.SearchBackPressureStatsValue
+                                .SEARCHBP_SEARCH_TASK_STATS_COMPLETION_COUNT
                                 .toString());
         double searchbpJVMShardCancellationCount =
                 getMetric(
                         this.searchbp_Stats,
                         searchbp_stats_type_field,
                         AllMetrics.SearchBackPressureStatsValue
-                                .SEARCHBP_SHARD_STATS_RESOURCE_HEAP_USAGE_CANCELLATIONCOUNT
+                                .SEARCHBP_SHARD_TASK_STATS_RESOURCE_HEAP_USAGE_CANCELLATION_COUNT
                                 .toString());
         double searchbpJVMTaskCancellationCount =
                 getMetric(
                         this.searchbp_Stats,
                         searchbp_stats_type_field,
                         AllMetrics.SearchBackPressureStatsValue
-                                .SEARCHBP_TASK_STATS_RESOURCE_HEAP_USAGE_CANCELLATIONCOUNT
+                                .SEARCHBP_SEARCH_TASK_STATS_RESOURCE_HEAP_USAGE_CANCELLATION_COUNT
                                 .toString());
 
         return new SearchBackPressureRCAMetric(

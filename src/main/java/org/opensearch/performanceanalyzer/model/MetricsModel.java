@@ -466,7 +466,7 @@ public class MetricsModel {
 
         // Search Back Pressure Metrics
         allMetricsInitializer.put(
-                AllMetrics.SearchBackPressureStatsValue.SEARCHBP_SHARD_STATS_CANCELLATIONCOUNT
+                AllMetrics.SearchBackPressureStatsValue.SEARCHBP_SHARD_TASK_STATS_CANCELLATION_COUNT
                         .toString(),
                 new MetricAttributes(MetricUnits.COUNT.toString(), EmptyDimension.values()));
         ALL_METRICS = Collections.unmodifiableMap(allMetricsInitializer);
