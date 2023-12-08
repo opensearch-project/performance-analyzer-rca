@@ -28,14 +28,17 @@ public class SearchBackPressureRcaConfig {
     public static final int DEFAULT_MAX_HEAP_INCREASE_THRESHOLD = 70;
     private Integer maxHeapIncreasePercentageThreshold;
 
-    // cancellation percent due to heap is more than 3% of all task completions in shard level
+    // cancellation percent due to heap is more than 5% of all task completions at shard level
     // (Taking 3 because we don't cancel more than 10% of all completions at any time)
+    // Basically this threshold tell that we are overcancelling the shard level tasks given max heap from last rca eval period is still
+    // below or equal to DEFAULT_MAX_HEAP_INCREASE_THRESHOLD
     public static final int DEFAULT_SHARD_MAX_HEAP_CANCELLATION_THRESHOLD = 5;
     private Integer maxShardHeapCancellationPercentageThreshold;
 
     //  cancellation percent due to heap is more than 5% of all task completions in
     // SearchTask(co-ordinator) level (Taking 3 because we don't cancel more than 10% of all
     // completions at any time)
+    // Basically this threshold tell that we are overcancelling the co-ordinator level tasks
     public static final int DEFAULT_TASK_MAX_HEAP_CANCELLATION_THRESHOLD = 5;
     private Integer maxTaskHeapCancellationPercentageThreshold;
 
@@ -45,10 +48,14 @@ public class SearchBackPressureRcaConfig {
     private Integer minHeapDecreasePercentageThreshold;
 
     // cancellationCount due to heap is less than 3% of all task completions in shard level
+    // Basically this threshold tell that we are under cancelling the shard level tasks given min heap from last rca eval period is still
+    // above or equal to DEFAULT_MIN_HEAP_DECREASE_THRESHOLD
     public static final int DEFAULT_SHARD_MIN_HEAP_CANCELLATION_THRESHOLD = 3;
     private Integer minShardHeapCancellationPercentageThreshold;
 
     // cancellationCount due to heap is less than 3% of all task completions in task level
+    // Basically this threshold tell that we are under cancelling the coordinator level tasks given min heap from last rca eval period is still
+    // above or equal to DEFAULT_MIN_HEAP_DECREASE_THRESHOLD
     public static final int DEFAULT_TASK_MIN_HEAP_CANCELLATION_THRESHOLD = 3;
     private Integer minTaskHeapCancellationPercentageThreshold;
 
