@@ -7,9 +7,17 @@ package org.opensearch.performanceanalyzer;
 
 
 import io.netty.handler.codec.http.HttpMethod;
+import java.io.BufferedReader;
 import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.opensearch.performanceanalyzer.core.Util;
@@ -52,6 +60,60 @@ public class LocalhostConnectionUtil {
             Thread.sleep((int) (60000 * (Math.random() * 2) + 100));
         }
         throw new RuntimeException("Failed to disable PA after 5 attempts");
+    }
+
+    public static class ClusterSettings {
+        static List<String> clusterSettings = new ArrayList<>();
+
+        static final String CLUSTER_SETTINGS_URL =
+                "/_cluster/settings?flat_settings=true&include_defaults=true&pretty";
+
+        /** Refreshes the Cluster Settings */
+        private static void refreshClusterSettings() {
+            final HttpURLConnection urlConnection =
+                    LocalhostConnectionUtil.createHTTPConnection(
+                            CLUSTER_SETTINGS_URL, HttpMethod.GET);
+            try (final BufferedReader br =
+                    new BufferedReader(new InputStreamReader(urlConnection.getInputStream()))) {
+                String line;
+                clusterSettings.clear();
+                while ((line = br.readLine()) != null) {
+                    clusterSettings.add(line);
+                }
+            } catch (IOException e) {
+                LOG.warn("could not refresh the cluster settings");
+            }
+        }
+
+        /**
+         * @param settingName a string representing the setting name in cluster settings, expected
+         *     values are flat settings, e,g; <code>search_backpressure.node_duress.heap_threshold
+         *     </code>
+         * @param settingValRegex a regex value representing valid regex match for the setting val
+         *     and should encapsulate the value in a group inside the string settingValRegex, e,g;
+         *     "\"([0-9].[0-9]+)\"" to match any floating value with one leading digit
+         * @returns the value for the setting settingName if present e,g; "0.7" or else NULL
+         */
+        public static String getClusterSettingValue(String settingName, String settingValRegex) {
+            refreshClusterSettings();
+            Pattern settingValPattern = Pattern.compile(settingValRegex);
+            Optional<String> setting =
+                    clusterSettings.stream()
+                            .filter(settingLine -> settingLine.contains(settingName))
+                            .findFirst();
+            final String settingVal =
+                    setting.map(
+                                    settingLine -> {
+                                        Matcher settingValMatcher =
+                                                settingValPattern.matcher(settingLine);
+                                        if (settingValMatcher.find()) {
+                                            return settingValMatcher.group(1);
+                                        }
+                                        return null;
+                                    })
+                            .orElseGet(() -> "NULL");
+            return settingVal;
+        }
     }
 
     private static HttpURLConnection createHTTPConnection(String path, HttpMethod httpMethod) {
