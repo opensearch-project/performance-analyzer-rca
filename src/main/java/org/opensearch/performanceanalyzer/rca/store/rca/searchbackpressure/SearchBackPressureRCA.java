@@ -5,6 +5,7 @@
 
 package org.opensearch.performanceanalyzer.rca.store.rca.searchbackpressure;
 
+import static org.opensearch.performanceanalyzer.LocalhostConnectionUtil.ClusterSettings.SETTING_NOT_FOUND;
 import static org.opensearch.performanceanalyzer.rca.framework.api.persist.SQLParsingUtil.readDataFromSqlResult;
 import static org.opensearch.performanceanalyzer.rca.framework.api.summaries.ResourceUtil.SEARCHBACKPRESSURE_SHARD;
 import static org.opensearch.performanceanalyzer.rca.framework.api.summaries.ResourceUtil.SEARCHBACKPRESSURE_TASK;
@@ -199,7 +200,6 @@ public class SearchBackPressureRCA extends Rca<ResourceFlowUnit<HotNodeSummary>>
                 LocalhostConnectionUtil.ClusterSettings.getClusterSettingValue(
                         SEARCH_BACKPRESSURE_HEAP_DURESS_KEY,
                         SEARCH_BACKPRESSURE_HEAP_DURESS_VAL_REGEX);
-        final String SETTING_NOT_FOUND = "NULL";
         // If there was an error fetching the threshold ignore for this run
         if (val.equals(SETTING_NOT_FOUND)) {
             LOG.warn("There was an error fetching the node duress heap settings value...");

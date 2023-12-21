@@ -65,6 +65,8 @@ public class LocalhostConnectionUtil {
     public static class ClusterSettings {
         static List<String> clusterSettings = new ArrayList<>();
 
+        public final static String SETTING_NOT_FOUND = "NULL";
+
         static final String CLUSTER_SETTINGS_URL =
                 "/_cluster/settings?flat_settings=true&include_defaults=true&pretty";
 
@@ -111,7 +113,7 @@ public class LocalhostConnectionUtil {
                                         }
                                         return null;
                                     })
-                            .orElseGet(() -> "NULL");
+                            .orElseGet(() -> SETTING_NOT_FOUND);
             return settingVal;
         }
     }

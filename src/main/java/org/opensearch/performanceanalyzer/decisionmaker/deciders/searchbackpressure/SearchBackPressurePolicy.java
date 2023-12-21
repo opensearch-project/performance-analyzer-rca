@@ -103,7 +103,7 @@ public class SearchBackPressurePolicy implements DecisionPolicy {
      * @param issue an issue with the application
      */
     private void record(HotResourceSummary summary) {
-        LOG.debug("SearchBackPressurePolicy capturing resource summary: {}", summary);
+        LOG.trace("SearchBackPressurePolicy capturing resource summary: {}", summary);
 
         if (HEAP_SEARCHBP_SHARD_SIGNALS.contains(summary.getResource())) {
             LOG.debug("Shard signal in SBP RCA summary...");
