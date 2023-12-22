@@ -79,7 +79,7 @@ public class SearchBackPressureRcaTest {
         setupMockHeapMetric(mockHeapMax, 100.0);
 
         // set up SearchBp_Stats table
-        setupMockSearchbpStats(mockSearchbpStats, 10.0, 10.0, 8.0, 7.0);
+        setupMockSearchbpStats(mockSearchbpStats, 10.0, 10.0, 200, 100, 8.0, 7.0);
 
         this.testRca =
                 new SearchBackPressureRCA(RCA_PERIOD, mockHeapMax, mockHeapUsed, mockSearchbpStats);
@@ -92,7 +92,7 @@ public class SearchBackPressureRcaTest {
     public void testSearchBpGetResourceContextLessRcaPeriod() {
         setupMockHeapMetric(mockHeapMax, DEFAULT_MAX_HEAP_SIZE);
         setupMockHeapMetric(mockHeapUsed, DEFAULT_MAX_HEAP_SIZE * 0.8);
-        setupMockSearchbpStats(mockSearchbpStats, 10.0, 10.0, 8.0, 7.0);
+        setupMockSearchbpStats(mockSearchbpStats, 10.0, 10.0, 200, 100, 8.0, 7.0);
 
         ResourceFlowUnit<HotNodeSummary> flowUnit = testRca.operate();
 
@@ -108,7 +108,7 @@ public class SearchBackPressureRcaTest {
     public void testSearchBpGetResourceContextEqualRcaPeriod() {
         setupMockHeapMetric(mockHeapMax, DEFAULT_MAX_HEAP_SIZE);
         setupMockHeapMetric(mockHeapUsed, DEFAULT_MAX_HEAP_SIZE * 0.8);
-        setupMockSearchbpStats(mockSearchbpStats, 10.0, 10.0, 8.0, 7.0);
+        setupMockSearchbpStats(mockSearchbpStats, 10.0, 10.0, 200, 100, 8.0, 7.0);
         IntStream.range(0, RCA_PERIOD - 1).forEach(i -> testRca.operate());
 
         ResourceFlowUnit<HotNodeSummary> flowUnit = testRca.operate();
@@ -126,7 +126,7 @@ public class SearchBackPressureRcaTest {
     public void testSearchBpGetHealthyFlowUnit() {
         setupMockHeapMetric(mockHeapMax, DEFAULT_MAX_HEAP_SIZE);
         setupMockHeapMetric(mockHeapUsed, DEFAULT_MAX_HEAP_SIZE * 0.8);
-        setupMockSearchbpStats(mockSearchbpStats, 10.0, 10.0, 8.0, 7.0);
+        setupMockSearchbpStats(mockSearchbpStats, 10.0, 10.0, 200, 100, 8.0, 7.0);
         IntStream.range(0, RCA_PERIOD - 1).forEach(i -> testRca.operate());
 
         ResourceFlowUnit<HotNodeSummary> flowUnit = testRca.operate();
@@ -138,13 +138,13 @@ public class SearchBackPressureRcaTest {
      * Test SearchBackPressure RCA returns unhealthy nonempty flow units if the settings does trigger autotune by increasing threshold
      * Increasing threshold:
      * node max heap usage in last 60 secs is less than 70%
-     * cancellationCount due to heap is more than 50% of all task cancellations (Shard-Level)
+     * cancellationCount due to heap is more than 5% of all task cancellations (Shard-Level)
      */
     @Test
     public void testSearchBpGetUnHealthyFlowUnitByShardIncreaseThreshold() {
         setupMockHeapMetric(mockHeapMax, DEFAULT_MAX_HEAP_SIZE);
         setupMockHeapMetric(mockHeapUsed, DEFAULT_MAX_HEAP_SIZE * 0.3);
-        setupMockSearchbpStats(mockSearchbpStats, 10.0, 10.0, 8.0, 4.0);
+        setupMockSearchbpStats(mockSearchbpStats, 10.0, 10.0, 10, 10, 1.2, 4.0);
         IntStream.range(0, RCA_PERIOD - 1).forEach(i -> testRca.operate());
 
         ResourceFlowUnit<HotNodeSummary> flowUnit = testRca.operate();
@@ -156,13 +156,13 @@ public class SearchBackPressureRcaTest {
      * Test SearchBackPressure RCA returns unhealthy nonempty flow units if the settings does trigger autotune by increasing threshold
      * Increasing threshold:
      * node max heap usage in last 60 secs is less than 70%
-     * cancellationCount due to heap is more than 50% of all task cancellations (Task-Level).
+     * cancellationCount due to heap is more than 5% of all task completions (Task-Level).
      */
     @Test
     public void testSearchBpGetUnHealthyFlowUnitByTaskIncreaseThreshold() {
         setupMockHeapMetric(mockHeapMax, DEFAULT_MAX_HEAP_SIZE);
         setupMockHeapMetric(mockHeapUsed, DEFAULT_MAX_HEAP_SIZE * 0.3);
-        setupMockSearchbpStats(mockSearchbpStats, 10.0, 10.0, 4.0, 8.0);
+        setupMockSearchbpStats(mockSearchbpStats, 10.0, 10.0, 10, 10, 4.0, 8.0);
         IntStream.range(0, RCA_PERIOD - 1).forEach(i -> testRca.operate());
 
         ResourceFlowUnit<HotNodeSummary> flowUnit = testRca.operate();
@@ -180,7 +180,7 @@ public class SearchBackPressureRcaTest {
     public void testSearchBpGetUnHealthyFlowUnitByShardDecreaseThreshold() {
         setupMockHeapMetric(mockHeapMax, DEFAULT_MAX_HEAP_SIZE);
         setupMockHeapMetric(mockHeapUsed, DEFAULT_MAX_HEAP_SIZE * 0.9);
-        setupMockSearchbpStats(mockSearchbpStats, 10.0, 10.0, 2.0, 8.0);
+        setupMockSearchbpStats(mockSearchbpStats, 10.0, 10.0, 10, 10, 0, 0);
         IntStream.range(0, RCA_PERIOD - 1).forEach(i -> testRca.operate());
 
         ResourceFlowUnit<HotNodeSummary> flowUnit = testRca.operate();
@@ -192,13 +192,13 @@ public class SearchBackPressureRcaTest {
      * Test SearchBackPressure RCA returns unhealthy nonempty flow units if the settings does trigger autotune by decreasing threshold
      * decreasing threshold:
      * node min heap usage in last 60 secs is more than 80%
-     * cancellationCount due to heap is less than 30% of all task cancellations (Task-Level)
+     * cancellationCount due to heap is less than 30% of all task completions (Task-Level)
      */
     @Test
     public void testSearchBpGetUnHealthyFlowUnitByTaskDecreaseThreshold() {
         setupMockHeapMetric(mockHeapMax, DEFAULT_MAX_HEAP_SIZE);
         setupMockHeapMetric(mockHeapUsed, DEFAULT_MAX_HEAP_SIZE * 0.9);
-        setupMockSearchbpStats(mockSearchbpStats, 10.0, 10.0, 8.0, 2.0);
+        setupMockSearchbpStats(mockSearchbpStats, 10.0, 10.0, 10, 10, 0, 0);
         IntStream.range(0, RCA_PERIOD - 1).forEach(i -> testRca.operate());
 
         ResourceFlowUnit<HotNodeSummary> flowUnit = testRca.operate();
@@ -211,13 +211,13 @@ public class SearchBackPressureRcaTest {
      * indicating the autotune (unhealthy resource unit) is caused by meeting the threshold in shard-level in decrease threshold
      * decreasing threshold:
      * node min heap usage in last 60 secs is more than 80%
-     * cancellationCount due to heap is less than 30% of all task cancellations (Shard-Level)
+     * cancellationCount due to heap is less than 3% of all task cancellations (Shard-Level)
      */
     @Test
     public void testSearchBpGetUnHealthyFlowUnitInShardLevelByDecreaseThreshold() {
         setupMockHeapMetric(mockHeapMax, DEFAULT_MAX_HEAP_SIZE);
         setupMockHeapMetric(mockHeapUsed, DEFAULT_MAX_HEAP_SIZE * 0.95);
-        setupMockSearchbpStats(mockSearchbpStats, 10.0, 10.0, 2.0, 8.0);
+        setupMockSearchbpStats(mockSearchbpStats, 10.0, 10.0, 10, 10, 0.1, 8.0);
         IntStream.range(0, RCA_PERIOD - 1).forEach(i -> testRca.operate());
 
         ResourceFlowUnit<HotNodeSummary> flowUnit = testRca.operate();
@@ -250,7 +250,7 @@ public class SearchBackPressureRcaTest {
     public void testSearchBpGetUnHealthyFlowUnitInShardLevelByIncreaseThreshold() {
         setupMockHeapMetric(mockHeapMax, DEFAULT_MAX_HEAP_SIZE);
         setupMockHeapMetric(mockHeapUsed, DEFAULT_MAX_HEAP_SIZE * 0.5);
-        setupMockSearchbpStats(mockSearchbpStats, 10.0, 10.0, 8.0, 2.0);
+        setupMockSearchbpStats(mockSearchbpStats, 10.0, 10.0, 10, 10, 8.0, 2.0);
         IntStream.range(0, RCA_PERIOD - 1).forEach(i -> testRca.operate());
 
         ResourceFlowUnit<HotNodeSummary> flowUnit = testRca.operate();
@@ -277,13 +277,13 @@ public class SearchBackPressureRcaTest {
      * indicating the autotune (unhealthy resource unit) is caused by meeting the threshold in task-level
      * decreasing threshold:
      * node min heap usage in last 60 secs is more than 80%
-     * cancellationCount due to heap is less than 30% of all task cancellations (Task-Level)
+     * cancellationCount due to heap is less than 3% of all task completions (Task-Level)
      */
     @Test
     public void testSearchBpGetUnHealthyFlowUnitInTaskLevelByDecreaseThreshold() {
         setupMockHeapMetric(mockHeapMax, DEFAULT_MAX_HEAP_SIZE);
         setupMockHeapMetric(mockHeapUsed, DEFAULT_MAX_HEAP_SIZE * 0.9);
-        setupMockSearchbpStats(mockSearchbpStats, 10.0, 10.0, 8.0, 2.0);
+        setupMockSearchbpStats(mockSearchbpStats, 10.0, 10.0, 10, 10, 1, 0.1);
         IntStream.range(0, RCA_PERIOD - 1).forEach(i -> testRca.operate());
 
         ResourceFlowUnit<HotNodeSummary> flowUnit = testRca.operate();
@@ -310,13 +310,13 @@ public class SearchBackPressureRcaTest {
      * indicating the autotune (unhealthy resource unit) is caused by meeting the threshold in shard-level
      * Increasing threshold:
      * node max heap usage in last 60 secs is less than 70%
-     * cancellationCount due to heap is more than 50% of all task cancellations (Task-Level)
+     * cancellationCount due to heap is more than 5% of all task completions (Task-Level)
      */
     @Test
     public void testSearchBpGetUnHealthyFlowUnitInTaskLevelByIncreaseThreshold() {
         setupMockHeapMetric(mockHeapMax, DEFAULT_MAX_HEAP_SIZE);
         setupMockHeapMetric(mockHeapUsed, DEFAULT_MAX_HEAP_SIZE * 0.5);
-        setupMockSearchbpStats(mockSearchbpStats, 10.0, 10.0, 2.0, 8.0);
+        setupMockSearchbpStats(mockSearchbpStats, 10.0, 10.0, 10, 10, 0, 0.6);
         IntStream.range(0, RCA_PERIOD - 1).forEach(i -> testRca.operate());
 
         ResourceFlowUnit<HotNodeSummary> flowUnit = testRca.operate();
@@ -360,6 +360,8 @@ public class SearchBackPressureRcaTest {
             final Metric metric,
             final double searchbpShardCancellationCount,
             final double searchbpTaskCancellationCount,
+            final double searchShardTaskCompletionCount,
+            final double searchTaskCompletionCount,
             final double searchbpJVMShardCancellationCount,
             final double searchbpJVMTaskCancellationCount) {
         String searchbpShardCancellationCountStr = Double.toString(searchbpShardCancellationCount);
@@ -368,12 +370,14 @@ public class SearchBackPressureRcaTest {
                 Double.toString(searchbpJVMShardCancellationCount);
         String searchbpJVMTaskCancellationCountStr =
                 Double.toString(searchbpJVMTaskCancellationCount);
+        String searchShardTaskCompletionCountStr = Double.toString(searchShardTaskCompletionCount);
+        String searchTaskCompletionCountStr = Double.toString(searchTaskCompletionCount);
 
         // add searchbpShardCancellationCountStr row
         List<String> searchbpShardCancellationCountRow =
                 Arrays.asList(
                         AllMetrics.SearchBackPressureStatsValue
-                                .SEARCHBP_SHARD_STATS_CANCELLATIONCOUNT
+                                .SEARCHBP_SHARD_TASK_STATS_CANCELLATION_COUNT
                                 .toString(),
                         searchbpShardCancellationCountStr,
                         searchbpShardCancellationCountStr,
@@ -384,18 +388,38 @@ public class SearchBackPressureRcaTest {
         List<String> searchbpTaskCancellationCountRow =
                 Arrays.asList(
                         AllMetrics.SearchBackPressureStatsValue
-                                .SEARCHBP_TASK_STATS_CANCELLATIONCOUNT
+                                .SEARCHBP_SEARCH_TASK_STATS_CANCELLATION_COUNT
                                 .toString(),
                         searchbpTaskCancellationCountStr,
                         searchbpTaskCancellationCountStr,
                         searchbpTaskCancellationCountStr,
                         searchbpTaskCancellationCountStr);
 
+        List<String> searchShardTaskCompletionCountRow =
+                Arrays.asList(
+                        AllMetrics.SearchBackPressureStatsValue
+                                .SEARCHBP_SHARD_TASK_STATS_COMPLETION_COUNT
+                                .toString(),
+                        searchShardTaskCompletionCountStr,
+                        searchShardTaskCompletionCountStr,
+                        searchShardTaskCompletionCountStr,
+                        searchShardTaskCompletionCountStr);
+
+        List<String> searchTaskCompletionCountRow =
+                Arrays.asList(
+                        AllMetrics.SearchBackPressureStatsValue
+                                .SEARCHBP_SEARCH_TASK_STATS_COMPLETION_COUNT
+                                .toString(),
+                        searchTaskCompletionCountStr,
+                        searchTaskCompletionCountStr,
+                        searchTaskCompletionCountStr,
+                        searchTaskCompletionCountStr);
+
         // add searchbpJVMShardCancellationCountStr row
         List<String> searchbpJVMShardCancellationCountRow =
                 Arrays.asList(
                         AllMetrics.SearchBackPressureStatsValue
-                                .SEARCHBP_SHARD_STATS_RESOURCE_HEAP_USAGE_CANCELLATIONCOUNT
+                                .SEARCHBP_SHARD_TASK_STATS_RESOURCE_HEAP_USAGE_CANCELLATION_COUNT
                                 .toString(),
                         searchbpJVMShardCancellationCountStr,
                         searchbpJVMShardCancellationCountStr,
@@ -406,7 +430,7 @@ public class SearchBackPressureRcaTest {
         List<String> searchbpJVMTaskCancellationCountRow =
                 Arrays.asList(
                         AllMetrics.SearchBackPressureStatsValue
-                                .SEARCHBP_TASK_STATS_RESOURCE_HEAP_USAGE_CANCELLATIONCOUNT
+                                .SEARCHBP_SEARCH_TASK_STATS_RESOURCE_HEAP_USAGE_CANCELLATION_COUNT
                                 .toString(),
                         searchbpJVMTaskCancellationCountStr,
                         searchbpJVMTaskCancellationCountStr,
@@ -423,6 +447,14 @@ public class SearchBackPressureRcaTest {
                                 0,
                                 metricTestHelper.createTestResult(
                                         searchbpTableColumns, searchbpTaskCancellationCountRow)),
+                        new MetricFlowUnit(
+                                0,
+                                metricTestHelper.createTestResult(
+                                        searchbpTableColumns, searchShardTaskCompletionCountRow)),
+                        new MetricFlowUnit(
+                                0,
+                                metricTestHelper.createTestResult(
+                                        searchbpTableColumns, searchTaskCompletionCountRow)),
                         new MetricFlowUnit(
                                 0,
                                 metricTestHelper.createTestResult(

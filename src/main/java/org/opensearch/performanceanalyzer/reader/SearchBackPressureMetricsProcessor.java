@@ -112,63 +112,71 @@ public class SearchBackPressureMetricsProcessor implements EventProcessor {
                         // Shard/Task Stats Cancellation Count
                         this.add(
                                 AllMetrics.SearchBackPressureStatsValue
-                                        .SEARCHBP_SHARD_STATS_CANCELLATIONCOUNT
+                                        .SEARCHBP_SHARD_TASK_STATS_CANCELLATION_COUNT
                                         .toString());
                         this.add(
                                 AllMetrics.SearchBackPressureStatsValue
-                                        .SEARCHBP_TASK_STATS_CANCELLATIONCOUNT
+                                        .SEARCHBP_SEARCH_TASK_STATS_CANCELLATION_COUNT
+                                        .toString());
+                        this.add(
+                                AllMetrics.SearchBackPressureStatsValue
+                                        .SEARCHBP_SHARD_TASK_STATS_COMPLETION_COUNT
+                                        .toString());
+                        this.add(
+                                AllMetrics.SearchBackPressureStatsValue
+                                        .SEARCHBP_SEARCH_TASK_STATS_COMPLETION_COUNT
                                         .toString());
 
                         // Shard Stats Resource Heap / CPU Usage
                         this.add(
                                 AllMetrics.SearchBackPressureStatsValue
-                                        .SEARCHBP_SHARD_STATS_RESOURCE_HEAP_USAGE_CANCELLATIONCOUNT
+                                        .SEARCHBP_SHARD_TASK_STATS_RESOURCE_HEAP_USAGE_CANCELLATION_COUNT
                                         .toString());
                         this.add(
                                 AllMetrics.SearchBackPressureStatsValue
-                                        .SEARCHBP_SHARD_STATS_RESOURCE_HEAP_USAGE_CURRENTMAX
+                                        .SEARCHBP_SHARD_TASK_STATS_RESOURCE_HEAP_USAGE_CURRENT_MAX
                                         .toString());
                         this.add(
                                 AllMetrics.SearchBackPressureStatsValue
-                                        .SEARCHBP_SHARD_STATS_RESOURCE_HEAP_USAGE_ROLLINGAVG
+                                        .SEARCHBP_SHARD_TASK_STATS_RESOURCE_HEAP_USAGE_ROLLING_AVG
                                         .toString());
                         this.add(
                                 AllMetrics.SearchBackPressureStatsValue
-                                        .SEARCHBP_SHARD_STATS_RESOURCE_CPU_USAGE_CANCELLATIONCOUNT
+                                        .SEARCHBP_SHARD_TASK_STATS_RESOURCE_CPU_USAGE_CANCELLATION_COUNT
                                         .toString());
                         this.add(
                                 AllMetrics.SearchBackPressureStatsValue
-                                        .SEARCHBP_SHARD_STATS_RESOURCE_CPU_USAGE_CURRENTMAX
+                                        .SEARCHBP_SHARD_TASK_STATS_RESOURCE_CPU_USAGE_CURRENT_MAX
                                         .toString());
                         this.add(
                                 AllMetrics.SearchBackPressureStatsValue
-                                        .SEARCHBP_SHARD_STATS_RESOURCE_CPU_USAGE_CURRENTAVG
+                                        .SEARCHBP_SHARD_TASK_STATS_RESOURCE_CPU_USAGE_CURRENT_AVG
                                         .toString());
 
                         // Task Stats Resource Heap / CPU Usage
                         this.add(
                                 AllMetrics.SearchBackPressureStatsValue
-                                        .SEARCHBP_TASK_STATS_RESOURCE_HEAP_USAGE_CANCELLATIONCOUNT
+                                        .SEARCHBP_SEARCH_TASK_STATS_RESOURCE_HEAP_USAGE_CANCELLATION_COUNT
                                         .toString());
                         this.add(
                                 AllMetrics.SearchBackPressureStatsValue
-                                        .SEARCHBP_TASK_STATS_RESOURCE_HEAP_USAGE_CURRENTMAX
+                                        .SEARCHBP_SEARCH_TASK_STATS_RESOURCE_HEAP_USAGE_CURRENT_MAX
                                         .toString());
                         this.add(
                                 AllMetrics.SearchBackPressureStatsValue
-                                        .SEARCHBP_TASK_STATS_RESOURCE_HEAP_USAGE_ROLLINGAVG
+                                        .SEARCHBP_SEARCH_TASK_STATS_RESOURCE_HEAP_USAGE_ROLLING_AVG
                                         .toString());
                         this.add(
                                 AllMetrics.SearchBackPressureStatsValue
-                                        .SEARCHBP_TASK_STATS_RESOURCE_CPU_USAGE_CANCELLATIONCOUNT
+                                        .SEARCHBP_SEARCH_TASK_STATS_RESOURCE_CPU_USAGE_CANCELLATION_COUNT
                                         .toString());
                         this.add(
                                 AllMetrics.SearchBackPressureStatsValue
-                                        .SEARCHBP_TASK_STATS_RESOURCE_CPU_USAGE_CURRENTMAX
+                                        .SEARCHBP_SEARCH_TASK_STATS_RESOURCE_CPU_USAGE_CURRENT_MAX
                                         .toString());
                         this.add(
                                 AllMetrics.SearchBackPressureStatsValue
-                                        .SEARCHBP_TASK_STATS_RESOURCE_CPU_USAGE_CURRENTAVG
+                                        .SEARCHBP_SEARCH_TASK_STATS_RESOURCE_CPU_USAGE_CURRENT_AVG
                                         .toString());
                     }
                 };

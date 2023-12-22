@@ -24,7 +24,9 @@ public class SearchBackPressureShardIssue extends SearchBackPressureIssue {
 
     @Override
     public void recordIssueBySummaryType(HotResourceSummary summary) {
-        if (summary.getMetaData() == SearchBackPressureRcaConfig.INCREASE_THRESHOLD_BY_JVM_STR) {
+        LOG.debug("Recording issue by summary type..... summary: {}", summary);
+        if (summary.getMetaData()
+                .equalsIgnoreCase(SearchBackPressureRcaConfig.INCREASE_THRESHOLD_BY_JVM_STR)) {
             LOG.debug("recording increase-level issue for shard");
             LOG.debug("size of the HashMap: {}", actionsAlarmMonitorMap.size());
             actionsAlarmMonitorMap
@@ -33,7 +35,8 @@ public class SearchBackPressureShardIssue extends SearchBackPressureIssue {
         }
 
         // decrease alarm for heap-related threshold
-        if (summary.getMetaData() == SearchBackPressureRcaConfig.DECREASE_THRESHOLD_BY_JVM_STR) {
+        if (summary.getMetaData()
+                .equalsIgnoreCase(SearchBackPressureRcaConfig.DECREASE_THRESHOLD_BY_JVM_STR)) {
             LOG.debug("recording decrease-level issue for shard");
             actionsAlarmMonitorMap
                     .get(SearchbpShardAlarmMonitorMapKeys.SHARD_HEAP_DECREASE_ALARM.toString())

@@ -78,10 +78,12 @@ public class ReceivedFlowUnitStore {
         final List<FlowUnitMessage> tempList = new ArrayList<>();
         BlockingQueue<FlowUnitMessage> existing = flowUnitMap.get(graphNode);
         if (existing == null) {
+            LOG.debug("Nothing in the FlowUnitStore for vertex: {}", graphNode);
             return ImmutableList.of();
         }
 
         existing.drainTo(tempList);
+        LOG.debug("Available flow units for vertex: {}, flowUnits: {}", graphNode, tempList);
 
         return ImmutableList.copyOf(tempList);
     }

@@ -130,6 +130,11 @@ public class SearchBackPressureAction extends SuppressibleAction {
         return summary.toJson();
     }
 
+    @Override
+    public String toString() {
+        return summary();
+    }
+
     public static final class Builder {
         public static final boolean DEFAULT_CAN_UPDATE = true;
 

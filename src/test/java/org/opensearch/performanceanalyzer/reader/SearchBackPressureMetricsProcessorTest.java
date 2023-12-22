@@ -35,27 +35,29 @@ public class SearchBackPressureMetricsProcessorTest {
     // mock SearchBackPressureStatsCollector to test Event processing
     private static final String SERIALIZED_EVENT =
             "{\"searchbp_shard_stats_cancellationCount\":2,"
-                    + "\"searchbp_shard_stats_limitReachedCount\":2,"
-                    + "\"searchbp_shard_stats_resource_heap_usage_cancellationCount\":3,"
-                    + "\"searchbp_shard_stats_resource_heap_usage_currentMax\":3,"
-                    + "\"searchbp_shard_stats_resource_heap_usage_rollingAvg\":3,"
-                    + "\"searchbp_shard_stats_resource_cpu_usage_cancellationCount\":5,"
-                    + "\"searchbp_shard_stats_resource_cpu_usage_currentMax\":5,"
-                    + "\"searchbp_shard_stats_resource_cpu_usage_currentAvg\":5,"
-                    + "\"searchbp_shard_stats_resource_elaspedtime_usage_cancellationCount\":2,"
-                    + "\"searchbp_shard_stats_resource_elaspedtime_usage_currentMax\":2,"
-                    + "\"searchbp_shard_stats_resource_elaspedtime_usage_currentAvg\":2,"
-                    + "\"searchbp_task_stats_cancellationCount\":0,"
-                    + "\"searchbp_task_stats_limitReachedCount\":0,"
-                    + "\"searchbp_task_stats_resource_heap_usage_cancellationCount\":0,"
-                    + "\"searchbp_task_stats_resource_heap_usage_currentMax\":0,"
-                    + "\"searchbp_task_stats_resource_heap_usage_rollingAvg\":0,"
-                    + "\"searchbp_task_stats_resource_cpu_usage_cancellationCount\":0,"
-                    + "\"searchbp_task_stats_resource_cpu_usage_currentMax\":0,"
-                    + "\"searchbp_task_stats_resource_cpu_usage_currentAvg\":0,"
-                    + "\"searchbp_task_stats_resource_elaspedtime_usage_cancellationCount\":0,"
-                    + "\"searchbp_task_stats_resource_elaspedtime_usage_currentMax\":0,"
-                    + "\"searchbp_task_stats_resource_elaspedtime_usage_currentAvg\":0,"
+                    + "\"searchbp_shard_task_stats_limitReachedCount\":2,"
+                    + "\"searchbp_shard_task_stats_completionCount\": 10,"
+                    + "\"searchbp_shard_task_stats_resource_heap_usage_cancellationCount\":3,"
+                    + "\"searchbp_shard_task_stats_resource_heap_usage_currentMax\":3,"
+                    + "\"searchbp_shard_task_stats_resource_heap_usage_rollingAvg\":3,"
+                    + "\"searchbp_shard_task_stats_resource_cpu_usage_cancellationCount\":5,"
+                    + "\"searchbp_shard_task_stats_resource_cpu_usage_currentMax\":5,"
+                    + "\"searchbp_shard_task_stats_resource_cpu_usage_currentAvg\":5,"
+                    + "\"searchbp_shard_task_stats_resource_elaspedtime_usage_cancellationCount\":2,"
+                    + "\"searchbp_shard_task_stats_resource_elaspedtime_usage_currentMax\":2,"
+                    + "\"searchbp_shard_task_stats_resource_elaspedtime_usage_currentAvg\":2,"
+                    + "\"searchbp_search_task_stats_cancellationCount\":0,"
+                    + "\"searchbp_search_task_stats_limitReachedCount\":0,"
+                    + "\"searchbp_search_task_stats_completionCount\": 5,"
+                    + "\"searchbp_search_stats_resource_heap_usage_cancellationCount\":0,"
+                    + "\"searchbp_search_task_stats_resource_heap_usage_currentMax\":0,"
+                    + "\"searchbp_search_task_stats_resource_heap_usage_rollingAvg\":0,"
+                    + "\"searchbp_search_task_stats_resource_cpu_usage_cancellationCount\":0,"
+                    + "\"searchbp_search_task_stats_resource_cpu_usage_currentMax\":0,"
+                    + "\"searchbp_search_task_stats_resource_cpu_usage_currentAvg\":0,"
+                    + "\"searchbp_search_task_stats_resource_elaspedtime_usage_cancellationCount\":0,"
+                    + "\"searchbp_search_task_stats_resource_elaspedtime_usage_currentMax\":0,"
+                    + "\"searchbp_search_task_stats_resource_elaspedtime_usage_currentAvg\":0,"
                     + "\"searchbp_mode\":\"MONITOR_ONLY\","
                     + "\"searchbp_nodeid\":\"FgNAAAQQQDSROABCDEFHTX\"}";
 
@@ -97,7 +99,7 @@ public class SearchBackPressureMetricsProcessorTest {
                 result.get(0)
                         .get(
                                 AllMetrics.SearchBackPressureStatsValue
-                                        .SEARCHBP_SHARD_STATS_RESOURCE_HEAP_USAGE_ROLLINGAVG
+                                        .SEARCHBP_SHARD_TASK_STATS_RESOURCE_HEAP_USAGE_ROLLING_AVG
                                         .toString()));
         // SEARCHBP_TASK_STATS_RESOURCE_CPU_USAGE_CANCELLATIONCOUNT value is 0L according to the
         // SERIALIZED_EVENT, should EQUAL
@@ -106,7 +108,7 @@ public class SearchBackPressureMetricsProcessorTest {
                 result.get(0)
                         .get(
                                 AllMetrics.SearchBackPressureStatsValue
-                                        .SEARCHBP_TASK_STATS_RESOURCE_CPU_USAGE_CANCELLATIONCOUNT
+                                        .SEARCHBP_SEARCH_TASK_STATS_RESOURCE_CPU_USAGE_CANCELLATION_COUNT
                                         .toString()));
 
         // SEARCHBP_TASK_STATS_RESOURCE_CPU_USAGE_CANCELLATIONCOUNT value is 0L according to the
@@ -116,7 +118,7 @@ public class SearchBackPressureMetricsProcessorTest {
                 result.get(0)
                         .get(
                                 AllMetrics.SearchBackPressureStatsValue
-                                        .SEARCHBP_TASK_STATS_RESOURCE_CPU_USAGE_CANCELLATIONCOUNT
+                                        .SEARCHBP_SEARCH_TASK_STATS_RESOURCE_CPU_USAGE_CANCELLATION_COUNT
                                         .toString()));
     }
 
