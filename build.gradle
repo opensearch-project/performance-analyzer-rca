@@ -46,13 +46,14 @@ plugins {
     id 'java'
     id 'application'
     id 'maven-publish'
-    id 'com.google.protobuf' version '0.8.18'
+    id 'com.google.protobuf' version '0.9.4'
     id 'jacoco'
     id 'idea'
-    id 'com.github.spotbugs' version '5.0.13'
-    id "de.undercouch.download" version "4.0.4"
-    id 'com.adarshr.test-logger' version '2.1.0'
-    id 'org.gradle.test-retry' version '1.5.2'
+    id 'eclipse'
+    id 'com.github.spotbugs' version '6.0.7'
+    id "de.undercouch.download" version "5.5.0"
+    id 'com.adarshr.test-logger' version '4.0.0'
+    id 'org.gradle.test-retry' version '1.5.8'
     id 'com.diffplug.spotless' version '5.11.0'
 }
 
@@ -126,7 +127,8 @@ testlogger {
 
 spotbugsMain {
     excludeFilter = file("checkstyle/findbugs-exclude.xml")
-    effort = 'max'
+
+    effort = com.github.spotbugs.snom.Effort.MAX
     ignoreFailures = true // TODO: Set this to false later as they are too many warnings to be fixed.
 
     reports {
@@ -145,14 +147,14 @@ check {
 }
 
 jacoco {
-    toolVersion = "0.8.7"
+    toolVersion = "0.8.11"
 }
 
 jacocoTestReport {
     reports {
-        xml.enabled true
-        html.enabled true
-        csv.enabled false
+        xml.required = true
+        html.required = true
+        csv.required = false
     }
 
     afterEvaluate {
@@ -208,7 +210,7 @@ check.dependsOn jacocoTestCoverageVerification
 version = opensearch_build
 
 distZip {
-    archiveName "performance-analyzer-rca-${version}.zip"
+    archiveFileName = "performance-analyzer-rca-${version}.zip"
 }
 
 publishing {
@@ -260,6 +262,9 @@ tasks.withType(Test) {
     jvmArgs('--add-opens=java.base/java.nio.file=ALL-UNNAMED')
     jvmArgs('--add-opens=java.base/java.lang=ALL-UNNAMED')
     jvmArgs('--add-opens=java.base/java.util=ALL-UNNAMED')
+    if (JavaVersion.current().compareTo(JavaVersion.VERSION_17) > 0) {
+      jvmArgs += ["-Djava.security.manager=allow"]
+    }
 }
 
 task rcaTest(type: Test) {
@@ -367,19 +372,15 @@ dependencies {
     implementation group: 'com.google.protobuf', name: 'protobuf-java', version: "${protobufVersion}"
     implementation 'io.grpc:grpc-netty:1.56.1'
     implementation 'io.grpc:grpc-protobuf:1.56.1'
-    implementation("io.netty:netty-codec-http2:${nettyVersion}") {
-        force = 'true'
-    }
-    implementation("io.netty:netty-handler-proxy:${nettyVersion}") {
-        force = 'true'
-    }
+    implementation("io.netty:netty-codec-http2:${nettyVersion}")
+    implementation("io.netty:netty-handler-proxy:${nettyVersion}")
     implementation 'io.grpc:grpc-stub:1.52.1'
     implementation "jakarta.annotation:jakarta.annotation-api:${jakartaVersion}"
 
     // JDK9+ has to run powermock 2+. https://github.com/powermock/powermock/issues/888
     testImplementation group: 'org.powermock', name: 'powermock-api-mockito2', version: '2.0.0'
     testImplementation group: 'org.powermock', name: 'powermock-module-junit4', version: '2.0.0'
-    implementation("org.mockito:mockito-core") {
+    testImplementation("org.mockito:mockito-core") {
         version {
             strictly "2.23.0"
         }
@@ -387,10 +388,10 @@ dependencies {
     testImplementation group: 'org.powermock', name: 'powermock-core', version: '2.0.2'
     testImplementation group: 'org.powermock', name: 'powermock-api-support', version: '2.0.2'
     testImplementation group: 'org.powermock', name: 'powermock-module-junit4-common', version: '2.0.2'
-    testImplementation group: 'org.javassist', name: 'javassist', version: '3.28.0-GA'
     testImplementation group: 'org.powermock', name: 'powermock-reflect', version: '2.0.2'
-    testImplementation group: 'net.bytebuddy', name: 'byte-buddy', version: '1.9.3'
-    testImplementation group: 'org.objenesis', name: 'objenesis', version: '3.0.1'
+    testImplementation group: 'org.javassist', name: 'javassist', version: '3.28.0-GA'
+    testImplementation group: 'net.bytebuddy', name: 'byte-buddy', version: '1.14.7'
+    testImplementation group: 'org.objenesis', name: 'objenesis', version: '3.2'
     testImplementation group: 'org.hamcrest', name: 'hamcrest-library', version: '2.1'
     testImplementation group: 'org.hamcrest', name: 'hamcrest', version: '2.1'
     testImplementation group: 'junit', name: 'junit', version: "${junitVersion}"
