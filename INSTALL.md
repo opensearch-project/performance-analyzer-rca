@@ -90,6 +90,10 @@ This package uses the [Gradle](https://docs.gradle.org/current/userguide/usergui
 ### Setup
 
 Currently, for the alpha development-only source code release, we support installing and running the RCA framework only on OpenSearch Docker containers.
+
+**NOTE:** If planning to use this framework with security plugin, the demo configuration requires an initial admin password to be set. You can set this by creating a .env file next to the docker compose and add following line to it:
+`OPENSEARCH_INITIAL_ADMIN_PASSWORD=<your-password>`
+There is a password validation in place, which requires a strong password.
   
 You can use the packaged Dockerfile and docker-compose.yml files [here](./docker) to spin up a cluster with RCA framework installed.
   
