@@ -150,9 +150,9 @@ jacoco {
 
 jacocoTestReport {
     reports {
-        xml.enabled true
-        html.enabled true
-        csv.enabled false
+        xml.required = true
+        html.required = true
+        csv.required = false
     }
 
     afterEvaluate {
@@ -208,7 +208,7 @@ check.dependsOn jacocoTestCoverageVerification
 version = opensearch_build
 
 distZip {
-    archiveName "performance-analyzer-rca-${version}.zip"
+    archiveFileName = "performance-analyzer-rca-${version}.zip"
 }
 
 publishing {
@@ -367,11 +367,15 @@ dependencies {
     implementation group: 'com.google.protobuf', name: 'protobuf-java', version: "${protobufVersion}"
     implementation 'io.grpc:grpc-netty:1.56.1'
     implementation 'io.grpc:grpc-protobuf:1.56.1'
-    implementation("io.netty:netty-codec-http2:${nettyVersion}") {
-        force = 'true'
+    implementation("io.netty:netty-codec-http2") {
+        version {
+            strictly "${nettyVersion}"
+        }
     }
-    implementation("io.netty:netty-handler-proxy:${nettyVersion}") {
-        force = 'true'
+    implementation("io.netty:netty-handler-proxy") {
+        version {
+            strictly "${nettyVersion}"
+        }
     }
     implementation 'io.grpc:grpc-stub:1.52.1'
     implementation "jakarta.annotation:jakarta.annotation-api:${jakartaVersion}"
