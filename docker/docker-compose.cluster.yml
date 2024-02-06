@@ -15,6 +15,7 @@ services:
       - cluster.initial_cluster_manager_nodes=opensearch1
       - bootstrap.memory_lock=true
       - "OPENSEARCH_JAVA_OPTS=-Xms512m -Xmx512m"
+      - "OPENSEARCH_INITIAL_ADMIN_PASSWORD=${OPENSEARCH_INITIAL_ADMIN_PASSWORD}"
   opensearch2:
     environment:
       - node.name=opensearch2
@@ -22,3 +23,4 @@ services:
       - cluster.initial_cluster_manager_nodes=opensearch1
       - bootstrap.memory_lock=true
       - "OPENSEARCH_JAVA_OPTS=-Xms512m -Xmx512m"
+      - "OPENSEARCH_INITIAL_ADMIN_PASSWORD=${OPENSEARCH_INITIAL_ADMIN_PASSWORD}"
