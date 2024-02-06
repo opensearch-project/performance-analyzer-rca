@@ -5,7 +5,6 @@
 
 package org.opensearch.performanceanalyzer.rca.persistence;
 
-
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;

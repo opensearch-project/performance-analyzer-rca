@@ -5,7 +5,6 @@
 
 package org.opensearch.performanceanalyzer.model;
 
-
 import java.util.HashSet;
 import org.opensearch.performanceanalyzer.commons.metrics.MetricDimension;
 

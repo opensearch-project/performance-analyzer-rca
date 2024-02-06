@@ -5,7 +5,6 @@
 
 package org.opensearch.performanceanalyzer.plugins;
 
-
 import java.util.ArrayList;
 import java.util.List;
 

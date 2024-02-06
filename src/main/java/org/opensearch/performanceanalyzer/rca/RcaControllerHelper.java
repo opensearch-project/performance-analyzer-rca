@@ -5,7 +5,6 @@
 
 package org.opensearch.performanceanalyzer.rca;
 
-
 import com.google.common.collect.ImmutableList;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import java.io.BufferedReader;

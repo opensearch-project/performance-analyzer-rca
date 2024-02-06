@@ -5,7 +5,6 @@
 
 package org.opensearch.performanceanalyzer.rca.integTests.framework;
 
-
 import com.google.gson.JsonElement;
 import java.io.File;
 import java.io.IOException;
@@ -272,7 +271,9 @@ public class Cluster {
     }
 
     public void updateGraph(final Class rcaGraphClass)
-            throws NoSuchMethodException, InstantiationException, IllegalAccessException,
+            throws NoSuchMethodException,
+                    InstantiationException,
+                    IllegalAccessException,
                     InvocationTargetException {
         for (Host host : hostList) {
             host.updateRcaGraph(rcaGraphClass);

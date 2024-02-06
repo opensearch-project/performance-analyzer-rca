@@ -5,7 +5,6 @@
 
 package org.opensearch.performanceanalyzer.rca.framework.api;
 
-
 import java.util.List;
 import org.jooq.Record;
 import org.jooq.Result;

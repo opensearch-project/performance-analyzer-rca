@@ -5,7 +5,6 @@
 
 package org.opensearch.performanceanalyzer.rca.framework.core;
 
-
 import com.google.common.annotations.VisibleForTesting;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -45,6 +44,7 @@ public abstract class Node<T extends GenericFlowUnit> {
 
     /** Flow unit produced by this vertex obtained from evaluating it locally. */
     protected T localFlowUnit;
+
     /**
      * These are matched against the tags in the rca.conf, to determine if a node is to executed at
      * a location.

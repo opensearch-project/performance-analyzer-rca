@@ -5,7 +5,6 @@
 
 package org.opensearch.performanceanalyzer.rca.framework.core;
 
-
 import java.nio.file.Paths;
 import java.util.Arrays;
 import org.junit.Assert;

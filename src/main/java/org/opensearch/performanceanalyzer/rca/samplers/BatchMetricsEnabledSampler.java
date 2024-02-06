@@ -5,7 +5,6 @@
 
 package org.opensearch.performanceanalyzer.rca.samplers;
 
-
 import java.util.Objects;
 import org.opensearch.performanceanalyzer.AppContext;
 import org.opensearch.performanceanalyzer.commons.stats.collectors.SampleAggregator;

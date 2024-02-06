@@ -5,7 +5,6 @@
 
 package org.opensearch.performanceanalyzer.util;
 
-
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 

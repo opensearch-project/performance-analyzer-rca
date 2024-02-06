@@ -5,7 +5,6 @@
 
 package org.opensearch.performanceanalyzer.rca.store.rca.hotheap;
 
-
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.concurrent.TimeUnit;

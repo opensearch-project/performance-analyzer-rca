@@ -5,7 +5,6 @@
 
 package org.opensearch.performanceanalyzer.reader;
 
-
 import com.google.common.annotations.VisibleForTesting;
 import java.io.File;
 import java.io.IOException;

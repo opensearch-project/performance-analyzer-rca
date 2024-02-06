@@ -5,7 +5,6 @@
 
 package org.opensearch.performanceanalyzer.rca.integTests.tests.util;
 
-
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 

@@ -5,7 +5,6 @@
 
 package org.opensearch.performanceanalyzer.rca.net.tasks;
 
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.opensearch.performanceanalyzer.commons.stats.ServiceMetrics;
@@ -19,6 +18,7 @@ import org.opensearch.performanceanalyzer.rca.net.ReceivedFlowUnitStore;
 public class FlowUnitRxTask implements Runnable {
 
     private static final Logger LOG = LogManager.getLogger(FlowUnitRxTask.class);
+
     /** Node state manager instance. */
     private final NodeStateManager nodeStateManager;
 

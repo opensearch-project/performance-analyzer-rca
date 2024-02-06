@@ -5,7 +5,6 @@
 
 package org.opensearch.performanceanalyzer.rca.spec;
 
-
 import java.util.ArrayList;
 import java.util.List;
 import org.jooq.Record;

@@ -5,7 +5,6 @@
 
 package org.opensearch.performanceanalyzer.rca.framework.core;
 
-
 import java.util.Map;
 import java.util.function.Predicate;
 import javax.annotation.Nullable;

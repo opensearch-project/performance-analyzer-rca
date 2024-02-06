@@ -5,7 +5,6 @@
 
 package org.opensearch.performanceanalyzer.rca.integTests.framework.runners;
 
-
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -185,8 +184,11 @@ public abstract class RcaItRunnerBase extends Runner implements IRcaItRunner, Fi
     }
 
     private void validateTestRun(Method method)
-            throws InvocationTargetException, NoSuchMethodException, InstantiationException,
-                    IllegalAccessException, IllegalStateException {
+            throws InvocationTargetException,
+                    NoSuchMethodException,
+                    InstantiationException,
+                    IllegalAccessException,
+                    IllegalStateException {
         List<Class> failedChecks = validateTestOutput(method);
 
         if (!failedChecks.isEmpty()) {
@@ -250,7 +252,9 @@ public abstract class RcaItRunnerBase extends Runner implements IRcaItRunner, Fi
     }
 
     private List<Class> validateTestOutput(Method method)
-            throws NoSuchMethodException, IllegalAccessException, InvocationTargetException,
+            throws NoSuchMethodException,
+                    IllegalAccessException,
+                    InvocationTargetException,
                     InstantiationException {
         List<Class> failedValidations = new ArrayList<>();
         if (method.isAnnotationPresent(AExpect.Expectations.class)

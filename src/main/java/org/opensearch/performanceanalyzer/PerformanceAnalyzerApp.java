@@ -5,7 +5,6 @@
 
 package org.opensearch.performanceanalyzer;
 
-
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.sun.net.httpserver.HttpServer;

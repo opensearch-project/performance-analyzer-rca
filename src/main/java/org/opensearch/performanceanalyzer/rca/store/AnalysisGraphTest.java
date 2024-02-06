@@ -5,7 +5,6 @@
 
 package org.opensearch.performanceanalyzer.rca.store;
 
-
 import org.opensearch.performanceanalyzer.rca.framework.api.AnalysisGraph;
 import org.opensearch.performanceanalyzer.rca.framework.api.Metric;
 import org.opensearch.performanceanalyzer.rca.framework.api.metrics.CPU_Utilization;

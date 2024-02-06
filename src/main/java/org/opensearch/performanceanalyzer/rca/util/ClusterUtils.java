@@ -5,7 +5,6 @@
 
 package org.opensearch.performanceanalyzer.rca.util;
 
-
 import java.util.List;
 import org.opensearch.performanceanalyzer.rca.framework.util.InstanceDetails;
 

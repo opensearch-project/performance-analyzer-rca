@@ -5,7 +5,6 @@
 
 package org.opensearch.performanceanalyzer.rca.integTests.tests.cache_tuning.validator;
 
-
 import org.junit.Assert;
 import org.opensearch.performanceanalyzer.AppContext;
 import org.opensearch.performanceanalyzer.decisionmaker.actions.ModifyCacheMaxSizeAction;

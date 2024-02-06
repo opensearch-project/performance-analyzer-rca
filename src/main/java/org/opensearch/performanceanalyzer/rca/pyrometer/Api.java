@@ -5,7 +5,6 @@
 
 package org.opensearch.performanceanalyzer.rca.pyrometer;
 
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;

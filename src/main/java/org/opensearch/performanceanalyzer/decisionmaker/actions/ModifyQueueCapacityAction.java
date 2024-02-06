@@ -5,7 +5,6 @@
 
 package org.opensearch.performanceanalyzer.decisionmaker.actions;
 
-
 import com.google.common.annotations.VisibleForTesting;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -274,6 +273,7 @@ public class ModifyQueueCapacityAction extends SuppressibleAction {
 
         @SerializedName(value = CURRENT_CAPACITY)
         private int currentCapacity;
+
         // TODO: remove coolOffPeriodInMillis and canUpdate from summary
         //  as those already exist in baseline action object
         @SerializedName(value = COOL_OFF_PERIOD)

@@ -5,7 +5,6 @@
 
 package org.opensearch.performanceanalyzer.rca.framework.core;
 
-
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.io.File;
 import java.util.ArrayList;

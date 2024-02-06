@@ -5,7 +5,6 @@
 
 package org.opensearch.performanceanalyzer.rca.framework.api.aggregators;
 
-
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.concurrent.TimeUnit;
