@@ -5,7 +5,6 @@
 
 package org.opensearch.performanceanalyzer.rca.integTests.framework.log;
 
-
 import java.util.Collection;
 import java.util.Objects;
 import org.apache.logging.log4j.Level;

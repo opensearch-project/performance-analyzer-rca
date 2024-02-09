@@ -5,7 +5,6 @@
 
 package org.opensearch.performanceanalyzer.rca.exceptions;
 
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;

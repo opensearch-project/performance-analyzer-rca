@@ -5,7 +5,6 @@
 
 package org.opensearch.performanceanalyzer.collections;
 
-
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import java.util.Iterator;

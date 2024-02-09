@@ -5,7 +5,6 @@
 
 package org.opensearch.performanceanalyzer.rca.integTests.tests.collator;
 
-
 import org.opensearch.performanceanalyzer.rca.integTests.framework.configs.Consts;
 
 public class CollatorITConstants {

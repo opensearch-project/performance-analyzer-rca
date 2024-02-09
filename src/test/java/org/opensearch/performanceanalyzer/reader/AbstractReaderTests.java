@@ -5,7 +5,6 @@
 
 package org.opensearch.performanceanalyzer.reader;
 
-
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.io.BufferedWriter;
 import java.io.File;

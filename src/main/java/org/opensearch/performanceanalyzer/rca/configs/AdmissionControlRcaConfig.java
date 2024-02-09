@@ -5,7 +5,6 @@
 
 package org.opensearch.performanceanalyzer.rca.configs;
 
-
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;

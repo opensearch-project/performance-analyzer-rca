@@ -5,7 +5,6 @@
 
 package org.opensearch.performanceanalyzer.net;
 
-
 import com.google.common.annotations.VisibleForTesting;
 import io.grpc.Server;
 import io.grpc.netty.GrpcSslContexts;

@@ -5,7 +5,6 @@
 
 package org.opensearch.performanceanalyzer.rca.integTests.framework;
 
-
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -93,7 +92,9 @@ public class TestEnvironment {
     }
 
     private void updateRcaGraph(ARcaGraph aRcaGraph, Env env)
-            throws NoSuchMethodException, IllegalAccessException, InvocationTargetException,
+            throws NoSuchMethodException,
+                    IllegalAccessException,
+                    InvocationTargetException,
                     InstantiationException {
         Class graphClass = aRcaGraph.value();
         env.rcaGraphClass = graphClass;

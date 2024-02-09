@@ -5,7 +5,6 @@
 
 package org.opensearch.performanceanalyzer.decisionmaker.deciders.test_utils;
 
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;

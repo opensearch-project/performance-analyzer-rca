@@ -5,7 +5,6 @@
 
 package org.opensearch.performanceanalyzer.net;
 
-
 import com.google.common.collect.Lists;
 import java.util.Collections;
 import java.util.HashMap;

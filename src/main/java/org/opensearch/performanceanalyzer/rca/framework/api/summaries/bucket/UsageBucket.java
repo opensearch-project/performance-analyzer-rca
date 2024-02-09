@@ -5,7 +5,6 @@
 
 package org.opensearch.performanceanalyzer.rca.framework.api.summaries.bucket;
 
-
 import org.opensearch.performanceanalyzer.grpc.Resource;
 
 /**

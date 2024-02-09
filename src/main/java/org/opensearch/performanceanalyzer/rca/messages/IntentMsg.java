@@ -5,7 +5,6 @@
 
 package org.opensearch.performanceanalyzer.rca.messages;
 
-
 import java.util.Map;
 
 public class IntentMsg {

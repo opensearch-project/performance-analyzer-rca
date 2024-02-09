@@ -5,7 +5,6 @@
 
 package org.opensearch.performanceanalyzer.metricsdb;
 
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;

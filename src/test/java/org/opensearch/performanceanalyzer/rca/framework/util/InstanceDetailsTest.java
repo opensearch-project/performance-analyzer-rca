@@ -5,7 +5,6 @@
 
 package org.opensearch.performanceanalyzer.rca.framework.util;
 
-
 import org.junit.Assert;
 import org.junit.Test;
 import org.opensearch.performanceanalyzer.commons.metrics.AllMetrics;

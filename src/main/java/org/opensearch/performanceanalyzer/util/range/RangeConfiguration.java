@@ -5,7 +5,6 @@
 
 package org.opensearch.performanceanalyzer.util.range;
 
-
 import java.util.Collection;
 
 public interface RangeConfiguration {

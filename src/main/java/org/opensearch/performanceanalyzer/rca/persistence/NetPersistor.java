@@ -5,7 +5,6 @@
 
 package org.opensearch.performanceanalyzer.rca.persistence;
 
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;

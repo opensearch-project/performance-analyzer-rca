@@ -5,7 +5,6 @@
 
 package org.opensearch.performanceanalyzer.rca.integTests.tests.jvm.young_gen;
 
-
 import org.opensearch.performanceanalyzer.rca.integTests.framework.configs.Consts;
 
 public final class YoungGenITConstants {

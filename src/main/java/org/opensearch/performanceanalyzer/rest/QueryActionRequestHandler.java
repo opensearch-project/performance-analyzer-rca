@@ -5,7 +5,6 @@
 
 package org.opensearch.performanceanalyzer.rest;
 
-
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;

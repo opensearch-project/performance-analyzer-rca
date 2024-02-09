@@ -5,7 +5,6 @@
 
 package org.opensearch.performanceanalyzer.rca.framework.util;
 
-
 import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.List;
@@ -23,8 +22,11 @@ public class RcaUtil {
     private static final Logger LOG = LogManager.getLogger(RcaUtil.class);
 
     private static AnalysisGraph getAnalysisGraphImplementor(RcaConf rcaConf)
-            throws ClassNotFoundException, NoSuchMethodException, IllegalAccessException,
-                    InvocationTargetException, InstantiationException {
+            throws ClassNotFoundException,
+                    NoSuchMethodException,
+                    IllegalAccessException,
+                    InvocationTargetException,
+                    InstantiationException {
         return (AnalysisGraph)
                 Class.forName(rcaConf.getAnalysisGraphEntryPoint())
                         .getDeclaredConstructor()
@@ -32,15 +34,21 @@ public class RcaUtil {
     }
 
     public static List<ConnectedComponent> getAnalysisGraphComponents(RcaConf rcaConf)
-            throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException,
-                    InstantiationException, IllegalAccessException {
+            throws ClassNotFoundException,
+                    NoSuchMethodException,
+                    InvocationTargetException,
+                    InstantiationException,
+                    IllegalAccessException {
         AnalysisGraph graph = getAnalysisGraphImplementor(rcaConf);
         return getAnalysisGraphComponents(graph);
     }
 
     public static List<ConnectedComponent> getAnalysisGraphComponents(String analysisGraphClass)
-            throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException,
-                    InstantiationException, IllegalAccessException {
+            throws ClassNotFoundException,
+                    NoSuchMethodException,
+                    InvocationTargetException,
+                    InstantiationException,
+                    IllegalAccessException {
         AnalysisGraph graph =
                 (AnalysisGraph)
                         Class.forName(analysisGraphClass).getDeclaredConstructor().newInstance();

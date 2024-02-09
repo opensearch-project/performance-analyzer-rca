@@ -5,7 +5,6 @@
 
 package org.opensearch.performanceanalyzer.rca.persistence;
 
-
 import com.google.common.annotations.VisibleForTesting;
 import com.google.gson.JsonElement;
 import java.io.IOException;
@@ -58,8 +57,11 @@ public interface Persistable {
      * @throws DataAccessException Thrown by the DB layer.
      */
     <T> @Nullable T read(Class<T> clz)
-            throws NoSuchMethodException, IllegalAccessException, InvocationTargetException,
-                    InstantiationException, DataAccessException;
+            throws NoSuchMethodException,
+                    IllegalAccessException,
+                    InvocationTargetException,
+                    InstantiationException,
+                    DataAccessException;
 
     /**
      * This API reads all the rows from the table corresponding to the maximum value in the field
@@ -78,8 +80,11 @@ public interface Persistable {
      * @throws DataAccessException Thrown by the DB layer.
      */
     <T, E> @Nullable List<T> readAllForMaxField(Class<T> clz, String fieldName, Class<E> fieldClz)
-            throws NoSuchMethodException, IllegalAccessException, InvocationTargetException,
-                    InstantiationException, DataAccessException;
+            throws NoSuchMethodException,
+                    IllegalAccessException,
+                    InvocationTargetException,
+                    InstantiationException,
+                    DataAccessException;
 
     /**
      * Write data to the database.
@@ -120,7 +125,10 @@ public interface Persistable {
      * @throws InvocationTargetException Invoking the getter or setter throws an exception.
      */
     <T> void write(@NonNull T object)
-            throws SQLException, IOException, IllegalAccessException, NoSuchMethodException,
+            throws SQLException,
+                    IOException,
+                    IllegalAccessException,
+                    NoSuchMethodException,
                     InvocationTargetException;
 
     void close() throws SQLException;

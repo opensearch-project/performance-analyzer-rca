@@ -5,7 +5,6 @@
 
 package org.opensearch.performanceanalyzer.rca.store.collector;
 
-
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import java.util.concurrent.TimeUnit;

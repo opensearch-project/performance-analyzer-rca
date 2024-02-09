@@ -5,7 +5,6 @@
 
 package org.opensearch.performanceanalyzer.rca.framework.api.summaries.bucket;
 
-
 import java.util.Map;
 import org.opensearch.performanceanalyzer.grpc.Resource;
 import org.opensearch.performanceanalyzer.grpc.ResourceEnum;

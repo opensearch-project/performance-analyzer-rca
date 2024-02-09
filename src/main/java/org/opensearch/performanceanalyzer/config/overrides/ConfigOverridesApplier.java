@@ -5,7 +5,6 @@
 
 package org.opensearch.performanceanalyzer.config.overrides;
 
-
 import com.google.common.annotations.VisibleForTesting;
 import java.io.IOException;
 import java.util.HashSet;

@@ -5,7 +5,6 @@
 
 package org.opensearch.performanceanalyzer.rca.store.rca.temperature;
 
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -40,7 +39,9 @@ public class ClusterTemperatureRca extends Rca<ClusterTemperatureFlowUnit> {
                 name() + "'s generateFlowUnitListFromWire() should not " + "be required.");
     }
 
-    /** @return */
+    /**
+     * @return
+     */
     @Override
     public ClusterTemperatureFlowUnit operate() {
         List<CompactNodeTemperatureFlowUnit> flowUnitsAcrossNodes =
