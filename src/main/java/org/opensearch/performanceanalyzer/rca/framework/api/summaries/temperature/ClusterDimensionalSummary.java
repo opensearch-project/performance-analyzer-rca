@@ -5,7 +5,6 @@
 
 package org.opensearch.performanceanalyzer.rca.framework.api.summaries.temperature;
 
-
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -40,6 +39,7 @@ import org.opensearch.performanceanalyzer.rca.store.rca.temperature.dimension.Cp
 public class ClusterDimensionalSummary extends GenericSummary {
 
     private static final Logger LOG = LogManager.getLogger(ClusterDimensionalSummary.class);
+
     /** The name of the table in which this summary is persisted. */
     public static final String TABLE_NAME = ClusterDimensionalSummary.class.getSimpleName();
 

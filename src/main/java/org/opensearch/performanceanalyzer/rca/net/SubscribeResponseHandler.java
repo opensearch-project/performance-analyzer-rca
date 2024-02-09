@@ -5,7 +5,6 @@
 
 package org.opensearch.performanceanalyzer.rca.net;
 
-
 import io.grpc.Status;
 import io.grpc.StatusException;
 import io.grpc.StatusRuntimeException;

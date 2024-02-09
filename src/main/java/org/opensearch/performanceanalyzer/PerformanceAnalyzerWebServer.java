@@ -5,7 +5,6 @@
 
 package org.opensearch.performanceanalyzer;
 
-
 import com.google.common.annotations.VisibleForTesting;
 import com.sun.net.httpserver.HttpServer;
 import com.sun.net.httpserver.HttpsConfigurator;
@@ -32,6 +31,7 @@ public class PerformanceAnalyzerWebServer {
 
     @VisibleForTesting
     public static final String WEBSERVICE_BIND_HOST_NAME = "webservice-bind-host";
+
     // Use system default for max backlog.
     private static final int INCOMING_QUEUE_LENGTH = 1;
 

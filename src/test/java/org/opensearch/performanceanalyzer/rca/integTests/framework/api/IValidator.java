@@ -5,7 +5,6 @@
 
 package org.opensearch.performanceanalyzer.rca.integTests.framework.api;
 
-
 import com.google.gson.JsonElement;
 
 /**

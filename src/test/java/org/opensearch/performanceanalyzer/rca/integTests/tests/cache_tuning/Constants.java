@@ -5,7 +5,6 @@
 
 package org.opensearch.performanceanalyzer.rca.integTests.tests.cache_tuning;
 
-
 import org.opensearch.performanceanalyzer.rca.integTests.framework.configs.Consts;
 
 public class Constants {

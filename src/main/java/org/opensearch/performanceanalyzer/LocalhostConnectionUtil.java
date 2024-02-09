@@ -5,7 +5,6 @@
 
 package org.opensearch.performanceanalyzer;
 
-
 import io.netty.handler.codec.http.HttpMethod;
 import java.io.DataOutputStream;
 import java.net.HttpURLConnection;

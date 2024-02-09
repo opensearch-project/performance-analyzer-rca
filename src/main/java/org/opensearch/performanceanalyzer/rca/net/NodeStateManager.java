@@ -5,7 +5,6 @@
 
 package org.opensearch.performanceanalyzer.rca.net;
 
-
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ImmutableList;
 import java.util.HashSet;

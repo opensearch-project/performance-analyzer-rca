@@ -5,7 +5,6 @@
 
 package org.opensearch.performanceanalyzer.threads.exceptions;
 
-
 import org.opensearch.performanceanalyzer.PerformanceAnalyzerThreads;
 import org.opensearch.performanceanalyzer.commons.stats.metrics.StatExceptionCode;
 

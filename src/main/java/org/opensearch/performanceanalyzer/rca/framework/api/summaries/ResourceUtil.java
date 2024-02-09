@@ -5,7 +5,6 @@
 
 package org.opensearch.performanceanalyzer.rca.framework.api.summaries;
 
-
 import org.opensearch.performanceanalyzer.grpc.AdditionalFields;
 import org.opensearch.performanceanalyzer.grpc.MetricEnum;
 import org.opensearch.performanceanalyzer.grpc.PANetworking;

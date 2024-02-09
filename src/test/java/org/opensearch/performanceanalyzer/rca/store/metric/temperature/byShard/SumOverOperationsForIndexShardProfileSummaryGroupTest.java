@@ -5,7 +5,6 @@
 
 package org.opensearch.performanceanalyzer.rca.store.metric.temperature.byShard;
 
-
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.SQLException;

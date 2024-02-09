@@ -5,7 +5,6 @@
 
 package org.opensearch.performanceanalyzer.decisionmaker.actions;
 
-
 import java.util.List;
 import java.util.Map;
 import org.opensearch.performanceanalyzer.rca.store.rca.cluster.NodeKey;

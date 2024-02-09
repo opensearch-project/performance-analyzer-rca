@@ -5,7 +5,6 @@
 
 package org.opensearch.performanceanalyzer.rca.integTests.tests.poc;
 
-
 import java.util.ArrayList;
 import java.util.List;
 import org.jooq.Record;

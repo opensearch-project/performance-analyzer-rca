@@ -5,7 +5,6 @@
 
 package org.opensearch.performanceanalyzer.rca.persistence;
 
-
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;

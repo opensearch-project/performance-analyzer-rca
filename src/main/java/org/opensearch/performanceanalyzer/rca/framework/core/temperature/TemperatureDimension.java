@@ -5,7 +5,6 @@
 
 package org.opensearch.performanceanalyzer.rca.framework.core.temperature;
 
-
 import org.opensearch.performanceanalyzer.rca.framework.api.metrics.ShardSize;
 
 /**

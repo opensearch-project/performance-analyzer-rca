@@ -5,7 +5,6 @@
 
 package org.opensearch.performanceanalyzer.rca.framework.api.summaries.temperature;
 
-
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.Assert;

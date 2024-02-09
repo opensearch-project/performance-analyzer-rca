@@ -5,7 +5,6 @@
 
 package org.opensearch.performanceanalyzer.decisionmaker.actions;
 
-
 import com.google.common.collect.ImmutableSet;
 import java.util.ArrayList;
 import java.util.HashSet;

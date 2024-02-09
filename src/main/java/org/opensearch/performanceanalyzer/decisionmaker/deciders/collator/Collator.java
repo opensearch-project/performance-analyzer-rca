@@ -5,7 +5,6 @@
 
 package org.opensearch.performanceanalyzer.decisionmaker.deciders.collator;
 
-
 import com.google.common.annotations.VisibleForTesting;
 import java.io.Serializable;
 import java.util.ArrayList;

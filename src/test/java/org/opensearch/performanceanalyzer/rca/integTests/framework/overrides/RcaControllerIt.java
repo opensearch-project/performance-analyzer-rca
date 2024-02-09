@@ -5,7 +5,6 @@
 
 package org.opensearch.performanceanalyzer.rca.integTests.framework.overrides;
 
-
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.concurrent.ScheduledExecutorService;
@@ -57,8 +56,11 @@ public class RcaControllerIt extends RcaController {
 
     @Override
     protected List<ConnectedComponent> getRcaGraphComponents(RcaConf rcaConf)
-            throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException,
-                    InstantiationException, IllegalAccessException {
+            throws ClassNotFoundException,
+                    NoSuchMethodException,
+                    InvocationTargetException,
+                    InstantiationException,
+                    IllegalAccessException {
         if (rcaGraphComponents != null) {
             return rcaGraphComponents;
         } else {
@@ -93,7 +95,9 @@ public class RcaControllerIt extends RcaController {
     }
 
     public void setRcaGraphComponents(Class rcaGraphClass)
-            throws NoSuchMethodException, IllegalAccessException, InvocationTargetException,
+            throws NoSuchMethodException,
+                    IllegalAccessException,
+                    InvocationTargetException,
                     InstantiationException {
         AnalysisGraph graphObject =
                 (AnalysisGraph) rcaGraphClass.getDeclaredConstructor().newInstance();

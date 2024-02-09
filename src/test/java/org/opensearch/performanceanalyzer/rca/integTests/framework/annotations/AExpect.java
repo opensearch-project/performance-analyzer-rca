@@ -5,7 +5,6 @@
 
 package org.opensearch.performanceanalyzer.rca.integTests.framework.annotations;
 
-
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Repeatable;
 import java.lang.annotation.Retention;
@@ -21,7 +20,9 @@ import org.opensearch.performanceanalyzer.rca.integTests.framework.configs.HostT
 @Retention(RetentionPolicy.RUNTIME)
 @Repeatable(value = AExpect.Expectations.class)
 public @interface AExpect {
-    /** @return What will be queried and matched against the expectations. */
+    /**
+     * @return What will be queried and matched against the expectations.
+     */
     Type what();
 
     /**

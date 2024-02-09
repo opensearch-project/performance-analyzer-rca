@@ -5,7 +5,6 @@
 
 package org.opensearch.performanceanalyzer.rest;
 
-
 import java.util.HashMap;
 import java.util.Map;
 

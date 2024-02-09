@@ -5,7 +5,6 @@
 
 package org.opensearch.performanceanalyzer.rca.net.tasks;
 
-
 import java.util.Map;
 import org.opensearch.performanceanalyzer.AppContext;
 import org.opensearch.performanceanalyzer.net.NetClient;

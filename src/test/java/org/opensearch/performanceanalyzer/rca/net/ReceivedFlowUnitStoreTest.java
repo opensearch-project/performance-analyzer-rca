@@ -5,7 +5,6 @@
 
 package org.opensearch.performanceanalyzer.rca.net;
 
-
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;

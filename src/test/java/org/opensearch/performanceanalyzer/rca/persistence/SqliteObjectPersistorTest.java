@@ -5,7 +5,6 @@
 
 package org.opensearch.performanceanalyzer.rca.persistence;
 
-
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Files;
@@ -66,8 +65,12 @@ public class SqliteObjectPersistorTest {
      */
     @Test
     public void testNoData()
-            throws IOException, SQLException, InvocationTargetException, NoSuchMethodException,
-                    InstantiationException, IllegalAccessException {
+            throws IOException,
+                    SQLException,
+                    InvocationTargetException,
+                    NoSuchMethodException,
+                    InstantiationException,
+                    IllegalAccessException {
         SQLitePersistor sqlite =
                 new SQLitePersistor(
                         testLocation.toString(),
@@ -102,7 +105,10 @@ public class SqliteObjectPersistorTest {
 
     @Test
     public void testObjectWithNoGetters()
-            throws IOException, SQLException, IllegalAccessException, NoSuchMethodException,
+            throws IOException,
+                    SQLException,
+                    IllegalAccessException,
+                    NoSuchMethodException,
                     InvocationTargetException {
         exceptionRule.expect(NoSuchMethodException.class);
         exceptionRule.expectMessage("Could not find 'getter' for the field 'x' of class");
@@ -123,7 +129,10 @@ public class SqliteObjectPersistorTest {
 
     @Test
     public void testGetterReturnMismatch()
-            throws IOException, SQLException, IllegalAccessException, NoSuchMethodException,
+            throws IOException,
+                    SQLException,
+                    IllegalAccessException,
+                    NoSuchMethodException,
                     InvocationTargetException {
         exceptionRule.expect(NoSuchMethodException.class);
         exceptionRule.expectMessage(
@@ -152,7 +161,10 @@ public class SqliteObjectPersistorTest {
 
     @Test
     public void testSetterArgTypeMismatch()
-            throws IOException, SQLException, IllegalAccessException, NoSuchMethodException,
+            throws IOException,
+                    SQLException,
+                    IllegalAccessException,
+                    NoSuchMethodException,
                     InvocationTargetException {
         exceptionRule.expect(NoSuchMethodException.class);
         exceptionRule.expectMessage("Could not find 'setter' for the field 'x' of class");
@@ -180,7 +192,10 @@ public class SqliteObjectPersistorTest {
 
     @Test
     public void testNonPublicGetterSetter()
-            throws IOException, SQLException, IllegalAccessException, NoSuchMethodException,
+            throws IOException,
+                    SQLException,
+                    IllegalAccessException,
+                    NoSuchMethodException,
                     InvocationTargetException {
         exceptionRule.expect(IllegalStateException.class);
         exceptionRule.expectMessage("Found 'getX'. But it is not public");
@@ -208,7 +223,10 @@ public class SqliteObjectPersistorTest {
 
     @Test
     public void testNoPersistableFields()
-            throws IOException, SQLException, IllegalAccessException, NoSuchMethodException,
+            throws IOException,
+                    SQLException,
+                    IllegalAccessException,
+                    NoSuchMethodException,
                     InvocationTargetException {
         exceptionRule.expect(IllegalStateException.class);
         exceptionRule.expectMessage(
@@ -229,7 +247,10 @@ public class SqliteObjectPersistorTest {
 
     @Test
     public void testCollectionOfPrimitives()
-            throws IOException, SQLException, IllegalAccessException, NoSuchMethodException,
+            throws IOException,
+                    SQLException,
+                    IllegalAccessException,
+                    NoSuchMethodException,
                     InvocationTargetException {
         exceptionRule.expect(IllegalStateException.class);
         exceptionRule.expectMessage(

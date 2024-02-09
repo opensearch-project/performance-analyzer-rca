@@ -5,7 +5,6 @@
 
 package org.opensearch.performanceanalyzer.net;
 
-
 import com.google.common.annotations.VisibleForTesting;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;

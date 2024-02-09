@@ -5,7 +5,6 @@
 
 package org.opensearch.performanceanalyzer.rca.store.rca.admissioncontrol;
 
-
 import org.opensearch.performanceanalyzer.rca.framework.api.Rca;
 import org.opensearch.performanceanalyzer.rca.framework.api.flow_units.ResourceFlowUnit;
 import org.opensearch.performanceanalyzer.rca.framework.api.summaries.HotNodeSummary;

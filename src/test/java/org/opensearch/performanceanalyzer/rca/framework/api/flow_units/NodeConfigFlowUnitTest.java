@@ -5,7 +5,6 @@
 
 package org.opensearch.performanceanalyzer.rca.framework.api.flow_units;
 
-
 import org.junit.Assert;
 import org.junit.Test;
 import org.opensearch.performanceanalyzer.grpc.FlowUnitMessage;

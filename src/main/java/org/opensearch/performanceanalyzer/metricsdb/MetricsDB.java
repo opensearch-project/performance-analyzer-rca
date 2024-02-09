@@ -5,7 +5,6 @@
 
 package org.opensearch.performanceanalyzer.metricsdb;
 
-
 import com.google.common.annotations.VisibleForTesting;
 import java.io.File;
 import java.io.FileNotFoundException;

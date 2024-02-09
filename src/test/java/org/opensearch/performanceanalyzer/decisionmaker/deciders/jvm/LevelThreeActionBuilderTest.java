@@ -5,7 +5,6 @@
 
 package org.opensearch.performanceanalyzer.decisionmaker.deciders.jvm;
 
-
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.Assert;

@@ -5,7 +5,6 @@
 
 package org.opensearch.performanceanalyzer.rca.integTests.tests.jvmsizing;
 
-
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;

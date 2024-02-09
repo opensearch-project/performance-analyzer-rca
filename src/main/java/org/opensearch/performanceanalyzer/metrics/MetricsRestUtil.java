@@ -5,7 +5,6 @@
 
 package org.opensearch.performanceanalyzer.metrics;
 
-
 import java.security.InvalidParameterException;
 import java.util.ArrayList;
 import java.util.Arrays;
