@@ -5,7 +5,6 @@
 
 package org.opensearch.performanceanalyzer.rca.store;
 
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;

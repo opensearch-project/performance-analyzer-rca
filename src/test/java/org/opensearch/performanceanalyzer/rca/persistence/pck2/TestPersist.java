@@ -5,7 +5,6 @@
 
 package org.opensearch.performanceanalyzer.rca.persistence.pck2;
 
-
 import org.opensearch.performanceanalyzer.rca.persistence.ValueColumn;
 
 public class TestPersist {

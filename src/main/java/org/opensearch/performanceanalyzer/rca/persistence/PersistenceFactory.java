@@ -5,7 +5,6 @@
 
 package org.opensearch.performanceanalyzer.rca.persistence;
 
-
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Map;

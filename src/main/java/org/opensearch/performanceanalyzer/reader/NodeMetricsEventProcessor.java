@@ -5,7 +5,6 @@
 
 package org.opensearch.performanceanalyzer.reader;
 
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import java.io.File;
 import java.io.IOException;

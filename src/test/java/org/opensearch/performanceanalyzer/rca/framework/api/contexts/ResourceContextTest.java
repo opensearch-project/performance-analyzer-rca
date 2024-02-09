@@ -5,7 +5,6 @@
 
 package org.opensearch.performanceanalyzer.rca.framework.api.contexts;
 
-
 import java.util.List;
 import org.jooq.Field;
 import org.jooq.impl.DSL;

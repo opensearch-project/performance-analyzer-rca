@@ -5,7 +5,6 @@
 
 package org.opensearch.performanceanalyzer.rca.integTests.framework.log;
 
-
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;

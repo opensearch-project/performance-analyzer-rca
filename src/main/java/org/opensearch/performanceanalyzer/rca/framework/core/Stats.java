@@ -5,7 +5,6 @@
 
 package org.opensearch.performanceanalyzer.rca.framework.core;
 
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;

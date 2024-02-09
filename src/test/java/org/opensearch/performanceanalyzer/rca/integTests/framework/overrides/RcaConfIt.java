@@ -5,7 +5,6 @@
 
 package org.opensearch.performanceanalyzer.rca.integTests.framework.overrides;
 
-
 import java.util.HashMap;
 import java.util.Map;
 import org.opensearch.performanceanalyzer.rca.framework.core.RcaConf;

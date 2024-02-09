@@ -5,7 +5,6 @@
 
 package org.opensearch.performanceanalyzer.rca.framework.api.summaries;
 
-
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import java.util.List;

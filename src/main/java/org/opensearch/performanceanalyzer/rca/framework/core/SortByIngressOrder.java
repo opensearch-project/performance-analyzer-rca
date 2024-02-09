@@ -5,7 +5,6 @@
 
 package org.opensearch.performanceanalyzer.rca.framework.core;
 
-
 import java.io.Serializable;
 import java.util.Comparator;
 

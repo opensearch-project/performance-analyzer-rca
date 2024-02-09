@@ -5,7 +5,6 @@
 
 package org.opensearch.performanceanalyzer.rca.net.tasks;
 
-
 import io.grpc.stub.StreamObserver;
 import java.util.Map;
 import org.apache.logging.log4j.LogManager;

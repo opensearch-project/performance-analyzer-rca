@@ -5,7 +5,6 @@
 
 package org.opensearch.performanceanalyzer.rca.store.rca;
 
-
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import org.apache.logging.log4j.LogManager;

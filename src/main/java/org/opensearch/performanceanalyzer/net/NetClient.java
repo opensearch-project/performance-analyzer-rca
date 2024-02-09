@@ -5,7 +5,6 @@
 
 package org.opensearch.performanceanalyzer.net;
 
-
 import io.grpc.StatusRuntimeException;
 import io.grpc.stub.StreamObserver;
 import java.util.Map;

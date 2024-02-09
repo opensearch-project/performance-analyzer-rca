@@ -5,7 +5,6 @@
 
 package org.opensearch.performanceanalyzer.rca.samplers;
 
-
 import java.io.IOException;
 import java.nio.file.DirectoryStream;
 import java.nio.file.FileSystems;

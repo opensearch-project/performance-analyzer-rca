@@ -5,7 +5,6 @@
 
 package org.opensearch.performanceanalyzer.rca.integTests.tests.jvmsizing.validator;
 
-
 import org.junit.Assert;
 import org.opensearch.performanceanalyzer.decisionmaker.actions.HeapSizeIncreaseAction;
 import org.opensearch.performanceanalyzer.rca.persistence.actions.PersistedAction;

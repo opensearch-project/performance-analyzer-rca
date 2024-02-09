@@ -5,7 +5,6 @@
 
 package org.opensearch.performanceanalyzer.decisionmaker.deciders;
 
-
 import java.util.List;
 import org.opensearch.performanceanalyzer.decisionmaker.actions.Action;
 

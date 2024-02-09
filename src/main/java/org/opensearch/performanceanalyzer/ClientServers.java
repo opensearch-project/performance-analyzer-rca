@@ -5,7 +5,6 @@
 
 package org.opensearch.performanceanalyzer;
 
-
 import com.sun.net.httpserver.HttpServer;
 import org.opensearch.performanceanalyzer.net.NetClient;
 import org.opensearch.performanceanalyzer.net.NetServer;

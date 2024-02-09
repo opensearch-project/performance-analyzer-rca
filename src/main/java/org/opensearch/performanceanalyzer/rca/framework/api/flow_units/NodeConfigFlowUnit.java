@@ -5,7 +5,6 @@
 
 package org.opensearch.performanceanalyzer.rca.framework.api.flow_units;
 
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;

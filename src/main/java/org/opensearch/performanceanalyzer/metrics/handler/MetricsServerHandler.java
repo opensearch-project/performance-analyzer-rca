@@ -5,7 +5,6 @@
 
 package org.opensearch.performanceanalyzer.metrics.handler;
 
-
 import io.grpc.stub.StreamObserver;
 import java.util.List;
 import java.util.Map;

@@ -305,6 +305,7 @@ public class ModifyCacheMaxSizeAction extends SuppressibleAction {
 
         @SerializedName(value = CURRENT_MAX_SIZE)
         private long currentCacheMaxSizeInBytes;
+
         // TODO: remove coolOffPeriodInMillis and canUpdate from summary
         //  as those already exist in baseline action object
         @SerializedName(value = COOL_OFF_PERIOD)
