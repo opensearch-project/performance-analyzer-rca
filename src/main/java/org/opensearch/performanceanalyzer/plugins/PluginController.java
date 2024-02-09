@@ -5,7 +5,6 @@
 
 package org.opensearch.performanceanalyzer.plugins;
 
-
 import com.google.common.annotations.VisibleForTesting;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;

@@ -5,7 +5,6 @@
 
 package org.opensearch.performanceanalyzer.decisionmaker.actions;
 
-
 import org.opensearch.performanceanalyzer.AppContext;
 
 /** Actions that can be suppressed through a config. */

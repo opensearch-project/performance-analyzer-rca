@@ -5,7 +5,6 @@
 
 package org.opensearch.performanceanalyzer.rca.framework.core.temperature;
 
-
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import javax.annotation.Nonnull;

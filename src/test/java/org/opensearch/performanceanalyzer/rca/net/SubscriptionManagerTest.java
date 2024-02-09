@@ -5,7 +5,6 @@
 
 package org.opensearch.performanceanalyzer.rca.net;
 
-
 import com.google.common.collect.Sets;
 import java.util.Collections;
 import java.util.Objects;

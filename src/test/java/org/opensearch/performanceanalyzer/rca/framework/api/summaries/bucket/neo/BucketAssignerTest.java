@@ -5,7 +5,6 @@
 
 package org.opensearch.performanceanalyzer.rca.framework.api.summaries.bucket.neo;
 
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import java.nio.file.Paths;
 import org.junit.Assert;

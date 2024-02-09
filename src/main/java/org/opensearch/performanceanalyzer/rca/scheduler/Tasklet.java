@@ -5,7 +5,6 @@
 
 package org.opensearch.performanceanalyzer.rca.scheduler;
 
-
 import com.google.common.annotations.VisibleForTesting;
 import java.util.ArrayList;
 import java.util.List;

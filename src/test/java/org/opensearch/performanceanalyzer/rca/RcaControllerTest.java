@@ -5,7 +5,6 @@
 
 package org.opensearch.performanceanalyzer.rca;
 
-
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.sun.net.httpserver.HttpServer;
 import java.io.IOException;

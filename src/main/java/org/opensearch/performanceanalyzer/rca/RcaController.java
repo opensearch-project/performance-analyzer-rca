@@ -5,7 +5,6 @@
 
 package org.opensearch.performanceanalyzer.rca;
 
-
 import com.google.common.annotations.VisibleForTesting;
 import com.sun.net.httpserver.HttpServer;
 import java.io.IOException;
@@ -164,8 +163,11 @@ public class RcaController {
     }
 
     protected List<ConnectedComponent> getRcaGraphComponents(RcaConf rcaConf)
-            throws ClassNotFoundException, NoSuchMethodException, InstantiationException,
-                    IllegalAccessException, InvocationTargetException {
+            throws ClassNotFoundException,
+                    NoSuchMethodException,
+                    InstantiationException,
+                    IllegalAccessException,
+                    InvocationTargetException {
         return RcaUtil.getAnalysisGraphComponents(rcaConf);
     }
 

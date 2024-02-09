@@ -5,7 +5,6 @@
 
 package org.opensearch.performanceanalyzer.rca.util;
 
-
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;

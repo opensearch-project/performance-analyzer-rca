@@ -5,7 +5,6 @@
 
 package org.opensearch.performanceanalyzer.rca.listener;
 
-
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Map;
@@ -22,6 +21,7 @@ import org.opensearch.performanceanalyzer.rca.framework.metrics.ExceptionsAndErr
 public class MisbehavingGraphOperateMethodListener implements IListener {
     private static final Logger LOG =
             LogManager.getLogger(MisbehavingGraphOperateMethodListener.class);
+
     /**
      * A map to keep track of the graphNodeName and the number of times it threw an exception in the
      * {@code operate()} method.

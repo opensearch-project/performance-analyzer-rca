@@ -5,7 +5,6 @@
 
 package org.opensearch.performanceanalyzer.rest;
 
-
 import com.google.common.annotations.VisibleForTesting;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;

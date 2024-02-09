@@ -5,7 +5,6 @@
 
 package org.opensearch.performanceanalyzer.net;
 
-
 import io.grpc.stub.StreamObserver;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;

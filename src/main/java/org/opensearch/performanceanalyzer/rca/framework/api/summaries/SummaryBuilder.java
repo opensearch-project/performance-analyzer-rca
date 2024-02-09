@@ -5,7 +5,6 @@
 
 package org.opensearch.performanceanalyzer.rca.framework.api.summaries;
 
-
 import org.jooq.Record;
 import org.opensearch.performanceanalyzer.rca.framework.core.GenericSummary;
 

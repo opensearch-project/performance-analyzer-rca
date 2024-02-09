@@ -54,7 +54,7 @@ plugins {
     id "de.undercouch.download" version "5.5.0"
     id 'com.adarshr.test-logger' version '4.0.0'
     id 'org.gradle.test-retry' version '1.5.8'
-    id 'com.diffplug.spotless' version '5.11.0'
+    id 'com.diffplug.spotless' version '6.25.0'
 }
 
 application {
@@ -87,7 +87,7 @@ distributions {
 spotless {
     java {
         licenseHeaderFile(file('license-header'))
-        googleJavaFormat('1.12.0').aosp()
+        googleJavaFormat('1.17.0').aosp()
         importOrder()
         removeUnusedImports()
         trimTrailingWhitespace()

@@ -5,7 +5,6 @@
 
 package org.opensearch.performanceanalyzer.rca.framework.sys;
 
-
 import java.util.Arrays;
 import java.util.List;
 import org.opensearch.performanceanalyzer.commons.stats.emitters.ISampler;

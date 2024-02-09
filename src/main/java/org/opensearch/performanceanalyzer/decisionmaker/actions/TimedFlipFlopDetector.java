@@ -5,7 +5,6 @@
 
 package org.opensearch.performanceanalyzer.decisionmaker.actions;
 
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;

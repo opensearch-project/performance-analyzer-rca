@@ -5,7 +5,6 @@
 
 package org.opensearch.performanceanalyzer.rca.response;
 
-
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.protobuf.GeneratedMessageV3;

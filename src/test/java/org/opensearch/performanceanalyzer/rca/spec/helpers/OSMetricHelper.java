@@ -5,7 +5,6 @@
 
 package org.opensearch.performanceanalyzer.rca.spec.helpers;
 
-
 import java.util.ArrayList;
 import java.util.List;
 import org.opensearch.performanceanalyzer.commons.metrics.AllMetrics;

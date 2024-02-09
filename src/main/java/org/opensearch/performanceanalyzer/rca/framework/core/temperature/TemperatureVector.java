@@ -5,7 +5,6 @@
 
 package org.opensearch.performanceanalyzer.rca.framework.core.temperature;
 
-
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import java.util.Comparator;

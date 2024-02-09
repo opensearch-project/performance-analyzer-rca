@@ -5,7 +5,6 @@
 
 package org.opensearch.performanceanalyzer.model;
 
-
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;

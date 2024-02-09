@@ -5,7 +5,6 @@
 
 package org.opensearch.performanceanalyzer.decisionmaker.deciders;
 
-
 import org.opensearch.performanceanalyzer.grpc.FlowUnitMessage;
 import org.opensearch.performanceanalyzer.rca.framework.core.GenericFlowUnit;
 import org.opensearch.performanceanalyzer.rca.framework.util.InstanceDetails;

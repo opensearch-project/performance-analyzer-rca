@@ -5,7 +5,6 @@
 
 package org.opensearch.performanceanalyzer.rca.framework.api.aggregators;
 
-
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
