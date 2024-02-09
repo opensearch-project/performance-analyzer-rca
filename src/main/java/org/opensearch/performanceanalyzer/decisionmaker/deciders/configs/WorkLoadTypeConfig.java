@@ -5,7 +5,6 @@
 
 package org.opensearch.performanceanalyzer.decisionmaker.deciders.configs;
 
-
 import org.opensearch.performanceanalyzer.rca.framework.core.Config;
 import org.opensearch.performanceanalyzer.rca.framework.core.NestedConfig;
 

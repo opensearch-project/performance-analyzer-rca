@@ -5,7 +5,6 @@
 
 package org.opensearch.performanceanalyzer.rca.framework.core;
 
-
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;

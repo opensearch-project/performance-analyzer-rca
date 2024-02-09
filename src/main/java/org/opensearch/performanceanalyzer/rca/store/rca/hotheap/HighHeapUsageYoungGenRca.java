@@ -5,7 +5,6 @@
 
 package org.opensearch.performanceanalyzer.rca.store.rca.hotheap;
 
-
 import java.time.Clock;
 import java.util.List;
 import java.util.concurrent.TimeUnit;

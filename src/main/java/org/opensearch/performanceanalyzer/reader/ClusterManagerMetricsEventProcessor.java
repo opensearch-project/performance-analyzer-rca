@@ -5,7 +5,6 @@
 
 package org.opensearch.performanceanalyzer.reader;
 
-
 import java.io.File;
 import java.sql.Connection;
 import java.util.Map;

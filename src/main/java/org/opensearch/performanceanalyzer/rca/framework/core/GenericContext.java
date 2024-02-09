@@ -5,7 +5,6 @@
 
 package org.opensearch.performanceanalyzer.rca.framework.core;
 
-
 import org.opensearch.performanceanalyzer.rca.framework.api.Resources;
 
 public abstract class GenericContext {

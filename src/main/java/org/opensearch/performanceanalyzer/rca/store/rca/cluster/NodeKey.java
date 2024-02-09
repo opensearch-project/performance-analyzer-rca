@@ -5,7 +5,6 @@
 
 package org.opensearch.performanceanalyzer.rca.store.rca.cluster;
 
-
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.opensearch.performanceanalyzer.rca.framework.util.InstanceDetails;
 

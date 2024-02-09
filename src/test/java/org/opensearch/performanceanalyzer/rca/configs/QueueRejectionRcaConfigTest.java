@@ -5,7 +5,6 @@
 
 package org.opensearch.performanceanalyzer.rca.configs;
 
-
 import java.nio.file.Paths;
 import org.junit.Assert;
 import org.junit.Before;

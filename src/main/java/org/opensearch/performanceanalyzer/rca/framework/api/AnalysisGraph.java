@@ -10,7 +10,6 @@ package org.opensearch.performanceanalyzer.rca.framework.api;
  * and
  */
 
-
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.logging.log4j.LogManager;

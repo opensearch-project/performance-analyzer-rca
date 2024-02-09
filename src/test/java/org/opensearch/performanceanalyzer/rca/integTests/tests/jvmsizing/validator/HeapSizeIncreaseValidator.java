@@ -5,7 +5,6 @@
 
 package org.opensearch.performanceanalyzer.rca.integTests.tests.jvmsizing.validator;
 
-
 import org.opensearch.performanceanalyzer.AppContext;
 import org.opensearch.performanceanalyzer.rca.integTests.framework.api.IValidator;
 import org.opensearch.performanceanalyzer.rca.persistence.actions.PersistedAction;

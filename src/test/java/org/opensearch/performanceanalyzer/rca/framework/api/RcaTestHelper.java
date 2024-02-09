@@ -5,7 +5,6 @@
 
 package org.opensearch.performanceanalyzer.rca.framework.api;
 
-
 import java.time.Clock;
 import java.util.Arrays;
 import java.util.Collections;

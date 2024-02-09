@@ -5,7 +5,6 @@
 
 package org.opensearch.performanceanalyzer.rca.store.rca.hot_node;
 
-
 import java.util.Collections;
 import java.util.Deque;
 import java.util.HashMap;

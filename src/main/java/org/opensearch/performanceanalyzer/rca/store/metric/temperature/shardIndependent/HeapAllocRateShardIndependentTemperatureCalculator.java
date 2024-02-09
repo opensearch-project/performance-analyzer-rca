@@ -5,7 +5,6 @@
 
 package org.opensearch.performanceanalyzer.rca.store.metric.temperature.shardIndependent;
 
-
 import org.opensearch.performanceanalyzer.rca.framework.core.temperature.TemperatureDimension;
 import org.opensearch.performanceanalyzer.rca.store.metric.temperature.shardIndependent.calculators.ShardIndependentTemperatureCalculator;
 

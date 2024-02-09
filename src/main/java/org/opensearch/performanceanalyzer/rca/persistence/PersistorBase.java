@@ -5,7 +5,6 @@
 
 package org.opensearch.performanceanalyzer.rca.persistence;
 
-
 import com.google.common.annotations.VisibleForTesting;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -199,7 +198,10 @@ public abstract class PersistorBase implements Persistable {
     }
 
     public synchronized <T> void write(T obj)
-            throws SQLException, IOException, IllegalAccessException, NoSuchMethodException,
+            throws SQLException,
+                    IOException,
+                    IllegalAccessException,
+                    NoSuchMethodException,
                     InvocationTargetException {
         Objects.requireNonNull(obj);
         rotateRegisterGarbageThenCreateNewDB(RotationType.TRY_ROTATE);
@@ -225,7 +227,9 @@ public abstract class PersistorBase implements Persistable {
     }
 
     abstract <T> void writeImpl(T obj)
-            throws IllegalAccessException, InvocationTargetException, NoSuchMethodException,
+            throws IllegalAccessException,
+                    InvocationTargetException,
+                    NoSuchMethodException,
                     SQLException;
 
     private synchronized void rotateRegisterGarbageThenCreateNewDB(RotationType type)

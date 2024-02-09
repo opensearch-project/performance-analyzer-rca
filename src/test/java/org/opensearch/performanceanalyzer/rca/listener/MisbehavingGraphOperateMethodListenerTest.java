@@ -5,7 +5,6 @@
 
 package org.opensearch.performanceanalyzer.rca.listener;
 
-
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.HashMap;

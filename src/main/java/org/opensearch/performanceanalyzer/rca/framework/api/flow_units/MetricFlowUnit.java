@@ -5,7 +5,6 @@
 
 package org.opensearch.performanceanalyzer.rca.framework.api.flow_units;
 
-
 import org.jooq.Record;
 import org.jooq.Result;
 import org.opensearch.performanceanalyzer.grpc.FlowUnitMessage;

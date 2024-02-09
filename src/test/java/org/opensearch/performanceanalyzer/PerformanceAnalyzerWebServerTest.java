@@ -5,7 +5,6 @@
 
 package org.opensearch.performanceanalyzer;
 
-
 import com.sun.net.httpserver.HttpServer;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import java.io.BufferedReader;

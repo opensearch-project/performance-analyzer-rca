@@ -5,7 +5,6 @@
 
 package org.opensearch.performanceanalyzer.rca.net.handler;
 
-
 import io.grpc.stub.StreamObserver;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.RejectedExecutionException;

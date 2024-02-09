@@ -5,7 +5,6 @@
 
 package org.opensearch.performanceanalyzer.decisionmaker.deciders.jvm.sizing;
 
-
 import com.google.common.annotations.VisibleForTesting;
 import java.nio.file.Paths;
 import java.util.ArrayList;

@@ -5,7 +5,6 @@
 
 package org.opensearch.performanceanalyzer.decisionmaker.actions;
 
-
 import java.util.Map;
 import org.junit.Assert;
 import org.junit.Test;

@@ -5,7 +5,6 @@
 
 package org.opensearch.performanceanalyzer.rca.store.rca.hotshard;
 
-
 import com.google.common.collect.MinMaxPriorityQueue;
 import java.time.Clock;
 import java.util.ArrayList;
@@ -234,6 +233,7 @@ public class HotShardRca extends Rca<ResourceFlowUnit<HotNodeSummary>> {
             return new ResourceFlowUnit<>(this.clock.millis());
         }
     }
+
     /**
      * read threshold values from rca.conf
      *
@@ -270,6 +270,7 @@ class NamedSummarizedWindow {
         this.indexShardKey = indexShardKey;
     }
 }
+
 /* Comparators for SummarizedWindow, comparing by different metrics.
 This way already existing structures can be recycled. */
 class SummarizedWindowCPUComparator implements Comparator<NamedSummarizedWindow> {

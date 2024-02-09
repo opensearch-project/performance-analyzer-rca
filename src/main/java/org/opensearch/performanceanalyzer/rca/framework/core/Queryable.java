@@ -5,7 +5,6 @@
 
 package org.opensearch.performanceanalyzer.rca.framework.core;
 
-
 import org.jooq.Record;
 import org.jooq.Result;
 import org.opensearch.performanceanalyzer.metricsdb.MetricsDB;

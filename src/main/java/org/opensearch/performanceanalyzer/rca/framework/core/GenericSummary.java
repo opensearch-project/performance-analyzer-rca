@@ -5,7 +5,6 @@
 
 package org.opensearch.performanceanalyzer.rca.framework.core;
 
-
 import com.google.common.annotations.VisibleForTesting;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;

@@ -5,7 +5,6 @@
 
 package org.opensearch.performanceanalyzer.rca.store.metric.temperature.byShard.calculators;
 
-
 import java.util.List;
 import org.jooq.DSLContext;
 import org.jooq.Field;

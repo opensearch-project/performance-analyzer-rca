@@ -5,7 +5,6 @@
 
 package org.opensearch.performanceanalyzer.collectors;
 
-
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.concurrent.Executors;

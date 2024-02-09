@@ -5,7 +5,6 @@
 
 package org.opensearch.performanceanalyzer.rca.store.rca.hot_node;
 
-
 import java.util.Arrays;
 import java.util.Collections;
 import org.junit.Assert;

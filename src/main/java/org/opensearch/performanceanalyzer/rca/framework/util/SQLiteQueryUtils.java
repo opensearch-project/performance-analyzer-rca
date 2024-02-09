@@ -5,7 +5,6 @@
 
 package org.opensearch.performanceanalyzer.rca.framework.util;
 
-
 import com.google.common.collect.ImmutableList;
 import java.util.Collections;
 import java.util.HashSet;

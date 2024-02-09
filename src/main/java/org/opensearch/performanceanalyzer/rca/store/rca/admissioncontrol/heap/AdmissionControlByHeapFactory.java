@@ -5,7 +5,6 @@
 
 package org.opensearch.performanceanalyzer.rca.store.rca.admissioncontrol.heap;
 
-
 import java.util.HashMap;
 import java.util.Map;
 
