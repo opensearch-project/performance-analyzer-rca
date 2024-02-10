@@ -85,7 +85,7 @@ fi
 if [[ -d "/usr/share/opensearch/plugins/opensearch_security" ]]; then
     # Install Demo certificates for Security Plugin and update the opensearch.yml
     # file to use those certificates.
-    /usr/share/opensearch/plugins/opensearch_security/tools/install_demo_configuration.sh -y -i -s
+    /usr/share/opensearch/plugins/opensearch_security/tools/install_demo_configuration.sh -y -i -s || exit 1
 fi
 
 if [[ -d "/usr/share/opensearch/plugins/opensearch-performance-analyzer" ]]; then
