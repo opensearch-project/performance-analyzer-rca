@@ -5,7 +5,6 @@
 
 package org.opensearch.performanceanalyzer.rca.framework.util;
 
-
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Objects;
 import com.google.common.net.InetAddresses;

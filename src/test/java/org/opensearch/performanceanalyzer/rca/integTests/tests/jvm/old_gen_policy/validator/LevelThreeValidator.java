@@ -5,7 +5,6 @@
 
 package org.opensearch.performanceanalyzer.rca.integTests.tests.jvm.old_gen_policy.validator;
 
-
 import com.google.gson.JsonArray;
 import org.opensearch.performanceanalyzer.grpc.ResourceEnum;
 

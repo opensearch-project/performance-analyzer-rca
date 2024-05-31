@@ -5,7 +5,6 @@
 
 package org.opensearch.performanceanalyzer.rca.integTests.tests.jvm.old_gen_policy.validator;
 
-
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;

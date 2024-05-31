@@ -5,7 +5,6 @@
 
 package org.opensearch.performanceanalyzer.rca.framework.api.summaries.temperature;
 
-
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import java.util.ArrayList;
@@ -37,6 +36,7 @@ import org.opensearch.performanceanalyzer.rca.framework.core.temperature.Tempera
 public class CompactNodeSummary extends GenericSummary {
 
     private static final Logger LOG = LogManager.getLogger(CompactNodeSummary.class);
+
     /** This will determine the name of the SQLite when this summary is persisted. */
     public static final String TABLE_NAME = CompactNodeSummary.class.getSimpleName();
 
@@ -278,7 +278,9 @@ public class CompactNodeSummary extends GenericSummary {
         return compactNodeTemperatureSummary;
     }
 
-    /** @return Returns a list of columns that this table would contain. */
+    /**
+     * @return Returns a list of columns that this table would contain.
+     */
     @Override
     public List<Field<?>> getSqlSchema() {
         List<Field<?>> schema = new ArrayList<>();

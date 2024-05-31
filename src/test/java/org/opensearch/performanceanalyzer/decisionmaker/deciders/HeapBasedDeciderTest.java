@@ -5,7 +5,6 @@
 
 package org.opensearch.performanceanalyzer.decisionmaker.deciders;
 
-
 import org.junit.Assert;
 import org.junit.Test;
 import org.opensearch.performanceanalyzer.AppContext;

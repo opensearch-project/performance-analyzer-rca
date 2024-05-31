@@ -5,7 +5,6 @@
 
 package org.opensearch.performanceanalyzer.decisionmaker.deciders;
 
-
 import com.google.common.annotations.VisibleForTesting;
 import java.time.Instant;
 import java.util.ArrayList;

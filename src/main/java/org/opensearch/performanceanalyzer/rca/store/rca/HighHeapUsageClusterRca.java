@@ -5,7 +5,6 @@
 
 package org.opensearch.performanceanalyzer.rca.store.rca;
 
-
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;

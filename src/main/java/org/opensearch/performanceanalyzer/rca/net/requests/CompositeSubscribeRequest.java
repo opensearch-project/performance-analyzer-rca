@@ -5,7 +5,6 @@
 
 package org.opensearch.performanceanalyzer.rca.net.requests;
 
-
 import io.grpc.stub.StreamObserver;
 import org.opensearch.performanceanalyzer.grpc.SubscribeMessage;
 import org.opensearch.performanceanalyzer.grpc.SubscribeResponse;

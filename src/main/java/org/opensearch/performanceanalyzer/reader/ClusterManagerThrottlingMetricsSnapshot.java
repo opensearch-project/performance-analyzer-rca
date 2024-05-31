@@ -5,7 +5,6 @@
 
 package org.opensearch.performanceanalyzer.reader;
 
-
 import com.google.common.annotations.VisibleForTesting;
 import java.sql.Connection;
 import java.util.ArrayList;

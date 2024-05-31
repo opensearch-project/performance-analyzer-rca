@@ -5,7 +5,6 @@
 
 package org.opensearch.performanceanalyzer.decisionmaker.deciders.jvm;
 
-
 import java.util.List;
 import java.util.Random;
 import org.junit.Assert;

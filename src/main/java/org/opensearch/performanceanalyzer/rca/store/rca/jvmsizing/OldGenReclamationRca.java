@@ -5,7 +5,6 @@
 
 package org.opensearch.performanceanalyzer.rca.store.rca.jvmsizing;
 
-
 import java.util.concurrent.TimeUnit;
 import org.opensearch.performanceanalyzer.commons.stats.ServiceMetrics;
 import org.opensearch.performanceanalyzer.rca.framework.api.Metric;

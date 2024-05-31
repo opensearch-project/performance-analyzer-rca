@@ -5,7 +5,6 @@
 
 package org.opensearch.performanceanalyzer;
 
-
 import org.opensearch.performanceanalyzer.commons.stats.metrics.StatExceptionCode;
 
 /**

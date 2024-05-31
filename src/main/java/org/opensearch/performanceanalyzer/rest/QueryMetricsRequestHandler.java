@@ -5,7 +5,6 @@
 
 package org.opensearch.performanceanalyzer.rest;
 
-
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import io.grpc.stub.StreamObserver;

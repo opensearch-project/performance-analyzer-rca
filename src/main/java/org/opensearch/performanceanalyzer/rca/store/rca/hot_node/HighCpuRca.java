@@ -5,7 +5,6 @@
 
 package org.opensearch.performanceanalyzer.rca.store.rca.hot_node;
 
-
 import org.opensearch.performanceanalyzer.rca.framework.api.Metric;
 import org.opensearch.performanceanalyzer.rca.framework.api.summaries.ResourceUtil;
 

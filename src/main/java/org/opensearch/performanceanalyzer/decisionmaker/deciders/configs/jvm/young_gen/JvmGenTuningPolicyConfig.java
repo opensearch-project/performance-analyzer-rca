@@ -5,7 +5,6 @@
 
 package org.opensearch.performanceanalyzer.decisionmaker.deciders.configs.jvm.young_gen;
 
-
 import java.util.concurrent.TimeUnit;
 import org.opensearch.performanceanalyzer.decisionmaker.deciders.jvm.JvmGenTuningPolicy;
 import org.opensearch.performanceanalyzer.rca.framework.core.Config;

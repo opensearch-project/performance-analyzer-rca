@@ -5,7 +5,6 @@
 
 package org.opensearch.performanceanalyzer.rca.framework.api.metrics;
 
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;

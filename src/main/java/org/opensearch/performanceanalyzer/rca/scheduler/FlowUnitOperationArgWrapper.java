@@ -5,7 +5,6 @@
 
 package org.opensearch.performanceanalyzer.rca.scheduler;
 
-
 import org.opensearch.performanceanalyzer.rca.framework.core.Node;
 import org.opensearch.performanceanalyzer.rca.framework.core.Queryable;
 import org.opensearch.performanceanalyzer.rca.net.WireHopper;

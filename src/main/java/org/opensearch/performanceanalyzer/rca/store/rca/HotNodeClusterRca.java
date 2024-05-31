@@ -5,7 +5,6 @@
 
 package org.opensearch.performanceanalyzer.rca.store.rca;
 
-
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Table;

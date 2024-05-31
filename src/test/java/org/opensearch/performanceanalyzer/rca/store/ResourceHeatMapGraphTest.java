@@ -5,7 +5,6 @@
 
 package org.opensearch.performanceanalyzer.rca.store;
 
-
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;

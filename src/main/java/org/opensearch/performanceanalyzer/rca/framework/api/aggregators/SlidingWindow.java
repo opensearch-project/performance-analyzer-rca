@@ -5,7 +5,6 @@
 
 package org.opensearch.performanceanalyzer.rca.framework.api.aggregators;
 
-
 import java.util.Deque;
 import java.util.LinkedList;
 import java.util.concurrent.TimeUnit;

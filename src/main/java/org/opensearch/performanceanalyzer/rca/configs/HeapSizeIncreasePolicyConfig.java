@@ -5,7 +5,6 @@
 
 package org.opensearch.performanceanalyzer.rca.configs;
 
-
 import org.opensearch.performanceanalyzer.rca.framework.core.RcaConf;
 
 public class HeapSizeIncreasePolicyConfig {

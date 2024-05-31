@@ -5,7 +5,6 @@
 
 package org.opensearch.performanceanalyzer.rca.framework.api.persist;
 
-
 import org.jooq.Field;
 
 /**

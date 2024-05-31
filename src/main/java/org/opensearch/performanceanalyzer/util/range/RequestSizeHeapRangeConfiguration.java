@@ -5,7 +5,6 @@
 
 package org.opensearch.performanceanalyzer.util.range;
 
-
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;

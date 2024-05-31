@@ -5,7 +5,6 @@
 
 package org.opensearch.performanceanalyzer.rca.integTests.framework;
 
-
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -61,12 +60,15 @@ import org.opensearch.performanceanalyzer.threads.ThreadProvider;
 public class Host {
     private static final Logger LOG = LogManager.getLogger(Host.class);
     private final boolean useHttps;
+
     /** Each host has its own AppContext instance. */
     private final AppContext appContext;
 
     private final HostTag myTag;
+
     /** This uniquely identifies a host. */
     private final int hostId;
+
     /**
      * For Integration tests, where all the virtual nodes are part of the same JVM, Ip string does
      * not matter. But for the sake of having this value filled, the string is 127.0.0.(hostId).
@@ -312,7 +314,9 @@ public class Host {
     }
 
     public void updateRcaGraph(final Class rcaGraphClass)
-            throws InvocationTargetException, NoSuchMethodException, InstantiationException,
+            throws InvocationTargetException,
+                    NoSuchMethodException,
+                    InstantiationException,
                     IllegalAccessException {
         rcaController.setRcaGraphComponents(rcaGraphClass);
     }

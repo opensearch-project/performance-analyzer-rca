@@ -5,7 +5,6 @@
 
 package org.opensearch.performanceanalyzer.rca.framework.api.aggregators;
 
-
 import java.util.concurrent.TimeUnit;
 import org.opensearch.performanceanalyzer.commons.metrics.AllMetrics;
 

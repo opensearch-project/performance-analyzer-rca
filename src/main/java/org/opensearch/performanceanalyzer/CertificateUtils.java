@@ -5,7 +5,6 @@
 
 package org.opensearch.performanceanalyzer;
 
-
 import java.io.File;
 import java.io.FileReader;
 import java.security.KeyStore;

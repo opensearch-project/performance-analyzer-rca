@@ -5,7 +5,6 @@
 
 package org.opensearch.performanceanalyzer;
 
-
 import io.netty.handler.codec.http.HttpMethod;
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
@@ -65,7 +64,7 @@ public class LocalhostConnectionUtil {
     public static class ClusterSettings {
         static List<String> clusterSettings = new ArrayList<>();
 
-        public final static String SETTING_NOT_FOUND = "NULL";
+        public static final String SETTING_NOT_FOUND = "NULL";
 
         static final String CLUSTER_SETTINGS_URL =
                 "/_cluster/settings?flat_settings=true&include_defaults=true&pretty";

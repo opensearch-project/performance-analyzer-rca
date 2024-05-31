@@ -5,7 +5,6 @@
 
 package org.opensearch.performanceanalyzer.rca.net.handler;
 
-
 import io.grpc.stub.StreamObserver;
 import java.util.ArrayList;
 import java.util.Collections;

@@ -5,7 +5,6 @@
 
 package org.opensearch.performanceanalyzer.reader;
 
-
 import com.google.common.collect.ImmutableList;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -28,6 +27,7 @@ import org.opensearch.performanceanalyzer.rca.RcaControllerHelper;
 
 public class ClusterDetailsEventProcessor implements EventProcessor {
     private static final Logger LOG = LogManager.getLogger(ClusterDetailsEventProcessor.class);
+
     /** keep a volatile immutable list to make the read/write to this list thread safe. */
     private volatile ImmutableList<NodeDetails> nodesDetails = null;
 

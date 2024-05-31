@@ -5,7 +5,6 @@
 
 package org.opensearch.performanceanalyzer.decisionmaker.deciders.jvm.old_gen;
 
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;

@@ -5,7 +5,6 @@
 
 package org.opensearch.performanceanalyzer.store.collector;
 
-
 import java.util.Arrays;
 import java.util.Collections;
 import org.junit.Assert;
