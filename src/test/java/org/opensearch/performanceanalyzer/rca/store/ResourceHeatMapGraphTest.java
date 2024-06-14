@@ -138,7 +138,8 @@ public class ResourceHeatMapGraphTest {
 
         RcaConf rcaConf = new RcaConf(dataNodeRcaConf);
         subscriptionManager = new SubscriptionManager(new GRPCConnectionManager(false));
-        subscriptionManager.setCurrentLocus(rcaConf.getTagMap().get("locus"));
+        String currentLocus = RcaUtil.getPriorityLocus(rcaConf.getTagMap().get("locus"));
+        subscriptionManager.setCurrentLocus(currentLocus);
 
         WireHopper wireHopper =
                 new WireHopper(
@@ -663,7 +664,8 @@ public class ResourceHeatMapGraphTest {
         RcaConf rcaConf = new RcaConf(dataNodeRcaConf);
         SubscriptionManager subscriptionManager =
                 new SubscriptionManager(new GRPCConnectionManager(false));
-        subscriptionManager.setCurrentLocus(rcaConf.getTagMap().get("locus"));
+        String currentLocus = RcaUtil.getPriorityLocus(rcaConf.getTagMap().get("locus"));
+        subscriptionManager.setCurrentLocus(currentLocus);
 
         AppContext appContext = RcaTestHelper.setMyIp("192.168.0.1", AllMetrics.NodeRole.DATA);
 
@@ -696,7 +698,8 @@ public class ResourceHeatMapGraphTest {
         RcaConf rcaConf2 = new RcaConf(clusterManagerNodeRcaConf);
         SubscriptionManager subscriptionManager2 =
                 new SubscriptionManager(new GRPCConnectionManager(false));
-        subscriptionManager2.setCurrentLocus(rcaConf2.getTagMap().get("locus"));
+        String currentLocus2 = RcaUtil.getPriorityLocus(rcaConf2.getTagMap().get("locus"));
+        subscriptionManager2.setCurrentLocus(currentLocus2);
 
         AppContext appContextClusterManager =
                 RcaTestHelper.setMyIp("192.168.0.4", AllMetrics.NodeRole.ELECTED_CLUSTER_MANAGER);
