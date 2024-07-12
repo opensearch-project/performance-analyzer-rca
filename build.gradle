@@ -323,8 +323,8 @@ dependencies {
     def log4jVersion = "${versions.log4j}"
 
     compile 'org.jooq:jooq:3.10.8'
-    compile 'org.bouncycastle:bcprov-jdk15to18:1.74'
-    compile 'org.bouncycastle:bcpkix-jdk15to18:1.74'
+    compile 'org.bouncycastle:bcprov-jdk15to18:1.78'
+    compile 'org.bouncycastle:bcpkix-jdk15to18:1.78'
     compile 'org.xerial:sqlite-jdbc:3.41.2.2'
     compile 'com.google.guava:guava:32.0.1-jre'
     compile 'com.google.code.gson:gson:2.10.1'
