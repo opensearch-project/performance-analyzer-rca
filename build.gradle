@@ -466,7 +466,7 @@ task copyAllArtifacts(type: Copy) {
     def paArtifacts = Paths.get(dockerBuildDir, 'pa', "opensearch-performance-analyzer-${version}.${file_ext}")
 
     dockerArtifactsDir = Paths.get(dockerBuildDir, 'rca-docker')
-    mkdir dockerArtifactsDir
+    mkdir -p dockerArtifactsDir
 
     from(dockerArtifacts)
     from(rcaArtifacts)
