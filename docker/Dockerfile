@@ -9,7 +9,7 @@
 # Set gid=0 and make group perms==owner perms
 ################################################################################
 
-FROM centos:7 AS prep_open_search_files
+FROM public.ecr.aws/amazonlinux/amazonlinux:2 AS prep_open_search_files
 ARG JDK_VER=11
 
 ENV PATH /usr/share/opensearch/bin:$PATH
@@ -78,6 +78,8 @@ fi
 FROM centos:7
 
 ENV OPENSEARCH_CONTAINER true
+
+RUN echo "nameserver 8.8.8.8" > /etc/resolv.conf
 
 RUN \
   rpm --rebuilddb && yum clean all && \
