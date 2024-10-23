@@ -75,11 +75,9 @@ fi
 # Add entrypoint
 ################################################################################
 
-FROM centos:7
+FROM public.ecr.aws/amazonlinux/amazonlinux:2
 
 ENV OPENSEARCH_CONTAINER true
-
-RUN echo "nameserver 8.8.8.8" > /etc/resolv.conf
 
 RUN \
   rpm --rebuilddb && yum clean all && \
