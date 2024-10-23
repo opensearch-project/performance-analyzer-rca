@@ -498,7 +498,7 @@ task runDocker(type: Exec) {
     // It sets the path to the docker-compose program from an environment variable
     // The DOCKER_COMPOSE_LOCATION environment variable is set in the gradle.yml file inside the
     // performance-analyzer repository.
-    def docker_compose_location = "docker-compose"
+    def docker_compose_location = "docker compose"
     if (System.getenv("DOCKER_COMPOSE_LOCATION") != null) {
         docker_compose_location = System.getenv("DOCKER_COMPOSE_LOCATION")
     }
