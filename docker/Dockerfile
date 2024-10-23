@@ -14,6 +14,8 @@ ARG JDK_VER=11
 
 ENV PATH /usr/share/opensearch/bin:$PATH
 
+RUN yum install -y tar
+
 RUN if [[ "${JDK_VER}" = "17" ]] ; then \
     curl -s https://download.java.net/java/GA/jdk17.0.2/dfd4a8d0985749f896bed50d7138ee7f/8/GPL/openjdk-17.0.2_linux-x64_bin.tar.gz | tar -C /opt -zxf -; \
     mkdir /opt/jdk ; \
@@ -79,23 +81,18 @@ FROM public.ecr.aws/amazonlinux/amazonlinux:2
 
 ENV OPENSEARCH_CONTAINER true
 
-RUN \
-  rpm --rebuilddb && yum clean all && \
-  yum install -y epel-release && \
-  yum update -y && \
-  yum install -y \
-                  iproute \
-                  python-setuptools \
-                  hostname \
-                  inotify-tools \
-                  yum-utils \
-                  which \
-                  jq \
-                  lsof \
-                  python-pip \
-                  rsync && \
-  yum clean all && \
-  pip install supervisor
+RUN yum install -y iproute \
+                   python3-setuptools \
+                   hostname \
+                   inotify-tools \
+                   yum-utils \
+                   which \
+                   jq \
+                   lsof \
+                   python3-pip \
+                   rsync && \
+    yum clean all && \
+    pip3 install supervisor
 
 RUN yum update -y && \
     yum install -y nc unzip wget which && \
