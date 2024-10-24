@@ -495,18 +495,18 @@ task runDocker(type: Exec) {
     workingDir(dockerArtifactsDir)
 
     // This block is included to make the runDocker task work with Github Actions
-    // It sets the path to the docker-compose program from an environment variable
-    // The DOCKER_COMPOSE_LOCATION environment variable is set in the gradle.yml file inside the
+    // It sets the path to the docker compose program from an environment variable
+    // The DOCKER_LOCATION environment variable is set in the gradle.yml file inside the
     // performance-analyzer repository.
-    def docker_compose_location = "docker"
-    if (System.getenv("DOCKER_COMPOSE_LOCATION") != null) {
-        docker_compose_location = System.getenv("DOCKER_COMPOSE_LOCATION")
+    def docker_location = "docker"
+    if (System.getenv("DOCKER_LOCATION") != null) {
+        docker_location = System.getenv("DOCKER_LOCATION")
     }
 
     environment 'DATA_VOLUME1', 'opensearchdata1'
     environment 'DATA_VOLUME2', 'opensearchdata2'
 
-    commandLine(docker_compose_location, 'compose',
+    commandLine(docker_location, 'compose',
             '-f', 'docker-compose.yml',
             '-f', 'docker-compose.hostports.yml',
             '-f', 'docker-compose.cluster.yml',
@@ -556,11 +556,11 @@ def runInProcess(commandArr) {
 def runDockerCompose = { executionPath ->
     // This block is included to make the runDocker task work with Github Actions
     // It sets the path to the docker-compose program from an environment variable
-    // The DOCKER_COMPOSE_LOCATION environment variable is set in the gradle.yml file inside the
+    // The DOCKER_LOCATION environment variable is set in the gradle.yml file inside the
     // performance-analyzer repository.
-    String dockerCompose = System.getenv("DOCKER_COMPOSE_LOCATION") == null ?
-            "docker-compose" : System.getenv("DOCKER_COMPOSE_LOCATION")
-    String[] commandArray = [dockerCompose,
+    String dockerCompose = System.getenv("DOCKER_LOCATION") == null ?
+            "docker" : System.getenv("DOCKER_LOCATION")
+    String[] commandArray = [dockerCompose, 'compose',
                              '-f', 'docker-compose.yml',
                              '-f', 'docker-compose.hostports.yml',
                              '-f', 'docker-compose.cluster.yml',
