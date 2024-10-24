@@ -81,6 +81,7 @@ FROM public.ecr.aws/amazonlinux/amazonlinux:2
 
 ENV OPENSEARCH_CONTAINER true
 
+RUN amazon-linux-extras install epel
 RUN yum install -y iproute \
                    python3-setuptools \
                    hostname \
@@ -91,6 +92,7 @@ RUN yum install -y iproute \
                    lsof \
                    python3-pip \
                    rsync && \
+                   supervisor && \
     yum clean all && \
     pip3 install supervisor
 
