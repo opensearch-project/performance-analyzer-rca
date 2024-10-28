@@ -527,14 +527,36 @@ public class RcaController {
     }
 
     private void addRcaRequestHandler() {
-        httpServer.createContext(Util.RCA_QUERY_URL, queryRcaRequestHandler);
-        httpServer.createContext(Util.LEGACY_OPENDISTRO_RCA_QUERY_URL, queryRcaRequestHandler);
+        try {
+            httpServer.createContext(Util.RCA_QUERY_URL, queryRcaRequestHandler);
+        } catch (IllegalArgumentException e) {
+            LOG.error("unable to create context in http server for URL: " + Util.RCA_QUERY_URL);
+        }
+
+        try {
+            httpServer.createContext(Util.LEGACY_OPENDISTRO_RCA_QUERY_URL, queryRcaRequestHandler);
+        } catch (IllegalArgumentException e) {
+            LOG.error(
+                    "unable to create context in http server for URL: "
+                            + Util.LEGACY_OPENDISTRO_RCA_QUERY_URL);
+        }
     }
 
     private void addActionsRequestHandler() {
-        httpServer.createContext(Util.ACTIONS_QUERY_URL, queryActionRequestHandler);
-        httpServer.createContext(
-                Util.LEGACY_OPENDISTRO_ACTIONS_QUERY_URL, queryActionRequestHandler);
+        try {
+            httpServer.createContext(Util.ACTIONS_QUERY_URL, queryActionRequestHandler);
+        } catch (IllegalArgumentException e) {
+            LOG.error("unable to create context in http server for URL: " + Util.ACTIONS_QUERY_URL);
+        }
+
+        try {
+            httpServer.createContext(
+                    Util.LEGACY_OPENDISTRO_ACTIONS_QUERY_URL, queryActionRequestHandler);
+        } catch (IllegalArgumentException e) {
+            LOG.error(
+                    "unable to create context in http server for URL: "
+                            + Util.LEGACY_OPENDISTRO_ACTIONS_QUERY_URL);
+        }
     }
 
     public void setDeliberateInterrupt() {
