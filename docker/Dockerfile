@@ -10,14 +10,14 @@
 ################################################################################
 
 FROM centos:7 AS prep_open_search_files
-ARG JDK_VER=11
+ARG JDK_VER=21
 
 ENV PATH /usr/share/opensearch/bin:$PATH
 
-RUN if [[ "${JDK_VER}" = "17" ]] ; then \
-    curl -s https://download.java.net/java/GA/jdk17.0.2/dfd4a8d0985749f896bed50d7138ee7f/8/GPL/openjdk-17.0.2_linux-x64_bin.tar.gz | tar -C /opt -zxf -; \
+RUN if [[ "${JDK_VER}" = "21" ]] ; then \
+    curl -s https://download.java.net/java/GA/jdk21.0.2/f2283984656d49d69e91c558476027ac/13/GPL/openjdk-21.0.2_linux-x64_bin.tar.gz | tar -C /opt -zxf -; \
     mkdir /opt/jdk ; \
-    mv -v /opt/jdk-17.0.2/* /opt/jdk; \
+    mv -v /opt/jdk-21.0.2/* /opt/jdk; \
 else \
     curl -s https://download.java.net/java/GA/jdk11/13/GPL/openjdk-11.0.1_linux-x64_bin.tar.gz | tar -C /opt -zxf -; \
     mkdir /opt/jdk ; \
@@ -26,6 +26,13 @@ fi
 
 
 ENV OPENSEARCH_JAVA_HOME /opt/jdk
+RUN yum clean all
+RUN sed -i s/mirror.centos.org/vault.centos.org/g /etc/yum.repos.d/*.repo
+RUN sed -i s/^#.*baseurl=http/baseurl=http/g /etc/yum.repos.d/*.repo
+RUN sed -i s/^mirrorlist=http/#mirrorlist=http/g /etc/yum.repos.d/*.repo
+RUN sed -i 's/mirrorlist/#mirrorlist/g' /etc/yum.repos.d/CentOS-*
+RUN sed -i 's|#baseurl=http://mirror.centos.org|baseurl=http://vault.centos.org|g' /etc/yum.repos.d/CentOS-*
+
 RUN yum install -y unzip
 RUN yum install -y lsof
 
@@ -79,6 +86,13 @@ FROM centos:7
 
 ENV OPENSEARCH_CONTAINER true
 
+RUN yum clean all
+RUN sed -i s/mirror.centos.org/vault.centos.org/g /etc/yum.repos.d/*.repo
+RUN sed -i s/^#.*baseurl=http/baseurl=http/g /etc/yum.repos.d/*.repo
+RUN sed -i s/^mirrorlist=http/#mirrorlist=http/g /etc/yum.repos.d/*.repo
+RUN sed -i 's/mirrorlist/#mirrorlist/g' /etc/yum.repos.d/CentOS-*
+RUN sed -i 's|#baseurl=http://mirror.centos.org|baseurl=http://vault.centos.org|g' /etc/yum.repos.d/CentOS-*
+
 RUN \
   rpm --rebuilddb && yum clean all && \
   yum install -y epel-release && \
@@ -95,7 +109,7 @@ RUN \
                   python-pip \
                   rsync && \
   yum clean all && \
-  pip install supervisor
+  pip install --trusted-host pypi.python.org supervisor
 
 RUN yum update -y && \
     yum install -y nc unzip wget which && \

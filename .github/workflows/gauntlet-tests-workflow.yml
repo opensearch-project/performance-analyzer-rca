@@ -16,7 +16,7 @@ jobs:
     strategy:
       matrix:
         java:
-          - 17
+          - 21
     steps:
     - name: Set up JDK
       uses: actions/setup-java@v1

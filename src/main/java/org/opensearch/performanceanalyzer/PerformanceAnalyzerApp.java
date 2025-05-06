@@ -351,14 +351,10 @@ public class PerformanceAnalyzerApp {
             QueryMetricsRequestHandler queryMetricsRequestHandler =
                     new QueryMetricsRequestHandler(netClient, metricsRestUtil, appContext);
             httpServer.createContext(Util.METRICS_QUERY_URL, queryMetricsRequestHandler);
-            httpServer.createContext(
-                    Util.LEGACY_OPENDISTRO_METRICS_QUERY_URL, queryMetricsRequestHandler);
 
             QueryBatchRequestHandler queryBatchRequestHandler =
                     new QueryBatchRequestHandler(netClient, metricsRestUtil);
             httpServer.createContext(Util.BATCH_METRICS_URL, queryBatchRequestHandler);
-            httpServer.createContext(
-                    Util.LEGACY_OPENDISTRO_BATCH_METRICS_URL, queryBatchRequestHandler);
         }
 
         return new ClientServers(httpServer, netServer, netClient);

@@ -37,7 +37,11 @@ import org.opensearch.performanceanalyzer.net.GRPCConnectionManager;
 import org.opensearch.performanceanalyzer.net.NetClient;
 import org.opensearch.performanceanalyzer.net.NetServer;
 import org.opensearch.performanceanalyzer.rca.exceptions.MalformedConfig;
-import org.opensearch.performanceanalyzer.rca.framework.core.*;
+import org.opensearch.performanceanalyzer.rca.framework.core.ConnectedComponent;
+import org.opensearch.performanceanalyzer.rca.framework.core.Queryable;
+import org.opensearch.performanceanalyzer.rca.framework.core.RcaConf;
+import org.opensearch.performanceanalyzer.rca.framework.core.Stats;
+import org.opensearch.performanceanalyzer.rca.framework.core.ThresholdMain;
 import org.opensearch.performanceanalyzer.rca.framework.metrics.RcaRuntimeMetrics;
 import org.opensearch.performanceanalyzer.rca.framework.util.InstanceDetails;
 import org.opensearch.performanceanalyzer.rca.framework.util.RcaConsts;
@@ -275,6 +279,7 @@ public class RcaController {
             Thread.currentThread().interrupt();
         }
         removeRcaRequestHandler();
+        removeActionsRequestHandler();
         Stats.getInstance().reset();
     }
 
@@ -486,18 +491,21 @@ public class RcaController {
         }
     }
 
+    private void removeActionsRequestHandler() {
+        try {
+            httpServer.removeContext(Util.ACTIONS_QUERY_URL);
+        } catch (IllegalArgumentException e) {
+            LOG.debug(
+                    "Http(s) context for path: {} was not found to remove.",
+                    Util.ACTIONS_QUERY_URL);
+        }
+    }
+
     private void removeRcaRequestHandler() {
         try {
             httpServer.removeContext(Util.RCA_QUERY_URL);
         } catch (IllegalArgumentException e) {
             LOG.debug("Http(s) context for path: {} was not found to remove.", Util.RCA_QUERY_URL);
-        }
-        try {
-            httpServer.removeContext(Util.LEGACY_OPENDISTRO_RCA_QUERY_URL);
-        } catch (IllegalArgumentException e) {
-            LOG.debug(
-                    "Http(s) context for path: {} was not found to remove.",
-                    Util.LEGACY_OPENDISTRO_RCA_QUERY_URL);
         }
     }
 
@@ -528,13 +536,10 @@ public class RcaController {
 
     private void addRcaRequestHandler() {
         httpServer.createContext(Util.RCA_QUERY_URL, queryRcaRequestHandler);
-        httpServer.createContext(Util.LEGACY_OPENDISTRO_RCA_QUERY_URL, queryRcaRequestHandler);
     }
 
     private void addActionsRequestHandler() {
         httpServer.createContext(Util.ACTIONS_QUERY_URL, queryActionRequestHandler);
-        httpServer.createContext(
-                Util.LEGACY_OPENDISTRO_ACTIONS_QUERY_URL, queryActionRequestHandler);
     }
 
     public void setDeliberateInterrupt() {

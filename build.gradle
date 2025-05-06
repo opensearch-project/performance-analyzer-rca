@@ -6,14 +6,14 @@
 buildscript {
 
     ext {
-        opensearch_version = System.getProperty("opensearch.version", "3.0.0-SNAPSHOT")
+        opensearch_version = System.getProperty("opensearch.version", "3.0.0")
         isSnapshot = "true" == System.getProperty("build.snapshot", "true")
         buildVersionQualifier = System.getProperty("build.version_qualifier", "")
-        buildDockerJdkVersion = System.getProperty("build.docker_jdk_ver", "11")
+        buildDockerJdkVersion = System.getProperty("build.docker_jdk_ver", "21")
 
         // The PA Commons (https://github.com/opensearch-project/performance-analyzer-commons)
         // is a library dependency with hardcoded versioning in PA and RCA repos.
-        paCommonsVersion = "1.6.0"
+        paCommonsVersion = "2.0.0"
 
         // 3.0.0-SNAPSHOT -> 3.0.0.0-SNAPSHOT
         version_tokens = opensearch_version.tokenize('-')
@@ -147,7 +147,7 @@ check {
 }
 
 jacoco {
-    toolVersion = "0.8.11"
+    toolVersion = "0.8.13"
 }
 
 jacocoTestReport {
@@ -262,7 +262,7 @@ tasks.withType(Test) {
     jvmArgs('--add-opens=java.base/java.nio.file=ALL-UNNAMED')
     jvmArgs('--add-opens=java.base/java.lang=ALL-UNNAMED')
     jvmArgs('--add-opens=java.base/java.util=ALL-UNNAMED')
-    if (JavaVersion.current().compareTo(JavaVersion.VERSION_17) > 0) {
+    if (JavaVersion.current().compareTo(JavaVersion.VERSION_17) > 0 && JavaVersion.current().compareTo(JavaVersion.VERSION_24) < 0) {
       jvmArgs += ["-Djava.security.manager=allow"]
     }
 }
@@ -282,8 +282,8 @@ task rcaIt(type: Test) {
     //testLogging.showStandardStreams = true
 }
 
-sourceCompatibility = JavaVersion.VERSION_11
-targetCompatibility = JavaVersion.VERSION_11
+sourceCompatibility = JavaVersion.VERSION_21
+targetCompatibility = JavaVersion.VERSION_21
 
 compileJava {
     dependsOn spotlessApply
@@ -333,9 +333,6 @@ tasks.withType(JavaCompile) {
 import org.opensearch.gradle.VersionProperties
 
 dependencies {
-    if (JavaVersion.current() <= JavaVersion.VERSION_1_8) {
-        implementation files("${System.properties['java.home']}/../lib/tools.jar")
-    }
     def versions = VersionProperties.versions
 
     def commonslangVersion = "${versions.commonslang}"
@@ -352,14 +349,14 @@ dependencies {
     // In case they fall out of compatibility, JOOQ will throw error message:
     // 'No bind variables have been provided with a single statement batch execution. This may be due to accidental API misuse>
     def jooqVersion = "3.16.20"
-    def sqliteVersion = "3.41.2.2"
+    def sqliteVersion = "3.49.1.0"
 
     implementation "org.jooq:jooq:${jooqVersion}"
     implementation 'org.bouncycastle:bcprov-jdk15to18:1.78.1'
     implementation 'org.bouncycastle:bcpkix-jdk15to18:1.78.1'
     implementation "org.xerial:sqlite-jdbc:${sqliteVersion}"
     implementation "com.google.guava:guava:${guavaVersion}"
-    implementation 'com.google.code.gson:gson:2.9.0'
+    implementation 'com.google.code.gson:gson:2.13.1'
     implementation 'org.checkerframework:checker-qual:3.29.0'
     implementation "com.fasterxml.jackson.core:jackson-annotations:${jacksonVersion}"
     implementation "com.fasterxml.jackson.core:jackson-databind:${jacksonDataBindVersion}"
@@ -370,8 +367,8 @@ dependencies {
     implementation group: 'commons-io', name: 'commons-io', version: '2.14.0'
     implementation group: 'com.google.errorprone', name: 'error_prone_annotations', version: '2.9.0'
     implementation group: 'com.google.protobuf', name: 'protobuf-java', version: "${protobufVersion}"
-    implementation 'io.grpc:grpc-netty:1.68.1'
-    implementation 'io.grpc:grpc-protobuf:1.68.1'
+    implementation 'io.grpc:grpc-netty:1.17.0'
+    implementation 'io.grpc:grpc-protobuf:1.72.0'
     implementation("io.netty:netty-codec-http2:${nettyVersion}")
     implementation("io.netty:netty-handler-proxy:${nettyVersion}")
     implementation 'io.grpc:grpc-stub:1.68.1'
@@ -389,13 +386,13 @@ dependencies {
     testImplementation group: 'org.powermock', name: 'powermock-api-support', version: '2.0.2'
     testImplementation group: 'org.powermock', name: 'powermock-module-junit4-common', version: '2.0.2'
     testImplementation group: 'org.powermock', name: 'powermock-reflect', version: '2.0.2'
-    testImplementation group: 'org.javassist', name: 'javassist', version: '3.28.0-GA'
-    testImplementation group: 'net.bytebuddy', name: 'byte-buddy', version: '1.14.7'
+    testImplementation group: 'org.javassist', name: 'javassist', version: '3.30.2-GA'
+    testImplementation group: 'net.bytebuddy', name: 'byte-buddy', version: '1.17.5'
     testImplementation group: 'org.objenesis', name: 'objenesis', version: '3.2'
     testImplementation group: 'org.hamcrest', name: 'hamcrest-library', version: '2.1'
     testImplementation group: 'org.hamcrest', name: 'hamcrest', version: '2.1'
     testImplementation group: 'junit', name: 'junit', version: "${junitVersion}"
-    testImplementation group: 'org.xerial', name: 'sqlite-jdbc', version: '3.41.2.2'
+    testImplementation group: 'org.xerial', name: 'sqlite-jdbc', version: "${sqliteVersion}"
     testImplementation group: 'com.github.stefanbirkner', name: 'system-rules', version: '1.19.0'
 
     // Required for Docker build
