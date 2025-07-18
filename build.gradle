@@ -23,7 +23,7 @@ buildscript {
         }
         if (isSnapshot) {
             opensearch_build += "-SNAPSHOT"
-            paCommonsVersion += "-SNAPSHOT"
+            //paCommonsVersion += "-SNAPSHOT"
         }
         gitPaBranch = 'main'
         gitPaRepo = "https://github.com/opensearch-project/performance-analyzer.git"
