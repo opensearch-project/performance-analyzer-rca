@@ -9,7 +9,7 @@ buildscript {
         opensearch_version = System.getProperty("opensearch.version", "3.0.0-SNAPSHOT")
         isSnapshot = "true" == System.getProperty("build.snapshot", "true")
         buildVersionQualifier = System.getProperty("build.version_qualifier", "")
-        buildDockerJdkVersion = System.getProperty("build.docker_jdk_ver", "11")
+        buildDockerJdkVersion = System.getProperty("build.docker_jdk_ver", "21")
 
         // The PA Commons (https://github.com/opensearch-project/performance-analyzer-commons)
         // is a library dependency with hardcoded versioning in PA and RCA repos.
@@ -282,8 +282,8 @@ task rcaIt(type: Test) {
     //testLogging.showStandardStreams = true
 }
 
-sourceCompatibility = JavaVersion.VERSION_11
-targetCompatibility = JavaVersion.VERSION_11
+sourceCompatibility = JavaVersion.VERSION_21
+targetCompatibility = JavaVersion.VERSION_21
 
 compileJava {
     dependsOn spotlessApply
