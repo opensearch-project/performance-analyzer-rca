@@ -370,11 +370,11 @@ dependencies {
     implementation group: 'commons-io', name: 'commons-io', version: '2.14.0'
     implementation group: 'com.google.errorprone', name: 'error_prone_annotations', version: '2.9.0'
     implementation group: 'com.google.protobuf', name: 'protobuf-java', version: "${protobufVersion}"
-    implementation 'io.grpc:grpc-netty:1.56.1'
-    implementation 'io.grpc:grpc-protobuf:1.56.1'
+    implementation 'io.grpc:grpc-netty:1.68.1'
+    implementation 'io.grpc:grpc-protobuf:1.68.1'
     implementation("io.netty:netty-codec-http2:${nettyVersion}")
     implementation("io.netty:netty-handler-proxy:${nettyVersion}")
-    implementation 'io.grpc:grpc-stub:1.52.1'
+    implementation 'io.grpc:grpc-stub:1.68.1'
     implementation "jakarta.annotation:jakarta.annotation-api:${jakartaVersion}"
 
     // JDK9+ has to run powermock 2+. https://github.com/powermock/powermock/issues/888
