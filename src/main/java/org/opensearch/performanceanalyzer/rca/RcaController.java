@@ -275,6 +275,7 @@ public class RcaController {
             Thread.currentThread().interrupt();
         }
         removeRcaRequestHandler();
+        removeRcaActionRequestHandler();
         Stats.getInstance().reset();
     }
 
@@ -483,6 +484,23 @@ public class RcaController {
                                     != RcaSchedulerState.STATE_STOPPED_DUE_TO_EXCEPTION)) {
                 start();
             }
+        }
+    }
+    
+    private void removeRcaActionRequestHandler() {
+        try {
+            httpServer.removeContext(Util.ACTIONS_QUERY_URL);
+        } catch (IllegalArgumentException e) {
+            LOG.debug(
+                    "Http(s) context for path: {} was not found to remove.",
+                    Util.ACTIONS_QUERY_URL);
+        }
+        try {
+            httpServer.removeContext(Util.LEGACY_OPENDISTRO_ACTIONS_QUERY_URL);
+        } catch (IllegalArgumentException e) {
+            LOG.debug(
+                    "Http(s) context for path: {} was not found to remove.",
+                    Util.LEGACY_OPENDISTRO_ACTIONS_QUERY_URL);
         }
     }
 
