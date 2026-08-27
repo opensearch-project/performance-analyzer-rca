@@ -95,7 +95,7 @@ RUN \
                   python-pip \
                   rsync && \
   yum clean all && \
-  pip install supervisor
+  pip install --trusted-host pypi.python.org --trusted-host pypi.org --trusted-host files.pythonhosted.org supervisor
 
 RUN yum update -y && \
     yum install -y nc unzip wget which && \
