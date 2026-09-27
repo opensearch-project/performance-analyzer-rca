@@ -345,7 +345,7 @@ public class HttpRequestMetricsSnapshot implements Removable {
 
     /**
      * This function returns requests with a missing end event. A request maybe long running and the
-     * end event might not have occured in this snapshot.
+     * end event might not have occurred in this snapshot.
      *
      * <p>Actual Table - |rid |operation|indices |status|exception|itemCount| st| et|
      * +-------+---------+--------+------+---------+---------+-------------+-------------+
