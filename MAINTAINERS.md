@@ -6,7 +6,6 @@ This document contains a list of maintainers in this repo. See [opensearch-proje
 
 | Maintainer                | GitHub ID                                             | Affiliation |
 |---------------------------|-------------------------------------------------------| ----------- |
-| Chenyang Ji               | [ansjcy](https://github.com/ansjcy)                   | Amazon      |
 | Subhobrata Dey            | [sbcd90](https://github.com/sbcd90)                   | Amazon      |
 | shephali mittal           | [Shephalimittal](https://github.com/Shephalimittal)   | Amazon      |
 | Nishchay Malhotra         | [nishchay21](https://github.com/nishchay21)           | Amazon      |
@@ -32,3 +31,4 @@ This document contains a list of maintainers in this repo. See [opensearch-proje
 | Atharva Sharma    | [atharvasharma61](https://github.com/atharvasharma61) | Amazon      |
 | DevJhaAbhishek    | [DevJhaAbhishek](https://github.com/DevJhaAbhishek)   | Amazon      |
 | Varunsrivathsa Venkatesha | [varunsrivathsav](https://github.com/varunsrivathsav) | Amazon      |
+| Chenyang Ji               | [ansjcy](https://github.com/ansjcy)                   | Amazon      |
